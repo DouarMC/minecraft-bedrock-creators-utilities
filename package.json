@@ -1,0 +1,67 @@
+{
+  "name": "minecraft-bedrock-creators-utilities",
+  "displayName": "minecraft-bedrock-creators-utilities",
+  "description": "\tVS Code tools for Minecraft Bedrock add-on development",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "extensionDependencies": [
+    "vscode.json-language-features"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "minecraft-bedrock-creators-utilities.helloWorld",
+        "title": "Hello World"
+      },
+      {
+        "command": "minecraft-bedrock-creators-utilities.initEnvironment",
+        "title": "Initialiser un projet Minecraft Bedrock"
+      },
+      {
+        "command": "minecraft-bedrock-creators-utilities.validateProject",
+        "title": "Valider le projet Minecraft Bedrock courant"
+      },
+      {
+        "command": "minecraft-bedrock-creators-utilities.deployProject",
+        "title": "Déployer le projet Minecraft Bedrock courant"
+      },
+      {
+        "command": "minecraft-bedrock-creators-utilities.toggleWatchDeploy",
+        "title": "Activer/Désactiver le déploiement automatique du projet Minecraft Bedrock"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.100.0",
+    "@typescript-eslint/eslint-plugin": "^8.31.1",
+    "@typescript-eslint/parser": "^8.31.1",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^9.25.1",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@minecraft/vanilla-data": "^1.21.90",
+    "jsonc-parser": "^3.3.1",
+    "vscode-json-languageservice": "^5.6.0"
+  }
+}
