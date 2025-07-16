@@ -1,6 +1,6 @@
-import {SchemaChange} from "../../../registry";
+import {SchemaChange} from "../../../schemaTypes";
 import { schemaPatterns } from "../../../../utils/schemas/schemaPatterns";
-import { schemaEnums } from "../../../../utils/schemas/schemaEnums";
+import { schemaRef } from "../../../../utils/schemas/schemaEnums";
 import { commonSchemas } from "../../../../utils/schemas/commonSchemas";
 
 export const baseSchema = {
@@ -39,7 +39,7 @@ export const baseSchema = {
                                     "description": "La catégorie de l'inventaire créatif ou commande dans laquelle le Bloc sera placé.",
                                     "default": "none",
                                     "type": "string",
-                                    "enum": schemaEnums.menu_categories
+                                    "$ref": schemaRef.menu_categories
                                 },
                                 "group": {
                                     "description": "Le groupe d'items du menu créatif où le Bloc sera placé.",
@@ -214,7 +214,7 @@ export const baseSchema = {
                                 {
                                     "type": "string",
                                     "pattern": schemaPatterns.loot_tables_file,
-                                    "examples": schemaEnums.loot_table_paths
+                                    "$ref": schemaRef.loot_table_paths
                                 },
                                 {
                                     "type": "object",
@@ -224,7 +224,7 @@ export const baseSchema = {
                                             "description": "La Loot Table utilisée pour le Bloc.",
                                             "type": "string",
                                             "pattern": schemaPatterns.loot_tables_file,
-                                            "examples": schemaEnums.loot_table_paths
+                                            "$ref": schemaRef.loot_table_paths
                                         }
                                     }
                                 }
@@ -469,7 +469,7 @@ export const baseSchema = {
                             description: "Définit la méthode de teinte utilisée pour la couleur du Bloc.",
                             default: "none",
                             type: "string",
-                            enum: schemaEnums.tint_methods
+                            $ref: schemaRef.tint_methods
                         }
                     }
                 }
@@ -609,7 +609,7 @@ export const versionedChanges: SchemaChange[] = [
                                 tint_method: {
                                     description: "La méthode de teinte utilisée sur la couleur du Bloc.",
                                     type: "string",
-                                    enum: schemaEnums.tint_methods
+                                    $ref: schemaRef.tint_methods
                                 }
                             }
                         }
@@ -730,7 +730,7 @@ export const versionedChanges: SchemaChange[] = [
                     oneOf: [
                         {
                             type: "string",
-                            examples: schemaEnums.block_model_ids
+                            $ref: schemaRef.block_model_ids
                         },
                         {
                             type: "object",
@@ -739,7 +739,7 @@ export const versionedChanges: SchemaChange[] = [
                                 identifier: {
                                     description: "L'identifiant du modèle pour le Bloc.",
                                     type: "string",
-                                    examples: schemaEnums.block_model_ids
+                                    $ref: schemaRef.block_model_ids
                                 },
                                 bone_visibility: {
                                     description: "Définit la visibilité de chaque os du modèle. Par défaut, tous les os sont visibles.",
@@ -757,7 +757,7 @@ export const versionedChanges: SchemaChange[] = [
                                     default: "minecraft:culling_layer.undefined",
                                     type: "string",
                                     pattern: schemaPatterns.culling_layer_identifier,
-                                    examples: schemaEnums.vanilla_culling_layers
+                                    $ref: schemaRef.vanilla_culling_layers
                                 }
                             }
                         }
@@ -854,7 +854,7 @@ export const versionedChanges: SchemaChange[] = [
                             items: {
                                 type: "string",
                                 maxLength: 64,
-                                examples: schemaEnums.crafting_recipe_tags
+                                $ref: schemaRef.crafting_recipe_tags
                             }
                         },
                         table_name: {
@@ -963,7 +963,7 @@ export const versionedChanges: SchemaChange[] = [
                                             oneOf: [
                                                 {
                                                     type: "string",
-                                                    examples: schemaEnums.block_ids
+                                                    $ref: schemaRef.block_ids
                                                 },
                                                 commonSchemas.block_descriptor
                                             ]
@@ -1467,7 +1467,7 @@ export const versionedChanges: SchemaChange[] = [
                             description: "La méthode de teinte à utiliser pour la couleur des particules de destruction du Bloc.",
                             default: "none",
                             type: "string",
-                            enum: schemaEnums.tint_methods
+                            $ref: schemaRef.tint_methods
                         }
                     }
                 }

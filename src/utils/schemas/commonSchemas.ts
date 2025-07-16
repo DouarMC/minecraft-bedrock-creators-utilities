@@ -1,4 +1,4 @@
-import { schemaEnums } from "./schemaEnums";
+import { schemaRef } from "./schemaEnums";
 
 export const commonSchemas = {
     block_descriptor: {
@@ -7,7 +7,7 @@ export const commonSchemas = {
             name: {
                 description: "L'identifiant du bloc.",
                 type: "string",
-                examples: schemaEnums.block_ids
+                $ref: schemaRef.block_ids
             },
             states: {
                 description: "Les états du bloc.",

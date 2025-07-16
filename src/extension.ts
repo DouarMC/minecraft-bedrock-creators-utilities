@@ -5,17 +5,14 @@ import { registerValidateProjectCommand } from './features/validation/validatePr
 import { registerDeployProjectCommand } from './features/deploy/deployProject';
 import { registerWatchDeployCommand } from './features/deploy/watchProjectChanges';
 
-import { registerSchemaVersioning } from './features/completion/schemaVersioning';
+import { registerCompletionProvider } from './features/providers/completionProvider';
+import { registerHoverProvider } from './features/providers/hoverProvider';
+import { registerValidationJson } from './features/diagnostics/validationJson';
 
-
-export async function testJsonDefaultsAPI() {
-    console.log(vscode.languages);
-}
 export async function activate(context: vscode.ExtensionContext) {
-
-
-
-    registerSchemaVersioning(context);
+    registerCompletionProvider(context);
+    registerHoverProvider(context);
+    registerValidationJson(context);
 
     registerInitEnvironmentCommand(context);
     registerValidateProjectCommand(context);
