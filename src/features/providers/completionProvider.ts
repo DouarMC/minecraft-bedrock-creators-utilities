@@ -21,7 +21,6 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                     }
 
                     const path = getJsonPathForCompletionAt(document, position); // Récupère le chemin JSON à la position du curseur
-                    console.log("🧪 Chemin JSON pour la complétion :", path);
                     const node = resolveSchemaAtPath(schema, path); // Récupère la sous-partie du schéma correspondant à la position du curseur
                     if (!node) { // Si pas de nœud, pas de suggestions
                         return [];
