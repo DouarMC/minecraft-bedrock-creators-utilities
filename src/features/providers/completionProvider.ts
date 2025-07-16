@@ -4,6 +4,8 @@ import { getJsonPathForCompletionAt } from '../../utils/getJsonPathAt';
 import { resolveOneOfToObjectSchema } from '../../utils/resolveOneOfToObjectSchema';
 import { resolveSchemaAtPath } from '../../utils/resolveSchemaAtPath';
 import { findNodeAtLocation, parseTree } from 'jsonc-parser';
+import { nodeToValue } from '../diagnostics/validationJson';
+import { getErrorsForSchema } from '../../utils/resolveMatchingSubSchema';
 
 /**
  * Enregistre le provider de complétion pour les fichiers JSON
@@ -14,174 +16,145 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
         vscode.languages.registerCompletionItemProvider(
             {language: "json", scheme: "file"}, // Dit qu'on veut des suggestions pour les fichiers JSON
             {
-                async provideCompletionItems(document, position) {
-                    const schema = getVersionedSchemaForFile(document); // Récupère le schéma JSON pour le fichier actuel
-                    if (!schema) { // Si pas de schéma, pas de suggestions
-                        return [];
-                    }
+                async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
+                    const schema = getVersionedSchemaForFile(document);
+                    if (!schema) {return [];}
 
-                    const path = getJsonPathForCompletionAt(document, position); // Récupère le chemin JSON à la position du curseur
-                    const node = resolveSchemaAtPath(schema, path); // Récupère la sous-partie du schéma correspondant à la position du curseur
-                    if (!node) { // Si pas de nœud, pas de suggestions
-                        return [];
-                    }
+                    const path = getJsonPathForCompletionAt(document, position);
+                    const rootNode = parseTree(document.getText());
+                    const rootValue = nodeToValue(rootNode as any);
+                    const rawSchema = resolveSchemaAtPath(schema, path, rootValue);
+                    if (!rawSchema) {return [];}
 
-                    const resolvedNode = resolveOneOfToObjectSchema(node) ?? node; // Résout les schémas oneOf/anyOf en un schéma d'objet si possible
+                    const valueAtPath = path.reduce((acc, key) => acc?.[key], rootValue);
+                    const { schema: resolvedNode } = getErrorsForSchema(rawSchema, valueAtPath);
+                    if (!resolvedNode) {return [];}
 
-                    const line = document.lineAt(position.line).text; // Récupère le texte de la ligne actuelle où se trouve le curseur
-                    const beforeCursor = line.slice(0, position.character); // Texte avant le curseur
-                    const afterCursor = line.slice(position.character); // Texte après le curseur
+                    const line = document.lineAt(position.line).text;
+                    const beforeCursor = line.slice(0, position.character);
+                    const afterCursor = line.slice(position.character);
 
-                    const isInQuotes = isInsideQuotes(beforeCursor, afterCursor); // Vérifie si le curseur est à l'intérieur de guillemets
-                    const isAfterColon = /:\s*$/.test(beforeCursor); // Vérifie si le curseur est après un deux-points
-                    const isStartOfProperty = /^[\s{,]*$/.test(beforeCursor) || /^[\s{,]*"[^"]*$/.test(beforeCursor); // Vérifie si on est au début d'une propriété
-                    const isTypingValue = isAfterColon || (isInQuotes && /:\s*"[^"]*$/.test(beforeCursor)); // Vérifie si on est en train de taper une valeur
-                    const isProbablyKeyWithoutQuotes = /^[\s{,]*[a-zA-Z0-9_]*$/.test(beforeCursor); // Vérifie si on est probablement en train de taper une clé sans guillemets
+                    const isInQuotes = isInsideQuotes(beforeCursor, afterCursor);
+                    const isAfterColon = /:\s*$/.test(beforeCursor);
+                    const isStartOfProperty = /^[\s{,]*$/.test(beforeCursor) || /^[\s{,]*"[^"]*$/.test(beforeCursor);
+                    const isTypingValue = isAfterColon || (isInQuotes && /:\s*"[^"]*$/.test(beforeCursor));
+                    const isProbablyKeyWithoutQuotes = /^[\s{,]*[a-zA-Z0-9_]*$/.test(beforeCursor);
 
-                    // Parse le document JSON pour obtenir l'arbre syntaxique
-                    const root = parseTree(document.getText());
-                    
-                    // Essaye de trouver le noeud en partant de la fin du chemin
+                    // Trouve le bon objet parent à partir du curseur
                     let workingPath = [...path];
-                    let nodeAtCursor = findNodeAtLocation(root!, workingPath);
+                    let nodeAtCursor = findNodeAtLocation(rootNode!, workingPath);
                     while (!nodeAtCursor && workingPath.length > 0) {
                         workingPath.pop();
-                        nodeAtCursor = findNodeAtLocation(root!, workingPath);
+                        nodeAtCursor = findNodeAtLocation(rootNode!, workingPath);
                     }
 
-                    let parentObject: any;
+                    let parentObject: any = null;
                     if (nodeAtCursor?.type === 'object') {
                         parentObject = nodeAtCursor;
                     } else if (nodeAtCursor?.type === 'array') {
                         const lastChild = nodeAtCursor.children?.at(-1);
-                        if (!lastChild || lastChild.type !== 'object') {
-                            return [];
-                        }
-                        parentObject = lastChild;
+                        if (lastChild?.type === 'object') {parentObject = lastChild;}
                     } else {
                         parentObject = findNearestObjectNode(nodeAtCursor);
                     }
 
-                    // Cas 1 : Si on est dans des guillemets ou au début d'une propriété, on propose les clés
+                    // ➤ Complétion de CLÉS
                     if (
                         resolvedNode.properties &&
                         parentObject?.type === 'object' &&
                         (isStartOfProperty || isInQuotes || isProbablyKeyWithoutQuotes) &&
-                        !isAfterColon &&
-                        !isTypingValue
+                        !isAfterColon && !isTypingValue
                     ) {
-                        // Récupère les propriétés déjà présentes dans l'objet actuel
-                        const existingKeys = new Set<string>(); // Ensemble pour stocker les clés déjà existantes
-
-                        // Si on est dans un objet, on récupère les clés existantes pour éviter les doublons
-                        if (parentObject?.type === 'object') {
-                            for (const prop of parentObject.children ?? []) {
-                                const keyNode = prop.children?.[0];
-                                if (keyNode?.type === 'string' && typeof keyNode.value === 'string') {
-                                    existingKeys.add(keyNode.value);
-                                }
+                        const existingKeys = new Set<string>();
+                        for (const prop of parentObject.children ?? []) {
+                            const keyNode = prop.children?.[0];
+                            if (keyNode?.type === 'string') {
+                                existingKeys.add(keyNode.value);
                             }
                         }
 
                         return Object.entries(resolvedNode.properties)
-                            .filter(([key]) => key !== "$schema" && !existingKeys.has(key)) // on ignore $schema et les clés déjà existantes
+                            .filter(([key]) => key !== "$schema" && !existingKeys.has(key))
                             .map(([key, value]) => {
-                                const item = new vscode.CompletionItem(key, vscode.CompletionItemKind.Property); // Crée un item de complétion pour chaque clé
-
-                                // Forcer la priorité et l'affichage en tête
+                                const item = new vscode.CompletionItem(key, vscode.CompletionItemKind.Property);
                                 item.sortText = '0';
                                 item.preselect = true;
 
-                                // Si on est dans des guillemets
                                 if (isInQuotes) {
-                                    const snippet = generateInsertTextForKey(key, value); // Génère le texte d'insertion pour la clé
+                                    const snippet = generateInsertTextForKey(key, value);
                                     const fullInsert = snippet.value;
-
-                                    // ⚠️ Séparer clé et valeur en analysant précisément le format
-                                    // Format attendu : `"clé": valeur`
                                     const match = /^"([^"]+)"\s*:\s*([\s\S]*)$/.exec(fullInsert);
-                                    if (!match) {
-                                        // Fallback si le format est inattendu
-                                        item.insertText = new vscode.SnippetString(`${key}: $1`);
-                                        return item;
-                                    }
 
-                                    const keyPart = match[1];
-                                    const valuePart = match[2];
-
-                                    const range = getQuoteContentRange(document, position); // Récupère le range du contenu entre guillemets
-                                    if (range) {
-                                        // Étend le range pour inclure la guillemet fermante
-                                        const extendedRange = new vscode.Range(
-                                            range.start,
-                                            new vscode.Position(range.end.line, range.end.character + 1)
-                                        );
-                                        item.range = extendedRange; // Définit le range de l'item de complétion ce qui permet de remplacer le contenu entre guillemets
-                                    }
-
-                                    // 🧠 On insère clé + valeur, mais en laissant VS Code remplacer juste la clé
-                                    item.insertText = new vscode.SnippetString(`${keyPart}": ${valuePart}`);
-
-                                } else { // Si on n'est pas dans des guillemets
-                                    item.insertText = generateInsertTextForKey(key, value);
-
-                                    // Range pour remplacer le mot actuel s'il existe
-                                    const wordRange = document.getWordRangeAtPosition(position);
-                                    if (wordRange) {
-                                        item.range = wordRange; // Définit le range pour remplacer le mot actuel
-                                    }
-                                }
-
-                                const description = (value as any).description || (value as any).markdownDescription || '';
-                                if (description) {
-                                    item.documentation = new vscode.MarkdownString(description); // Ajoute une description si disponible
-                                }
-
-                                return item; // Retourne l'item de complétion
-                            });
-                    }
-
-                    // Cas 2 : Si on est après un deux-points, on propose les valeurs possibles
-                    if (isTypingValue || isAfterColon) {
-                        // On stocke les valeurs possibles dans un tableau qui sont définit dans le schéma
-                        const values = [
-                            ...(node.enum ?? []),
-                            ...(node.examples ?? []),
-                            ...(node.const !== undefined ? [node.const] : []),
-                            ...(node.default !== undefined ? [node.default] : [])
-                        ];
-
-                        if (values.length > 0) { // Si on a au moins une valeur
-                            return values.map(value => {
-                                const label = typeof value === "string" ? value : JSON.stringify(value); // Convertit la valeur en chaîne de caractères pour l'affichage
-                                const item = new vscode.CompletionItem(label, vscode.CompletionItemKind.Value); // Crée un item de complétion pour chaque valeur
-
-                                if (typeof value === "string") { // Si la valeur est une chaîne de caractères
-                                    if (isInQuotes) { // Si on est dans des guillemets
-                                        item.insertText = new vscode.SnippetString(`${value}"$0`);
+                                    if (match) {
+                                        const [_, keyPart, valuePart] = match;
                                         const range = getQuoteContentRange(document, position);
                                         if (range) {
                                             const extendedRange = new vscode.Range(
                                                 range.start,
-                                                new vscode.Position(range.end.line, range.end.character + 1) // inclut la guillemet fermante
+                                                new vscode.Position(range.end.line, range.end.character + 1)
                                             );
                                             item.range = extendedRange;
                                         }
-
+                                        item.insertText = new vscode.SnippetString(`${keyPart}": ${valuePart}`);
                                     } else {
-                                        item.insertText = new vscode.SnippetString(`"${value}"$0`); // Si on n'est pas dans des guillemets, on ajoute des guillemets autour de la valeur
+                                        item.insertText = new vscode.SnippetString(`${key}: $1`);
                                     }
-                                } else { // Si la valeur n'est pas une chaîne de caractères
-                                    item.insertText = new vscode.SnippetString(`${JSON.stringify(value)}$0`); // On convertit la valeur en JSON pour l'insertion
+
+                                } else {
+                                    item.insertText = generateInsertTextForKey(key, value);
+                                    const wordRange = document.getWordRangeAtPosition(position);
+                                    if (wordRange) {item.range = wordRange;}
                                 }
 
-                                return item; // Retourne l'item de complétion
+                                const description = (value as any).description || (value as any).markdownDescription || '';
+                                if (description) {
+                                    item.documentation = new vscode.MarkdownString(description);
+                                }
+
+                                return item;
                             });
-                        }
                     }
 
-                    return []; // Si aucun cas ne correspond, retourne un tableau vide
+                    // ➤ Complétion de VALEURS
+                    if (isTypingValue || isAfterColon) {
+                        const rawValues = [
+                            ...(rawSchema.enum ?? []),
+                            ...(rawSchema.examples ?? []),
+                            ...(rawSchema.const !== undefined ? [rawSchema.const] : []),
+                            ...(rawSchema.default !== undefined ? [rawSchema.default] : [])
+                        ];
+                        const uniqueValues = [...new Set(rawValues)]; // Évite les doublons
+
+                        return uniqueValues.map(value => {
+                            const label = typeof value === "string" ? value : JSON.stringify(value);
+                            const item = new vscode.CompletionItem(label, vscode.CompletionItemKind.Value);
+
+                            if (typeof value === "string") {
+                                if (isInQuotes) {
+                                    item.insertText = new vscode.SnippetString(`${value}"$0`);
+                                    const range = getQuoteContentRange(document, position);
+                                    if (range) {
+                                        const extendedRange = new vscode.Range(
+                                            range.start,
+                                            new vscode.Position(range.end.line, range.end.character + 1)
+                                        );
+                                        item.range = extendedRange;
+                                    }
+                                } else {
+                                    item.insertText = new vscode.SnippetString(`"${value}"$0`);
+                                }
+                            } else {
+                                item.insertText = new vscode.SnippetString(`${JSON.stringify(value)}$0`);
+                            }
+
+                            return item;
+                        });
+                    }
+
+                    return [];
                 }
+
+
             },
             '"', ':' // Déclencheurs de complétion
         )

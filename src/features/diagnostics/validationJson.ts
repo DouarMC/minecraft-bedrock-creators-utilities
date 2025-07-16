@@ -46,13 +46,6 @@ function validateDocument(document: vscode.TextDocument, diagnostics: vscode.Dia
         const rawSchema = resolveSchemaAtPath(schema, path, nodeToValue(root)); // Récupère le schéma brut pour le chemin actuel
         const { schema: resolvedSchema, errors: validationErrors } = getErrorsForSchema(rawSchema, value); // Validation centralisée
 
-        // 🧠 🔽 Ajoute les logs ici :
-        console.log("🧩 PATH:", path.join('.'));
-        console.log("🔎 VALUE:", value);
-        console.log("📜 RAW SCHEMA:", rawSchema ? "[OK]" : "undefined ❌");
-        console.log("✅ RESOLVED SCHEMA:", resolvedSchema ? "[OK]" : "undefined ❌");
-        console.log("❗ ERRORS:", validationErrors.map(e => e.error));
-
         if (validationErrors.length > 0) {
             errors.push(new vscode.Diagnostic(
                 toRange(document, node),
@@ -86,7 +79,7 @@ function walkJsonTree(node: Node, callback: (node: Node, path: string[]) => void
     }
 }
 
-function nodeToValue(node: Node): any {
+export function nodeToValue(node: Node): any {
     switch (node.type) {
         case 'string':
         case 'number':
