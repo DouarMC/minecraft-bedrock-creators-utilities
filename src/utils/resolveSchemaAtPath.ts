@@ -49,9 +49,19 @@ export function resolveSchemaAtPath(schema: any, path: string[], rootValue?: any
                 .find(([pattern]) => new RegExp(pattern).test(segment));
             if (matched) {
                 current = matched[1];
+                while (current?.$ref) {
+                    const resolved = resolveRefInSchema(schema, current.$ref);
+                    if (!resolved) {break;}
+                    current = { ...resolved, ...current };
+                    delete current.$ref;
+                }
+            } else if (current.additionalProperties) {
+                current = current.additionalProperties;
             } else {
                 return undefined;
             }
+        } else if (current.additionalProperties) {
+            current = current.additionalProperties;
         } else {
             return undefined;
         }

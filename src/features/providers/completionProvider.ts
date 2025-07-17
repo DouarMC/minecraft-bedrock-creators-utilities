@@ -34,8 +34,6 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                     }
 
                     const valueAtPath = path.reduce((acc, key) => acc?.[key], rootValue); // Exemple équivalent: rootValue?.['minecraft:block']?.['components']?.['minecraft:collision_box']
-                    console.log("Valeur à la position du curseur :", valueAtPath);
-                    console.log("Path: ", path);
                     const { schema: resolvedNode } = getErrorsForSchema(rawSchema, valueAtPath);
                     if (!resolvedNode) {return [];}
 
@@ -83,7 +81,7 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                         }
 
                         return Object.entries(resolvedNode.properties)
-                            .filter(([key]) => key !== "$schema" && !existingKeys.has(key))
+                            .filter(([key]) => !existingKeys.has(key))
                             .map(([key, value]) => {
                                 const item = new vscode.CompletionItem(key, vscode.CompletionItemKind.Property);
                                 item.sortText = '0';

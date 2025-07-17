@@ -16,10 +16,6 @@ export function getJsonPathForCompletionAt(document: vscode.TextDocument, positi
     }
 
     const node = findNodeAtOffset(root, offset, true);  // Récupère le nœud JSON (clé ou valeur) à la position donnée
-    console.log("Valeur du nœud trouvé :", node?.value, "Type :", node?.type);
-    if (node?.type === "property") {
-        console.log(node.children![0].value, "est une propriété");
-    }
 
     if (!node) {
         return []; // Si aucun nœud n'est trouvé, retourne un tableau vide

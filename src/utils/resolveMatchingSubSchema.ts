@@ -8,38 +8,43 @@ export interface SchemaValidationResult {
 }
 
 export function getErrorsForSchema(schema: any, value: any): SchemaValidationResult {
-    // Si le schéma n'est pas un objet, on renvoie un résultat vide
     if (!schema || typeof schema !== 'object') {
         return { schema: null, errors: [] };
     }
 
-    const variants = schema.oneOf || schema.anyOf; // Récupère les variantes oneOf ou anyOf du schéma
-    if (Array.isArray(variants)) { // Si on a des variantes
-        // Étape 1 : on filtre les variants de type compatible
+    const variants = schema.oneOf || schema.anyOf;
+    if (Array.isArray(variants)) {
         const compatibleVariants = variants
-            .map(variant => ({
-                variant,
-                isCompatible: variant.type ? isValueOfType(value, variant.type) : true,
-                errors: validateAgainstSchema(variant, value),
-            }))
+            .map(variant => {
+                const result = getErrorsForSchema(variant, value); // 🔁 récursif ici
+                const isCompatible = variant.type ? isValueOfType(value, variant.type) : true;
+
+                return {
+                    variant: result.schema,
+                    isCompatible,
+                    errors: result.errors
+                };
+            })
             .sort((a, b) => {
-                // Priorité : compatible > moins d'erreurs
                 if (a.isCompatible !== b.isCompatible) {
                     return b.isCompatible ? 1 : -1;
                 }
                 return a.errors.length - b.errors.length;
             });
 
-        const best = compatibleVariants[0];
+        const best = compatibleVariants.find(v => v.isCompatible) ?? compatibleVariants[0];
+        if (!best || !best.isCompatible) {
+            return { schema, errors: [{ error: `Aucune des variantes 'oneOf' ne correspond au type de la valeur.` }] };
+        }
+
         return {
             schema: best.variant,
             errors: best.errors
         };
     }
 
-    // Pas de oneOf/anyOf, validation directe
-    const errors = validateAgainstSchema(schema, value); // Valide la valeur contre le schéma principal
-    return { schema, errors }; // On retourne le schéma principal et les erreurs de validation potentielles
+    const errors = validateAgainstSchema(schema, value);
+    return { schema, errors };
 }
 
 function validateAgainstSchema(schema: any, value: any): SchemaError[] {
@@ -118,6 +123,32 @@ function validateAgainstSchema(schema: any, value: any): SchemaError[] {
 
         if (schema.maxItems !== undefined && value.length > schema.maxItems) {
             errors.push({ error: `Le tableau contient ${value.length} éléments, mais ${schema.maxItems} maximum sont autorisés.` }); // Ajoute une erreur pour le nombre maximum d'éléments
+        }
+
+        if (schema.items) {
+            for (let i = 0; i < value.length; i++) {
+                const itemValue = value[i];
+                const itemSchema = schema.items;
+
+                // Si items.oneOf existe → on cherche un variant compatible
+                if (Array.isArray(itemSchema.oneOf)) {
+                    const subVariants = itemSchema.oneOf.map((variant: any) => ({
+                        variant,
+                        isValid: validateAgainstSchema(variant, itemValue).length === 0
+                    }));
+
+                    if (!subVariants.some((v: any) => v.isValid)) {
+                        errors.push({
+                            error: `Élément ${i} invalide : aucun des types attendus ne correspond.`
+                        });
+                    }
+                } else {
+                    const subErrors = validateAgainstSchema(itemSchema, itemValue);
+                    errors.push(...subErrors.map(e => ({
+                        error: `Élément ${i} invalide : ${e.error}`
+                    })));
+                }
+            }
         }
     }
 

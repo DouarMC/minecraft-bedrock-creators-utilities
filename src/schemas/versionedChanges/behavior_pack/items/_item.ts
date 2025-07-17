@@ -1,6 +1,6 @@
 import { SchemaChange } from "../../../schemaTypes";
 import { schemaPatterns } from "../../../../utils/schemas/schemaPatterns";
-import { schemaRef } from "../../../../utils/schemas/schemaEnums";
+import { schemaEnums, schemaExamples } from "../../../../utils/schemas/schemaEnums";
 import { commonSchemas } from "../../../../utils/schemas/commonSchemas";
 
 export const baseSchema = {
@@ -825,7 +825,7 @@ export const versionedChanges: SchemaChange[] = [
                             description: "La catégorie de l'inventaire créatif ou commande dans laquelle le Bloc sera placé.",
                             default: "none",
                             type: "string",
-                            $ref: schemaRef.menu_categories
+                            enum: schemaEnums.menu_categories
                         },
                         group: {
                             description: "Le groupe d'items du menu créatif où l'Item sera placé.",
@@ -1289,7 +1289,7 @@ export const versionedChanges: SchemaChange[] = [
                             type: "array",
                             items: {
                                 type: "string",
-                                $ref: schemaRef.entity_damage_causes
+                                enum: schemaEnums.entity_damage_causes
                             }
                         }
                     }
