@@ -15,18 +15,25 @@ export function getErrorsForSchema(schema: any, value: any): SchemaValidationRes
 
     const variants = schema.oneOf || schema.anyOf; // Récupère les variantes oneOf ou anyOf du schéma
     if (Array.isArray(variants)) { // Si on a des variantes
-        // Essaye de trouver un sous-schéma qui matche sans erreur
-        for (const variant of variants) {
-            const errors = validateAgainstSchema(variant, value); // Valide la valeur contre le schéma de la variante
-            if (errors.length === 0) { // Si aucune erreur n'est trouvée
-                return { schema: variant, errors: [] }; // On retourne le schéma de la variante avec une liste d'erreurs vide
-            }
-        }
+        // Étape 1 : on filtre les variants de type compatible
+        const compatibleVariants = variants
+            .map(variant => ({
+                variant,
+                isCompatible: variant.type ? isValueOfType(value, variant.type) : true,
+                errors: validateAgainstSchema(variant, value),
+            }))
+            .sort((a, b) => {
+                // Priorité : compatible > moins d'erreurs
+                if (a.isCompatible !== b.isCompatible) {
+                    return b.isCompatible ? 1 : -1;
+                }
+                return a.errors.length - b.errors.length;
+            });
 
-        // Aucun sous-schéma ne matche : on prend le premier pour afficher des erreurs quand même
+        const best = compatibleVariants[0];
         return {
-            schema,
-            errors: [{ error: `Aucune des variantes (${variants.length}) ne correspond à la valeur "${JSON.stringify(value)}"` }]
+            schema: best.variant,
+            errors: best.errors
         };
     }
 
@@ -50,6 +57,32 @@ function validateAgainstSchema(schema: any, value: any): SchemaError[] {
         errors.push({ error: `Valeur invalide. Valeurs autorisées : ${allowed}` }); // Ajoute une erreur pour la valeur invalide
     }
 
+    if (typeof value === "string") {
+        if (schema.minLength !== undefined && value.length < schema.minLength) {
+            errors.push({ error: `La valeur "${value}" est trop courte (longueur minimale : ${schema.minLength})` }); // Ajoute une erreur pour la longueur minimale
+        }
+
+        if (schema.maxLength !== undefined && value.length > schema.maxLength) {
+            errors.push({ error: `La valeur "${value}" est trop longue (longueur maximale : ${schema.maxLength})` }); // Ajoute une erreur pour la longueur maximale
+        }
+
+        if (schema.pattern) {
+            const regex = new RegExp(schema.pattern); // Crée une expression régulière à partir du pattern du schéma
+            if (!regex.test(value)) { // Si la valeur ne correspond pas au pattern
+                errors.push({ error: `La valeur "${value}" ne correspond pas au pattern "${schema.pattern}"` }); // Ajoute une erreur pour le pattern
+            }
+        }
+    }
+
+    if (typeof value === "object" && value !== null) {
+        if (schema.required) {
+            const missingKeys = schema.required.filter((key: string) => !(key in value)); // Vérifie les clés requises
+            if (missingKeys.length > 0) {
+                errors.push({ error: `Clés manquantes : ${missingKeys.join(", ")}` }); // Ajoute une erreur pour les clés manquantes
+            }
+        }
+    }
+
     // ➕ Tu pourras ajouter ici : pattern, minLength, required, etc.
 
     return errors;
@@ -69,6 +102,9 @@ export function isValueOfType(value: any, type: string | string[]): boolean {
         }
         if (t === 'number') {
             return typeof value === 'number';
+        }
+        if (t === 'integer') {
+            return typeof value === 'number' && Number.isInteger(value); // Vérifie si c'est un entier
         }
         if (t === 'boolean') {
             return typeof value === 'boolean';
