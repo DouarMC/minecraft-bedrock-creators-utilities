@@ -1,4 +1,5 @@
-import { commonSchemas } from "../../../../utils/schemas/commonSchemas";
+import { commonSchemas } from "../../../utils/commonSchemas";
+import { dynamicExamplesSourceKeys } from "../../../utils/schemaEnums";
 
 
 export const baseSchema = {
@@ -45,7 +46,8 @@ export const baseSchema = {
                                     description: "Le bloc utilisé pour décorer la surface près du niveau de la mer.",
                                     oneOf: [
                                         {
-                                            type: "string"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
                                         commonSchemas.block_descriptor
                                     ]
@@ -57,7 +59,8 @@ export const baseSchema = {
                                     items: {
                                         oneOf: [
                                             {
-                                                type: "string"
+                                                type: "string",
+                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                             },
                                             commonSchemas.block_descriptor
                                         ]
@@ -70,7 +73,8 @@ export const baseSchema = {
                                     items: {
                                         oneOf: [
                                             {
-                                                type: "string"
+                                                type: "string",
+                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                             },
                                             commonSchemas.block_descriptor
                                         ]
@@ -80,7 +84,8 @@ export const baseSchema = {
                                     description: "Bloc utilisé pour remplacer les blocs solides qui ne sont pas des blocs de surface.",
                                     oneOf: [
                                         {
-                                            type: "string"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
                                         commonSchemas.block_descriptor
                                     ]
@@ -89,7 +94,8 @@ export const baseSchema = {
                                     description: "Bloc utilisé pour remplacer les blocs d'air sous le niveau de la mer.",
                                     oneOf: [
                                         {
-                                            type: "string"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
                                         commonSchemas.block_descriptor
                                     ]
@@ -156,7 +162,8 @@ export const baseSchema = {
                                     description: "Controle le type de bloc utilisé dans une couche sous la surface de ce biome.",
                                     oneOf: [
                                         {
-                                            type: "string"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
                                         commonSchemas.block_descriptor
                                     ]
@@ -169,7 +176,8 @@ export const baseSchema = {
                                     description: "Contrôle le type de bloc utilisé comme sol pour les étendues d'eau dans ce biome.",
                                     oneOf: [
                                         {
-                                            type: "string"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
                                         commonSchemas.block_descriptor
                                     ]
@@ -178,7 +186,8 @@ export const baseSchema = {
                                     description: "Contrôle le type de bloc utilisé pour les étendues d'eau dans ce biome.",
                                     oneOf: [
                                         {
-                                            type: "string"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
                                         commonSchemas.block_descriptor
                                     ]
@@ -187,7 +196,8 @@ export const baseSchema = {
                                     description: "Contrôle le type de bloc utilisé pour la surface de ce biome.",
                                     oneOf: [
                                         {
-                                            type: "string"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
                                         commonSchemas.block_descriptor
                                     ]
@@ -196,7 +206,8 @@ export const baseSchema = {
                                     description: "Contrôle le type de bloc utilisé profondément sous terre dans ce biome.",
                                     oneOf: [
                                         {
-                                            type: "string"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
                                         commonSchemas.block_descriptor
                                     ]
@@ -216,7 +227,8 @@ export const baseSchema = {
                                     description: "Contrôle le type de bloc utilisé dans une couche sous la surface de ce biome.",
                                     oneOf: [
                                         {
-                                            type: "string"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
                                         commonSchemas.block_descriptor
                                     ]
@@ -225,7 +237,8 @@ export const baseSchema = {
                                     description: "Contrôle le type de bloc utilisé comme sol pour les étendues d'eau dans ce biome.",
                                     oneOf: [
                                         {
-                                            type: "string"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
                                         commonSchemas.block_descriptor
                                     ]
@@ -234,7 +247,8 @@ export const baseSchema = {
                                     description: "Contrôle le type de bloc utilisé profondément sous terre dans ce biome.",
                                     oneOf: [
                                         {
-                                            type: "string"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
                                         commonSchemas.block_descriptor
                                     ]
@@ -243,7 +257,8 @@ export const baseSchema = {
                                     description: "Contrôle le type de bloc utilisé pour la surface de ce biome.",
                                     oneOf: [
                                         {
-                                            type: "string"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
                                         commonSchemas.block_descriptor
                                     ]
@@ -252,7 +267,8 @@ export const baseSchema = {
                                     description: "Contrôle le type de bloc utilisé pour les étendues d'eau dans ce biome.",
                                     oneOf: [
                                         {
-                                            type: "string"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
                                         commonSchemas.block_descriptor
                                     ]
@@ -261,7 +277,8 @@ export const baseSchema = {
                                     description: "Contrôle le type de bloc utilisé pour les strates de terre cuite dure dans ce biome.",
                                     oneOf: [
                                         {
-                                            type: "string"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
                                         commonSchemas.block_descriptor
                                     ]
@@ -270,7 +287,8 @@ export const baseSchema = {
                                     description: "Contrôle le type de bloc utilisé pour les strates d'argile dans ce biome.",
                                     oneOf: [
                                         {
-                                            type: "string"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
                                         commonSchemas.block_descriptor
                                     ]
@@ -297,7 +315,8 @@ export const baseSchema = {
                                             description: "Le bloc de surface utilisé pour les pentes raides.",
                                             oneOf: [
                                                 {
-                                                    type: "string"
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                                 },
                                                 commonSchemas.block_descriptor
                                             ]
@@ -602,7 +621,8 @@ export const baseSchema = {
                                                             description: "Contrôle le type de bloc utilisé pour les étendues d'eau dans ce biome lorsque cet ajustement est actif.",
                                                             oneOf: [
                                                                 {
-                                                                    type: "string"
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                                                 },
                                                                 commonSchemas.block_descriptor
                                                             ]
@@ -611,7 +631,8 @@ export const baseSchema = {
                                                             description: "Contrôle le type de bloc utilisé profondément sous terre dans ce biome lorsque cet ajustement est actif.",
                                                             oneOf: [
                                                                 {
-                                                                    type: "string"
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                                                 },
                                                                 commonSchemas.block_descriptor
                                                             ]
@@ -620,7 +641,8 @@ export const baseSchema = {
                                                             description: "Contrôle le type de bloc utilisé pour la surface de ce biome lorsque cet ajustement est actif.",
                                                             oneOf: [
                                                                 {
-                                                                    type: "string"
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                                                 },
                                                                 commonSchemas.block_descriptor
                                                             ]
@@ -629,7 +651,8 @@ export const baseSchema = {
                                                             description: "Contrôle le type de bloc utilisé dans une couche sous la surface de ce biome lorsque cet ajustement est actif.",
                                                             oneOf: [
                                                                 {
-                                                                    type: "string"
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                                                 },
                                                                 commonSchemas.block_descriptor
                                                             ]
@@ -638,7 +661,8 @@ export const baseSchema = {
                                                             description: "Contrôle le type de bloc utilisé comme sol pour les étendues d'eau dans ce biome lorsque cet ajustement est actif.",
                                                             oneOf: [
                                                                 {
-                                                                    type: "string"
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                                                 },
                                                                 commonSchemas.block_descriptor
                                                             ]
@@ -696,7 +720,8 @@ export const baseSchema = {
                                     description: "Contrôle le type de bloc utilisé dans une couche sous la surface de ce biome.",
                                     oneOf: [
                                         {
-                                            type: "string"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
                                         commonSchemas.block_descriptor
                                     ]
@@ -705,7 +730,8 @@ export const baseSchema = {
                                     description: "Contrôle le type de bloc utilisé comme sol pour les étendues d'eau dans ce biome.",
                                     oneOf: [
                                         {
-                                            type: "string"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
                                         commonSchemas.block_descriptor
                                     ]
@@ -714,7 +740,8 @@ export const baseSchema = {
                                     description: "Contrôle le type de bloc utilisé pour les étendues d'eau dans ce biome.",
                                     oneOf: [
                                         {
-                                            type: "string"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
                                         commonSchemas.block_descriptor
                                     ]
@@ -723,7 +750,8 @@ export const baseSchema = {
                                     description: "Contrôle le type de bloc utilisé pour la surface de ce biome.",
                                     oneOf: [
                                         {
-                                            type: "string"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
                                         commonSchemas.block_descriptor
                                     ]
@@ -732,7 +760,8 @@ export const baseSchema = {
                                     description: "Contrôle le type de bloc utilisé profondément sous terre dans ce biome.",
                                     oneOf: [
                                         {
-                                            type: "string"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
                                         commonSchemas.block_descriptor
                                     ]
@@ -748,7 +777,8 @@ export const baseSchema = {
                                     description: "Contrôle le type de bloc utilisé dans une couche sous la surface de ce biome.",
                                     oneOf: [
                                         {
-                                            type: "string"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
                                         commonSchemas.block_descriptor
                                     ]
@@ -761,7 +791,8 @@ export const baseSchema = {
                                     description: "Contrôle le type de bloc utilisé comme sol pour les étendues d'eau dans ce biome.",
                                     oneOf: [
                                         {
-                                            type: "string"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
                                         commonSchemas.block_descriptor
                                     ]
@@ -770,7 +801,8 @@ export const baseSchema = {
                                     description: "Contrôle le type de bloc utilisé pour les étendues d'eau dans ce biome.",
                                     oneOf: [
                                         {
-                                            type: "string"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
                                         commonSchemas.block_descriptor
                                     ]
@@ -779,7 +811,8 @@ export const baseSchema = {
                                     description: "Contrôle le type de bloc utilisé pour la surface de ce biome.",
                                     oneOf: [
                                         {
-                                            type: "string"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
                                         commonSchemas.block_descriptor
                                     ]
@@ -788,7 +821,8 @@ export const baseSchema = {
                                     description: "Contrôle le type de bloc utilisé profondément sous terre dans ce biome.",
                                     oneOf: [
                                         {
-                                            type: "string"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
                                         commonSchemas.block_descriptor
                                     ]

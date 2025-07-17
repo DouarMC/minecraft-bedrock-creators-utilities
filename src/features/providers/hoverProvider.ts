@@ -1,9 +1,9 @@
 import * as vscode from "vscode";
-import { getJsonPathForHoverAt } from "../../utils/getJsonPathAt";
-import { getVersionedSchemaForFile } from "../../schemas/getVersionedSchemaForFile";
-import { resolveSchemaAtPath } from "../../utils/resolveSchemaAtPath";
+import { getJsonPathForHoverAt } from "../../utils/json/getJsonPathAt";
+import { getVersionedSchemaForFile } from "../../core/getVersionedSchemaForFile";
+import { resolveSchemaAtPath } from "../../utils/json/resolveSchemaAtPath";
 import { parseTree, findNodeAtOffset } from "jsonc-parser";
-import { resolveOneOfToObjectSchema } from "../../utils/resolveOneOfToObjectSchema";
+import { resolveOneOfToObjectSchema } from "../../utils/json/resolveOneOfToObjectSchema";
 
 export function registerHoverProvider(context: vscode.ExtensionContext) {
     context.subscriptions.push(

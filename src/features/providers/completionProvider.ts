@@ -1,11 +1,12 @@
 import * as vscode from 'vscode';
-import { getVersionedSchemaForFile } from '../../schemas/getVersionedSchemaForFile';
-import { getJsonPathForCompletionAt } from '../../utils/getJsonPathAt';
-import { resolveOneOfToObjectSchema } from '../../utils/resolveOneOfToObjectSchema';
-import { resolveSchemaAtPath } from '../../utils/resolveSchemaAtPath';
+import { getVersionedSchemaForFile } from '../../core/getVersionedSchemaForFile';
+import { getJsonPathForCompletionAt } from '../../utils/json/getJsonPathAt';
+import { resolveOneOfToObjectSchema } from '../../utils/json/resolveOneOfToObjectSchema';
+import { resolveSchemaAtPath } from '../../utils/json/resolveSchemaAtPath';
 import { findNodeAtLocation, parseTree } from 'jsonc-parser';
 import { nodeToValue } from '../diagnostics/validationJson';
-import { getErrorsForSchema } from '../../utils/resolveMatchingSubSchema';
+import { getErrorsForSchema } from '../../utils/json/resolveMatchingSubSchema';
+import { getAllBlockIdentifiers, getAllBlockModelIds, getAllLootTablePaths, getCraftingRecipeTags, getCullingLayers } from '../../utils/workspace/getContent';
 
 /**
  * Enregistre le provider de complétion pour les fichiers JSON
@@ -130,7 +131,30 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                             schemaForValues = rawSchema.items;
                         }
 
+                        let dynamicExamples: any[] = [];
+                        if ("x-dynamic-examples-source" in schemaForValues) {
+                            const source = schemaForValues['x-dynamic-examples-source'];
+                            switch (source) {
+                                case "block_ids":
+                                    dynamicExamples = await getAllBlockIdentifiers();
+                                    break;
+                                case "loot_table_file_paths":
+                                    dynamicExamples = await getAllLootTablePaths();
+                                    break;
+                                case "block_model_ids":
+                                    dynamicExamples = await getAllBlockModelIds();
+                                    break;
+                                case "crafting_recipe_tags":
+                                    dynamicExamples = await getCraftingRecipeTags();
+                                    break;
+                                case "culling_layers":
+                                    dynamicExamples = await getCullingLayers();
+                                    break;
+                            }
+                        }
+
                         const rawValues = [
+                            ...dynamicExamples,
                             ...(schemaForValues.enum ?? []),
                             ...(schemaForValues.examples ?? []),
                             ...(schemaForValues.const !== undefined ? [schemaForValues.const] : []),

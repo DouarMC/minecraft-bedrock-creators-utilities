@@ -2,9 +2,9 @@ import { randomUUID } from "crypto";
 import * as vscode from "vscode";
 import { exec } from "child_process";
 import { promisify } from "util";
-import { writeJsonFilePretty } from "../../utils/jsonUtils";
-import { SCRIPT_API_MODULES, SCRIPT_API_MODULES_NAMES, SCRIPT_API_MODULES_NAMES_PREVIEW, SCRIPT_API_MODULES_PREVIEW, SCRIPT_API_MODULES_VERSIONS_PACKAGE, SCRIPT_API_MODULES_VERSIONS_PACKAGE_PREVIEW } from "../../utils/scriptApiModules";
-import { LAST_VERSION_STABLE, LAST_VERSION_PREVIEW } from "../../utils/minecraftVersions";
+import { writeJsonFilePretty } from "../../utils/json/jsonUtils";
+import { SCRIPT_API_MODULES, SCRIPT_API_MODULES_NAMES, SCRIPT_API_MODULES_NAMES_PREVIEW, SCRIPT_API_MODULES_PREVIEW, SCRIPT_API_MODULES_VERSIONS_PACKAGE, SCRIPT_API_MODULES_VERSIONS_PACKAGE_PREVIEW } from "../../utils/data/scriptApiModules";
+import { LAST_VERSION_STABLE, LAST_VERSION_PREVIEW } from "../../utils/data/minecraftVersions";
 
 /**
  * Crée un objet de base pour le manifeste d'un pack de comportement ou de ressources.

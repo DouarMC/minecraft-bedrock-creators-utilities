@@ -1,20 +1,20 @@
-import { baseSchema as aimAssistCategoriesBaseSchema } from "./versionedChanges/behavior_pack/aim_assist/categories/categories";
-import { baseSchema as _aimAssistPresetBaseSchema } from "./versionedChanges/behavior_pack/aim_assist/presets/_aim_assist_preset";
-import { baseSchema as _animationControllersBaseSchemaBP } from "./versionedChanges/behavior_pack/animation_controllers/_animation_controllers";
-import { baseSchema as _animationsBaseSchemaBP } from "./versionedChanges/behavior_pack/animations/_animations";
-import { baseSchema as _biomeBaseSchema } from "./versionedChanges/behavior_pack/biomes/_biome";
+import { baseSchema as aimAssistCategoriesBaseSchema } from "../schemas/versionedChanges/behavior_pack/aim_assist/categories/categories";
+import { baseSchema as _aimAssistPresetBaseSchema } from "../schemas/versionedChanges/behavior_pack/aim_assist/presets/_aim_assist_preset";
+import { baseSchema as _animationControllersBaseSchemaBP } from "../schemas/versionedChanges/behavior_pack/animation_controllers/_animation_controllers";
+import { baseSchema as _animationsBaseSchemaBP } from "../schemas/versionedChanges/behavior_pack/animations/_animations";
+import { baseSchema as _biomeBaseSchema } from "../schemas/versionedChanges/behavior_pack/biomes/_biome";
 
 // Import des schémas de base et des modifications versionnées pour les blocs
 import {
   versionedChanges as _blockChanges,
   baseSchema as _blockBaseSchema
-} from "./versionedChanges/behavior_pack/blocks/_block";
+} from "../schemas/versionedChanges/behavior_pack/blocks/_block";
 
 // Import des schémas de base et des modifications versionnées pour les items
 import {
   versionedChanges as _itemChanges,
   baseSchema as _itemBaseSchema
-} from "./versionedChanges/behavior_pack/items/_item";
+} from "../schemas/versionedChanges/behavior_pack/items/_item";
 
 // Décrit une modification unique à appliquer à un schéma
 export interface SchemaModification {

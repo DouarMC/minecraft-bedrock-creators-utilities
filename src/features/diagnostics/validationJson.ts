@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 import { parseTree, ParseError, getNodePath, Node } from 'jsonc-parser';
-import { getVersionedSchemaForFile } from '../../schemas/getVersionedSchemaForFile';
-import { resolveSchemaAtPath } from '../../utils/resolveSchemaAtPath';
-import { getErrorsForSchema } from '../../utils/resolveMatchingSubSchema';
+import { getVersionedSchemaForFile } from '../../core/getVersionedSchemaForFile';
+import { resolveSchemaAtPath } from '../../utils/json/resolveSchemaAtPath';
+import { getErrorsForSchema } from '../../utils/json/resolveMatchingSubSchema';
 
 export function registerValidationJson(context: vscode.ExtensionContext) {
     const diagnostics = vscode.languages.createDiagnosticCollection("jsonSchemaValidation");

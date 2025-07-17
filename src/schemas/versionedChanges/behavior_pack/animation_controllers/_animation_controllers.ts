@@ -1,4 +1,4 @@
-import { schemaPatterns } from "../../../../utils/schemas/schemaPatterns";
+import { schemaPatterns } from "../../../utils/schemaPatterns";
 
 export const baseSchema = {
     $schema: "https://json-schema.org/draft-07/schema#",

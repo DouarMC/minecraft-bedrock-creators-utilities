@@ -1,3 +1,5 @@
+import { dynamicExamplesSourceKeys } from "./schemaEnums";
+
 export const commonSchemas = {
     block_descriptor: {
         type: "object",
@@ -5,7 +7,7 @@ export const commonSchemas = {
             name: {
                 description: "L'identifiant du bloc.",
                 type: "string",
-                // $ref: schemaRef.block_ids
+                "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
             },
             states: {
                 description: "Les états du bloc.",

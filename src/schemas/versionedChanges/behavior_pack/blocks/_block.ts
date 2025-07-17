@@ -1,7 +1,7 @@
-import {SchemaChange} from "../../../schemaTypes";
-import { schemaPatterns } from "../../../../utils/schemas/schemaPatterns";
-import { schemaEnums, schemaExamples } from "../../../../utils/schemas/schemaEnums";
-import { commonSchemas } from "../../../../utils/schemas/commonSchemas";
+import {SchemaChange} from "../../../../core/schemaTypes";
+import { schemaPatterns } from "../../../utils/schemaPatterns";
+import { schemaEnums, dynamicExamplesSourceKeys } from "../../../utils/schemaEnums";
+import { commonSchemas } from "../../../utils/commonSchemas";
 
 export const baseSchema = {
     "$schema": "https://json-schema.org/draft-07/schema#",
@@ -214,7 +214,7 @@ export const baseSchema = {
                                 {
                                     "type": "string",
                                     "pattern": schemaPatterns.loot_tables_file,
-                                    // "$ref": schemaRef.loot_table_paths
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.loot_table_file_paths
                                 },
                                 {
                                     "type": "object",
@@ -224,7 +224,7 @@ export const baseSchema = {
                                             "description": "La Loot Table utilisée pour le Bloc.",
                                             "type": "string",
                                             "pattern": schemaPatterns.loot_tables_file,
-                                            // "$ref": schemaRef.loot_table_paths
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.loot_table_file_paths
                                         }
                                     }
                                 }
@@ -730,7 +730,7 @@ export const versionedChanges: SchemaChange[] = [
                     oneOf: [
                         {
                             type: "string",
-                            //$ref: schemaRef.block_model_ids
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_model_ids
                         },
                         {
                             type: "object",
@@ -739,7 +739,7 @@ export const versionedChanges: SchemaChange[] = [
                                 identifier: {
                                     description: "L'identifiant du modèle pour le Bloc.",
                                     type: "string",
-                                    //$ref: schemaRef.block_model_ids
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_model_ids
                                 },
                                 bone_visibility: {
                                     description: "Définit la visibilité de chaque os du modèle. Par défaut, tous les os sont visibles.",
@@ -757,7 +757,7 @@ export const versionedChanges: SchemaChange[] = [
                                     default: "minecraft:culling_layer.undefined",
                                     type: "string",
                                     pattern: schemaPatterns.culling_layer_identifier,
-                                    examples: schemaExamples.vanilla_culling_layers
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.culling_layers
                                 }
                             }
                         }
@@ -854,7 +854,7 @@ export const versionedChanges: SchemaChange[] = [
                             items: {
                                 type: "string",
                                 maxLength: 64,
-                                examples: schemaExamples.crafting_recipe_tags
+                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.crafting_recipe_tags
                             }
                         },
                         table_name: {
@@ -963,7 +963,7 @@ export const versionedChanges: SchemaChange[] = [
                                             oneOf: [
                                                 {
                                                     type: "string",
-                                                    //$ref: schemaRef.block_ids
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                                 },
                                                 commonSchemas.block_descriptor
                                             ]

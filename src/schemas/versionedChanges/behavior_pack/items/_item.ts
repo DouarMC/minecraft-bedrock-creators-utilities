@@ -1,7 +1,7 @@
-import { SchemaChange } from "../../../schemaTypes";
-import { schemaPatterns } from "../../../../utils/schemas/schemaPatterns";
-import { schemaEnums, schemaExamples } from "../../../../utils/schemas/schemaEnums";
-import { commonSchemas } from "../../../../utils/schemas/commonSchemas";
+import { SchemaChange } from "../../../../core/schemaTypes";
+import { schemaPatterns } from "../../../utils/schemaPatterns";
+import { dynamicExamplesSourceKeys, schemaEnums } from "../../../utils/schemaEnums";
+import { commonSchemas } from "../../../utils/commonSchemas";
 
 export const baseSchema = {
     $schema: "https://json-schema.org/draft-07/schema#",
@@ -39,7 +39,8 @@ export const baseSchema = {
                     properties: {
                         "minecraft:block": {
                             description: "Transforme l'Item en bloc spécifié.",
-                            type: "string"
+                            type: "string",
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                         },
                         "minecraft:camera": {
                             description: "Permet à l'Item de placer une caméra.",
@@ -186,18 +187,21 @@ export const baseSchema = {
                             properties: {
                                 crop_result: {
                                     description: "Définit le bloc qui sera planté lorsque la graine est utilisée.",
-                                    type: "string"
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                 },
                                 plant_at: {
                                     description: "Définit les blocs où la graine peut être plantée.",
                                     oneOf: [
                                         {
-                                            type: "string"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
                                         {
                                             type: "array",
                                             items: {
-                                                type: "string"
+                                                type: "string",
+                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                             }
                                         }
                                     ]
@@ -360,7 +364,8 @@ export const versionedChanges: SchemaChange[] = [
                             items: {
                                 oneOf: [
                                     {
-                                        type: "string"
+                                        type: "string",
+                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                     },
                                     commonSchemas.block_descriptor
                                 ]
@@ -376,7 +381,8 @@ export const versionedChanges: SchemaChange[] = [
                             items: {
                                 oneOf: [
                                     {
-                                        type: "string"
+                                        type: "string",
+                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                     },
                                     commonSchemas.block_descriptor
                                 ]
@@ -438,7 +444,8 @@ export const versionedChanges: SchemaChange[] = [
                     properties: {
                         block: {
                             description: "L'identifiant du bloc à placer.",
-                            type: "string"
+                            type: "string",
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                         },
                         use_on: {
                             description: "Définit les blocs sur lesquels l'Item peut être utilisé pour placer le bloc.",
@@ -446,7 +453,8 @@ export const versionedChanges: SchemaChange[] = [
                             items: {
                                 oneOf: [
                                     {
-                                        type: "string"
+                                        type: "string",
+                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                     },
                                     commonSchemas.block_descriptor
                                 ]
@@ -1043,7 +1051,8 @@ export const versionedChanges: SchemaChange[] = [
                                         description: "Le bloc pour lequel la vitesse de minage est définie.",
                                         oneOf: [
                                             {
-                                                type: "string"
+                                                type: "string",
+                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                             },
                                             commonSchemas.block_descriptor
                                         ]
@@ -1498,7 +1507,8 @@ export const versionedChanges: SchemaChange[] = [
                     properties: {
                         block: {
                             description: "L'identifiant du bloc à placer.",
-                            type: "string"
+                            type: "string",
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                         },
                         replace_block_item: {
                             description: "Définit si l'Item remplace l'Item utilisé pour placer le bloc. Il faut que l'Item et le bloc possèdent le meme identifiant.",
@@ -1510,7 +1520,8 @@ export const versionedChanges: SchemaChange[] = [
                             items: {
                                 oneOf: [
                                     {
-                                        type: "string"
+                                        type: "string",
+                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                     },
                                     commonSchemas.block_descriptor
                                 ]

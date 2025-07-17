@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { parseEnvValue } from '../../utils/envUtils';
-import { directoryExists } from '../../utils/directories';
+import { directoryExists } from '../../utils/workspace/directories';
 import path from 'path';
 import { exec } from 'child_process';
 import { promisify } from 'util';
