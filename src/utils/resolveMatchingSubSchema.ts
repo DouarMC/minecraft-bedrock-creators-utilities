@@ -74,12 +74,50 @@ function validateAgainstSchema(schema: any, value: any): SchemaError[] {
         }
     }
 
+    if (typeof value === "number") {
+        if (schema.minimum !== undefined && value < schema.minimum) { // Si la valeur est inférieure au minimum autorisé
+            errors.push({ error: `La valeur ${value} est inférieure au minimum autorisé (${schema.minimum})`});
+        }
+
+        if (schema.maximum !== undefined && value > schema.maximum) { // Si la valeur est supérieure au maximum autorisé
+            errors.push({ error: `La valeur ${value} est supérieure au maximum autorisé (${schema.maximum})`});
+        }
+
+        if (schema.exclusiveMinimum !== undefined && value <= schema.exclusiveMinimum) { // Si la valeur est inférieure ou égale à l'exclusif minimum
+            errors.push({ error: `La valeur ${value} doit être strictement supérieure à l'exclusif minimum (${schema.exclusiveMinimum})`});
+        }
+
+        if (schema.exclusiveMaximum !== undefined && value >= schema.exclusiveMaximum) { // Si la valeur est supérieure ou égale à l'exclusif maximum
+            errors.push({ error: `La valeur ${value} doit être strictement inférieure à l'exclusif maximum (${schema.exclusiveMaximum})`});
+        }
+
+        if (schema.multipleOf !== undefined) {
+            const multiple = schema.multipleOf;
+            const quotient = value / multiple;
+            // Pour les flottants, on tolère une petite marge d'erreur à cause de la précision binaire
+            const isMultiple = Math.abs(quotient - Math.round(quotient)) < 1e-8;
+            if (!isMultiple) { // Si la valeur n'est pas un multiple du multipleOf
+                errors.push({ error: `La valeur ${value} n'est pas un multiple de ${multiple}` }); // Ajoute une erreur pour le multiple
+            }
+        }
+    }
+
     if (typeof value === "object" && value !== null) {
         if (schema.required) {
             const missingKeys = schema.required.filter((key: string) => !(key in value)); // Vérifie les clés requises
             if (missingKeys.length > 0) {
                 errors.push({ error: `Clés manquantes : ${missingKeys.join(", ")}` }); // Ajoute une erreur pour les clés manquantes
             }
+        }
+    }
+
+    if (Array.isArray(value)) {
+        if (schema.minItems !== undefined && value.length < schema.minItems) {
+            errors.push({ error: `Le tableau contient ${value.length} éléments, mais ${schema.minItems} minimum sont requis.` }); // Ajoute une erreur pour le nombre minimum d'éléments
+        }
+
+        if (schema.maxItems !== undefined && value.length > schema.maxItems) {
+            errors.push({ error: `Le tableau contient ${value.length} éléments, mais ${schema.maxItems} maximum sont autorisés.` }); // Ajoute une erreur pour le nombre maximum d'éléments
         }
     }
 
