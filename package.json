@@ -38,6 +38,12 @@
         "command": "minecraft-bedrock-creators-utilities.toggleWatchDeploy",
         "title": "Activer/Désactiver le déploiement automatique du projet Minecraft Bedrock"
       }
+    ],
+    "jsonValidation": [
+      {
+        "fileMatch": ["*.json"],
+        "url": "./schemas/empty.schema.json"
+      }
     ]
   },
   "scripts": {

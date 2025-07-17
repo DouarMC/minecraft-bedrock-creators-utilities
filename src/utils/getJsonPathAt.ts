@@ -9,15 +9,28 @@ import * as vscode from "vscode";
  */
 export function getJsonPathForCompletionAt(document: vscode.TextDocument, position: vscode.Position): string[] {
     const text = document.getText(); // Récupère le texte du document
-    const offset = document.offsetAt(position); // Convertit la position en offset qui esst le nombre de décalage vers la droite pour atteindre la position
+    const offset = document.offsetAt(position); // Convertit la position en offset qui est le nombre de décalage vers la droite pour atteindre la position
     const root = parseTree(text); // Crée l'arbre de syntaxe JSON à partir du texte ce qui permet de naviguer dans la structure JSON
     if (!root) {
         return []; // Si l'arbre n'est pas valide, retourne un tableau vide
     }
 
     const node = findNodeAtOffset(root, offset, true);  // Récupère le nœud JSON (clé ou valeur) à la position donnée
+    console.log("Valeur du nœud trouvé :", node?.value, "Type :", node?.type);
+    if (node?.type === "property") {
+        console.log(node.children![0].value, "est une propriété");
+    }
+
     if (!node) {
         return []; // Si aucun nœud n'est trouvé, retourne un tableau vide
+    }
+
+    if (node.type === "property") {
+        const key = node.children?.[0]?.value;
+        const parentPath = getNodePath(node.parent!).map(s => s.toString());
+        if (key) {
+            return [...parentPath, key]; // Si le nœud est une propriété, retourne le chemin jusqu'à cette propriété
+        }
     }
 
     // Si le curseur est placé sur le nom (clé) d'une propriété JSON, on récupère le chemin complet vers l'objet parent (excluant la clé elle-même)

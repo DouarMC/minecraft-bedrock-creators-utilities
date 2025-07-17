@@ -79,6 +79,11 @@ function walkJsonTree(node: Node, callback: (node: Node, path: string[]) => void
     }
 }
 
+/**
+ * Convertit un nœud JSON en valeur JavaScript exploitable.
+ * @param node Le nœud JSON à convertir.
+ * @returns 
+ */
 export function nodeToValue(node: Node): any {
     switch (node.type) {
         case 'string':

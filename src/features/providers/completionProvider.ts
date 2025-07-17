@@ -17,21 +17,30 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
             {language: "json", scheme: "file"}, // Dit qu'on veut des suggestions pour les fichiers JSON
             {
                 async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
-                    const schema = getVersionedSchemaForFile(document);
-                    if (!schema) {return [];}
+                    const schema = getVersionedSchemaForFile(document); // Récupère le schéma JSON pour le fichier actuel
+                    if (!schema) {
+                        return [];
+                    }
 
+                    // Détermine le chemin JSON hiérarchique (tableau de clés) depuis la racine jusqu'à la position actuelle du curseur pour l'autocomplétion
+                    // Ex: ['minecraft:block', 'components', 'minecraft:collision_box']
                     const path = getJsonPathForCompletionAt(document, position);
+                    // Parse le contenu textuel du document en arbre de syntaxe abstraite (AST) pour analyser la structure JSON/objet
                     const rootNode = parseTree(document.getText());
-                    const rootValue = nodeToValue(rootNode as any);
-                    const rawSchema = resolveSchemaAtPath(schema, path, rootValue);
-                    if (!rawSchema) {return [];}
+                    const rootValue = nodeToValue(rootNode as any); // Convertit l'arbre en valeur JavaScript pour une manipulation plus facile
+                    const rawSchema = resolveSchemaAtPath(schema, path, rootValue); // Ex: path=['minecraft:block', 'components'] → retourne le schéma pour cette propriété
+                    if (!rawSchema) { // Si aucun schéma n'est trouvé pour le chemin, on ne propose pas de complétion
+                        return [];
+                    }
 
-                    const valueAtPath = path.reduce((acc, key) => acc?.[key], rootValue);
+                    const valueAtPath = path.reduce((acc, key) => acc?.[key], rootValue); // Exemple équivalent: rootValue?.['minecraft:block']?.['components']?.['minecraft:collision_box']
+                    console.log("Valeur à la position du curseur :", valueAtPath);
+                    console.log("Path: ", path);
                     const { schema: resolvedNode } = getErrorsForSchema(rawSchema, valueAtPath);
                     if (!resolvedNode) {return [];}
 
                     const line = document.lineAt(position.line).text;
-                    const beforeCursor = line.slice(0, position.character);
+                    const beforeCursor = line.slice(0, position.character);     
                     const afterCursor = line.slice(position.character);
 
                     const isInQuotes = isInsideQuotes(beforeCursor, afterCursor);
@@ -115,13 +124,19 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                             });
                     }
 
+                    const isInArrayElement = isInsideArrayElement(beforeCursor, afterCursor);
                     // ➤ Complétion de VALEURS
-                    if (isTypingValue || isAfterColon) {
+                    if (isTypingValue || isAfterColon || isInArrayElement) {
+                        let schemaForValues = resolvedNode ?? rawSchema;
+                        if (isInArrayElement && rawSchema.items) {
+                            schemaForValues = rawSchema.items;
+                        }
+
                         const rawValues = [
-                            ...(rawSchema.enum ?? []),
-                            ...(rawSchema.examples ?? []),
-                            ...(rawSchema.const !== undefined ? [rawSchema.const] : []),
-                            ...(rawSchema.default !== undefined ? [rawSchema.default] : [])
+                            ...(schemaForValues.enum ?? []),
+                            ...(schemaForValues.examples ?? []),
+                            ...(schemaForValues.const !== undefined ? [schemaForValues.const] : []),
+                            ...(schemaForValues.default !== undefined ? [schemaForValues.default] : [])
                         ];
                         const uniqueValues = [...new Set(rawValues)]; // Évite les doublons
 
@@ -179,6 +194,28 @@ function isInsideQuotes(beforeCursor: string, afterCursor: string): boolean {
 
     // On est à l'intérieur de guillemets uniquement si on est entre une ouverture et une fermeture
     return inQuotes && hasClosingQuote;
+}
+
+/**
+ * Vérifie si le curseur est à l'intérieur d'un élément de tableau
+ * @param beforeCursor Le texte avant le curseur
+ * @param afterCursor Le texte après le curseur
+ * @returns 
+ */
+function isInsideArrayElement(beforeCursor: string, afterCursor: string): boolean {
+    // Compte les crochets ouvrants et fermants non échappés
+    const openBrackets = (beforeCursor.match(/(?<!\\)\[/g) || []).length;
+    const closeBrackets = (beforeCursor.match(/(?<!\\)\]/g) || []).length;
+    
+    // On est dans un tableau si on a plus de crochets ouvrants que fermants
+    const inArray = openBrackets > closeBrackets;
+    
+    // Vérifie qu'on est dans une valeur (entre guillemets ou après virgule/crochet)
+    const inArrayValue = isInsideQuotes(beforeCursor, afterCursor) || 
+                        /[\[,]\s*$/.test(beforeCursor) || 
+                        /[\[,]\s*"[^"]*$/.test(beforeCursor);
+    
+    return inArray && inArrayValue;
 }
 
 /**
