@@ -20,23 +20,33 @@
     "commands": [
       {
         "command": "minecraft-bedrock-creators-utilities.helloWorld",
-        "title": "Hello World"
+        "title": "Hello World",
+        "category": "Minecraft Bedrock Utilities"
       },
       {
         "command": "minecraft-bedrock-creators-utilities.initEnvironment",
-        "title": "Initialiser un projet Minecraft Bedrock"
+        "title": "Initialiser un projet Minecraft Bedrock",
+        "category": "Minecraft Bedrock Utilities"
       },
       {
         "command": "minecraft-bedrock-creators-utilities.validateProject",
-        "title": "Valider le projet Minecraft Bedrock courant"
+        "title": "Valider le projet Minecraft Bedrock courant",
+        "category": "Minecraft Bedrock Utilities"
       },
       {
         "command": "minecraft-bedrock-creators-utilities.deployProject",
-        "title": "Déployer le projet Minecraft Bedrock courant"
+        "title": "Déployer le projet Minecraft Bedrock courant",
+        "category": "Minecraft Bedrock Utilities"
       },
       {
         "command": "minecraft-bedrock-creators-utilities.toggleWatchDeploy",
-        "title": "Activer/Désactiver le déploiement automatique du projet Minecraft Bedrock"
+        "title": "Activer/Désactiver le déploiement automatique du projet Minecraft Bedrock",
+        "category": "Minecraft Bedrock Utilities"
+      },
+      {
+        "command": "minecraft-bedrock-creators-utilities.openMolangEditor",
+        "title": "Ouvrir l'éditeur Molang",
+        "category": "Minecraft Bedrock Utilities"
       }
     ],
     "jsonValidation": [

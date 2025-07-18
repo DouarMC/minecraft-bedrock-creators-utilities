@@ -14,7 +14,7 @@ export const baseSchema = {
             description: "La version du format à utiliser.",
             type: "string",
             enum: [
-                "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90"
+                "1.13.0", "1.14.0", "1.14.1", "1.14.20", "1.14.30", "1.15.0", "1.16.0", "1.16.20", "1.16.100", "1.16.200", "1.16.210", "1.16.220", "1.16.230", "1.17.0", "1.17.10", "1.17.20", "1.17.30", "1.17.40", "1.18.0", "1.18.10", "1.18.20", "1.18.30", "1.18.40", "1.19.0", "1.19.10", "1.19.20", "1.19.30", "1.19.40", "1.19.50", "1.19.60", "1.19.70", "1.19.80", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90"
             ]
         },
         "minecraft:biome": {
@@ -29,7 +29,8 @@ export const baseSchema = {
                     properties: {
                         identifier: {
                             description: "L'identifiant du Biome.",
-                            type: "string"
+                            type: "string",
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.biome_ids
                         }
                     }
                 },
@@ -386,14 +387,16 @@ export const baseSchema = {
                                     description: "Quel Biome utiliser pour convertir en Biome muté. Peut être juste le nom de chaîne d'un Biome, ou un tableau de n'importe quelle taille. Si un tableau, chaque entrée peut être une chaîne de nom de Biome, ou un tableau de taille 2, où la première entrée est un nom de Biome et la deuxième entrée est un entier positif représentant comment ce Biome est pondéré par rapport aux autres entrées. Si aucun poids n'est fourni, un poids de 1 est utilisé.",
                                     oneOf: [
                                         {
-                                            type: "string"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.biome_ids
                                         },
                                         {
                                             type: "array",
                                             items: {
                                                 oneOf: [
                                                     {
-                                                        type: "string"
+                                                        type: "string",
+                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.biome_ids
                                                     },
                                                     {
                                                         type: "array",
@@ -401,7 +404,8 @@ export const baseSchema = {
                                                         maxItems: 2,
                                                         items: [
                                                             {
-                                                                type: "string"
+                                                                type: "string",
+                                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.biome_ids
                                                             },
                                                             {
                                                                 default: 1,
@@ -419,14 +423,16 @@ export const baseSchema = {
                                     description: "Quel Biome utiliser pour convertir en Biome de collines. Peut être juste le nom de chaîne d'un Biome, ou un tableau de n'importe quelle taille. Si un tableau, chaque entrée peut être une chaîne de nom de Biome, ou un tableau de taille 2, où la première entrée est un nom de Biome et la deuxième entrée est un entier positif représentant comment ce Biome est pondéré par rapport aux autres entrées. Si aucun poids n'est fourni, un poids de 1 est utilisé.",
                                     oneOf: [
                                         {
-                                            type: "string"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.biome_ids
                                         },
                                         {
                                             type: "array",
                                             items: {
                                                 oneOf: [
                                                     {
-                                                        type: "string"
+                                                        type: "string",
+                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.biome_ids
                                                     },
                                                     {
                                                         type: "array",
@@ -434,7 +440,8 @@ export const baseSchema = {
                                                         maxItems: 2,
                                                         items: [
                                                             {
-                                                                type: "string"
+                                                                type: "string",
+                                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.biome_ids
                                                             },
                                                             {
                                                                 default: 1,
@@ -472,14 +479,16 @@ export const baseSchema = {
                                     description: "Quel Biome utiliser pour convertir en Biome de rivière. Peut être juste le nom de chaîne d'un Biome, ou un tableau de n'importe quelle taille. Si un tableau, chaque entrée peut être une chaîne de nom de Biome, ou un tableau de taille 2, où la première entrée est un nom de Biome et la deuxième entrée est un entier positif représentant comment ce Biome est pondéré par rapport aux autres entrées. Si aucun poids n'est fourni, un poids de 1 est utilisé.",
                                     oneOf: [
                                         {
-                                            type: "string"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.biome_ids
                                         },
                                         {
                                             type: "array",
                                             items: {
                                                 oneOf: [
                                                     {
-                                                        type: "string"
+                                                        type: "string",
+                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.biome_ids
                                                     },
                                                     {
                                                         type: "array",
@@ -487,7 +496,8 @@ export const baseSchema = {
                                                         maxItems: 2,
                                                         items: [
                                                             {
-                                                                type: "string"
+                                                                type: "string",
+                                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.biome_ids
                                                             },
                                                             {
                                                                 default: 1,
@@ -505,14 +515,16 @@ export const baseSchema = {
                                     description: "Quel Biome utiliser pour convertir en Biome d'océan. Peut être juste le nom de chaîne d'un Biome, ou un tableau de n'importe quelle taille. Si un tableau, chaque entrée peut être une chaîne de nom de Biome, ou un tableau de taille 2, où la première entrée est un nom de Biome et la deuxième entrée est un entier positif représentant comment ce Biome est pondéré par rapport aux autres entrées. Si aucun poids n'est fourni, un poids de 1 est utilisé.",
                                     oneOf: [
                                         {
-                                            type: "string"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.biome_ids
                                         },
                                         {
                                             type: "array",
                                             items: {
                                                 oneOf: [
                                                     {
-                                                        type: "string"
+                                                        type: "string",
+                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.biome_ids
                                                     },
                                                     {
                                                         type: "array",
@@ -520,7 +532,8 @@ export const baseSchema = {
                                                         maxItems: 2,
                                                         items: [
                                                             {
-                                                                type: "string"
+                                                                type: "string",
+                                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.biome_ids
                                                             },
                                                             {
                                                                 default: 1,
@@ -580,7 +593,8 @@ export const baseSchema = {
                                                 type: "array",
                                                 minItems: 1,
                                                 items: {
-                                                    type: "string"
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.biome_ids
                                                 }
                                             },
                                             amount: {
@@ -838,7 +852,8 @@ export const baseSchema = {
                                     description: "Liste des tags de chaîne à attacher à ce Biome.",
                                     type: "array",
                                     items: {
-                                        type: "string"
+                                        type: "string",
+                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.biome_tags
                                     }
                                 }
                             }

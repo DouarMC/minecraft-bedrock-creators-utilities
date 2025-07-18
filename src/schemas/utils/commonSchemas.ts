@@ -33,18 +33,7 @@ export const commonSchemas = {
                 markdownDescription:
                 "**ℹ️ Expression Molang supportée.**\n\n" +
                 "Les tags du bloc.",
-                oneOf: [
-                    {
-                        type: "string"
-                    },
-                    {
-                        type: "number"
-                    },
-                    {
-                        type: "boolean"
-                    }
-                ],
-                "x-molang": true
+                type: "molang"
             }
         }
     },
@@ -53,7 +42,8 @@ export const commonSchemas = {
         properties: {
             name: {
                 description: "L'identifiant de l'item.",
-                type: "string"
+                type: "string",
+                "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
             },
             data: {
                 description: "La valeur aux value de l'item.",
@@ -63,18 +53,7 @@ export const commonSchemas = {
                 markdownDescription:
                 "**ℹ️ Expression Molang supportée.**\n\n" +
                 "Les tags de l'item.",
-                oneOf: [
-                    {
-                        type: "string"
-                    },
-                    {
-                        type: "number"
-                    },
-                    {
-                        type: "boolean"
-                    }
-                ],
-                "x-molang": true
+                type: "molang"
             }
         }
     }

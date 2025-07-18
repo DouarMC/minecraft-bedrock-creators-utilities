@@ -38,43 +38,19 @@ export const baseSchema = {
                         markdownDescription:
                         "**ℹ️ Expression Molang supportée.**\n\n" +
                         "Définit le delai en secondes à attendre avant de jouer l'animation.",
-                        oneOf: [
-                            {
-                                type: "string"
-                            },
-                            {
-                                type: "number"
-                            }
-                        ],
-                        "x-molang": true
+                        type: "molang"
                     },
                     loop_delay: {
                         markdownDescription:
                         "**ℹ️ Expression Molang supportée.**\n\n" +
                         "Définit le delai en secondes à attendre avant de relancer l'animation si elle est en boucle.",
-                        oneOf: [
-                            {
-                                type: "string"
-                            },
-                            {
-                                type: "number"
-                            }
-                        ],
-                        "x-molang": true
+                        type: "molang"
                     },
                     anim_time_update: {
                         markdownDescription:
                         "**ℹ️ Expression Molang supportée.**\n\n" +
                         "Définit l'écoulement du temps lors de la lecture de l'animation. Par défaut, il s'agit de `query.anim_time + query.delta_time`, ce qui signifie une progression en secondes.",
-                        oneOf: [
-                            {
-                                type: "string"
-                            },
-                            {
-                                type: "number"
-                            }
-                        ],
-                        "x-molang": true
+                        type: "molang"
                     },
                     timeline: {
                         description: "Définit la timeline de l'animation. À chaque keyframe, il est possible d'executer des commandes, des événements d'entité, ou des expressions Molang arbitraires",
@@ -82,14 +58,12 @@ export const baseSchema = {
                         additionalProperties: {
                             oneOf: [
                                 {
-                                    type: "string",
-                                    "x-molang": true
+                                    type: "molang"
                                 },
                                 {
                                     type: "array",
                                     items: {
-                                        type: "string",
-                                        "x-molang": true
+                                        type: "molang"
                                     }
                                 }
                             ]

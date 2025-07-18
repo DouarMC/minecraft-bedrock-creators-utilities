@@ -42,8 +42,7 @@ export const baseSchema = {
                                         type: "object",
                                         maxProperties: 1,
                                         additionalProperties: {
-                                            type: "string",
-                                            "x-molang": true
+                                            type: "molang"
                                         }
                                     }
                                 },
@@ -58,15 +57,7 @@ export const baseSchema = {
                                             {
                                                 type: "object",
                                                 additionalProperties: {
-                                                    oneOf: [
-                                                        {
-                                                            type: "number"
-                                                        },
-                                                        {
-                                                            type: "string"
-                                                        }
-                                                    ],
-                                                    "x-molang": true
+                                                    type: "molang"
                                                 }
                                             }
                                         ]
@@ -80,16 +71,14 @@ export const baseSchema = {
                                     description: "Définit les commandes, événements d'entité, ou expressions Molang à exécuter lorsque l'état est entré.",
                                     type: "array",
                                     items: {
-                                        type: "string",
-                                        "x-molang": true
+                                        type: "molang"
                                     }
                                 },
                                 on_exit: {
                                     description: "Définit les commandes, événements d'entité, ou expressions Molang à exécuter lorsque l'état est quitté.",
                                     type: "array",
                                     items: {
-                                        type: "string",
-                                        "x-molang": true
+                                        type: "molang"
                                     }
                                 }
                             }

@@ -29,7 +29,8 @@ export const baseSchema = {
                         identifier: {
                             description: "L'identifiant de l'Item.",
                             type: "string",
-                            pattern: schemaPatterns.identifier_with_namespace
+                            pattern: schemaPatterns.identifier_with_namespace,
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.vanilla_data_driven_item_ids
                         }
                     }
                 },
@@ -98,7 +99,8 @@ export const baseSchema = {
                                         properties: {
                                             name: {
                                                 description: "L'identifiant de l'effet.",
-                                                type: "string"
+                                                type: "string",
+                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.effect_ids
                                             },
                                             chance: {
                                                 description: "La chance que l'effet soit appliqué.",
@@ -137,7 +139,8 @@ export const baseSchema = {
                                     description: "Les effets à retirer lorsque l'Item est mangé.",
                                     type: "array",
                                     items: {
-                                        type: "string"
+                                        type: "string",
+                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.effect_ids
                                     }
                                 },
                                 on_use_action: {
@@ -162,7 +165,8 @@ export const baseSchema = {
                                 },
                                 using_converts_to: {
                                     description: "L'item auquel l'Item se transforme après utilisation.",
-                                    type: "string"
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
                                 }
                             }
                         },
@@ -496,7 +500,8 @@ export const versionedChanges: SchemaChange[] = [
                     properties: {
                         category: {
                             description: "Définit à quelle catégorie de recharge l'Item appartient. Cela permet de regrouper les Items ayant le même temps de recharge pour qu'ils ne puissent pas être utilisés simultanément.",
-                            type: "string"
+                            type: "string",
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.cooldown_category_ids
                         },
                         duration: {
                             description: "Le temps de recharge de l'Item en secondes.",
@@ -573,7 +578,8 @@ export const versionedChanges: SchemaChange[] = [
                         },
                         projectile_entity: {
                             description: "L'entité projectile qui sera lancée lorsque l'Item est utilisé.",
-                            type: "string"
+                            type: "string",
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.entity_ids
                         }
                     }
                 }
@@ -619,7 +625,8 @@ export const versionedChanges: SchemaChange[] = [
                                     {
                                         oneOf: [
                                             {
-                                                type: "string"
+                                                type: "string",
+                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
                                             },
                                             commonSchemas.item_descriptor
                                         ]
@@ -634,7 +641,8 @@ export const versionedChanges: SchemaChange[] = [
                                                 items: {
                                                     oneOf: [
                                                         {
-                                                            type: "string"
+                                                            type: "string",
+                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
                                                         },
                                                         commonSchemas.item_descriptor
                                                     ]
@@ -644,18 +652,7 @@ export const versionedChanges: SchemaChange[] = [
                                                 markdownDescription:
                                                 "**ℹ️ Expression Molang supportée.**\n\n" +
                                                 "La quantité de durabilité restaurée par l'utilisation de ces items pour réparer cet Item.",
-                                                oneOf: [
-                                                    {
-                                                        type: "string"
-                                                    },
-                                                    {
-                                                        type: "number"
-                                                    },
-                                                    {
-                                                        type: "boolean"
-                                                    }
-                                                ],
-                                                "x-molang": true
+                                                type: "molang"
                                             }
                                         }
                                     }
@@ -682,7 +679,8 @@ export const versionedChanges: SchemaChange[] = [
                                         description: "L'item qui peut être utilisé comme munition.",
                                         oneOf: [
                                             {
-                                                type: "string"
+                                                type: "string",
+                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
                                             },
                                             commonSchemas.item_descriptor
                                         ]
@@ -838,7 +836,8 @@ export const versionedChanges: SchemaChange[] = [
                         group: {
                             description: "Le groupe d'items du menu créatif où l'Item sera placé.",
                             type: "string",
-                            maxLength: 256
+                            maxLength: 256,
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_group_ids
                         },
                         is_hidden_in_commands: {
                             description: "Indique si l'Item doit être caché dans les commandes.",
@@ -1123,7 +1122,8 @@ export const versionedChanges: SchemaChange[] = [
                         },
                         using_converts_to: {
                             description: "L'Item qui sera obtenu après avoir consommé cet Item. Par exemple, une pomme peut être consommée et donner un noyau de pomme.",
-                            type: "string"
+                            type: "string",
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
                         }
                     }
                 }
@@ -1162,7 +1162,8 @@ export const versionedChanges: SchemaChange[] = [
                             description: "Les tags associés à l'Item.",
                             type: "array",
                             items: {
-                                type: "string"
+                                type: "string",
+                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_tags
                             }
                         }
                     }
@@ -1437,7 +1438,8 @@ export const versionedChanges: SchemaChange[] = [
                             items: {
                                 oneOf: [
                                     {
-                                        type: "string"
+                                        type: "string",
+                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
                                     },
                                     commonSchemas.item_descriptor
                                 ]
@@ -1449,7 +1451,8 @@ export const versionedChanges: SchemaChange[] = [
                             items: {
                                 oneOf: [
                                     {
-                                        type: "string"
+                                        type: "string",
+                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
                                     },
                                     commonSchemas.item_descriptor
                                 ]
@@ -1564,7 +1567,8 @@ export const versionedChanges: SchemaChange[] = [
                     description: "Le groupe d'items du menu créatif où l'Item sera placé.",
                     type: "string",
                     maxLength: 256,
-                    pattern: schemaPatterns.identifier_with_namespace
+                    pattern: schemaPatterns.identifier_with_namespace,
+                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_group_ids_with_minecraft_namespace
                 }
             },
             {

@@ -50,6 +50,17 @@ export function getErrorsForSchema(schema: any, value: any): SchemaValidationRes
 function validateAgainstSchema(schema: any, value: any): SchemaError[] {
     const errors: SchemaError[] = []; // Tableau pour stocker les erreurs de validation
 
+    // Support spécial : molang peut être string, number ou boolean
+    if (schema.type === "molang") {
+        const t = typeof value;
+        const isValid = t === "string" || t === "number" || t === "boolean";
+        if (!isValid) {
+            return [{ error: `Une expression Molang doit être une chaîne, un nombre ou un booléen (ex: "query.health > 0", true, 2.5)` }];
+        }
+
+        return []; // Pas d'erreur pour molang
+    }
+
     // Vérification du type
     if (schema.type && !isValueOfType(value, schema.type)) { // Si le type de la valeur ne correspond pas au type attendu du schéma
         const typeDesc = Array.isArray(schema.type) ? schema.type.join(" | ") : schema.type; // Description du type attendu
@@ -112,6 +123,21 @@ function validateAgainstSchema(schema: any, value: any): SchemaError[] {
             const missingKeys = schema.required.filter((key: string) => !(key in value)); // Vérifie les clés requises
             if (missingKeys.length > 0) {
                 errors.push({ error: `Clés manquantes : ${missingKeys.join(", ")}` }); // Ajoute une erreur pour les clés manquantes
+            }
+        }
+
+        // // Validation des noms de propriétés
+        if (schema.propertyNames) {
+            const nameSchema = schema.propertyNames;
+            for (const key of Object.keys(value)) {
+                if (nameSchema.pattern) {
+                    const regex = new RegExp(nameSchema.pattern);
+                    if (!regex.test(key)) {
+                        errors.push({
+                            error: `Le nom de propriété "${key}" ne respecte pas le pattern "${nameSchema.pattern}"`
+                        });
+                    }
+                }
             }
         }
     }

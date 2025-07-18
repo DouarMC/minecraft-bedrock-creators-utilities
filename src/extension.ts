@@ -9,6 +9,8 @@ import { registerCompletionProvider } from './features/providers/completionProvi
 import { registerHoverProvider } from './features/providers/hoverProvider';
 import { registerValidationJson } from './features/diagnostics/validationJson';
 
+import { registerMolangEditorCommand } from './features/molang/molangEditor';
+
 export async function activate(context: vscode.ExtensionContext) {
     registerCompletionProvider(context);
     registerHoverProvider(context);
@@ -18,6 +20,7 @@ export async function activate(context: vscode.ExtensionContext) {
     registerValidateProjectCommand(context);
     registerDeployProjectCommand(context);
     registerWatchDeployCommand(context);
+    registerMolangEditorCommand(context);
 }
 
 export function deactivate() {}

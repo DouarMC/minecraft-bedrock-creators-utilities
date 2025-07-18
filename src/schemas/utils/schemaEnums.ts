@@ -9,5 +9,18 @@ export const dynamicExamplesSourceKeys = {
     loot_table_file_paths: "loot_table_file_paths",
     block_model_ids: "block_model_ids",
     crafting_recipe_tags: "crafting_recipe_tags",
-    culling_layers: "culling_layers"
+    culling_layer_ids: "culling_layer_ids",
+    aim_assist_category_ids: "aim_assist_category_ids",
+    aim_assist_preset_ids: "aim_assist_preset_ids",
+    entity_ids: "entity_ids",
+    item_ids: "item_ids",
+    biome_ids: "biome_ids",
+    biome_tags: "biome_tags",
+    item_group_ids: "item_group_ids",
+    item_group_ids_with_minecraft_namespace: "item_group_ids_with_minecraft_namespace",
+    block_culling_rules_ids: "block_culling_rules_ids",
+    vanilla_data_driven_item_ids: "vanilla_data_driven_item_ids",
+    effect_ids: "effect_ids",
+    cooldown_category_ids: "cooldown_category_ids",
+    item_tags: "item_tags"
 };

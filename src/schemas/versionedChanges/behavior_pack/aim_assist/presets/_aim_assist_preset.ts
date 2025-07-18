@@ -1,3 +1,4 @@
+import { dynamicExamplesSourceKeys } from "../../../../utils/schemaEnums";
 import { schemaPatterns } from "../../../../utils/schemaPatterns";
 
 export const baseSchema = {
@@ -19,35 +20,41 @@ export const baseSchema = {
                 identifier: {
                     description: "L'identifiant du preset d'Aim-Assist.",
                     type: "string",
-                    pattern: schemaPatterns.identifier_with_namespace
+                    pattern: schemaPatterns.identifier_with_namespace,
+                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.aim_assist_preset_ids
                 },
                 item_settings: {
                     description: "La catégorie d'Aim-Assist à utiliser pour des items spécifiques que le joueur tient dans sa main.",
                     type: "object",
                     additionalProperties: {
-                        type: "string"
+                        type: "string",
+                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.aim_assist_category_ids
                     }
                 },
                 default_item_settings: {
                     description: "La catégorie d'Aim-Assist à utiliser par défaut pour les items que le joueur tient dans sa main.",
-                    type: "string"
+                    type: "string",
+                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.aim_assist_category_ids
                 },
                 hand_settings: {
                     description: "La catégorie d'Aim-Assist à utiliser pour les joueurs qui n'ont pas d'item dans leur main.",
-                    type: "string"
+                    type: "string",
+                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.aim_assist_category_ids
                 },
                 exclusion_list: {
                     description: "Liste des blocs/entités qui ne doivent pas être affectés par l'Aim-Assist.",
                     type: "array",
                     items: {
-                        type: "string"
+                        type: "string",
+                        "x-dynamic-examples-source": [dynamicExamplesSourceKeys.block_ids, dynamicExamplesSourceKeys.entity_ids]
                     }
                 },
                 liquid_targeting_list: {
                     description: "Liste des items qui cibleront les blocs liquides avec l'Aim-Assist lorsqu'ils sont tenus dans la main.",
                     type: "array",
                     items: {
-                        type: "string"
+                        type: "string",
+                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
                     }
                 }
             }

@@ -44,7 +44,8 @@ export const baseSchema = {
                                 "group": {
                                     "description": "Le groupe d'items du menu créatif où le Bloc sera placé.",
                                     "type": "string",
-                                    "maxLength": 256
+                                    "maxLength": 256,
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_group_ids
                                 }
                             }
                         }
@@ -750,14 +751,15 @@ export const versionedChanges: SchemaChange[] = [
                                 },
                                 culling: {
                                     description: "L'identifiant des règles de Block Culling à utiliser pour le Bloc.",
-                                    type: "string"
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_culling_rules_ids
                                 },
                                 culling_layer: {
                                     description: "Paramètre qui définit l'identifiant de la couche de culling du Bloc. Utile pour les fichiers des règles de Block Culling.",
                                     default: "minecraft:culling_layer.undefined",
                                     type: "string",
                                     pattern: schemaPatterns.culling_layer_identifier,
-                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.culling_layers
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.culling_layer_ids
                                 }
                             }
                         }
@@ -1044,18 +1046,7 @@ export const versionedChanges: SchemaChange[] = [
                                 markdownDescription:
                                 "**ℹ️ Expression Molang supportée.**\n\n" +
                                 "La condition Molang qui doit être remplie pour que cette permutation soit appliquée.",
-                                oneOf: [
-                                    {
-                                        type: "string"
-                                    },
-                                    {
-                                        type: "number"
-                                    },
-                                    {
-                                        type: "boolean"
-                                    }
-                                ],
-                                "x-molang": true
+                                type: "molang"
                             },
                             components: {
                                 description: "Les composants du Bloc pour cette permutation.",
@@ -1160,18 +1151,7 @@ export const versionedChanges: SchemaChange[] = [
                     "Définit la visivilité de chaque os du modèle. Par défaut, tous les os sont visibles.",
                     type: "object",
                     additionalProperties: {
-                        oneOf: [
-                            {
-                                type: "string"
-                            },
-                            {
-                                type: "number"
-                            },
-                            {
-                                type: "boolean"
-                            }
-                        ],
-                        "x-molang": true
+                        type: "molang"
                     }
                 }
             },
@@ -1330,7 +1310,8 @@ export const versionedChanges: SchemaChange[] = [
                                 description: "L'item ou les items pour lesquels la vitesse de destruction est définie.",
                                 oneOf: [
                                     {
-                                        type: "string"
+                                        type: "string",
+                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
                                     },
                                     commonSchemas.item_descriptor
                                 ]
@@ -1376,7 +1357,8 @@ export const versionedChanges: SchemaChange[] = [
                     description: "Le groupe d'items du menu créatif où le Bloc sera placé.",
                     type: "string",
                     maxLength: 256,
-                    pattern: schemaPatterns.identifier_with_namespace
+                    pattern: schemaPatterns.identifier_with_namespace,
+                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_group_ids_with_minecraft_namespace
                 }
             },
             {

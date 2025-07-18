@@ -1,3 +1,5 @@
+import { dynamicExamplesSourceKeys } from "../../../../utils/schemaEnums";
+
 export const baseSchema = {
     $schema: "https://json-schema.org/draft-07/schema#",
     description: "Ce fichier crée des catégories pour les comportements d'assistance à la visée (Aim-Assist).",
@@ -23,7 +25,8 @@ export const baseSchema = {
                         properties: {
                             name: {
                                 description: "Le nom de la catégorie d'Aim-Assist.",
-                                type: "string"
+                                type: "string",
+                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.aim_assist_category_ids
                             },
                             entity_default: {
                                 description: "La priorité par défaut de la catégorie d'Aim-Assist pour les entités.",

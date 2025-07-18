@@ -1,12 +1,12 @@
 import * as vscode from 'vscode';
 import { getVersionedSchemaForFile } from '../../core/getVersionedSchemaForFile';
 import { getJsonPathForCompletionAt } from '../../utils/json/getJsonPathAt';
-import { resolveOneOfToObjectSchema } from '../../utils/json/resolveOneOfToObjectSchema';
 import { resolveSchemaAtPath } from '../../utils/json/resolveSchemaAtPath';
 import { findNodeAtLocation, parseTree } from 'jsonc-parser';
 import { nodeToValue } from '../diagnostics/validationJson';
 import { getErrorsForSchema } from '../../utils/json/resolveMatchingSubSchema';
-import { getAllBlockIdentifiers, getAllBlockModelIds, getAllLootTablePaths, getCraftingRecipeTags, getCullingLayers } from '../../utils/workspace/getContent';
+import { getBlockIds, getBlockModelIds, getLootTablePaths, getCraftingRecipeTagIds, getCullingLayerIds, getAimAssistCategoryIds, getEntityIds, getItemIds, getAimAssistPresetIds, getBiomeIds, getBiomeTags, getDataDrivenItemIds, getEffectIds, getCooldownCategoryIds, getItemTags } from '../../utils/workspace/getContent';
+import { dynamicExamplesSourceKeys } from '../../schemas/utils/schemaEnums';
 
 /**
  * Enregistre le provider de complétion pour les fichiers JSON
@@ -36,6 +36,9 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
 
                     const valueAtPath = path.reduce((acc, key) => acc?.[key], rootValue); // Exemple équivalent: rootValue?.['minecraft:block']?.['components']?.['minecraft:collision_box']
                     const { schema: resolvedNode } = getErrorsForSchema(rawSchema, valueAtPath);
+                    console.log("📍 path", path);
+                    console.log("📂 resolvedNode", resolvedNode);
+
                     if (!resolvedNode) {return [];}
 
                     const line = document.lineAt(position.line).text;
@@ -133,23 +136,57 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
 
                         let dynamicExamples: any[] = [];
                         if ("x-dynamic-examples-source" in schemaForValues) {
-                            const source = schemaForValues['x-dynamic-examples-source'];
-                            switch (source) {
-                                case "block_ids":
-                                    dynamicExamples = await getAllBlockIdentifiers();
-                                    break;
-                                case "loot_table_file_paths":
-                                    dynamicExamples = await getAllLootTablePaths();
-                                    break;
-                                case "block_model_ids":
-                                    dynamicExamples = await getAllBlockModelIds();
-                                    break;
-                                case "crafting_recipe_tags":
-                                    dynamicExamples = await getCraftingRecipeTags();
-                                    break;
-                                case "culling_layers":
-                                    dynamicExamples = await getCullingLayers();
-                                    break;
+                            const sources = Array.isArray(schemaForValues["x-dynamic-examples-source"])
+                                ? schemaForValues["x-dynamic-examples-source"]
+                                : [schemaForValues["x-dynamic-examples-source"]];
+                            for (const source of sources) {
+                                switch (source) {
+                                    case dynamicExamplesSourceKeys.block_ids:
+                                        dynamicExamples.push(...await getBlockIds());
+                                        break;
+                                    case dynamicExamplesSourceKeys.loot_table_file_paths:
+                                        dynamicExamples.push(...await getLootTablePaths());
+                                        break;
+                                    case dynamicExamplesSourceKeys.block_model_ids:
+                                        dynamicExamples.push(...await getBlockModelIds());
+                                        break;
+                                    case dynamicExamplesSourceKeys.crafting_recipe_tags:
+                                        dynamicExamples.push(...await getCraftingRecipeTagIds());
+                                        break;
+                                    case dynamicExamplesSourceKeys.culling_layer_ids:
+                                        dynamicExamples.push(...await getCullingLayerIds());
+                                        break;
+                                    case dynamicExamplesSourceKeys.aim_assist_category_ids:
+                                        dynamicExamples.push(...await getAimAssistCategoryIds());
+                                        break;
+                                    case dynamicExamplesSourceKeys.aim_assist_preset_ids:
+                                        dynamicExamples.push(...await getAimAssistPresetIds());
+                                        break;
+                                    case dynamicExamplesSourceKeys.entity_ids:
+                                        dynamicExamples.push(...await getEntityIds());
+                                        break;
+                                    case dynamicExamplesSourceKeys.item_ids:
+                                        dynamicExamples.push(...await getItemIds());
+                                        break;
+                                    case dynamicExamplesSourceKeys.biome_ids:
+                                        dynamicExamples.push(...await getBiomeIds());
+                                        break;
+                                    case dynamicExamplesSourceKeys.biome_tags:
+                                        dynamicExamples.push(...await getBiomeTags());
+                                        break;
+                                    case dynamicExamplesSourceKeys.vanilla_data_driven_item_ids:
+                                        dynamicExamples.push(...await getDataDrivenItemIds());
+                                        break;
+                                    case dynamicExamplesSourceKeys.effect_ids:
+                                        dynamicExamples.push(...await getEffectIds());
+                                        break;
+                                    case dynamicExamplesSourceKeys.cooldown_category_ids:
+                                        dynamicExamples.push(...await getCooldownCategoryIds());
+                                        break;
+                                    case dynamicExamplesSourceKeys.item_tags:
+                                        dynamicExamples.push(...await getItemTags());
+                                        break;
+                                }
                             }
                         }
 
@@ -225,19 +262,16 @@ function isInsideQuotes(beforeCursor: string, afterCursor: string): boolean {
  * @returns 
  */
 function isInsideArrayElement(beforeCursor: string, afterCursor: string): boolean {
-    // Compte les crochets ouvrants et fermants non échappés
-    const openBrackets = (beforeCursor.match(/(?<!\\)\[/g) || []).length;
-    const closeBrackets = (beforeCursor.match(/(?<!\\)\]/g) || []).length;
-    
-    // On est dans un tableau si on a plus de crochets ouvrants que fermants
-    const inArray = openBrackets > closeBrackets;
-    
-    // Vérifie qu'on est dans une valeur (entre guillemets ou après virgule/crochet)
-    const inArrayValue = isInsideQuotes(beforeCursor, afterCursor) || 
-                        /[\[,]\s*$/.test(beforeCursor) || 
-                        /[\[,]\s*"[^"]*$/.test(beforeCursor);
-    
-    return inArray && inArrayValue;
+    // Vérifie si le curseur est après une virgule, un crochet ouvrant ou un saut de ligne à l'intérieur d'un tableau
+    const before = beforeCursor.trimEnd();
+    const after = afterCursor.trimStart();
+
+    const isAfterOpeningBracket = /\[\s*$/.test(before); // Exemple: `tags: [\n|`
+    const isAfterComma = /,\s*$/.test(before);           // Exemple: `"...",\n|`
+    const isInQuotes = isInsideQuotes(beforeCursor, afterCursor);
+    const isLineStart = before === '"' || before.endsWith('\n"');
+
+    return isAfterOpeningBracket || isAfterComma || isInQuotes || isLineStart;
 }
 
 /**
