@@ -45,16 +45,57 @@ export function registerMolangEditorCommand(context: vscode.ExtensionContext) {
  * @returns 
  */
 function getMolangEditorHtml(currentValue: string): string {
-    return `
+    return /* html */ `
+<!DOCTYPE html>
 <html>
+<head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="https://unpkg.com/codemirror@5.65.15/lib/codemirror.css">
+    <link rel="stylesheet" href="https://unpkg.com/codemirror@5.65.15/theme/darcula.css">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background: #1e1e1e;
+            color: white;
+        }
+        .editor-container {
+            height: calc(100% - 40px);
+        }
+        .CodeMirror {
+            height: 100%;
+            font-size: 14px;
+        }
+        button {
+            width: 100%;
+            height: 40px;
+            font-size: 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
 <body>
-    <textarea id="editor" style="width:100%; height:90vh; font-family:monospace; font-size:14px;">${currentValue}</textarea>
+    <div class="editor-container">
+        <textarea id="editor">${currentValue}</textarea>
+    </div>
     <button onclick="apply()">✅ Appliquer</button>
 
+    <script src="https://unpkg.com/codemirror@5.65.15/lib/codemirror.js"></script>
+    <script src="https://unpkg.com/codemirror@5.65.15/mode/javascript/javascript.js"></script>
     <script>
         const vscode = acquireVsCodeApi();
+        const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
+            lineNumbers: true,
+            mode: 'javascript',
+            theme: 'darcula',
+        });
+
         function apply() {
-            const value = document.getElementById('editor').value;
+            const value = editor.getValue();
             vscode.postMessage({ value });
         }
     </script>
