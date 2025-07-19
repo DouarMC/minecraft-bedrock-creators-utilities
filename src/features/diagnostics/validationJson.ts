@@ -44,7 +44,9 @@ function validateDocument(document: vscode.TextDocument, diagnostics: vscode.Dia
         }
 
         const rawSchema = resolveSchemaAtPath(schema, path, nodeToValue(root)); // Récupère le schéma brut pour le chemin actuel
+        console.log("Raw schema pour le chemin", path, ":", JSON.stringify(rawSchema, null, 2));
         const { schema: resolvedSchema, errors: validationErrors } = getErrorsForSchema(rawSchema, value); // Validation centralisée
+        console.log("Schéma résolu pour le chemin", path, ":", JSON.stringify(resolvedSchema, null, 2));
 
         if (validationErrors.length > 0) {
             errors.push(new vscode.Diagnostic(

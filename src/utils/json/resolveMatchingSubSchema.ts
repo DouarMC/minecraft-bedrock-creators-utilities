@@ -50,21 +50,14 @@ export function getErrorsForSchema(schema: any, value: any): SchemaValidationRes
 function validateAgainstSchema(schema: any, value: any): SchemaError[] {
     const errors: SchemaError[] = []; // Tableau pour stocker les erreurs de validation
 
-    // Support spécial : molang peut être string, number ou boolean
-    if (schema.type === "molang") {
-        const t = typeof value;
-        const isValid = t === "string" || t === "number" || t === "boolean";
-        if (!isValid) {
-            return [{ error: `Une expression Molang doit être une chaîne, un nombre ou un booléen (ex: "query.health > 0", true, 2.5)` }];
-        }
-
-        return []; // Pas d'erreur pour molang
-    }
-
     // Vérification du type
     if (schema.type && !isValueOfType(value, schema.type)) { // Si le type de la valeur ne correspond pas au type attendu du schéma
         const typeDesc = Array.isArray(schema.type) ? schema.type.join(" | ") : schema.type; // Description du type attendu
-        errors.push({ error: `Type attendu : ${typeDesc}, obtenu : ${typeof value}` }); // Ajoute une erreur pour le type attendu
+        if (typeDesc === "molang") {
+            errors.push({ error: `Une expression Molang doit être une chaîne, un nombre ou un booléen (ex: "query.health > 0", true, 2.5)` });
+        } else {
+            errors.push({ error: `Type attendu : ${typeDesc}, obtenu : ${typeof value}` }); // Ajoute une erreur pour le type attendu
+        }
     }
 
     // Vérification enum
@@ -192,6 +185,9 @@ function validateAgainstSchema(schema: any, value: any): SchemaError[] {
 export function isValueOfType(value: any, type: string | string[]): boolean {
     const types = Array.isArray(type) ? type : [type]; // Assure que type est toujours un tableau
     return types.some(t => {
+        if (t === "molang") {
+            return typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean';
+        }
         if (t === 'string') {
             return typeof value === 'string';
         }

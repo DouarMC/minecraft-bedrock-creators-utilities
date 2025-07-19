@@ -2,6 +2,8 @@ import * as vscode from 'vscode';
 import { getJsonPathForHoverAt } from '../../utils/json/getJsonPathAt';
 import { getVersionedSchemaForFile } from '../../core/getVersionedSchemaForFile';
 import { resolveSchemaAtPath } from '../../utils/json/resolveSchemaAtPath';
+import { findNodeAtLocation, parseTree } from 'jsonc-parser';
+import { getErrorsForSchema } from '../../utils/json/resolveMatchingSubSchema';
 
 export function registerCodeActionProvider(context: vscode.ExtensionContext) {
     context.subscriptions.push(
@@ -32,8 +34,21 @@ class MolangCodeActionProvider implements vscode.CodeActionProvider {
             return;
         }
 
-        const resolved = resolveSchemaAtPath(schema, path);
-        if (!resolved || resolved.type !== "molang") {
+        const root = parseTree(document.getText());
+        if (!root) {
+            return;
+        }
+
+        const node = findNodeAtLocation(root, path);
+        if (!node) {
+            return;
+        }
+
+        const value = node.value;
+        const rawSchema = resolveSchemaAtPath(schema, path, node.value);
+        const { schema: resolvedSchema, errors } = getErrorsForSchema(rawSchema, value);
+
+        if (!resolvedSchema || resolvedSchema.type !== "molang") {
             return;
         }
 
