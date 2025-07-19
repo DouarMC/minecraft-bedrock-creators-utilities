@@ -1,6 +1,7 @@
+import { SchemaType } from "../../../../types/schema";
 import { schemaPatterns } from "../../../utils/schemaPatterns";
 
-export const baseSchema = {
+const baseSchema = {
     $schema: "https://json-schema.org/draft-07/schema#",
     description: "Ce fichier crée des animations de type Behavior.",
     type: "object",
@@ -78,4 +79,10 @@ export const baseSchema = {
             }
         }
     }
+};
+
+export const animationsSchemaTypeBP: SchemaType = {
+    fileMatch: ["**/addon/behavior_pack/animations/**/*.json"],
+    baseSchema: baseSchema,
+    versionedChanges: [] // Pas de changements pour ce schéma pour l'instant
 };

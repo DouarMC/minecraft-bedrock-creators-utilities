@@ -1,9 +1,9 @@
-import { SchemaChange } from "../../../../core/schemaTypes";
 import { schemaPatterns } from "../../../utils/schemaPatterns";
 import { dynamicExamplesSourceKeys, schemaEnums } from "../../../utils/schemaEnums";
 import { commonSchemas } from "../../../utils/commonSchemas";
+import { SchemaChange, SchemaType } from "../../../../types/schema";
 
-export const baseSchema = {
+const baseSchema = {
     $schema: "https://json-schema.org/draft-07/schema#",
     description: "Ce fichier crée ou modifie un Item.",
     type: "object",
@@ -239,7 +239,7 @@ export const baseSchema = {
     }
 };
 
-export const versionedChanges: SchemaChange[] = [
+const versionedChanges: SchemaChange[] = [
     {
         version: "1.20.0",
         changes: [
@@ -1639,3 +1639,9 @@ export const versionedChanges: SchemaChange[] = [
         ]
     }
 ];
+
+export const itemSchemaTypeBP: SchemaType = {
+    fileMatch: ["**/addon/behavior_pack/items/**/*.json"],
+    baseSchema: baseSchema,
+    versionedChanges: versionedChanges
+};

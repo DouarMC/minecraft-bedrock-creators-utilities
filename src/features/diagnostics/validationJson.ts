@@ -44,9 +44,7 @@ function validateDocument(document: vscode.TextDocument, diagnostics: vscode.Dia
         }
 
         const rawSchema = resolveSchemaAtPath(schema, path, nodeToValue(root)); // Récupère le schéma brut pour le chemin actuel
-        console.log("Raw schema pour le chemin", path, ":", JSON.stringify(rawSchema, null, 2));
-        const { schema: resolvedSchema, errors: validationErrors } = getErrorsForSchema(rawSchema, value); // Validation centralisée
-        console.log("Schéma résolu pour le chemin", path, ":", JSON.stringify(resolvedSchema, null, 2));
+        const { schema: resolvedSchema, errors: validationErrors } = getErrorsForSchema(rawSchema, value); // Récupère les erreurs de validation pour la valeur actuelle
 
         if (validationErrors.length > 0) {
             errors.push(new vscode.Diagnostic(
@@ -60,6 +58,12 @@ function validateDocument(document: vscode.TextDocument, diagnostics: vscode.Dia
     diagnostics.set(document.uri, errors);
 }
 
+/**
+ * Fonction récursive pour parcourir l'arbre JSON et appliquer un callback à chaque nœud.
+ * @param node Le nœud JSON actuel.
+ * @param callback La fonction à appeler pour chaque nœud.
+ * @param path Le chemin actuel dans l'arbre JSON, utilisé pour la validation.
+ */
 function walkJsonTree(node: Node, callback: (node: Node, path: string[]) => void, path: string[] = []) {
     if (node.type === 'property' && node.children?.length === 2) {
         const key = node.children[0].value;

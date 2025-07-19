@@ -1,7 +1,8 @@
+import { SchemaType } from "../../../../../types/schema";
 import { dynamicExamplesSourceKeys } from "../../../../utils/schemaEnums";
 import { schemaPatterns } from "../../../../utils/schemaPatterns";
 
-export const baseSchema = {
+const baseSchema = {
     $schema: "https://json-schema.org/draft-07/schema#",
     description: "Ce fichier crée des presets d'assistance à la visée (Aim-Assist).",
     type: "object",
@@ -60,4 +61,10 @@ export const baseSchema = {
             }
         }
     }
+};
+
+export const aimAssistPresetSchemaTypeBP: SchemaType = {
+    fileMatch: ["**/addon/behavior_pack/aim_assist/presets/**/*.json"],
+    baseSchema: baseSchema,
+    versionedChanges: [] // Pas de changements pour ce schéma pour l'instant
 };

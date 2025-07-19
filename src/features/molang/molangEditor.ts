@@ -132,7 +132,7 @@ function getNodeRangeFromPath(document: vscode.TextDocument, path: string[]): vs
  * @param path Le chemin à normaliser, sous forme de tableau de chaînes
  * @returns 
  */
-function normalizePath(path: string[]): (string | number)[] {
+export function normalizePath(path: string[]): (string | number)[] {
     return path.map(key => {
         const num = Number(key);
         return !isNaN(num) && /^\d+$/.test(key) ? num : key;

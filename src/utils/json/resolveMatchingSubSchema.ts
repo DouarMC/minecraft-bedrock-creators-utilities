@@ -8,35 +8,38 @@ export interface SchemaValidationResult {
 }
 
 export function getErrorsForSchema(schema: any, value: any): SchemaValidationResult {
+    // Si le schéma est vide ou non défini, on retourne un résultat vide
     if (!schema || typeof schema !== 'object') {
         return { schema: null, errors: [] };
     }
 
-    const variants = schema.oneOf || schema.anyOf;
-    if (Array.isArray(variants)) {
+    const variants = schema.oneOf || schema.anyOf; // On récupère les variantes si elles existent
+    if (Array.isArray(variants)) { // Si on a des variantes, on doit choisir la bonne
         const compatibleVariants = variants
-            .map(variant => {
-                const result = getErrorsForSchema(variant, value); // 🔁 récursif ici
-                const isCompatible = variant.type ? isValueOfType(value, variant.type) : true;
+            .map(variant => { // Pour chaque variante, on vérifie si elle est compatible avec la valeur
+                const result = getErrorsForSchema(variant, value); // Résout récursivement les erreurs pour cette branche du oneOf
+                const isCompatible = variant.type ? isValueOfType(value, variant.type) : true; // Vérifie si la variante est compatible avec la valeur grâce à son type
 
                 return {
-                    variant: result.schema,
-                    isCompatible,
-                    errors: result.errors
+                    variant: result.schema, // Le schéma de la variante
+                    isCompatible, // Si la variante est compatible avec la valeur
+                    errors: result.errors // Les erreurs de validation pour cette variante
                 };
             })
-            .sort((a, b) => {
+            .sort((a, b) => { // On trie les variantes qui sont le plus compatibles avec la valeur
+                // Priorise les variantes compatibles : une variante compatible vient avant une incompatible
                 if (a.isCompatible !== b.isCompatible) {
                     return b.isCompatible ? 1 : -1;
                 }
-                return a.errors.length - b.errors.length;
+                return a.errors.length - b.errors.length; // Priorise les variantes avec le moins d'erreurs
             });
 
-        const best = compatibleVariants.find(v => v.isCompatible) ?? compatibleVariants[0];
-        if (!best || !best.isCompatible) {
+        const best = compatibleVariants.find(v => v.isCompatible) ?? compatibleVariants[0]; // On prend la meilleure variante compatible ou la première si aucune n'est compatible
+        if (!best || !best.isCompatible) { // Si aucune variante n'est compatible, on retourne une erreur
             return { schema, errors: [{ error: `Aucune des variantes 'oneOf' ne correspond au type de la valeur.` }] };
         }
 
+        // Si on a trouvé une variante compatible, on retourne son schéma et ses erreurs
         return {
             schema: best.variant,
             errors: best.errors
@@ -52,12 +55,15 @@ function validateAgainstSchema(schema: any, value: any): SchemaError[] {
 
     // Vérification du type
     if (schema.type && !isValueOfType(value, schema.type)) { // Si le type de la valeur ne correspond pas au type attendu du schéma
-        const typeDesc = Array.isArray(schema.type) ? schema.type.join(" | ") : schema.type; // Description du type attendu
-        if (typeDesc === "molang") {
-            errors.push({ error: `Une expression Molang doit être une chaîne, un nombre ou un booléen (ex: "query.health > 0", true, 2.5)` });
+        const schemaType = schema.type; // Description du type attendu
+        let errorMessage: string;
+        if (schemaType === "molang") { // Si le type attendu est "molang"
+            errorMessage = `Une expression Molang doit être une chaîne, un nombre ou un booléen (ex: "query.health > 0", true, 2.5)`;
         } else {
-            errors.push({ error: `Type attendu : ${typeDesc}, obtenu : ${typeof value}` }); // Ajoute une erreur pour le type attendu
+            errorMessage = `Type attendu : ${schemaType}, obtenu : ${typeof value}`;
         }
+
+        errors.push({ error: errorMessage }); // Ajoute une erreur pour le type invalide
     }
 
     // Vérification enum
@@ -66,15 +72,19 @@ function validateAgainstSchema(schema: any, value: any): SchemaError[] {
         errors.push({ error: `Valeur invalide. Valeurs autorisées : ${allowed}` }); // Ajoute une erreur pour la valeur invalide
     }
 
+    // Vérification des erreurs pour les valeurs de type string
     if (typeof value === "string") {
+        // Vérification de la longueur minimale de la chaîne
         if (schema.minLength !== undefined && value.length < schema.minLength) {
             errors.push({ error: `La valeur "${value}" est trop courte (longueur minimale : ${schema.minLength})` }); // Ajoute une erreur pour la longueur minimale
         }
 
+        // Vérification de la longueur maximale de la chaîne
         if (schema.maxLength !== undefined && value.length > schema.maxLength) {
             errors.push({ error: `La valeur "${value}" est trop longue (longueur maximale : ${schema.maxLength})` }); // Ajoute une erreur pour la longueur maximale
         }
 
+        // Vérification du pattern de la chaîne
         if (schema.pattern) {
             const regex = new RegExp(schema.pattern); // Crée une expression régulière à partir du pattern du schéma
             if (!regex.test(value)) { // Si la valeur ne correspond pas au pattern
@@ -83,6 +93,7 @@ function validateAgainstSchema(schema: any, value: any): SchemaError[] {
         }
     }
 
+    // Vérification des erreurs pour les valeurs de type number
     if (typeof value === "number") {
         if (schema.minimum !== undefined && value < schema.minimum) { // Si la valeur est inférieure au minimum autorisé
             errors.push({ error: `La valeur ${value} est inférieure au minimum autorisé (${schema.minimum})`});
@@ -100,7 +111,7 @@ function validateAgainstSchema(schema: any, value: any): SchemaError[] {
             errors.push({ error: `La valeur ${value} doit être strictement inférieure à l'exclusif maximum (${schema.exclusiveMaximum})`});
         }
 
-        if (schema.multipleOf !== undefined) {
+        if (schema.multipleOf !== undefined) { // Si le schéma a un multipleOf
             const multiple = schema.multipleOf;
             const quotient = value / multiple;
             // Pour les flottants, on tolère une petite marge d'erreur à cause de la précision binaire
@@ -111,7 +122,9 @@ function validateAgainstSchema(schema: any, value: any): SchemaError[] {
         }
     }
 
+    // Vérification des erreurs pour les valeurs de type Object
     if (typeof value === "object" && value !== null) {
+        // Vérification des clés requises
         if (schema.required) {
             const missingKeys = schema.required.filter((key: string) => !(key in value)); // Vérifie les clés requises
             if (missingKeys.length > 0) {
@@ -135,11 +148,14 @@ function validateAgainstSchema(schema: any, value: any): SchemaError[] {
         }
     }
 
+    // Vérification des erreurs pour les valeurs de type Array
     if (Array.isArray(value)) {
+        // Vérification du nombre minimum d'éléments dans le tableau
         if (schema.minItems !== undefined && value.length < schema.minItems) {
             errors.push({ error: `Le tableau contient ${value.length} éléments, mais ${schema.minItems} minimum sont requis.` }); // Ajoute une erreur pour le nombre minimum d'éléments
         }
 
+        // Vérification du nombre maximum d'éléments dans le tableau
         if (schema.maxItems !== undefined && value.length > schema.maxItems) {
             errors.push({ error: `Le tableau contient ${value.length} éléments, mais ${schema.maxItems} maximum sont autorisés.` }); // Ajoute une erreur pour le nombre maximum d'éléments
         }
@@ -149,29 +165,16 @@ function validateAgainstSchema(schema: any, value: any): SchemaError[] {
                 const itemValue = value[i];
                 const itemSchema = schema.items;
 
-                // Si items.oneOf existe → on cherche un variant compatible
-                if (Array.isArray(itemSchema.oneOf)) {
-                    const subVariants = itemSchema.oneOf.map((variant: any) => ({
-                        variant,
-                        isValid: validateAgainstSchema(variant, itemValue).length === 0
-                    }));
+                const { errors: subErrors } = getErrorsForSchema(itemSchema, itemValue);
 
-                    if (!subVariants.some((v: any) => v.isValid)) {
-                        errors.push({
-                            error: `Élément ${i} invalide : aucun des types attendus ne correspond.`
-                        });
-                    }
-                } else {
-                    const subErrors = validateAgainstSchema(itemSchema, itemValue);
+                if (subErrors.length > 0) {
                     errors.push(...subErrors.map(e => ({
-                        error: `Élément ${i} invalide : ${e.error}`
+                        error: `Élément ${i + 1} invalide : ${e.error}`
                     })));
                 }
             }
         }
     }
-
-    // ➕ Tu pourras ajouter ici : pattern, minLength, required, etc.
 
     return errors;
 }

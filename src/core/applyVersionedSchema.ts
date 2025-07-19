@@ -1,17 +1,18 @@
-import { SchemaChange } from "./schemaTypes";
+import { SchemaType } from "../types/schema";
 import { cloneDeep, set, unset } from "lodash";
 
 /**
- * Applique des changements versionnés à un schéma de base en fonction de la version de format.
- * @param base Le schéma de base auquel les changements seront appliqués.
- * @param changes Les changements versionnés à appliquer au schéma de base.
- * @param formatVersion La version de format du document, utilisée pour déterminer quels changements appliquer.
+ * Applique les modifications de schéma versionnées à un schéma de base.
+ * @param schemaType Le type de schéma contenant le schéma de base et les modifications versionnées.
+ * @param formatVersion La version de format du document à modifier, sous forme de chaîne de caractères.
  * @returns 
  */
-export function applyVersionedSchema(base: any, changes: SchemaChange[], formatVersion: string | undefined): any {
-    const result = cloneDeep(base); // Crée une copie profonde du schéma de base
+export function applyVersionedSchema(schemaType: SchemaType, formatVersion: string | undefined): any {
+    const result = cloneDeep(schemaType.baseSchema); // Crée une copie profonde du schéma de base
+
+    // Si la version de format est définie, on applique les modifications versionnées
     if (formatVersion) {
-        for (const changeSet of changes) { // Parcourt chaque ensemble de changements versionnés
+        for (const changeSet of schemaType.versionedChanges) { // Parcourt chaque ensemble de changements versionnés
             if (compareVersions(formatVersion, changeSet.version) >= 0) { // Si la format version du document est supérieure ou égale à la version de l'ensemble de changements
                 for (const change of changeSet.changes) { // Pour chaque changement dans l'ensemble
                     switch (change.action) {

@@ -1,8 +1,8 @@
+import { SchemaType } from "../../../../types/schema";
 import { commonSchemas } from "../../../utils/commonSchemas";
 import { dynamicExamplesSourceKeys } from "../../../utils/schemaEnums";
 
-
-export const baseSchema = {
+const baseSchema = {
     $schema: "https://json-schema.org/draft-07/schema#",
     markdownDescription:
     "[ℹ️**Expérimentale**]: `Custom Biomes`\n\n" +
@@ -867,4 +867,10 @@ export const baseSchema = {
             }
         }
     }
+};
+
+export const biomeSchemaTypeBP: SchemaType = {
+    fileMatch: ["**/addon/behavior_pack/biomes/**/*.json"],
+    baseSchema: baseSchema,
+    versionedChanges: [] // Pas de changements pour ce schéma pour l'instant
 };

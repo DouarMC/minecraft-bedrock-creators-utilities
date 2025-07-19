@@ -1,9 +1,9 @@
-import {SchemaChange} from "../../../../core/schemaTypes";
 import { schemaPatterns } from "../../../utils/schemaPatterns";
 import { schemaEnums, dynamicExamplesSourceKeys } from "../../../utils/schemaEnums";
 import { commonSchemas } from "../../../utils/commonSchemas";
+import { SchemaChange, SchemaType } from "../../../../types/schema";
 
-export const baseSchema = {
+const baseSchema = {
     "$schema": "https://json-schema.org/draft-07/schema#",
     "description": "Ce fichier crée un Bloc personnalisé.",
     "type": "object",
@@ -479,7 +479,7 @@ export const baseSchema = {
     }
 };
 
-export const versionedChanges: SchemaChange[] = [
+const versionedChanges: SchemaChange[] = [
     {
         version: "1.18.10",
         changes: [
@@ -1495,3 +1495,9 @@ export const versionedChanges: SchemaChange[] = [
         ]
     }
 ];
+
+export const blockSchemaTypeBP: SchemaType = {
+    fileMatch: ["**/addon/behavior_pack/blocks/**/*.json"],
+    baseSchema: baseSchema,
+    versionedChanges: versionedChanges
+};

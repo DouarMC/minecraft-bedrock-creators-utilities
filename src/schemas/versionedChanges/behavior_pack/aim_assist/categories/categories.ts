@@ -1,6 +1,7 @@
+import { SchemaType } from "../../../../../types/schema";
 import { dynamicExamplesSourceKeys } from "../../../../utils/schemaEnums";
 
-export const baseSchema = {
+const baseSchema = {
     $schema: "https://json-schema.org/draft-07/schema#",
     description: "Ce fichier crée des catégories pour les comportements d'assistance à la visée (Aim-Assist).",
     type: "object",
@@ -78,4 +79,10 @@ export const baseSchema = {
             }
         }
     }
+};
+
+export const aimAssistCategoriesSchemaTypeBP: SchemaType = {
+    fileMatch: ["**/addon/behavior_pack/aim_assist/categories/categories.json"],
+    baseSchema: baseSchema,
+    versionedChanges: []
 };

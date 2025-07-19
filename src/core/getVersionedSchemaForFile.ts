@@ -1,7 +1,8 @@
 import * as vscode from "vscode";
 import { applyVersionedSchema } from "./applyVersionedSchema";
-import { findMatchingSchemaType } from "./findMatchingSchemaType";
 import { findNodeAtLocation, parseTree } from "jsonc-parser";
+import { schemaTypes } from "./schemaTypes";
+import micromatch from "micromatch";
 
 /**
  * Récupère le schéma versionné pour un fichier donné.
@@ -10,11 +11,14 @@ import { findNodeAtLocation, parseTree } from "jsonc-parser";
  */
 export function getVersionedSchemaForFile(document: vscode.TextDocument): any | undefined {
     const filePath = document.uri.fsPath; // Récupère le chemin du fichier
+    const normalizedPath = filePath.replace(/\\/g, "/"); // Normalise le chemin pour éviter les problèmes de séparateurs de fichiers
 
-    const schemaType = findMatchingSchemaType(filePath); // Trouve le type de schéma correspondant au chemin du fichier
-    if (!schemaType) { // Si aucun type de schéma ne correspond, on retourne undefined
-        console.warn("🚫 Aucun SchemaType ne correspond au chemin");
-        return undefined; // Aucun type de schéma correspondant trouvé
+    // Cherche le type de schéma correspondant au chemin du fichier
+    const matchedSchemaType  = schemaTypes.find(schemaType =>
+        schemaType.fileMatch.some(pattern => micromatch.isMatch(normalizedPath, pattern))
+    );
+    if (!matchedSchemaType ) { // Si aucun type de schéma ne correspond, on retourne undefined
+        return;
     }
 
     let formatVersion: string | undefined = undefined; // Initialisation de la version de format
@@ -26,5 +30,5 @@ export function getVersionedSchemaForFile(document: vscode.TextDocument): any | 
         }
     }
 
-    return applyVersionedSchema(schemaType.baseSchema, schemaType.versionedChanges, formatVersion);
+    return applyVersionedSchema(matchedSchemaType, formatVersion); // On renvoie le schéma appliqué avec les modifications versionnées
 }

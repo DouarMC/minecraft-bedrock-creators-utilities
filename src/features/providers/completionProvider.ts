@@ -18,7 +18,8 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
             {language: "json", scheme: "file"}, // Dit qu'on veut des suggestions pour les fichiers JSON
             {
                 async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
-                    const schema = getVersionedSchemaForFile(document); // Récupère le schéma JSON pour le fichier actuel
+                    // Récupère le schéma versionné pour le fichier actuel
+                    const schema = getVersionedSchemaForFile(document);
                     if (!schema) {
                         return [];
                     }
