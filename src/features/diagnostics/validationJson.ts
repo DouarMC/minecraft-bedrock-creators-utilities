@@ -1,11 +1,13 @@
 import * as vscode from 'vscode';
-import { parseTree, ParseError, getNodePath, Node } from 'jsonc-parser';
+import { parseTree, ParseError, Node } from 'jsonc-parser';
 import { getVersionedSchemaForFile } from '../../core/getVersionedSchemaForFile';
-import { resolveSchemaAtPath } from '../../utils/json/resolveSchemaAtPath';
-import { getErrorsForSchema } from '../../utils/json/resolveMatchingSubSchema';
+import { getErrorsForSchema } from '../../utils/json/getErrorsForSchema';
+import { getSchemaAtNodePath } from '../../core/schemaContext';
+import { walkJsonTree } from '../../utils/json/walkJsonTree';
+import { nodeToValue } from '../../utils/json/nodeToValue';
 
 export function registerValidationJson(context: vscode.ExtensionContext) {
-    const diagnostics = vscode.languages.createDiagnosticCollection("jsonSchemaValidation");
+    const diagnostics = vscode.languages.createDiagnosticCollection("minecraft-bedrock-creators-utilities.jsonValidation");
     context.subscriptions.push(diagnostics);
 
     vscode.workspace.onDidOpenTextDocument(doc => validateDocument(doc, diagnostics));
@@ -43,80 +45,19 @@ function validateDocument(document: vscode.TextDocument, diagnostics: vscode.Dia
             return;
         }
 
-        const rawSchema = resolveSchemaAtPath(schema, path, nodeToValue(root)); // Récupère le schéma brut pour le chemin actuel
-        const { schema: resolvedSchema, errors: validationErrors } = getErrorsForSchema(rawSchema, value); // Récupère les erreurs de validation pour la valeur actuelle
+        const { schema: resolvedSchema, valueAtPath } = getSchemaAtNodePath(document, node, path);
+        const { errors: validationErrors } = getErrorsForSchema(resolvedSchema, valueAtPath);
 
-        if (validationErrors.length > 0) {
+        for (const err of validationErrors) {
             errors.push(new vscode.Diagnostic(
                 toRange(document, node),
-                validationErrors[0].error, // On affiche uniquement la première erreur
+                err.error,
                 vscode.DiagnosticSeverity.Warning
             ));
         }
     });
 
     diagnostics.set(document.uri, errors);
-}
-
-/**
- * Fonction récursive pour parcourir l'arbre JSON et appliquer un callback à chaque nœud.
- * @param node Le nœud JSON actuel.
- * @param callback La fonction à appeler pour chaque nœud.
- * @param path Le chemin actuel dans l'arbre JSON, utilisé pour la validation.
- */
-function walkJsonTree(node: Node, callback: (node: Node, path: string[]) => void, path: string[] = []) {
-    if (node.type === 'property' && node.children?.length === 2) {
-        const key = node.children[0].value;
-        const valueNode = node.children[1];
-        walkJsonTree(valueNode, callback, [...path, key]);
-    } else if (node.type === 'array') {
-        callback(node, path); // le tableau lui-même
-        node.children?.forEach((child, index) => {
-            // on donne un path avec l'index pour chaque élément
-            walkJsonTree(child, callback, [...path, String(index)]);
-        });
-    } else if (node.type === 'object') {
-        callback(node, path); // l'objet lui-même
-        node.children?.forEach(child => {
-            walkJsonTree(child, callback, path); // les "property" se chargeront d'ajouter la clé
-        });
-    } else {
-        callback(node, path); // valeur simple
-    }
-}
-
-/**
- * Convertit un nœud JSON en valeur JavaScript exploitable.
- * @param node Le nœud JSON à convertir.
- * @returns 
- */
-export function nodeToValue(node: Node): any {
-    switch (node.type) {
-        case 'string':
-        case 'number':
-        case 'boolean':
-            return node.value;
-        case 'null':
-            return null;
-        case 'object': {
-            const obj: Record<string, any> = {};
-            if (node.children) {
-                for (const prop of node.children) {
-                    const key = prop.children?.[0]?.value;
-                    const valNode = prop.children?.[1];
-                    if (typeof key === 'string' && valNode) {
-                        obj[key] = nodeToValue(valNode); // récursif
-                    }
-                }
-            }
-            return obj;
-        }
-        case 'array': {
-            return (node.children ?? []).map(child => nodeToValue(child));
-        }
-        default:
-            return undefined;
-    }
 }
 
 function toRange(document: vscode.TextDocument, node: Node): vscode.Range {

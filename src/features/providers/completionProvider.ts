@@ -1,12 +1,13 @@
 import * as vscode from 'vscode';
-import { getVersionedSchemaForFile } from '../../core/getVersionedSchemaForFile';
-import { getJsonPathForCompletionAt } from '../../utils/json/getJsonPathAt';
-import { resolveSchemaAtPath } from '../../utils/json/resolveSchemaAtPath';
-import { findNodeAtLocation, parseTree } from 'jsonc-parser';
-import { nodeToValue } from '../diagnostics/validationJson';
-import { getErrorsForSchema } from '../../utils/json/resolveMatchingSubSchema';
+import { findNodeAtOffset, parseTree } from 'jsonc-parser';
+import { getErrorsForSchema } from '../../utils/json/getErrorsForSchema';
 import { getBlockIds, getBlockModelIds, getLootTablePaths, getCraftingRecipeTagIds, getCullingLayerIds, getAimAssistCategoryIds, getEntityIds, getItemIds, getAimAssistPresetIds, getBiomeIds, getBiomeTags, getDataDrivenItemIds, getEffectIds, getCooldownCategoryIds, getItemTags } from '../../utils/workspace/getContent';
 import { dynamicExamplesSourceKeys } from '../../schemas/utils/schemaEnums';
+import { getSchemaAtPosition } from '../../core/schemaContext';
+import { findNearestNodeAtPath } from '../../utils/json/findNearestNodeAtPath';
+import { getCursorContext } from '../../utils/json/getCursorContext';
+import { findNearestObjectAtNode } from '../../utils/json/findNearestObjectAtPath';
+import { find } from 'lodash';
 
 /**
  * Enregistre le provider de complétion pour les fichiers JSON
@@ -18,64 +19,33 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
             {language: "json", scheme: "file"}, // Dit qu'on veut des suggestions pour les fichiers JSON
             {
                 async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
-                    // Récupère le schéma versionné pour le fichier actuel
-                    const schema = getVersionedSchemaForFile(document);
-                    if (!schema) {
+                    // On récupère le schéma à la position actuelle, le chemin et la valeur à cette position, et le schéma complet
+                    const {path, schema: rawSchema, valueAtPath, fullSchema} = getSchemaAtPosition(document, position);
+                    if (!rawSchema) { // Si pas de schéma trouvé, on ne propose rien
                         return [];
                     }
 
-                    // Détermine le chemin JSON hiérarchique (tableau de clés) depuis la racine jusqu'à la position actuelle du curseur pour l'autocomplétion
-                    // Ex: ['minecraft:block', 'components', 'minecraft:collision_box']
-                    const path = getJsonPathForCompletionAt(document, position);
-                    // Parse le contenu textuel du document en arbre de syntaxe abstraite (AST) pour analyser la structure JSON/objet
-                    const rootNode = parseTree(document.getText());
-                    const rootValue = nodeToValue(rootNode as any); // Convertit l'arbre en valeur JavaScript pour une manipulation plus facile
-                    const rawSchema = resolveSchemaAtPath(schema, path, rootValue); // Ex: path=['minecraft:block', 'components'] → retourne le schéma pour cette propriété
-                    if (!rawSchema) { // Si aucun schéma n'est trouvé pour le chemin, on ne propose pas de complétion
+                    const { schema: resolvedNode } = getErrorsForSchema(rawSchema, valueAtPath); // Résout le schéma à la position actuelle
+                    if (!resolvedNode) { // Si pas de schéma résolu, on ne propose rien
                         return [];
                     }
 
-                    const valueAtPath = path.reduce((acc, key) => acc?.[key], rootValue); // Exemple équivalent: rootValue?.['minecraft:block']?.['components']?.['minecraft:collision_box']
-                    const { schema: resolvedNode } = getErrorsForSchema(rawSchema, valueAtPath);
-                    console.log("📍 path", path);
-                    console.log("📂 resolvedNode", resolvedNode);
-
-                    if (!resolvedNode) {return [];}
-
-                    const line = document.lineAt(position.line).text;
-                    const beforeCursor = line.slice(0, position.character);     
-                    const afterCursor = line.slice(position.character);
-
-                    const isInQuotes = isInsideQuotes(beforeCursor, afterCursor);
-                    const isAfterColon = /:\s*$/.test(beforeCursor);
-                    const isStartOfProperty = /^[\s{,]*$/.test(beforeCursor) || /^[\s{,]*"[^"]*$/.test(beforeCursor);
-                    const isTypingValue = isAfterColon || (isInQuotes && /:\s*"[^"]*$/.test(beforeCursor));
-                    const isProbablyKeyWithoutQuotes = /^[\s{,]*[a-zA-Z0-9_]*$/.test(beforeCursor);
+                    const cursorContext = getCursorContext(document, position); // Récupère le contexte du curseur (est-ce qu'on est en train de taper une clé, une valeur, etc.)
 
                     // Trouve le bon objet parent à partir du curseur
-                    let workingPath = [...path];
-                    let nodeAtCursor = findNodeAtLocation(rootNode!, workingPath);
-                    while (!nodeAtCursor && workingPath.length > 0) {
-                        workingPath.pop();
-                        nodeAtCursor = findNodeAtLocation(rootNode!, workingPath);
-                    }
+                    const rootNode = parseTree(document.getText());
+                    const nodeAtCursor = rootNode ? findNearestNodeAtPath(rootNode, path) : undefined; // Trouve le nœud JSON le plus proche à partir du chemin
+                    const parentObject = findNearestObjectAtNode(nodeAtCursor); // Trouve l'objet parent le plus proche du nœud à la position du curseur
 
-                    let parentObject: any = null;
-                    if (nodeAtCursor?.type === 'object') {
-                        parentObject = nodeAtCursor;
-                    } else if (nodeAtCursor?.type === 'array') {
-                        const lastChild = nodeAtCursor.children?.at(-1);
-                        if (lastChild?.type === 'object') {parentObject = lastChild;}
-                    } else {
-                        parentObject = findNearestObjectNode(nodeAtCursor);
-                    }
-
-                    // ➤ Complétion de CLÉS
+                    // ➤ Complétion de CLÉS, vérifie que le schéma résolu est un objet avec des propriétés → donc que la complétion peut proposer des clés valides.
+                    // et que Le curseur se trouve dans un objet JSON.
+                    // et que l'utilisateur est en train de taper une clé (soit au début d'une propriété, soit dans des guillemets, soit probablement une clé sans guillemets),
+                    // et qu'on n'est pas après un deux-points (donc pas en train de taper une valeur).
                     if (
                         resolvedNode.properties &&
                         parentObject?.type === 'object' &&
-                        (isStartOfProperty || isInQuotes || isProbablyKeyWithoutQuotes) &&
-                        !isAfterColon && !isTypingValue
+                        (cursorContext.isStartOfProperty || cursorContext.isInQuotes || cursorContext.isProbablyKeyWithoutQuotes) &&
+                        !cursorContext.isAfterColon && !cursorContext.isTypingValue
                     ) {
                         const existingKeys = new Set<string>();
                         for (const prop of parentObject.children ?? []) {
@@ -92,7 +62,7 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                                 item.sortText = '0';
                                 item.preselect = true;
 
-                                if (isInQuotes) {
+                                if (cursorContext.isInQuotes) {
                                     const snippet = generateInsertTextForKey(key, value);
                                     const fullInsert = snippet.value;
                                     const match = /^"([^"]+)"\s*:\s*([\s\S]*)$/.exec(fullInsert);
@@ -115,7 +85,9 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                                 } else {
                                     item.insertText = generateInsertTextForKey(key, value);
                                     const wordRange = document.getWordRangeAtPosition(position);
-                                    if (wordRange) {item.range = wordRange;}
+                                    if (wordRange) {
+                                        item.range = wordRange;
+                                    }
                                 }
 
                                 const description = (value as any).description || (value as any).markdownDescription || '';
@@ -127,11 +99,10 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                             });
                     }
 
-                    const isInArrayElement = isInsideArrayElement(beforeCursor, afterCursor);
-                    // ➤ Complétion de VALEURS
-                    if (isTypingValue || isAfterColon || isInArrayElement) {
+                    // Complétion de VALEURS
+                    if (cursorContext.isTypingValue || cursorContext.isAfterColon || cursorContext.isInArrayElement) {
                         let schemaForValues = resolvedNode ?? rawSchema;
-                        if (isInArrayElement && rawSchema.items) {
+                        if (cursorContext.isInArrayElement && rawSchema.items) {
                             schemaForValues = rawSchema.items;
                         }
 
@@ -205,7 +176,7 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                             const item = new vscode.CompletionItem(label, vscode.CompletionItemKind.Value);
 
                             if (typeof value === "string") {
-                                if (isInQuotes) {
+                                if (cursorContext.isInQuotes) {
                                     item.insertText = new vscode.SnippetString(`${value}"$0`);
                                     const range = getQuoteContentRange(document, position);
                                     if (range) {
@@ -234,45 +205,6 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
             '"', ':' // Déclencheurs de complétion
         )
     );
-}
-
-/**
- * Vérifie si le curseur est à l'intérieur de guillemets
- * @param beforeCursor Le texte avant le curseur
- * @param afterCursor Le texte après le curseur
- * @returns 
- */
-function isInsideQuotes(beforeCursor: string, afterCursor: string): boolean {
-    // Compte le nombre de guillemets non échappés avant le curseur
-    const quotesBeforeCount = (beforeCursor.match(/(?<!\\)"/g) || []).length;
-    
-    // Si le nombre est impair, on est probablement à l'intérieur d'une chaîne
-    const inQuotes = quotesBeforeCount % 2 === 1;
-
-    // Vérifie s'il y a un guillemet fermant après le curseur (mais pas immédiatement une nouvelle clé)
-    const hasClosingQuote = /^[^"]*"/.test(afterCursor);
-
-    // On est à l'intérieur de guillemets uniquement si on est entre une ouverture et une fermeture
-    return inQuotes && hasClosingQuote;
-}
-
-/**
- * Vérifie si le curseur est à l'intérieur d'un élément de tableau
- * @param beforeCursor Le texte avant le curseur
- * @param afterCursor Le texte après le curseur
- * @returns 
- */
-function isInsideArrayElement(beforeCursor: string, afterCursor: string): boolean {
-    // Vérifie si le curseur est après une virgule, un crochet ouvrant ou un saut de ligne à l'intérieur d'un tableau
-    const before = beforeCursor.trimEnd();
-    const after = afterCursor.trimStart();
-
-    const isAfterOpeningBracket = /\[\s*$/.test(before); // Exemple: `tags: [\n|`
-    const isAfterComma = /,\s*$/.test(before);           // Exemple: `"...",\n|`
-    const isInQuotes = isInsideQuotes(beforeCursor, afterCursor);
-    const isLineStart = before === '"' || before.endsWith('\n"');
-
-    return isAfterOpeningBracket || isAfterComma || isInQuotes || isLineStart;
 }
 
 /**
@@ -341,18 +273,4 @@ function generateInsertTextForKey(key: string, value: any): vscode.SnippetString
     }
 
     return new vscode.SnippetString(insertText);
-}
-
-/**
- * Trouve le nœud parent le plus proche de type "object"
- */
-function findNearestObjectNode(node: any): any {
-    let current = node;
-    while (current) {
-        if (current.type === 'object') {
-            return current;
-        }
-        current = current.parent;
-    }
-    return null;
 }

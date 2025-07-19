@@ -13,7 +13,11 @@ export function getErrorsForSchema(schema: any, value: any): SchemaValidationRes
         return { schema: null, errors: [] };
     }
 
-    const variants = schema.oneOf || schema.anyOf; // On récupère les variantes si elles existent
+    const variants = Array.isArray(schema.oneOf)
+        ? schema.oneOf
+        : Array.isArray(schema.anyOf)
+        ? schema.anyOf
+        : null;
     if (Array.isArray(variants)) { // Si on a des variantes, on doit choisir la bonne
         const compatibleVariants = variants
             .map(variant => { // Pour chaque variante, on vérifie si elle est compatible avec la valeur
@@ -47,6 +51,11 @@ export function getErrorsForSchema(schema: any, value: any): SchemaValidationRes
     }
 
     const errors = validateAgainstSchema(schema, value);
+
+    // Si le type ne correspond pas, on retourne schema: null (pour éviter une mauvaise résolution dans la complétion)
+    if (schema.type && !isValueOfType(value, schema.type)) {
+        return { schema: null, errors };
+    }
     return { schema, errors };
 }
 
@@ -132,8 +141,8 @@ function validateAgainstSchema(schema: any, value: any): SchemaError[] {
             }
         }
 
-        // // Validation des noms de propriétés
-        if (schema.propertyNames) {
+        // Validation des noms de propriétés
+        if (schema.propertyNames && typeof schema.propertyNames === 'object') {
             const nameSchema = schema.propertyNames;
             for (const key of Object.keys(value)) {
                 if (nameSchema.pattern) {
@@ -163,7 +172,9 @@ function validateAgainstSchema(schema: any, value: any): SchemaError[] {
         if (schema.items) {
             for (let i = 0; i < value.length; i++) {
                 const itemValue = value[i];
-                const itemSchema = schema.items;
+                const itemSchema = Array.isArray(schema.items)
+                    ? schema.items[i] ?? {}
+                    : schema.items;
 
                 const { errors: subErrors } = getErrorsForSchema(itemSchema, itemValue);
 
@@ -185,7 +196,7 @@ function validateAgainstSchema(schema: any, value: any): SchemaError[] {
  * @param type Le type attendu (peut être un tableau de types)
  * @returns 
  */
-export function isValueOfType(value: any, type: string | string[]): boolean {
+function isValueOfType(value: any, type: string | string[]): boolean {
     const types = Array.isArray(type) ? type : [type]; // Assure que type est toujours un tableau
     return types.some(t => {
         if (t === "molang") {

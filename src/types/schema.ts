@@ -1,3 +1,5 @@
+import { JSONPath } from "vscode-json-languageservice";
+
 export interface SchemaModification {
     target: string; // ex.: "minecraft:block.components.minecraft:block_light_absorption"
     action: "add" | "remove" | "modify";
@@ -14,4 +16,11 @@ export interface SchemaType {
     fileMatch: string[];
     baseSchema: any;
     versionedChanges: SchemaChange[];
+}
+
+export interface SchemaContext {
+    path: JSONPath;
+    schema: any | undefined;
+    fullSchema: SchemaType | undefined;
+    valueAtPath: any;
 }

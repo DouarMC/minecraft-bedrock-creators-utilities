@@ -5,13 +5,12 @@ export function registerMolangEditorCommand(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.commands.registerCommand("minecraft-bedrock-creators-utilities.openMolangEditor", async (uri: vscode.Uri, path: string[]) => {
             const document = await vscode.workspace.openTextDocument(uri); // On récupère le document à partir de l'URI
-            const text = document.getText(); // On récupère le texte du document
-
-            const root = parseTree(text);
+            const root = parseTree(document.getText());
             if (!root) {
                 return;
             }
-            const node = findNodeAtLocation(root, normalizePath(path));
+
+            const node = findNodeAtLocation(root, path);
             const currentValue = node?.value !== undefined ? node.value : "";
 
             // On crée un panel pour l'éditeur Molang
@@ -23,11 +22,11 @@ export function registerMolangEditorCommand(context: vscode.ExtensionContext) {
             );
 
             panel.webview.html = getMolangEditorHtml(currentValue); // On définit le contenu HTML du panel
+
             panel.webview.onDidReceiveMessage(msg => {
                 if (msg.value) {
                     const range = getNodeRangeFromPath(document, path);
                     if (range) {
-                        console.log("ON A UNE RANGE OEEEEEE");
                         const edit = new vscode.WorkspaceEdit();
                         edit.replace(document.uri, range, JSON.stringify(msg.value)); // garde les guillemets si string
                         vscode.workspace.applyEdit(edit);
@@ -116,7 +115,7 @@ function getNodeRangeFromPath(document: vscode.TextDocument, path: string[]): vs
         return null;
     }
 
-    const node = findNodeAtLocation(root, normalizePath(path));
+    const node = findNodeAtLocation(root, path); // ✅ pas de normalizePath
     if (!node) {
         return null;
     }
@@ -125,16 +124,4 @@ function getNodeRangeFromPath(document: vscode.TextDocument, path: string[]): vs
         document.positionAt(node.offset),
         document.positionAt(node.offset + node.length)
     );
-}
-
-/**
- * Normalise le chemin pour convertir les clés numériques en nombres
- * @param path Le chemin à normaliser, sous forme de tableau de chaînes
- * @returns 
- */
-export function normalizePath(path: string[]): (string | number)[] {
-    return path.map(key => {
-        const num = Number(key);
-        return !isNaN(num) && /^\d+$/.test(key) ? num : key;
-    });
 }

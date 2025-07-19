@@ -1,10 +1,6 @@
 import * as vscode from 'vscode';
-import { getJsonPathForHoverAt } from '../../utils/json/getJsonPathAt';
-import { getVersionedSchemaForFile } from '../../core/getVersionedSchemaForFile';
-import { resolveSchemaAtPath } from '../../utils/json/resolveSchemaAtPath';
 import { findNodeAtLocation, parseTree } from 'jsonc-parser';
-import { getErrorsForSchema } from '../../utils/json/resolveMatchingSubSchema';
-import { normalizePath } from '../molang/molangEditor';
+import { getSchemaAtPosition } from '../../core/schemaContext';
 
 export function registerCodeActionProvider(context: vscode.ExtensionContext) {
     context.subscriptions.push(
@@ -25,44 +21,19 @@ class MolangCodeActionProvider implements vscode.CodeActionProvider {
         context: vscode.CodeActionContext,
         token: vscode.CancellationToken
     ): vscode.ProviderResult<vscode.CodeAction[]> {
-        const path = getJsonPathForHoverAt(document, range.start);
-        const normalizedPath = normalizePath(path);
-        console.log("AAAAAA");
-        if (!normalizedPath) {
+        const { schema, path } = getSchemaAtPosition(document, range.start);
+        if (!schema || schema.type !== "molang" || !path.length) {
             return;
         }
 
-        const schema = getVersionedSchemaForFile(document);
-        console.log("BBBBB");
-        if (!schema) {
-            return;
-        }
-
+        // 🧠 Optionnel mais sûr : vérifier que la valeur existe à ce chemin
         const root = parseTree(document.getText());
-        console.log("CCCCCC");
-        if (!root) {
-            return;
-        }
-
-        const node = findNodeAtLocation(root, normalizedPath);
-        console.log("PATH: ", normalizedPath);
+        const node = root ? findNodeAtLocation(root, path) : undefined;
         if (!node) {
-            console.log("Le noeud n'existe pas pour le chemin donné.");
             return;
         }
 
-        const value = node.value;
-        const rawSchema = resolveSchemaAtPath(schema, normalizedPath, node.value);
-        const { schema: resolvedSchema, errors } = getErrorsForSchema(rawSchema, value);
-
-        console.log("RAW SCHEMA : ", JSON.stringify(rawSchema, null, 2));
-        console.log("RESOLVED SCHEMA : ", JSON.stringify(resolvedSchema, null, 2));
-        console.log("CACA ?");
-        if (!resolvedSchema || resolvedSchema.type !== "molang") {
-            console.log("Le schéma n'est pas de type Molang ou n'existe pas.");
-            return;
-        }
-
+        // Crée l'action d'ouverture de l'éditeur Molang
         const action = new vscode.CodeAction(
             "Éditer l'expression Molang",
             vscode.CodeActionKind.QuickFix
@@ -71,9 +42,8 @@ class MolangCodeActionProvider implements vscode.CodeActionProvider {
         action.command = {
             command: 'minecraft-bedrock-creators-utilities.openMolangEditor',
             title: "Ouvrir l'éditeur Molang",
-            arguments: [document.uri, normalizePath]
+            arguments: [document.uri, path]
         };
-
         return [action];
     }
 }
