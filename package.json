@@ -10,9 +10,9 @@
         "Other"
     ],
     "activationEvents": [
-        "onStartupFinished" // Active l'extension une fois que VS Code a terminé de démarrer
+        "onStartupFinished"
     ],  
-    "main": "./out/extension.js", // Point d’entrée principal de l’extension (après compilation TypeScript)
+    "main": "./out/extension.js",
     "contributes": {
         "commands": [
             {
