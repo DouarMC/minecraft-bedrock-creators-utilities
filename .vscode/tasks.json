@@ -1,19 +1,19 @@
-// See https://go.microsoft.com/fwlink/?LinkId=733558
-// for the documentation about the tasks.json format
+// Ce fichier définit des tâches automatisées dans VS Code (comme compiler ou surveiller les fichiers).
+// Ici, on lance "npm run watch" en tâche de fond à chaque F5 (débogage).
 {
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"type": "npm",
-			"script": "watch",
-			"problemMatcher": "$tsc-watch",
-			"isBackground": true,
+			"type": "npm", // Type de tâche : ici, une commande npm
+			"script": "watch", // Exécute "npm run watch". C'est défini dans package.json pour surveiller les changements dans le code TypeScript et recompiler automatiquement. 
+			"problemMatcher": "$tsc-watch", // Permet à VS Code de détecter les erreurs TypeScript en live. Les erreurs TypeScript s’affichent automatiquement dans l’éditeur dès que tu sauvegardes ou même pendant que tu tapes (selon ton tsconfig.json).
+			"isBackground": true, // Indique que la tâche reste active en arrière-plan (utile pour watch)
 			"presentation": {
-				"reveal": "never"
+				"reveal": "silent" // Ne pas afficher le terminal sauf en cas d’erreur
 			},
 			"group": {
-				"kind": "build",
-				"isDefault": true
+				"kind": "build", // Groupe de tâches de type "build". Pour compiler l'extension.
+				"isDefault": true // C’est la tâche par défaut (appelée par ${defaultBuildTask})
 			}
 		}
 	]

@@ -1,88 +1,85 @@
 {
-  "name": "minecraft-bedrock-creators-utilities",
-  "displayName": "minecraft-bedrock-creators-utilities",
-  "description": "\tVS Code tools for Minecraft Bedrock add-on development",
-  "version": "0.0.1",
-  "engines": {
-    "vscode": "^1.100.0"
-  },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [
-    "onStartupFinished"
-  ],
-  "main": "./out/extension.js",
-  "extensionDependencies": [
-    "vscode.json-language-features"
-  ],
-  "contributes": {
-    "commands": [
-      {
-        "command": "minecraft-bedrock-creators-utilities.helloWorld",
-        "title": "Hello World",
-        "category": "Minecraft Bedrock Utilities"
-      },
-      {
-        "command": "minecraft-bedrock-creators-utilities.initEnvironment",
-        "title": "Initialiser un projet Minecraft Bedrock",
-        "category": "Minecraft Bedrock Utilities"
-      },
-      {
-        "command": "minecraft-bedrock-creators-utilities.validateProject",
-        "title": "Valider le projet Minecraft Bedrock courant",
-        "category": "Minecraft Bedrock Utilities"
-      },
-      {
-        "command": "minecraft-bedrock-creators-utilities.deployProject",
-        "title": "Déployer le projet Minecraft Bedrock courant",
-        "category": "Minecraft Bedrock Utilities"
-      },
-      {
-        "command": "minecraft-bedrock-creators-utilities.toggleWatchDeploy",
-        "title": "Activer/Désactiver le déploiement automatique du projet Minecraft Bedrock",
-        "category": "Minecraft Bedrock Utilities"
-      },
-      {
-        "command": "minecraft-bedrock-creators-utilities.openMolangEditor",
-        "title": "Ouvrir l'éditeur Molang",
-        "category": "Minecraft Bedrock Utilities"
-      }
+    "name": "minecraft-bedrock-creators-utilities",
+    "displayName": "minecraft-bedrock-creators-utilities",
+    "description": "VS Code tools for Minecraft Bedrock add-on development",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.100.0"
+    },
+    "categories": [
+        "Other"
     ],
-    "jsonValidation": [
-      {
-        "fileMatch": ["*.json"],
-        "url": "./schemas/empty.schema.json"
-      }
-    ]
-  },
-  "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src",
-    "test": "vscode-test"
-  },
-  "devDependencies": {
-    "@types/lodash": "^4.17.20",
-    "@types/micromatch": "^4.0.9",
-    "@types/mocha": "^10.0.10",
-    "@types/node": "20.x",
-    "@types/vscode": "^1.100.0",
-    "@typescript-eslint/eslint-plugin": "^8.31.1",
-    "@typescript-eslint/parser": "^8.31.1",
-    "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.5.2",
-    "eslint": "^9.25.1",
-    "typescript": "^5.8.3"
-  },
-  "dependencies": {
-    "@minecraft/vanilla-data": "^1.21.90",
-    "ajv": "^8.17.1",
-    "jsonc-parser": "^3.3.1",
-    "lodash": "^4.17.21",
-    "micromatch": "^4.0.8",
-    "vscode-json-languageservice": "^5.6.0"
-  }
+    "activationEvents": [
+        "onStartupFinished" // Active l'extension une fois que VS Code a terminé de démarrer
+    ],  
+    "main": "./out/extension.js", // Point d’entrée principal de l’extension (après compilation TypeScript)
+    "contributes": {
+        "commands": [
+            {
+                "command": "minecraft-bedrock-creators-utilities.helloWorld",
+                "title": "Hello World",
+                "category": "Minecraft Bedrock Utilities"
+            },
+            {
+                "command": "minecraft-bedrock-creators-utilities.initEnvironment",
+                "title": "Initialiser un projet Minecraft Bedrock",
+                "category": "Minecraft Bedrock Utilities"
+            },
+            {
+                "command": "minecraft-bedrock-creators-utilities.validateProject",
+                "title": "Valider le projet Minecraft Bedrock courant",
+                "category": "Minecraft Bedrock Utilities"
+            },
+            {
+                "command": "minecraft-bedrock-creators-utilities.deployProject",
+                "title": "Déployer le projet Minecraft Bedrock courant",
+                "category": "Minecraft Bedrock Utilities"
+            },
+            {
+                "command": "minecraft-bedrock-creators-utilities.toggleWatchDeploy",
+                "title": "Activer/Désactiver le déploiement automatique du projet Minecraft Bedrock",
+                "category": "Minecraft Bedrock Utilities"
+            },
+            {
+                "command": "minecraft-bedrock-creators-utilities.openMolangEditor",
+                "title": "Ouvrir l'éditeur Molang",
+                "category": "Minecraft Bedrock Utilities"
+            }
+        ],
+        "jsonValidation": [
+            {
+                "fileMatch": ["*.json"],
+                "url": "./schemas/empty.schema.json"
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "pretest": "npm run compile && npm run lint",
+        "lint": "eslint src",
+        "test": "vscode-test"
+    },
+    "devDependencies": {
+        "@types/lodash": "^4.17.20",
+        "@types/micromatch": "^4.0.9",
+        "@types/mocha": "^10.0.10",
+        "@types/node": "20.x",
+        "@types/vscode": "^1.100.0",
+        "@typescript-eslint/eslint-plugin": "^8.31.1",
+        "@typescript-eslint/parser": "^8.31.1",
+        "@vscode/test-cli": "^0.0.10",
+        "@vscode/test-electron": "^2.5.2",
+        "eslint": "^9.25.1",
+        "typescript": "^5.8.3"
+    },
+    "dependencies": {
+        "@minecraft/vanilla-data": "^1.21.90",
+        "ajv": "^8.17.1",
+        "jsonc-parser": "^3.3.1",
+        "lodash": "^4.17.21",
+        "micromatch": "^4.0.8",
+        "vscode-json-languageservice": "^5.6.0"
+    }
 }

@@ -1,15 +1,15 @@
-// Place your settings in this file to overwrite default and user settings.
+// Ce fichier contient les paramètres de configuration de l'environnement de développement pour l'extension Minecraft Bedrock Creators Utilities dans Visual Studio Code.
 {
 	"files.exclude": {
-		"out": false // set this to true to hide the "out" folder with the compiled JS files
+		"out": false // le dossier out est visible dans l'explorateur de fichiers. Les fichiers JS compilés sont visibles pour le débogage.
 	},
 	"search.exclude": {
-		"out": true // set this to false to include "out" folder in search results
+		"out": true // Le dossier out est ignoré dans les recherches. Les fichier js compilés ne sont pas inclus dans les résultats de recherche.
 	},
-	// Turn off tsc task auto detection since we have the necessary tasks as npm scripts
-	"typescript.tsc.autoDetect": "off",
+
+	"typescript.tsc.autoDetect": "off", // Désactive la détection automatique des tâches tsc. On utilise notre propre tâche watch via npm run watch.
 
 	"files.associations": {
-		"*.json": "jsonc"
+		"*.json": "jsonc" // Traite les fichiers JSON comme JSON avec commentaires. Utile pour les fichiers de configuration comme package.json, tsconfig.json, etc.
 	}
 }

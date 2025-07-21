@@ -1,21 +1,19 @@
-// A launch configuration that compiles the extension and then opens it inside a new window
-// Use IntelliSense to learn about possible attributes.
-// Hover to view descriptions of existing attributes.
-// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+// Ce fichier configure le lancement et le débogage de l'extension dans VS Code.
+// Quand on appuie sur F5, il compile le code, puis ouvre une fenêtre avec l'extension active.
 {
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "Run Extension",
-			"type": "extensionHost",
-			"request": "launch",
+			"name": "Run Extension", // Nom qui s'affiche dans le menu de lancement (F5)
+			"type": "extensionHost", // Lance VS Code dans un "hôte d'extension" isolé
+			"request": "launch", // Type de démarrage (ici: lancement normal)
 			"args": [
-				"--extensionDevelopmentPath=${workspaceFolder}"
+				"--extensionDevelopmentPath=${workspaceFolder}" // Charge ton extension depuis ce projet. dit à VS Code de lancer une nouvelle fenêtre VS Code (un environnement de test) en chargeant ton extension à partir de ton dossier courant.
 			],
 			"outFiles": [
-				"${workspaceFolder}/out/**/*.js"
+				"${workspaceFolder}/out/**/*.js" // Indique où trouver les fichiers compilés (TypeScript → JS)
 			],
-			"preLaunchTask": "${defaultBuildTask}"
+			"preLaunchTask": "${defaultBuildTask}" // Compile l’extension avant de la lancer. Execute la tâche par défaut définie dans tasks.json avant de lancer l'extension
 		}
 	]
 }
