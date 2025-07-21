@@ -46,11 +46,10 @@ export function registerMolangEditorCommand(context: vscode.ExtensionContext) {
 function getMolangEditorHtml(currentValue: string): string {
     return /* html */ `
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <link rel="stylesheet" href="https://unpkg.com/codemirror@5.65.15/lib/codemirror.css">
-    <link rel="stylesheet" href="https://unpkg.com/codemirror@5.65.15/theme/darcula.css">
+    <title>Molang Editor</title>
     <style>
         html, body {
             margin: 0;
@@ -59,14 +58,10 @@ function getMolangEditorHtml(currentValue: string): string {
             background: #1e1e1e;
             color: white;
         }
-        .editor-container {
+        #editor-container {
             height: calc(100% - 40px);
         }
-        .CodeMirror {
-            height: 100%;
-            font-size: 14px;
-        }
-        button {
+        #submit-button {
             width: 100%;
             height: 40px;
             font-size: 16px;
@@ -78,25 +73,77 @@ function getMolangEditorHtml(currentValue: string): string {
     </style>
 </head>
 <body>
-    <div class="editor-container">
-        <textarea id="editor">${currentValue}</textarea>
-    </div>
-    <button onclick="apply()">✅ Appliquer</button>
+    <div id="editor-container"></div>
+    <button id="submit-button">✅ Appliquer</button>
 
-    <script src="https://unpkg.com/codemirror@5.65.15/lib/codemirror.js"></script>
-    <script src="https://unpkg.com/codemirror@5.65.15/mode/javascript/javascript.js"></script>
+    <!-- Monaco via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/loader.js"></script>
     <script>
+        const initialValue = \`${currentValue.replace(/`/g, '\\`')}\`;
         const vscode = acquireVsCodeApi();
-        const editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
-            lineNumbers: true,
-            mode: 'javascript',
-            theme: 'darcula',
-        });
 
-        function apply() {
-            const value = editor.getValue();
-            vscode.postMessage({ value });
-        }
+        require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs' }});
+        require(['vs/editor/editor.main'], function () {
+            monaco.languages.register({ id: 'molang' });
+
+            monaco.languages.setMonarchTokensProvider('molang', {
+                tokenizer: {
+                    root: [
+                        [/\b(true|false|null)\b/, "keyword"],
+                        [/\b(query|variable|math|animation)\b/, "identifier"],
+                        [/[a-zA-Z_][\\w.]*/, "variable"],
+                        [/\\d+(\\.\\d+)?/, "number"],
+                        [/[-+*/%=!<>]+/, "operator"],
+                        [/[{}()\\[\\]]/, "@brackets"]
+                    ]
+                }
+            });
+
+            monaco.languages.registerCompletionItemProvider('molang', {
+                provideCompletionItems: () => {
+                    return {
+                        suggestions: [
+                            {
+                                label: 'query.is_sprinting',
+                                kind: monaco.languages.CompletionItemKind.Property,
+                                insertText: 'query.is_sprinting',
+                                documentation: 'Retourne true si l’entité est en train de sprinter.'
+                            }
+                        ]
+                    };
+                }
+            });
+
+            monaco.languages.registerHoverProvider('molang', {
+                provideHover: function(model, position) {
+                    const word = model.getWordAtPosition(position);
+                    if (!word) return;
+
+                    const text = word.word;
+                    if (text === 'query.is_sprinting') {
+                        return {
+                            range: new monaco.Range(position.lineNumber, word.startColumn, position.lineNumber, word.endColumn),
+                            contents: [
+                                { value: '**query.is_sprinting**' },
+                                { value: 'Retourne true si l’entité est en train de sprinter.' }
+                            ]
+                        };
+                    }
+                }
+            });
+
+            const editor = monaco.editor.create(document.getElementById('editor-container'), {
+                value: initialValue,
+                language: 'molang',
+                theme: 'vs-dark',
+                automaticLayout: true
+            });
+
+            document.getElementById('submit-button').addEventListener('click', () => {
+                const value = editor.getValue();
+                vscode.postMessage({ value });
+            });
+        });
     </script>
 </body>
 </html>
