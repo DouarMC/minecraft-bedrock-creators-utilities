@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { findNodeAtOffset, parseTree } from 'jsonc-parser';
 import { getErrorsForSchema } from '../../utils/json/getErrorsForSchema';
-import { getBlockIds, getBlockModelIds, getLootTablePaths, getCraftingRecipeTagIds, getCullingLayerIds, getAimAssistCategoryIds, getEntityIds, getItemIds, getAimAssistPresetIds, getBiomeIds, getBiomeTags, getDataDrivenItemIds, getEffectIds, getCooldownCategoryIds, getItemTags } from '../../utils/workspace/getContent';
+import { getBlockIds, getBlockModelIds, getLootTablePaths, getCraftingRecipeTagIds, getCullingLayerIds, getAimAssistCategoryIds, getEntityIds, getItemIds, getAimAssistPresetIds, getBiomeIds, getBiomeTags, getDataDrivenItemIds, getEffectIds, getCooldownCategoryIds, getItemTags, getItemGroupIds, getItemGroupIdsWithMinecraftNamespace } from '../../utils/workspace/getContent';
 import { dynamicExamplesSourceKeys } from '../../schemas/utils/schemaEnums';
 import { getSchemaAtPosition } from '../../core/schemaContext';
 import { findNearestNodeAtPath } from '../../utils/json/findNearestNodeAtPath';
@@ -157,6 +157,12 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                                         break;
                                     case dynamicExamplesSourceKeys.item_tags:
                                         dynamicExamples.push(...await getItemTags());
+                                        break;
+                                    case dynamicExamplesSourceKeys.item_group_ids:
+                                        dynamicExamples.push(...await getItemGroupIds());
+                                        break;
+                                    case dynamicExamplesSourceKeys.item_group_ids_with_minecraft_namespace:
+                                        dynamicExamples.push(...await getItemGroupIdsWithMinecraftNamespace());
                                         break;
                                 }
                             }
