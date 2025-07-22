@@ -51,6 +51,24 @@
                 "fileMatch": ["*.json"],
                 "url": "./schemas/empty.schema.json"
             }
+        ],
+        "languages": [
+            {
+                "id": "molang",
+                "aliases": ["Molang", "molang"],
+                "extensions": [".molang"],
+                "icon": {
+                    "dark": "./resources/molang_icon.png",
+                    "light": "./resources/molang_icon.png"
+                }
+            }
+        ],
+        "grammars": [
+            {
+                "language": "molang",
+                "scopeName": "source.molang",
+                "path": "./syntaxes/molang.tmLanguage.json"
+            }
         ]
     },
     "scripts": {

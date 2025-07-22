@@ -7,12 +7,19 @@ import { registerWatchDeployCommand } from './features/deploy/watchProjectChange
 
 import { registerCompletionProvider } from './features/providers/completionProvider';
 import { registerHoverProvider } from './features/providers/hoverProvider';
+import { registerInMemoryFileSystemProvider } from './features/providers/InMemoryFileSystemProvider';
 import { registerValidationJson } from './features/diagnostics/validationJson';
 
 import { registerMolangEditorCommand } from './features/molang/molangEditor';
 import { registerCodeActionProvider } from './features/providers/codeActionProvider';
 
+import { registerMolangLanguage } from './features/molang/molangLanguage';
+
 export async function activate(context: vscode.ExtensionContext) {
+    registerMolangLanguage(context);
+
+    registerInMemoryFileSystemProvider(context);
+
     registerCompletionProvider(context);
     registerHoverProvider(context);
     registerValidationJson(context);
