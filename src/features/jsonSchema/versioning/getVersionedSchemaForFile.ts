@@ -29,6 +29,6 @@ export function getVersionedSchemaForFile(document: vscode.TextDocument): any | 
             formatVersion = versionNode.value; // Si le nœud de version est trouvé et est une chaîne, on l'utilise comme version de format
         }
     }
-
+    
     return applyVersionedSchema(matchedSchemaType, formatVersion); // On renvoie le schéma appliqué avec les modifications versionnées
 }

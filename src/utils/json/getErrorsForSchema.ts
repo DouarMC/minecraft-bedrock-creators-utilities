@@ -18,6 +18,56 @@ export function getErrorsForSchema(schema: any, value: any): SchemaValidationRes
         : Array.isArray(schema.anyOf)
         ? schema.anyOf
         : null;
+    // ➕ Ajout : tentative de fusion des propriétés pour les objets oneOf
+    let objectVariants: any[] = [];
+
+    if (
+        Array.isArray(schema.oneOf) &&
+        typeof value === "object" &&
+        value !== null
+    ) {
+        // 👇 Sélectionne tous les objets dans oneOf ou dans oneOf imbriqué
+        objectVariants = schema.oneOf.flatMap((v: any) => {
+            return Array.isArray(v.oneOf) ? v.oneOf : [v];
+        }).filter((v: any) => v.type === "object" && typeof v.properties === "object");
+
+        if (objectVariants.length > 0) {
+            const matchingVariant = objectVariants.find((variant: any) =>
+                Object.keys(value).some(key => key in (variant.properties ?? {}))
+            );
+
+            if (matchingVariant) {
+                return getErrorsForSchema(matchingVariant, value);
+            } else {
+                const mergedProperties = Object.assign({}, ...objectVariants.map((v: any) => v.properties ?? {}));
+                const mergedSchema = {
+                    type: "object",
+                    properties: mergedProperties
+                };
+                return getErrorsForSchema(mergedSchema, value);
+            }
+        }
+
+
+        // Si une propriété du JSON match l’une des branches → on utilise cette branche uniquement
+        const matchingVariant = objectVariants.find((variant: any) =>
+            Object.keys(value).some(key => key in (variant.properties ?? {}))
+        );
+
+        if (matchingVariant) {
+            // 🧠 Une des branches correspond à une propriété présente → on la traite seule
+            return getErrorsForSchema(matchingVariant, value);
+        } else {
+            // 🧪 Aucune propriété n'est encore écrite → on crée un schéma fusionné pour la complétion
+            const mergedProperties = Object.assign({}, ...objectVariants.map((v: any) => v.properties ?? {}));
+            const mergedSchema = {
+                type: "object",
+                properties: mergedProperties
+            };
+            return getErrorsForSchema(mergedSchema, value);
+        }
+    }
+
     if (Array.isArray(variants)) { // Si on a des variantes, on doit choisir la bonne
         const compatibleVariants = variants
             .map(variant => { // Pour chaque variante, on vérifie si elle est compatible avec la valeur

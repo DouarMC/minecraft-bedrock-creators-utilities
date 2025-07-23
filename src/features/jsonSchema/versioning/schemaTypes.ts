@@ -7,6 +7,7 @@ import { animationsSchemaTypeBP } from "../versionedChanges/behavior_pack/animat
 import { biomeSchemaTypeBP } from "../versionedChanges/behavior_pack/biomes/_biome"; 
 import { blockSchemaTypeBP } from "../versionedChanges/behavior_pack/blocks/_block"; 
 import { itemSchemaTypeBP } from "../versionedChanges/behavior_pack/items/_item"; 
+import { testSchemaType } from "../versionedChanges/behavior_pack/test";
 
 /**
  * Liste des types de schémas versionnés
@@ -18,5 +19,6 @@ export const schemaTypes: SchemaType[] = [
     animationsSchemaTypeBP,
     biomeSchemaTypeBP,
     blockSchemaTypeBP,
-    itemSchemaTypeBP
+    itemSchemaTypeBP,
+    testSchemaType
 ];
