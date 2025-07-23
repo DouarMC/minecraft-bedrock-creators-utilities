@@ -17,7 +17,7 @@ export function registerValidationJson(context: vscode.ExtensionContext) {
 
 function validateDocument(document: vscode.TextDocument, diagnostics: vscode.DiagnosticCollection) {
     // Si le document n'est pas un JSON, on ne fait rien
-    if (document.languageId !== 'json') {
+    if (document.languageId !== 'json' && document.languageId !== 'jsonc') {
         diagnostics.delete(document.uri);
         return;
     }

@@ -5,7 +5,7 @@ import { getSchemaAtPosition } from '../jsonSchema/versioning/schemaContext';
 export function registerCodeActionProvider(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.languages.registerCodeActionsProvider(
-            {language: "json", scheme: "file"},
+            [{language: "json", scheme: "file"}, {language: "jsonc", scheme: "file"}],
             new MolangCodeActionProvider(),
             {
                 providedCodeActionKinds: [vscode.CodeActionKind.QuickFix]

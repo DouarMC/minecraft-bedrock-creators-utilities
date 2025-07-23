@@ -15,7 +15,7 @@ import { findNearestObjectAtNode } from '../../utils/json/findNearestObjectAtPat
 export function registerCompletionProvider(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.languages.registerCompletionItemProvider(
-            {language: "json", scheme: "file"}, // Dit qu'on veut des suggestions pour les fichiers JSON
+            [{ language: "json", scheme: "file" }, { language: "jsonc", scheme: "file" }],
             {
                 async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
                     // On récupère le schéma à la position actuelle, le chemin et la valeur à cette position, et le schéma complet
