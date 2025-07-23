@@ -42,7 +42,7 @@ export function resolveSchemaAtPath(schema: any, path: (string | number)[], root
             continue;
         }
 
-        let nextSchema = getSubSchemaForObject(current, segment, schema);
+        let nextSchema = getSubSchemaForObject(current, segment);
         nextSchema = resolveInlineRefs(nextSchema, schema);
 
         const subValue = currentValue?.[segment];
@@ -57,7 +57,7 @@ export function resolveSchemaAtPath(schema: any, path: (string | number)[], root
     return resolveInlineRefs(current, schema);
 }
 
-function getSubSchemaForObject(current: any, segment: string | number, rootSchema: any): any {
+function getSubSchemaForObject(current: any, segment: string | number): any {
     if (current?.properties?.[segment]) {
         return current.properties[segment];
     }
