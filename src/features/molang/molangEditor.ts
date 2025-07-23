@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { parseTree, findNodeAtLocation } from 'jsonc-parser';
-import { getInMemoryFileSystemProvider } from '../providers/InMemoryFileSystemProvider';
+import { getInMemoryFileSystemProvider } from './InMemoryFileSystemProvider';
 
 const molangContextMap = new Map<string, { originUri: vscode.Uri, path: string[] }>();
 

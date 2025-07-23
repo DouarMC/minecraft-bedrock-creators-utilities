@@ -1,7 +1,7 @@
-import { JSONPath } from "vscode-json-languageservice";
+import { JSONPath } from "jsonc-parser";
 
 export interface SchemaModification {
-    target: string; // ex.: "minecraft:block.components.minecraft:block_light_absorption"
+    target: string[]; // ex.: ["minecraft:block", "components", "minecraft:block_light_absorption"]
     action: "add" | "remove" | "modify";
     value?: any;
     notes?: string;

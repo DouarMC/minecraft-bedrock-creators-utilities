@@ -1,35 +1,31 @@
 import * as vscode from 'vscode';
 
-import { registerInitEnvironmentCommand } from './features/init/initEnvironment';
-import { registerValidateProjectCommand } from './features/validation/validateProject';
-import { registerDeployProjectCommand } from './features/deploy/deployProject';
-import { registerWatchDeployCommand } from './features/deploy/watchProjectChanges';
+import { registerInitEnvironmentCommand } from './features/initProject/initEnvironment';
 
-import { registerCompletionProvider } from './features/providers/completionProvider';
-import { registerHoverProvider } from './features/providers/hoverProvider';
-import { registerInMemoryFileSystemProvider } from './features/providers/InMemoryFileSystemProvider';
-import { registerValidationJson } from './features/diagnostics/validationJson';
+
+
+import { registerCompletionProvider } from './features/jsonSchema/completionProvider';
+import { registerHoverProvider } from './features/jsonSchema/hoverProvider';
+import { registerValidationJson } from './features/jsonSchema/validationJson';
 
 import { registerMolangEditorCommand } from './features/molang/molangEditor';
-import { registerCodeActionProvider } from './features/providers/codeActionProvider';
-
+import { registerCodeActionProvider } from './features/molang/codeActionProvider';
+import { registerInMemoryFileSystemProvider } from './features/molang/InMemoryFileSystemProvider';
 import { registerMolangLanguage } from './features/molang/molangLanguage';
+import { registerDeployFeatures } from './features/deployProject/register';
 
 export async function activate(context: vscode.ExtensionContext) {
-    registerMolangLanguage(context);
+    registerInitEnvironmentCommand(context);
 
-    registerInMemoryFileSystemProvider(context);
+    registerDeployFeatures(context);
 
     registerCompletionProvider(context);
     registerHoverProvider(context);
     registerValidationJson(context);
 
-    registerInitEnvironmentCommand(context);
-    registerValidateProjectCommand(context);
-    registerDeployProjectCommand(context);
-    registerWatchDeployCommand(context);
+    registerMolangLanguage(context);
+    registerInMemoryFileSystemProvider(context);
     registerMolangEditorCommand(context);
-
     registerCodeActionProvider(context);
 }
 

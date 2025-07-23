@@ -26,11 +26,6 @@
                 "category": "Minecraft Bedrock Utilities"
             },
             {
-                "command": "minecraft-bedrock-creators-utilities.validateProject",
-                "title": "Valider le projet Minecraft Bedrock courant",
-                "category": "Minecraft Bedrock Utilities"
-            },
-            {
                 "command": "minecraft-bedrock-creators-utilities.deployProject",
                 "title": "Déployer le projet Minecraft Bedrock courant",
                 "category": "Minecraft Bedrock Utilities"
