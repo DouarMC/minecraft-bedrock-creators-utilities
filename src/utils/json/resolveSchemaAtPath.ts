@@ -62,6 +62,15 @@ function getSubSchemaForObject(current: any, segment: string | number): any {
         return current.properties[segment];
     }
 
+    // Si on a un oneOf, chercher dans toutes les branches qui sont des objets
+    if (current?.oneOf) {
+        for (const branch of current.oneOf) {
+            if (branch?.type === "object" && branch.properties?.[segment]) {
+                return branch.properties[segment];
+            }
+        }
+    }
+
     if (current?.patternProperties) {
         const matched = Object.entries(current.patternProperties)
             .find(([pattern]) => new RegExp(pattern).test(String(segment)));

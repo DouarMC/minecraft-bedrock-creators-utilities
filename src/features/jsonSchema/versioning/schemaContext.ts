@@ -30,6 +30,7 @@ export function getSchemaAtPosition(document: vscode.TextDocument, position: vsc
 
     // Ce bloc corrige un bug VS Code : quand le curseur est placé juste après une clé et un :, la fonction getJsonPathAt() retourne un chemin trop court.
     const currentLine = document.lineAt(position.line).text;
+    
     const colonMatch = currentLine.slice(0, position.character).match(/"([^"]+)"\s*:\s*$/);
 
     if (colonMatch && colonMatch[1]) { // Si on trouve une clé avant le curseur, on l'ajoute au chemin
@@ -38,6 +39,7 @@ export function getSchemaAtPosition(document: vscode.TextDocument, position: vsc
 
         // Vérifie si ce chemin est valide dans le schéma
         const testSchema = resolveSchemaAtPath(fullSchema, pathCandidate, rootValue); // On teste le chemin candidat dans le schéma complet
+        
         if (testSchema && typeof testSchema === 'object') { // Si le schéma est valide, on utilise le candidat
             rawPath.push(key); // corrige le chemin
         }

@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { parseTree } from 'jsonc-parser';
-import { getErrorsForSchema } from '../../utils/json/getErrorsForSchema';
+import { validateSchema, SchemaValidationResult } from '../../utils/json/validation';
 import { getBlockIds, getBlockModelIds, getLootTablePaths, getCraftingRecipeTagIds, getCullingLayerIds, getAimAssistCategoryIds, getEntityIds, getItemIds, getAimAssistPresetIds, getBiomeIds, getBiomeTags, getDataDrivenItemIds, getEffectIds, getCooldownCategoryIds, getItemTags, getItemGroupIds, getItemGroupIdsWithMinecraftNamespace } from '../../utils/workspace/getContent';
 import { dynamicExamplesSourceKeys } from './shared/schemaEnums';
 import { getSchemaAtPosition } from './versioning/schemaContext';
@@ -24,42 +24,103 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                         return [];
                     }
 
-                    const { schema: resolvedNode } = getErrorsForSchema(rawSchema, valueAtPath); // Résout le schéma à la position actuelle
+                    // Utilisation du nouveau système de validation pour résoudre le schéma
+                    const validationResult: SchemaValidationResult = validateSchema(rawSchema, valueAtPath);
+                    const resolvedNode = validationResult.matchedSchema || rawSchema;
+                    
                     if (!resolvedNode) { // Si pas de schéma résolu, on ne propose rien
                         return [];
                     }
 
-                    const cursorContext = getCursorContext(document, position); // Récupère le contexte du curseur (est-ce qu'on est en train de taper une clé, une valeur, etc.)
+                    const cursorContext = getCursorContext(document, position); // Récupère le contexte du curseur
 
                     // Trouve le bon objet parent à partir du curseur
                     const rootNode = parseTree(document.getText());
-                    const nodeAtCursor = rootNode ? findNearestNodeAtPath(rootNode, path) : undefined; // Trouve le nœud JSON le plus proche à partir du chemin
-                    const parentObject = findNearestObjectAtNode(nodeAtCursor); // Trouve l'objet parent le plus proche du nœud à la position du curseur
+                    const nodeAtCursor = rootNode ? findNearestNodeAtPath(rootNode, path) : undefined;
+                    const parentObject = findNearestObjectAtNode(nodeAtCursor);
 
-                    
+                    // Gestion intelligente des propriétés avec résolution oneOf améliorée
                     let propertiesForCompletion: any = resolvedNode.properties;
 
-                    if (
-                        !propertiesForCompletion &&
-                        rawSchema.oneOf &&
-                        typeof valueAtPath === "object" &&
-                        valueAtPath !== null
-                    ) {
-                        // Aucun schéma n’a matché, on fusionne toutes les propriétés de oneOf
-                        propertiesForCompletion = Object.assign(
-                            {},
-                            ...rawSchema.oneOf
-                                .filter((v: any) => v && v.type === "object" && v.properties)
-                                .map((v: any) => v.properties)
-                        );
+                    // Cas spécial : si nous sommes dans un élément de tableau (path se termine par un nombre),
+                    // nous devons vérifier si le schéma parent du tableau a un oneOf pour fusionner toutes les propriétés
+                    const isInArrayElement = typeof path[path.length - 1] === 'number';
+                    
+                    if (isInArrayElement && path.length >= 2) {
+                        // Chercher dans le fullSchema pour trouver le schéma du tableau parent
+                        const arrayPath = path.slice(0, -1); // Enlever l'index du tableau
+                        
+                        // Navigation manuelle dans le schéma pour trouver le schéma du tableau
+                        let arraySchema: any = fullSchema;
+                        for (const segment of arrayPath) {
+                            if (arraySchema?.properties && arraySchema.properties[segment]) {
+                                arraySchema = arraySchema.properties[segment];
+                            } else if (arraySchema?.items) {
+                                arraySchema = arraySchema.items;
+                            } else {
+                                arraySchema = undefined;
+                                break;
+                            }
+                        }
+                        
+                        if (arraySchema?.items?.oneOf) {
+                            // Fusionner les propriétés de TOUTES les branches oneOf pour la completion
+                            const allProperties = Object.assign(
+                                {},
+                                ...arraySchema.items.oneOf
+                                    .filter((v: any) => v && v.type === "object" && v.properties)
+                                    .map((v: any) => v.properties)
+                            );
+                            propertiesForCompletion = allProperties;
+                        }
+                    }
+                    // Pour les objets normaux (non dans des tableaux), utiliser la logique existante
+                    else if (!propertiesForCompletion && rawSchema.oneOf && typeof valueAtPath === "object" && valueAtPath !== null) {
+                        // Utiliser le nouveau système pour identifier les branches compatibles
+                        const compatibleBranches = rawSchema.oneOf.filter((branch: any) => {
+                            if (!branch || branch.type !== "object" || !branch.properties) return false;
+                            
+                            // Tester si cette branche est potentiellement compatible
+                            const branchValidation = validateSchema(branch, valueAtPath);
+                            return branchValidation.isValid || branchValidation.errors.length < 3; // Tolérance pour branches presque valides
+                        });
+
+                        if (compatibleBranches.length > 0) {
+                            // Fusionner les propriétés des branches compatibles
+                            propertiesForCompletion = Object.assign({}, ...compatibleBranches.map((v: any) => v.properties));
+                        } else {
+                            // Fallback : toutes les propriétés de toutes les branches
+                            propertiesForCompletion = Object.assign(
+                                {},
+                                ...rawSchema.oneOf
+                                    .filter((v: any) => v && v.type === "object" && v.properties)
+                                    .map((v: any) => v.properties)
+                            );
+                        }
                     }
 
+                    // Déterminer le schéma pour les valeurs (nécessaire pour la détection précoce)
+                    let schemaForValues = resolvedNode ?? rawSchema;
+                    if (cursorContext.isInArrayElement && rawSchema.items) {
+                        schemaForValues = rawSchema.items;
+                    }
 
+                    // COMPLETION DE PROPRIÉTÉS (CLÉS)
+                    // Amélioration : éviter la completion de propriétés quand on est dans une valeur string d'un tableau
+                    const isStringValueInArray = cursorContext.isInArrayElement && cursorContext.isInQuotes && 
+                        schemaForValues?.type === 'string';
+                        
+                    // Nouvelle amélioration : détecter quand on est dans des guillemets dans un array qui attend des objets
+                    const isInvalidStringInObjectArray = cursorContext.isInArrayElement && cursorContext.isInQuotes &&
+                        schemaForValues?.type === 'object';
+                    
                     if (
-                        propertiesForCompletion && // <--- ici au lieu de resolvedNode.properties
+                        propertiesForCompletion &&
                         parentObject?.type === 'object' &&
                         (cursorContext.isStartOfProperty || cursorContext.isInQuotes || cursorContext.isProbablyKeyWithoutQuotes) &&
-                        !cursorContext.isAfterColon && !cursorContext.isTypingValue
+                        !cursorContext.isAfterColon && !cursorContext.isTypingValue &&
+                        !isStringValueInArray &&  // Array de strings : pas de completion de propriétés
+                        !isInvalidStringInObjectArray  // Array d'objets avec guillemets : pas de completion du tout
                     ) {
                         const existingKeys = new Set<string>();
                         for (const prop of parentObject.children ?? []) {
@@ -71,13 +132,14 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
 
                         return Object.entries(propertiesForCompletion)
                             .filter(([key]) => !existingKeys.has(key))
-                            .map(([key, value]) => {
+                            .map(([key, propertySchema]) => {
                                 const item = new vscode.CompletionItem(key, vscode.CompletionItemKind.Property);
                                 item.sortText = '0';
                                 item.preselect = true;
 
+                                // Gestion intelligente des guillemets et insertion
                                 if (cursorContext.isInQuotes) {
-                                    const snippet = generateInsertTextForKey(key, value);
+                                    const snippet = generateAdvancedInsertTextForKey(key, propertySchema);
                                     const fullInsert = snippet.value;
                                     const match = /^"([^"]+)"\s*:\s*([\s\S]*)$/.exec(fullInsert);
 
@@ -93,38 +155,119 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                                         }
                                         item.insertText = new vscode.SnippetString(`${keyPart}": ${valuePart}`);
                                     } else {
-                                        item.insertText = new vscode.SnippetString(`${key}: $1`);
+                                        item.insertText = new vscode.SnippetString(`${key}": $1`);
                                     }
-
                                 } else {
-                                    item.insertText = generateInsertTextForKey(key, value);
+                                    item.insertText = generateAdvancedInsertTextForKey(key, propertySchema);
                                     const wordRange = document.getWordRangeAtPosition(position);
                                     if (wordRange) {
                                         item.range = wordRange;
                                     }
                                 }
 
-                                const description = (value as any).description || (value as any).markdownDescription || '';
+                                // Documentation améliorée
+                                const description = (propertySchema as any).description || (propertySchema as any).markdownDescription || '';
                                 if (description) {
                                     item.documentation = new vscode.MarkdownString(description);
+                                }
+
+                                // Ajouter des détails sur le type attendu
+                                const typeInfo = getTypeInfo(propertySchema);
+                                if (typeInfo) {
+                                    item.detail = typeInfo;
                                 }
 
                                 return item;
                             });
                     }
 
-                    // Complétion de VALEURS
+                    // COMPLETION DE VALEURS
                     if (cursorContext.isTypingValue || cursorContext.isAfterColon || cursorContext.isInArrayElement) {
-                        let schemaForValues = resolvedNode ?? rawSchema;
+                        // Éviter la completion de valeurs quand on tape des strings dans un array qui attend des objets
+                        const isInvalidStringInObjectArray = cursorContext.isInArrayElement && cursorContext.isInQuotes &&
+                            schemaForValues?.type === 'object';
+                            
+                        if (isInvalidStringInObjectArray) {
+                            // Ne pas proposer de completion dans ce cas invalide
+                            return [];
+                        }
+                        
+                        // Logique avancée pour la résolution de schéma (déjà défini plus haut)
+                        
+                        // Gestion spéciale pour les éléments de tableau avec oneOf
                         if (cursorContext.isInArrayElement && rawSchema.items) {
-                            schemaForValues = rawSchema.items;
+                            // Re-calculer schemaForValues pour les éléments de tableau avec logique oneOf
+                            let arrayItemSchema = rawSchema.items;
+                            
+                            // Si l'élément de tableau a un oneOf, appliquer la résolution intelligente
+                            if (arrayItemSchema.oneOf && typeof valueAtPath === "object" && valueAtPath !== null) {
+                                // Utiliser le système de validation pour identifier les branches compatibles
+                                const compatibleBranches = arrayItemSchema.oneOf.filter((branch: any) => {
+                                    if (!branch) return false;
+                                    
+                                    // Tester si cette branche est potentiellement compatible avec l'objet actuel
+                                    const branchValidation = validateSchema(branch, valueAtPath);
+                                    return branchValidation.isValid || branchValidation.errors.length < 3;
+                                });
+
+                                if (compatibleBranches.length > 0) {
+                                    // Si on a des branches compatibles, utiliser la première (la plus compatible)
+                                    schemaForValues = compatibleBranches[0];
+                                } else {
+                                    // Fallback : essayer de détecter le type voulu par les propriétés existantes
+                                    const existingKeys = Object.keys(valueAtPath);
+                                    
+                                    for (const branch of arrayItemSchema.oneOf) {
+                                        if (branch?.type === "object" && branch.properties) {
+                                            // Vérifier si cette branche contient les propriétés déjà présentes
+                                            const branchHasExistingKeys = existingKeys.every(key => 
+                                                branch.properties.hasOwnProperty(key)
+                                            );
+                                            
+                                            if (branchHasExistingKeys) {
+                                                schemaForValues = branch;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            } else {
+                                // Pas de oneOf, utiliser le schéma des items directement
+                                schemaForValues = arrayItemSchema;
+                            }
                         }
 
+                        // Pour les propriétés spécifiques d'un objet (non-tableau), utiliser le schéma de la propriété
+                        // au lieu du schéma de l'objet parent (résout le problème oneOf)
+                        if (path.length > 0 && !cursorContext.isInArrayElement) {
+                            const propertyName = path[path.length - 1];
+                            
+                            // Si on a des propriétés disponibles pour completion (issues de la résolution oneOf)
+                            if (propertiesForCompletion && propertiesForCompletion[propertyName]) {
+                                schemaForValues = propertiesForCompletion[propertyName];
+                            }
+                            // Sinon, essayer de récupérer la propriété du schéma résolu
+                            else if (resolvedNode?.properties && resolvedNode.properties[propertyName]) {
+                                schemaForValues = resolvedNode.properties[propertyName];
+                            }
+                            // Fallback : chercher dans toutes les branches oneOf du parent
+                            else if (rawSchema.oneOf && typeof valueAtPath === "object" && valueAtPath !== null) {
+                                for (const branch of rawSchema.oneOf) {
+                                    if (branch?.type === "object" && branch.properties && branch.properties[propertyName]) {
+                                        schemaForValues = branch.properties[propertyName];
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        // Collecte des exemples dynamiques
                         let dynamicExamples: any[] = [];
                         if ("x-dynamic-examples-source" in schemaForValues) {
                             const sources = Array.isArray(schemaForValues["x-dynamic-examples-source"])
                                 ? schemaForValues["x-dynamic-examples-source"]
                                 : [schemaForValues["x-dynamic-examples-source"]];
+                            
                             for (const source of sources) {
                                 switch (source) {
                                     case dynamicExamplesSourceKeys.block_ids:
@@ -182,6 +325,7 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                             }
                         }
 
+                        // Collecte de toutes les valeurs possibles
                         const rawValues = [
                             ...dynamicExamples,
                             ...(schemaForValues.enum ?? []),
@@ -189,14 +333,16 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                             ...(schemaForValues.const !== undefined ? [schemaForValues.const] : []),
                             ...(schemaForValues.default !== undefined ? [schemaForValues.default] : [])
                         ];
-                        const uniqueValues = [...new Set(rawValues)]; // Évite les doublons
+                        const uniqueValues = [...new Set(rawValues)];
 
                         return uniqueValues.map(value => {
                             const label = typeof value === "string" ? value : JSON.stringify(value);
                             const item = new vscode.CompletionItem(label, vscode.CompletionItemKind.Value);
 
+                            // Gestion intelligente des guillemets pour les valeurs
                             if (typeof value === "string") {
                                 if (cursorContext.isInQuotes) {
+                                    // Dans des guillemets, remplacer le contenu et fermer
                                     item.insertText = new vscode.SnippetString(`${value}"$0`);
                                     const range = getQuoteContentRange(document, position);
                                     if (range) {
@@ -207,11 +353,16 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                                         item.range = extendedRange;
                                     }
                                 } else {
+                                    // Pas dans des guillemets, ajouter les guillemets et positionner le curseur après
                                     item.insertText = new vscode.SnippetString(`"${value}"$0`);
                                 }
                             } else {
+                                // Valeurs non-string (nombres, booléens, etc.)
                                 item.insertText = new vscode.SnippetString(`${JSON.stringify(value)}$0`);
                             }
+
+                            // Ajouter des détails sur le type et la source
+                            item.detail = getValueTypeDetail(value, schemaForValues);
 
                             return item;
                         });
@@ -219,22 +370,116 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
 
                     return [];
                 }
-
-
             },
-            '"', ':' // Déclencheurs de complétion
+            '"', ':', ' ' // Déclencheurs de complétion améliorés
         )
     );
 }
 
 /**
- * Retourne le range du contenu entre guillemets
- * @param document Le document/fichier actuel
- * @param position La position du curseur
- * @returns 
+ * Génère un texte d'insertion avancé pour une clé avec gestion intelligente du curseur
+ */
+function generateAdvancedInsertTextForKey(key: string, propertySchema: any): vscode.SnippetString {
+    let insertText = `"${key}": `;
+
+    if ("default" in propertySchema) {
+        insertText += JSON.stringify(propertySchema.default);
+    } else if (propertySchema.type === 'object') {
+        insertText += `{\n\t$1\n}`;
+    } else if (propertySchema.type === 'array') {
+        insertText += `[$1]`;
+    } else if (propertySchema.type === 'string') {
+        // Pour les strings, créer des guillemets vides avec curseur au milieu
+        insertText += `"$1"`;
+    } else if (propertySchema.type === 'boolean') {
+        // Pour les booléens, proposer un choix
+        insertText += `\${1|true,false|}`;
+    } else if (propertySchema.type === 'number' || propertySchema.type === 'integer') {
+        // Pour les nombres, placeholder avec exemple si disponible
+        const example = propertySchema.examples?.[0] ?? propertySchema.minimum ?? 0;
+        insertText += `\${1:${example}}`;
+    } else if (propertySchema.enum) {
+        // Pour les enums, proposer un choix
+        const enumOptions = propertySchema.enum.map((v: any) => JSON.stringify(v)).join(',');
+        insertText += `\${1|${enumOptions}|}`;
+    } else {
+        insertText += `$1`; // valeur générique
+    }
+
+    return new vscode.SnippetString(insertText);
+}
+
+/**
+ * Retourne des informations sur le type attendu pour une propriété
+ */
+function getTypeInfo(propertySchema: any): string {
+    if (!propertySchema) return '';
+
+    const type = propertySchema.type;
+    if (Array.isArray(type)) {
+        return `Type: ${type.join(' | ')}`;
+    }
+    
+    if (type) {
+        let info = `Type: ${type}`;
+        
+        if (propertySchema.enum) {
+            info += ` (${propertySchema.enum.length} options)`;
+        }
+        
+        if (type === 'string' && propertySchema.pattern) {
+            info += ` (pattern: ${propertySchema.pattern})`;
+        }
+        
+        if ((type === 'number' || type === 'integer') && propertySchema.minimum !== undefined) {
+            info += ` (min: ${propertySchema.minimum})`;
+        }
+        
+        return info;
+    }
+
+    if (propertySchema.oneOf) {
+        return `OneOf (${propertySchema.oneOf.length} options)`;
+    }
+    
+    if (propertySchema.anyOf) {
+        return `AnyOf (${propertySchema.anyOf.length} options)`;
+    }
+
+    return '';
+}
+
+/**
+ * Retourne des détails sur le type d'une valeur
+ */
+function getValueTypeDetail(value: any, schema: any): string {
+    const valueType = typeof value;
+    let detail = `${valueType}`;
+
+    if (valueType === 'string' && schema.pattern) {
+        detail += ' (matches pattern)';
+    }
+
+    if (schema.enum && schema.enum.includes(value)) {
+        detail += ' (enum value)';
+    }
+
+    if (schema.examples && schema.examples.includes(value)) {
+        detail += ' (example)';
+    }
+
+    if (schema.default === value) {
+        detail += ' (default)';
+    }
+
+    return detail;
+}
+
+/**
+ * Retourne le range du contenu entre guillemets (version améliorée)
  */
 function getQuoteContentRange(document: vscode.TextDocument, position: vscode.Position): vscode.Range | null {
-    const line = document.lineAt(position.line).text; // Récupère le texte de la ligne actuelle
+    const line = document.lineAt(position.line).text;
 
     let openQuote = -1;
     for (let i = position.character - 1; i >= 0; i--) {
@@ -266,31 +511,5 @@ function getQuoteContentRange(document: vscode.TextDocument, position: vscode.Po
         );
     }
 
-    return null; // Pas de guillemets trouvés
-}
-
-/**
- * Génère le texte d'insertion pour une clé avec sa valeur
- * @param key La clé à insérer
- * @param value La valeur associée à la clé
- * @returns 
- */
-function generateInsertTextForKey(key: string, value: any): vscode.SnippetString {
-    let insertText = `"${key}": `;
-
-    if ("default" in value) {
-        insertText += JSON.stringify(value.default);
-    } else if (value.type === 'object') {
-        insertText += `{\n\t$1\n}`;
-    } else if (value.type === 'array') {
-        insertText += `[$1]`;
-    } else if (value.type === 'string') {
-        insertText += `"$1"`;
-    } else if (value.type === 'boolean') {
-        insertText += `$1`; // l'utilisateur pourra taper true / false
-    } else {
-        insertText += `$1`; // valeur générique
-    }
-
-    return new vscode.SnippetString(insertText);
+    return null;
 }

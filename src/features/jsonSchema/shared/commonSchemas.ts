@@ -3,6 +3,7 @@ import { dynamicExamplesSourceKeys } from "./schemaEnums";
 export const commonSchemas = {
     block_descriptor: {
         type: "object",
+        required: ["name"],
         properties: {
             name: {
                 description: "L'identifiant du bloc.",
@@ -39,6 +40,7 @@ export const commonSchemas = {
     },
     item_descriptor: {
         type: "object",
+        required: ["name"],
         properties: {
             name: {
                 description: "L'identifiant de l'item.",

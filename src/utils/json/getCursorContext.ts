@@ -22,12 +22,27 @@ export function getCursorContext(document: vscode.TextDocument, position: vscode
     const beforeCursor = line.slice(0, position.character);
     const afterCursor = line.slice(position.character);
 
+    // Pour détecter les éléments de tableau, nous devons analyser plus de contexte
+    // Récupérer le texte depuis le début du document jusqu'au curseur
+    const fullTextBeforeCursor = document.getText(new vscode.Range(
+        new vscode.Position(0, 0),
+        position
+    ));
+    
+    // Récupérer le texte depuis le curseur jusqu'à la fin du document  
+    const fullTextAfterCursor = document.getText(new vscode.Range(
+        position,
+        new vscode.Position(document.lineCount - 1, document.lineAt(document.lineCount - 1).text.length)
+    ));
+
     const isInQuotes = isInsideQuotes(beforeCursor, afterCursor);
     const isAfterColon = /:\s*$/.test(beforeCursor);
     const isStartOfProperty = /^[\s{,]*$/.test(beforeCursor) || /^[\s{,]*"[^"]*$/.test(beforeCursor);
     const isTypingValue = isAfterColon || (isInQuotes && /:\s*"[^"]*$/.test(beforeCursor));
     const isProbablyKeyWithoutQuotes = /^[\s{,]*[a-zA-Z0-9_]*$/.test(beforeCursor);
-    const isInArrayElement = isInsideArrayElement(beforeCursor, afterCursor);
+    
+    // Utiliser le contexte complet pour détecter les éléments de tableau
+    const isInArrayElement = isInsideArrayElement(fullTextBeforeCursor, fullTextAfterCursor);
 
     return {
         beforeCursor,
@@ -72,10 +87,40 @@ function isInsideArrayElement(beforeCursor: string, afterCursor: string): boolea
     const before = beforeCursor.trimEnd();
     const after = afterCursor.trimStart();
 
+    // Comptage des crochets pour s'assurer qu'on est bien dans un tableau
+    const openBrackets = (beforeCursor.match(/\[/g) || []).length;
+    const closeBrackets = (beforeCursor.match(/\]/g) || []).length;
+    const insideArray = openBrackets > closeBrackets;
+
+    if (!insideArray) {
+        return false;
+    }
+
     const isAfterOpeningBracket = /\[\s*$/.test(before); // Exemple: `tags: [\n|`
     const isAfterComma = /,\s*$/.test(before);           // Exemple: `"...",\n|`
     const isInQuotes = isInsideQuotes(beforeCursor, afterCursor);
     const isLineStart = before === '"' || before.endsWith('\n"');
+
+    // Vérification supplémentaire : si on est dans des guillemets, s'assurer qu'on n'est pas dans une propriété d'objet
+    if (isInQuotes) {
+        // Analyser le contexte plus finement pour distinguer array vs propriété d'objet
+        const beforeQuotes = beforeCursor.substring(0, beforeCursor.lastIndexOf('"'));
+        
+        // Chercher le dernier crochet ouvrant et le dernier deux-points
+        const lastOpenBracket = beforeQuotes.lastIndexOf('[');
+        const lastColon = beforeQuotes.lastIndexOf(':');
+        
+        // Si il y a un crochet ouvrant APRÈS le dernier deux-points, on est dans un array
+        // Sinon, si le deux-points est plus récent, on est dans une propriété d'objet
+        if (lastOpenBracket > lastColon) {
+            // On est dans un array : le crochet ouvrant est plus récent que le deux-points
+            return true;
+        } else if (lastColon > lastOpenBracket) {
+            // On est dans une propriété d'objet : le deux-points est plus récent
+            return false;
+        }
+        // Si aucun des deux n'est trouvé, continuer avec la logique normale
+    }
 
     return isAfterOpeningBracket || isAfterComma || isInQuotes || isLineStart;
 }
