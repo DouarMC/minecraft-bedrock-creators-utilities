@@ -3,6 +3,7 @@ import { resolveSchemaAtPath } from "../../utils/json/resolveSchemaAtPath";
 import { parseTree, findNodeAtOffset } from "jsonc-parser";
 import { resolveOneOfToObjectSchema } from "../../utils/json/resolveOneOfToObjectSchema";
 import { getSchemaAtPosition } from "./versioning/schemaContext";
+import { getErrorsForSchema } from "../../utils/json/getErrorsForSchema";
 
 export function registerHoverProvider(context: vscode.ExtensionContext) {
     context.subscriptions.push(
@@ -29,18 +30,24 @@ export function registerHoverProvider(context: vscode.ExtensionContext) {
                     const key = path[path.length - 1]; // Récupère la dernière clé du chemin
                     const parentPath = path.slice(0, -1); // Récupère le chemin du parent en enlevant la dernière clé
 
+                    // 1. Résout le schéma "parent" à ce chemin
                     const rawNodeSchema = resolveSchemaAtPath(fullSchema, parentPath);
-                    const nodeSchema = resolveOneOfToObjectSchema(rawNodeSchema) ?? rawNodeSchema; // Résout les schémas "oneOf" en un schéma d'objet, ou utilise le schéma brut si non applicable
 
-                    if (!nodeSchema || !nodeSchema.properties) { // Si le schéma du nœud ou ses propriétés ne sont pas définis, on ne peut pas fournir de hover
-                        return;
-                    }
+                    // 2. Récupère la valeur JS de l'objet parent (ex: { branch: "x", valX: ... })
+                    const parentValue = valueAtPath; // valueAtPath dans getSchemaAtPosition = valeur à ce chemin
 
-                    const propSchema = nodeSchema.properties[key]; // Récupère le schéma de la propriété à partir du schéma du nœud
-                    if (propSchema?.description || propSchema?.markdownDescription) { // Si la propriété a une description ou une description Markdown, on peut fournir un hover
+                    // 3. Applique getErrorsForSchema pour trouver la branche oneOf/anyOf active
+                    const { schema: resolvedParentSchema } = getErrorsForSchema(rawNodeSchema, parentValue);
+
+                    // 4. Recherche la clé dans properties (et patternProperties/additionalProperties si tu veux compléter)
+                    if (resolvedParentSchema?.properties && resolvedParentSchema.properties[key]) {
+                        const propSchema = resolvedParentSchema.properties[key];
                         const desc = propSchema.markdownDescription || propSchema.description;
-                        return new vscode.Hover(new vscode.MarkdownString(desc));
+                        if (desc) {
+                            return new vscode.Hover(new vscode.MarkdownString(desc));
+                        }
                     }
+
                     
                     return;
                 }

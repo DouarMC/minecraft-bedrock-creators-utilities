@@ -23,8 +23,8 @@ export function getSchemaAtPosition(document: vscode.TextDocument, position: vsc
         };
     }
 
-    const rawPath = getJsonPathAt(document, position); // On récupère le chemin JSON brut à la position du curseur
-
+    const rawPath = getJsonPathAt(document, position); // On récupère le chemin JSON brut à la position du curseur ✅
+    
     const root = parseTree(document.getText()); // On obtient le noeud racine de l'arbre JSON
     const rootValue = nodeToValue(root as Node); // On convertit le noeud racine en valeur JS
 

@@ -36,12 +36,27 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                     const nodeAtCursor = rootNode ? findNearestNodeAtPath(rootNode, path) : undefined; // Trouve le nœud JSON le plus proche à partir du chemin
                     const parentObject = findNearestObjectAtNode(nodeAtCursor); // Trouve l'objet parent le plus proche du nœud à la position du curseur
 
-                    // ➤ Complétion de CLÉS, vérifie que le schéma résolu est un objet avec des propriétés → donc que la complétion peut proposer des clés valides.
-                    // et que Le curseur se trouve dans un objet JSON.
-                    // et que l'utilisateur est en train de taper une clé (soit au début d'une propriété, soit dans des guillemets, soit probablement une clé sans guillemets),
-                    // et qu'on n'est pas après un deux-points (donc pas en train de taper une valeur).
+                    
+                    let propertiesForCompletion: any = resolvedNode.properties;
+
                     if (
-                        resolvedNode.properties &&
+                        !propertiesForCompletion &&
+                        rawSchema.oneOf &&
+                        typeof valueAtPath === "object" &&
+                        valueAtPath !== null
+                    ) {
+                        // Aucun schéma n’a matché, on fusionne toutes les propriétés de oneOf
+                        propertiesForCompletion = Object.assign(
+                            {},
+                            ...rawSchema.oneOf
+                                .filter((v: any) => v && v.type === "object" && v.properties)
+                                .map((v: any) => v.properties)
+                        );
+                    }
+
+
+                    if (
+                        propertiesForCompletion && // <--- ici au lieu de resolvedNode.properties
                         parentObject?.type === 'object' &&
                         (cursorContext.isStartOfProperty || cursorContext.isInQuotes || cursorContext.isProbablyKeyWithoutQuotes) &&
                         !cursorContext.isAfterColon && !cursorContext.isTypingValue
@@ -54,7 +69,7 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                             }
                         }
 
-                        return Object.entries(resolvedNode.properties)
+                        return Object.entries(propertiesForCompletion)
                             .filter(([key]) => !existingKeys.has(key))
                             .map(([key, value]) => {
                                 const item = new vscode.CompletionItem(key, vscode.CompletionItemKind.Property);

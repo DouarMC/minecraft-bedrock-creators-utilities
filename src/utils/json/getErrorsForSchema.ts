@@ -8,101 +8,51 @@ export interface SchemaValidationResult {
 }
 
 export function getErrorsForSchema(schema: any, value: any): SchemaValidationResult {
-    // Si le schéma est vide ou non défini, on retourne un résultat vide
     if (!schema || typeof schema !== 'object') {
         return { schema: null, errors: [] };
     }
 
-    const variants = Array.isArray(schema.oneOf)
-        ? schema.oneOf
-        : Array.isArray(schema.anyOf)
-        ? schema.anyOf
-        : null;
-    // ➕ Ajout : tentative de fusion des propriétés pour les objets oneOf
-    let objectVariants: any[] = [];
-
-    if (
-        Array.isArray(schema.oneOf) &&
-        typeof value === "object" &&
-        value !== null
-    ) {
-        // 👇 Sélectionne tous les objets dans oneOf ou dans oneOf imbriqué
-        objectVariants = schema.oneOf.flatMap((v: any) => {
-            return Array.isArray(v.oneOf) ? v.oneOf : [v];
-        }).filter((v: any) => v.type === "object" && typeof v.properties === "object");
-
-        if (objectVariants.length > 0) {
-            const matchingVariant = objectVariants.find((variant: any) =>
-                Object.keys(value).some(key => key in (variant.properties ?? {}))
-            );
-
-            if (matchingVariant) {
-                return getErrorsForSchema(matchingVariant, value);
-            } else {
-                const mergedProperties = Object.assign({}, ...objectVariants.map((v: any) => v.properties ?? {}));
-                const mergedSchema = {
-                    type: "object",
-                    properties: mergedProperties
-                };
-                return getErrorsForSchema(mergedSchema, value);
-            }
+    // --- ONEOF (strict, via helper) ---
+    if (Array.isArray(schema.oneOf)) {
+        const result = findMatchingOneOfBranch(schema, value);
+        if (result.matchedBranches === 1) {
+            const matchedSchema = schema.oneOf[result.matchingIndex!];
+            return getErrorsForSchema(matchedSchema, value);
         }
-
-
-        // Si une propriété du JSON match l’une des branches → on utilise cette branche uniquement
-        const matchingVariant = objectVariants.find((variant: any) =>
-            Object.keys(value).some(key => key in (variant.properties ?? {}))
-        );
-
-        if (matchingVariant) {
-            // 🧠 Une des branches correspond à une propriété présente → on la traite seule
-            return getErrorsForSchema(matchingVariant, value);
-        } else {
-            // 🧪 Aucune propriété n'est encore écrite → on crée un schéma fusionné pour la complétion
-            const mergedProperties = Object.assign({}, ...objectVariants.map((v: any) => v.properties ?? {}));
-            const mergedSchema = {
-                type: "object",
-                properties: mergedProperties
+        if (result.matchedBranches > 1) {
+            return {
+                schema,
+                errors: [{
+                    error: "L'objet correspond à plusieurs branches 'oneOf', ce qui n'est pas autorisé par JSON Schema."
+                }]
             };
-            return getErrorsForSchema(mergedSchema, value);
         }
-    }
-
-    if (Array.isArray(variants)) { // Si on a des variantes, on doit choisir la bonne
-        const compatibleVariants = variants
-            .map(variant => { // Pour chaque variante, on vérifie si elle est compatible avec la valeur
-                const result = getErrorsForSchema(variant, value); // Résout récursivement les erreurs pour cette branche du oneOf
-                const isCompatible = variant.type ? isValueOfType(value, variant.type) : true; // Vérifie si la variante est compatible avec la valeur grâce à son type
-
-                return {
-                    variant: result.schema, // Le schéma de la variante
-                    isCompatible, // Si la variante est compatible avec la valeur
-                    errors: result.errors // Les erreurs de validation pour cette variante
-                };
-            })
-            .sort((a, b) => { // On trie les variantes qui sont le plus compatibles avec la valeur
-                // Priorise les variantes compatibles : une variante compatible vient avant une incompatible
-                if (a.isCompatible !== b.isCompatible) {
-                    return b.isCompatible ? 1 : -1;
-                }
-                return a.errors.length - b.errors.length; // Priorise les variantes avec le moins d'erreurs
-            });
-
-        const best = compatibleVariants.find(v => v.isCompatible) ?? compatibleVariants[0]; // On prend la meilleure variante compatible ou la première si aucune n'est compatible
-        if (!best || !best.isCompatible) { // Si aucune variante n'est compatible, on retourne une erreur
-            return { schema, errors: [{ error: `Aucune des variantes 'oneOf' ne correspond au type de la valeur.` }] };
-        }
-
-        // Si on a trouvé une variante compatible, on retourne son schéma et ses erreurs
         return {
-            schema: best.variant,
-            errors: best.errors
+            schema,
+            errors: [{
+                error: "Aucune des variantes 'oneOf' ne correspond à la valeur."
+            }]
         };
     }
 
-    const errors = validateAgainstSchema(schema, value);
+    // --- ANYOF (tolérant) ---
+    if (Array.isArray(schema.anyOf)) {
+        for (const variant of schema.anyOf) {
+            const result = getErrorsForSchema(variant, value);
+            if (result.errors.length === 0) {
+                return { schema: result.schema, errors: [] };
+            }
+        }
+        return {
+            schema,
+            errors: [{
+                error: "Aucune des variantes 'anyOf' ne correspond à la valeur."
+            }]
+        };
+    }
 
-    // Si le type ne correspond pas, on retourne schema: null (pour éviter une mauvaise résolution dans la complétion)
+    // Le reste ne bouge pas
+    const errors = validateAgainstSchema(schema, value);
     if (schema.type && !isValueOfType(value, schema.type)) {
         return { schema: null, errors };
     }
@@ -275,4 +225,38 @@ function isValueOfType(value: any, type: string | string[]): boolean {
         }
         return false;
     });
+}
+
+interface OneOfMatchResult {
+    matchedBranches: number;
+    matchingIndex?: number; // Index de la seule branche valide, sinon undefined
+    errorsPerBranch: string[][];
+}
+
+function findMatchingOneOfBranch(schema: any, value: any): OneOfMatchResult {
+    // On ne gère que les schémas avec oneOf ici.
+    if (!Array.isArray(schema.oneOf)) {
+        return { matchedBranches: 0, errorsPerBranch: [] };
+    }
+
+    const errorsPerBranch: string[][] = [];
+    const matchingIndices: number[] = [];
+
+    for (let i = 0; i < schema.oneOf.length; i++) {
+        const branch = schema.oneOf[i];
+        const { errors } = getErrorsForSchema(branch, value);
+
+        errorsPerBranch[i] = errors.map(e => e.error);
+
+        // Si la branche n'a aucune erreur, c'est un match strict
+        if (errors.length === 0) {
+            matchingIndices.push(i);
+        }
+    }
+
+    return {
+        matchedBranches: matchingIndices.length,
+        matchingIndex: matchingIndices.length === 1 ? matchingIndices[0] : undefined,
+        errorsPerBranch
+    };
 }
