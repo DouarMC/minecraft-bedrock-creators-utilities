@@ -47,21 +47,67 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                     const isInArrayElement = typeof path[path.length - 1] === 'number';
                     
                     if (isInArrayElement && path.length >= 2) {
+                        console.log("🔍 DEBUG oneOf resolution in array:");
+                        console.log("  - path:", path);
+                        console.log("  - rawSchema type:", rawSchema?.type);
+                        console.log("  - rawSchema has properties:", !!rawSchema?.properties);
+                        console.log("  - rawSchema has oneOf:", !!rawSchema?.oneOf);
+                        console.log("  - valueAtPath:", valueAtPath);
+                        
                         // Chercher dans le fullSchema pour trouver le schéma du tableau parent
                         const arrayPath = path.slice(0, -1); // Enlever l'index du tableau
+                        console.log("  - arrayPath:", arrayPath);
                         
-                        // Navigation manuelle dans le schéma pour trouver le schéma du tableau
+                        // Navigation améliorée dans le schéma pour gérer les oneOf imbriqués
                         let arraySchema: any = fullSchema;
-                        for (const segment of arrayPath) {
-                            if (arraySchema?.properties && arraySchema.properties[segment]) {
-                                arraySchema = arraySchema.properties[segment];
-                            } else if (arraySchema?.items) {
-                                arraySchema = arraySchema.items;
+                        let navigationLog: string[] = [];
+                        
+                        for (let i = 0; i < arrayPath.length; i++) {
+                            const segment = arrayPath[i];
+                            navigationLog.push(`Step ${i}: segment="${segment}"`);
+                            
+                            if (typeof segment === 'number') {
+                                // C'est un index de tableau, on va vers les items
+                                if (arraySchema?.items) {
+                                    arraySchema = arraySchema.items;
+                                    navigationLog.push(`  -> Moved to items`);
+                                } else {
+                                    navigationLog.push(`  -> No items found`);
+                                    arraySchema = undefined;
+                                    break;
+                                }
                             } else {
-                                arraySchema = undefined;
-                                break;
+                                // C'est une propriété
+                                if (arraySchema?.properties && arraySchema.properties[segment]) {
+                                    arraySchema = arraySchema.properties[segment];
+                                    navigationLog.push(`  -> Found property ${segment}`);
+                                } else if (arraySchema?.oneOf) {
+                                    // Si on a un oneOf, chercher dans toutes les branches
+                                    let found = false;
+                                    for (const branch of arraySchema.oneOf) {
+                                        if (branch?.properties && branch.properties[segment]) {
+                                            arraySchema = branch.properties[segment];
+                                            navigationLog.push(`  -> Found ${segment} in oneOf branch`);
+                                            found = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!found) {
+                                        navigationLog.push(`  -> Property ${segment} not found in any oneOf branch`);
+                                        arraySchema = undefined;
+                                        break;
+                                    }
+                                } else {
+                                    navigationLog.push(`  -> No properties or oneOf found for ${segment}`);
+                                    arraySchema = undefined;
+                                    break;
+                                }
                             }
                         }
+                        
+                        console.log("  - Navigation log:", navigationLog);
+                        console.log("  - arraySchema found:", !!arraySchema);
+                        console.log("  - arraySchema.items?.oneOf:", !!arraySchema?.items?.oneOf);
                         
                         if (arraySchema?.items?.oneOf) {
                             // Fusionner les propriétés de TOUTES les branches oneOf pour la completion
@@ -72,6 +118,12 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                                     .map((v: any) => v.properties)
                             );
                             propertiesForCompletion = allProperties;
+                            console.log("  - Merged properties from array oneOf:", Object.keys(allProperties));
+                        } else if (rawSchema?.properties) {
+                            // Si pas de oneOf au niveau du tableau mais rawSchema a des propriétés,
+                            // c'est que la résolution oneOf a déjà été faite
+                            propertiesForCompletion = rawSchema.properties;
+                            console.log("  - Using rawSchema properties:", Object.keys(rawSchema.properties));
                         }
                     }
                     // Pour les objets normaux (non dans des tableaux), utiliser la logique existante

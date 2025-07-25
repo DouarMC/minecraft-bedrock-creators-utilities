@@ -4,6 +4,7 @@ import path from 'path';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { ProjectMetadata } from '../../types/projectMetadata';
+import { promptToLaunchMinecraft } from './launchMinecraft';
 
 async function compileTypeScriptIfNeeded(root: vscode.Uri): Promise<boolean> {
     const scriptsPath = vscode.Uri.joinPath(root, "addon", "scripts");
@@ -90,6 +91,9 @@ export async function deployProject(root: vscode.Uri, metadata: ProjectMetadata)
         }
 
         vscode.window.showInformationMessage(`✅ Projet "${id}" déployé avec succès !`);
+        
+        // Proposer de lancer Minecraft après un déploiement réussi
+        await promptToLaunchMinecraft(minecraftProduct);
     } catch (error) {
         console.error("Erreur lors du déploiement :", error);
         vscode.window.showErrorMessage("❌ Une erreur est survenue pendant le déploiement. Voir la console.");
