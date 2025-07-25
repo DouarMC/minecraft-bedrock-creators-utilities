@@ -39,6 +39,26 @@
                 "command": "minecraft-bedrock-creators-utilities.openMolangEditor",
                 "title": "Ouvrir l'éditeur Molang",
                 "category": "Minecraft Bedrock Utilities"
+            },
+            {
+                "command": "minecraft-bedrock-creators-utilities.openMinecraftStablePacksFolder",
+                "title": "📂 Ouvrir le dossier des packs Minecraft Stable",
+                "category": "Minecraft Bedrock Utilities"
+            },
+            {
+                "command": "minecraft-bedrock-creators-utilities.openMinecraftPreviewPacksFolder",
+                "title": "📂 Ouvrir le dossier des packs Minecraft Preview",
+                "category": "Minecraft Bedrock Utilities"
+            },
+            {
+                "command": "minecraft-bedrock-creators-utilities.openMinecraftStableVanillaFolder",
+                "title": "📂 Ouvrir les ressources vanilla Minecraft Stable",
+                "category": "Minecraft Bedrock Utilities"
+            },
+            {
+                "command": "minecraft-bedrock-creators-utilities.openMinecraftPreviewVanillaFolder",
+                "title": "📂 Ouvrir les ressources vanilla Minecraft Preview",
+                "category": "Minecraft Bedrock Utilities"
             }
         ],
         "jsonValidation": [
