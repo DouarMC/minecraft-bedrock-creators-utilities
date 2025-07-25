@@ -1,5 +1,7 @@
 import { SchemaType } from "../../../types/schema";
 import { cloneDeep, set, unset } from "lodash";
+import { getMinecraftProjectMetadataSync } from "../../../utils/workspace/getMinecraftProjectMetadata";
+import * as vscode from "vscode";
 
 /**
  * Applique les modifications de schéma versionnées à un schéma de base.
@@ -25,6 +27,25 @@ export function applyVersionedSchema(schemaType: SchemaType, formatVersion: stri
                         case "remove":
                             unset(result, change.target);
                             break;
+                    }
+                }
+            }
+        }
+
+        const projectMetadata = getMinecraftProjectMetadataSync(vscode.workspace.workspaceFolders?.[0].uri as vscode.Uri);
+        if (projectMetadata?.minecraftProduct === "preview" && schemaType.previewVersionedChanges) {
+            for (const changeSet of schemaType.previewVersionedChanges) {
+                if (compareVersions(formatVersion, changeSet.version) >= 0) {
+                    for (const change of changeSet.changes) {
+                        switch (change.action) {
+                            case "add":
+                            case "modify":
+                                set(result, change.target, change.value);
+                                break;
+                            case "remove":
+                                unset(result, change.target);
+                                break;
+                        }
                     }
                 }
             }

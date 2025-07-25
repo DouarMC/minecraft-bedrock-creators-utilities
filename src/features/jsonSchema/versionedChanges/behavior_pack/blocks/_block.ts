@@ -1496,8 +1496,22 @@ const versionedChanges: SchemaChange[] = [
     }
 ];
 
+const previewVersionedChanges: SchemaChange[] = [
+    {
+        version: "1.19.80",
+        changes: [
+            {
+                action: "modify",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:geometry", "oneOf", "1", "properties", "uv_lock", "markdownDescription"],
+                value: "Définit si l'orientation UV de tous les os du modèle est vérouillée, ou si l'orientation UV de certains os spécifiques est verrouillée. Pour des raisons de performance, il est recommandé d'utiliser un booléen. Notez que pour les cubes utilisant des UVs en boîte, plutôt que des UVs par face, `uv_lock` n'est pris en charge que si les faces du cube sont carrées."
+            }
+        ]
+    }
+];
+
 export const blockSchemaTypeBP: SchemaType = {
     fileMatch: ["**/addon/behavior_pack/blocks/**/*.json"],
     baseSchema: baseSchema,
-    versionedChanges: versionedChanges
+    versionedChanges: versionedChanges,
+    previewVersionedChanges: previewVersionedChanges
 };

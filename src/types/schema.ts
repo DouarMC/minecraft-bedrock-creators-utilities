@@ -16,6 +16,7 @@ export interface SchemaType {
     fileMatch: string[];
     baseSchema: any;
     versionedChanges: SchemaChange[];
+    previewVersionedChanges?: SchemaChange[];
 }
 
 export interface SchemaContext {
