@@ -1,5 +1,4 @@
-import { max } from "lodash";
-import { SchemaType } from "../../../../../types/schema";
+import { SchemaChange, SchemaType } from "../../../../../types/schema";
 import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
 import { schemaPatterns } from "../../../shared/schemaPatterns";
 
@@ -11216,8 +11215,139 @@ const baseSchema = {
     }
 };
 
+const versionedChanges: SchemaChange[] = [
+    {
+        version: "1.20.60",
+        changes: [
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:entity_sensor"],
+                value: {
+                    "description": "Composant qui possède plusieurs sous-cpateurs où chacun déclenche un événement  lorsque les conditions sont valides par les autres entités dans la plage défini. \nType: `Object`",
+                    "type": "object",
+                    "properties": {
+                        "find_players_only": {
+                            "description": "Définit si la recherche est limitée uniquement aux joueurs pour tous les sous-capteurs. \nType: `Boolean`",
+                            "default": false,
+                            "type": "boolean"
+                        },
+                        "relative_range": {
+                            "description": "Définit si la plage des sous-capteurs est additive par rapport à la taille de l'entité. \nType: `Boolean` \nNote: Additive signifie que la plage des sous-capteurs est ajoutée à la taille de l'entité.",
+                            "default": true,
+                            "type": "boolean"
+                        },
+                        "subsensors": {
+                            "description": "La liste des sous-capteurs qui détectent les entités et émettent des événements lorsque toutes leurs conditions sont remplies. \nType: `Object[]`",
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "cooldown": {
+                                        "description": "De combien de secondes le sous-capteur doit attendre avant de pouvoir détecter à nouveau des entités. \nType: `Number` \nNote: Une valeur négative signifie qu'aucun temps de recharge n'est utilisé.",
+                                        "default": -1,
+                                        "type": "number"
+                                    },
+                                    "event": {
+                                        "description": "L'événement à déclencher quand les conditions du sous-capteur sont remplies. \nType: `EventTrigger`",
+                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/event_trigger_type"
+                                    },
+                                    "event_filters": {
+                                        "description": "L'ensemble de conditions qui doivent être satisfaites pour que l'événement soit déclenché. \nType: `Minecraft Filter`",
+                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/minecraft_filter"
+                                    },
+                                    "maximum_count": {
+                                        "description": "Le nombre maximum d'entités qui peuvent être détectées par le sous-capteur. \nType: `Integer`",
+                                        "default": -1,
+                                        "type": "integer"
+                                    },
+                                    "minimum_count": {
+                                        "description": "Le nombre minimum d'entités qui doivent être détectées par le sous-capteur pour que l'événement soit déclenché. \nType: `Integer`",
+                                        "default": 1,
+                                        "type": "integer"
+                                    },
+                                    "range": {
+                                        "description": "La distance maximale à laquelle les entités peuvent être détectées par le sous-capteur. \nType: `Number`",
+                                        "default": 10,
+                                        "type": "number"
+                                    },
+                                    "require_all": {
+                                        "description": "Définit si toutes les entités à portée doivent satisfaire les conditions du sous-capteur pour que l'événement soit déclenché. \nType: `Boolean`",
+                                        "default": false,
+                                        "type": "boolean"
+                                    },
+                                    "y_offset": {
+                                        "description": "Décalage vertical appliquée à la position de l'Entité lors du calcul de la distance par rapport aux autres entités. \nType: `Number`",
+                                        "default": 0.0,
+                                        "type": "number"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    {
+        version: "1.20.70",
+        changes: [
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:entity_sensor", "properties", "subsensors", "items", "properties", "range"],
+                value: {
+                    "description": "La distance horizontale et verticale maximale à laquelle les entités peuvent être détectées par le sous-capteur. \nType: `Number[2]`",
+                    "type": "array",
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "items": {
+                        "type": "number"
+                    }
+                }
+            }
+        ]
+    },
+    {
+        version: "1.21.10",
+        changes: [
+            {
+                action: "remove",
+                target: ["properties", "minecraft:entity", "properties", "description", "properties", "aliases"]
+            }
+        ]
+    },
+    {
+        version: "1.21.70",
+        changes: [
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.float_wander", "properties", "use_home_position_restriction", "default"],
+                value: true
+            }
+        ]
+    },
+    {
+        version: "1.21.80",
+        changes: [
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:leashable", "properties", "on_unleash", "description"],
+                value: "Evénement à déclencher lorsque la laisse attachée à l'Entité se brise."
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:leashable", "properties", "on_unleash_interact_only"],
+                value: {
+                    description: "Si vrai, l'événement `on_unleash` ne sera déclenché que si l'Entité est déliée par un joueur.",
+                    default : false,
+                    type: "boolean"
+                }
+            }
+        ]
+    }
+];
+
 export const entitySchemaTypeBP: SchemaType = {
     fileMatch: ["**/addon/behavior_pack/entities/**/*.json"],
     baseSchema: baseSchema,
-    versionedChanges: []
+    versionedChanges: versionedChanges
 };
