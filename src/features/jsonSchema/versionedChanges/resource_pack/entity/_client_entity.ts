@@ -1,0 +1,309 @@
+import { SchemaChange, SchemaType } from "../../../../../types/schema";
+
+const baseSchema = {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "description": "Ce fichier sert à définir les ressources d'une Entité. \nType: `Object`",
+    "type": "object",
+    "required": ["format_version", "minecraft:client_entity"],
+    "properties": {
+        "format_version": {
+            "description": "La version du Format à utiliser. \nType: `String`",
+            "type": "string",
+            enum: [
+                "1.8.0", "1.9.0", "1.10.0", "1.11.0", "1.12.0", "1.13.0", "1.14.0", "1.14.1", "1.14.20", "1.14.30", "1.15.0", "1.16.0", "1.16.20", "1.16.100", "1.16.200", "1.16.210", "1.16.220", "1.16.230", "1.17.0", "1.17.10", "1.17.20", "1.17.30", "1.17.40", "1.18.0", "1.18.10", "1.18.20", "1.18.30", "1.18.40", "1.19.0", "1.19.10", "1.19.20", "1.19.30", "1.19.40", "1.19.50", "1.19.60", "1.19.70", "1.19.80", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90"
+            ]
+        },
+        "minecraft:client_entity": {
+            "description": "Contient toute la définition du Client de l'Entité. \nType: `Object`",
+            "type": "object",
+            "required": ["description"],
+            "properties": {
+                "description": {
+                    "description": "Contient les propeiétés de descriptions du Client de l'Entité. \nType: `Object`",
+                    "type": "object",
+                    "required": ["identifier"],
+                    "properties": {
+                        "identifier": {
+                            "description": "L'identifiant de l'Entité. \nType: `String`",
+                            "type": "string",
+                            "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                        },
+                        "min_engine_version": {
+                            "description": "Définit la version minimale du moteur Bedrock pour ce Client d'Entité. \n Type: `String` \n Note: Si il y a plusieurs définitions pour le même Client de l'Entité, la version la plus élevée sera utilisée à condition que le moteur Bedrock soit compatible.",
+                            "type": "string",
+                            "pattern": "^\\d+\\.\\d+\\.\\d+$"
+                        },
+                        "materials": {
+                            "description": "Les Materiels à référencer pour cet Entité. \nType: `Object`",
+                            "type": "object",
+                            "properties": {
+                                "default": {
+                                    "description": "Le Materiel par défaut à utiliser. \nType: `String`",
+                                    "type": "string"
+                                }
+                            },
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "textures": {
+                            "description": "Les Textures à référencer pour cet Entité. \nType: `Object`",
+                            "type": "object",
+                            "properties": {
+                                "default": {
+                                    "description": "La Texture par défaut à utiliser. \nType: `String`",
+                                    "type": "string"
+                                }
+                            },
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "geometry": {
+                            "description": "Les Modèles à référencer pour cet Entité. \nType: `Object`",
+                            "type": "object",
+                            "properties": {
+                                "default": {
+                                    "description": "Le Modèle par défaut à utiliser. \nType: `String`",
+                                    "type": "string",
+                                    "pattern": "^geometry\\..*"
+                                }
+                            },
+                            "additionalProperties": {
+                                "type": "string",
+                                "pattern": "^geometry\\..*"
+                            }
+                        },
+                        "animations": {
+                            "description": "Les animations à référencer. \nType: `Object`",
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string",
+                                "pattern": "^animation\\..*"
+                            }
+                        },
+                        "animation_controllers": {
+                            "description": "Les contrôleurs d'animation à référencer. \nType: `Object[]`",
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "maxProperties": 1,
+                                "additionalProperties": {
+                                    "type": "string",
+                                    "pattern": "^controller\\.animation\\..*"
+                                }
+                            }
+                        },
+                        "render_controllers": {
+                            "description": "La liste des render controllers. \nType: `(String | Object)[]`",
+                            "type": "array",
+                            "items": {
+                                "oneOf": [
+                                    {
+                                        "type": "string",
+                                        "pattern": "^controller\\.render\\..*"
+                                    },
+                                    {
+                                        "type": "object",
+                                        "additionalProperties": {
+                                            "type": "string"
+                                        },
+                                        "propertyNames": {
+                                            "type": "string",
+                                            "pattern": "^controller\\.render\\..*"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "scripts": {
+                            "description": "Définie certains script que l'Entité execute à certains moments. \nType: `Object`",
+                            "type": "object",
+                            "properties": {
+                                "scale": {
+                                    "description": "Définit la taille du modèle de l'entité. \nType: `Molang String | Number`",
+                                    "oneOf": [
+                                        {
+                                            "type": "string"
+                                        },
+                                        {
+                                            "type": "number"
+                                        }
+                                    ]
+                                },
+                                "scaleX": {
+                                    "description": "Définit la taille X du modèle de l'entité. \nType: `Molang String | Number`",
+                                    "oneOf": [
+                                        {
+                                            "type": "string"
+                                        },
+                                        {
+                                            "type": "number"
+                                        }
+                                    ]
+                                },
+                                "scaleY": {
+                                    "description": "Définit la taille Y du modèle de l'entité. \nType: `Molang String | Number`",
+                                    "oneOf": [
+                                        {
+                                            "type": "string"
+                                        },
+                                        {
+                                            "type": "number"
+                                        }
+                                    ]
+                                },
+                                "scaleZ": {
+                                    "description": "Définit la taille Z du modèle de l'entité. \nType: `Molang String | Number`",
+                                    "oneOf": [
+                                        {
+                                            "type": "string"
+                                        },
+                                        {
+                                            "type": "number"
+                                        }
+                                    ]
+                                },
+                                "initialize": {
+                                    "description": "Ce script s'exécute lors de la première initialisation de l'entité, c'est-à-dire lorsqu'elle apparaît et à chaque fois qu'elle est chargée. \nType: `Molang String[]`",
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "pre_animation": {
+                                    "description": "Ce script s'exécute chaque image avant la lecture des animations. Ceci est utile pour calculer les variables qui seront utilisées dans les animations et qui doivent être calculées avant l'exécution de l'animation. \nType: `Molang String[]`",
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                },
+                                "should_update_bones_and_effects_offscreen": {
+                                    "description": "Si `true`, les os et les effets seront toujours mis à jour si le client de l'Entité est hors écran. \n Type: `Boolean | Molang String`",
+                                    "default": false,
+                                    "oneOf": [
+                                        {
+                                            "type": "boolean"
+                                        },
+                                        {
+                                            "type": "string"
+                                        }
+                                    ]
+                                },
+                                "should_update_effects_offscreen": {
+                                    "description": "Si `true`, les effets seront toujours mis à jour si le client de l'Entité est hors écran. \n Type: `Boolean | Molang String`",
+                                    "default": false,
+                                    "oneOf": [
+                                        {
+                                            "type": "boolean"
+                                        },
+                                        {
+                                            "type": "string"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        "particle_effects": {
+                            "description": "Les effets de particules à référencer pour le client de l'Entité. \n Type: `Object`",
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "particle_emitters": {
+                            "description": "Les émetteurs de particules à référencer pour le client de l'Entité. \n Type: `Object`",
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "sound_effects": {
+                            "description": "Les effets de sons à référencer pour l'Entité. \n Type: `Object`",
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "enable_attachables": {
+                            "description": "Définie si l'entité peut équiper des Attachables. \n Type: `Boolean`",
+                            "type": "boolean"
+                        },
+                        "held_item_ignores_lighting": {
+                            "description": "Définie si l'Item tenu par cet Entité doit être entièrement éclairé, ou alors être éclairé en fonction de l'éclairage ambiant. \n Type: `Boolean`",
+                            "type": "boolean"
+                        },
+                        "hide_armor": {
+                            "description": "Définit si l'armure de l'Entité doit être caché ou non. \n Type: `Boolean`",
+                            "type": "boolean"
+                        },
+                        "spawn_egg": {
+                            "description": "Définit la texture de l'icône de l'oeuf d'apparition de cet Entité. \n Type: `Object`",
+                            "type": "object",
+                            "oneOf": [
+                                {
+                                    "required": ["base_color", "overlay_color"],
+                                    "properties": {
+                                        "base_color": {
+                                            "description": "La couleur d'arrière plan de la texture de l'Oeuf d'apparition.",
+                                            "type": "string",
+                                            "pattern": "^#[0-9a-fA-F]{6}$"
+                                        },
+                                        "overlay_color": {
+                                            "description": "La couleur de sur-couche de la texture de l'Oeuf d'apparition.",
+                                            "type": "string",
+                                            "pattern": "^#[0-9a-fA-F]{6}$"
+                                        }
+                                    }
+                                },
+                                {
+                                    "required": ["texture"],
+                                    "properties": {
+                                        "texture": {
+                                            "description": "La Texture pour l'icône de texture d'Oeuf d'apparition.",
+                                            "type": "string"
+                                        },
+                                        "texture_index": {
+                                            "description": "L'index de la texture de la référence à utiliser.",
+                                            "type": "number"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
+const versionedChanges: SchemaChange[] = [
+    {
+        version: "1.10.0",
+        changes: [
+            {
+                action: "remove",
+                target: ["properties", "minecraft:client_entity", "properties", "description", "properties", "animation_controllers"]
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:client_entity", "properties", "description", "properties", "animations"],
+                value: {
+                    "description": "Les animations et controlleurs d'animations à référencer. \nType: `Object`",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string",
+                        "pattern": "^(controller\\.animation\\.|animation\\.).*"
+                    }
+                }
+            }
+        ]
+    }
+];
+
+export const clientEntitySchemaTypeRP: SchemaType = {
+    fileMatch: ["**/addon/resource_pack/entity/*.json"],
+    baseSchema: baseSchema,
+    versionedChanges: versionedChanges
+};
