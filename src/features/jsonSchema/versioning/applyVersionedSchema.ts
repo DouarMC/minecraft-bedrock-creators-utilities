@@ -9,7 +9,7 @@ import * as vscode from "vscode";
  * @param formatVersion La version de format du document à modifier, sous forme de chaîne de caractères.
  * @returns 
  */
-export function applyVersionedSchema(schemaType: SchemaType, formatVersion: string | undefined): any {
+export function applyVersionedSchema(schemaType: SchemaType, formatVersion: string | undefined, documentUri?: vscode.Uri): any {
     const result = cloneDeep(schemaType.baseSchema); // Crée une copie profonde du schéma de base
 
     // Si la version de format est définie, on applique les modifications versionnées
@@ -32,7 +32,22 @@ export function applyVersionedSchema(schemaType: SchemaType, formatVersion: stri
             }
         }
 
-        const projectMetadata = getMinecraftProjectMetadataSync(vscode.workspace.workspaceFolders?.[0].uri as vscode.Uri);
+        // Determine project metadata based on the document location, fallback to first workspace folder
+        const folderUri = documentUri 
+            ? vscode.workspace.getWorkspaceFolder(documentUri)?.uri 
+            : vscode.workspace.workspaceFolders?.[0].uri;
+        const projectMetadata = folderUri 
+            ? getMinecraftProjectMetadataSync(folderUri) 
+            : undefined;
+            
+        // DEBUG: Log pour détecter les problèmes de changement de mode
+        console.log('🔍 DEBUG Preview Detection:');
+        console.log('  - Document URI:', documentUri?.fsPath);
+        console.log('  - Folder URI:', folderUri?.fsPath);
+        console.log('  - Project metadata:', projectMetadata);
+        console.log('  - Is Preview?:', projectMetadata?.minecraftProduct === "preview");
+        console.log('  - Has preview changes?:', !!schemaType.previewVersionedChanges);
+            
         if (projectMetadata?.minecraftProduct === "preview" && schemaType.previewVersionedChanges) {
             for (const changeSet of schemaType.previewVersionedChanges) {
                 if (compareVersions(formatVersion, changeSet.version) >= 0) {

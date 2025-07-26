@@ -30,5 +30,11 @@ export function getVersionedSchemaForFile(document: vscode.TextDocument): any | 
         }
     }
     
-    return applyVersionedSchema(matchedSchemaType, formatVersion); // On renvoie le schéma appliqué avec les modifications versionnées
+    // DEBUG: Log pour détecter les changements de projet
+    console.log('🔍 DEBUG Schema Generation:');
+    console.log('  - Document:', document.uri.fsPath);
+    console.log('  - Format version:', formatVersion);
+    
+    // On renvoie le schéma appliqué avec les modifications versionnées (stable et preview) selon le document
+    return applyVersionedSchema(matchedSchemaType, formatVersion, document.uri);
 }

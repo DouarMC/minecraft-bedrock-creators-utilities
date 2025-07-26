@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { parseTree } from 'jsonc-parser';
 import { validateSchema, SchemaValidationResult } from '../../utils/json/validation';
-import { getBlockIds, getBlockModelIds, getLootTablePaths, getCraftingRecipeTagIds, getCullingLayerIds, getAimAssistCategoryIds, getEntityIds, getItemIds, getAimAssistPresetIds, getBiomeIds, getBiomeTags, getDataDrivenItemIds, getEffectIds, getCooldownCategoryIds, getItemTags, getItemGroupIds, getItemGroupIdsWithMinecraftNamespace } from '../../utils/workspace/getContent';
+import { getBlockIds, getBlockModelIds, getLootTablePaths, getCraftingRecipeTagIds, getCullingLayerIds, getAimAssistCategoryIds, getEntityIds, getItemIds, getAimAssistPresetIds, getBiomeIds, getBiomeTags, getDataDrivenItemIds, getEffectIds, getCooldownCategoryIds, getItemTags, getItemGroupIds, getItemGroupIdsWithMinecraftNamespace, getDataDrivenEntityIds } from '../../utils/workspace/getContent';
 import { dynamicExamplesSourceKeys } from './shared/schemaEnums';
 import { getSchemaAtPosition } from './versioning/schemaContext';
 import { findNearestNodeAtPath } from '../../utils/json/findNearestNodeAtPath';
@@ -372,6 +372,9 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                                         break;
                                     case dynamicExamplesSourceKeys.item_group_ids_with_minecraft_namespace:
                                         dynamicExamples.push(...await getItemGroupIdsWithMinecraftNamespace());
+                                        break;
+                                    case dynamicExamplesSourceKeys.vanilla_data_driven_entity_ids:
+                                        dynamicExamples.push(...await getDataDrivenEntityIds());
                                         break;
                                 }
                             }

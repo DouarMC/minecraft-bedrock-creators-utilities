@@ -22,5 +22,6 @@ export const dynamicExamplesSourceKeys = {
     vanilla_data_driven_item_ids: "vanilla_data_driven_item_ids",
     effect_ids: "effect_ids",
     cooldown_category_ids: "cooldown_category_ids",
-    item_tags: "item_tags"
+    item_tags: "item_tags",
+    vanilla_data_driven_entity_ids: "vanilla_data_driven_entity_ids"
 };

@@ -67,6 +67,10 @@ export async function getEntityIds(): Promise<string[]> {
     return Array.from(new Set([...vanillaEntityIds, ...customEntityIds]));
 }
 
+export async function getDataDrivenEntityIds(): Promise<string[]> {
+    return VANILLA_ENTITY_IDS;
+}
+
 export async function getLootTablePaths(): Promise<string[]> {
     const uris = await vscode.workspace.findFiles(
         "**/addon/behavior_pack/loot_tables/**/*.json",

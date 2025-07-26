@@ -9,6 +9,7 @@ import { blockSchemaTypeBP } from "../versionedChanges/behavior_pack/blocks/_blo
 import { cameraPresetSchemaTypeBP } from "../versionedChanges/behavior_pack/cameras/presets/_camera_preset";
 import { dialogueSchemaTypeBP } from "../versionedChanges/behavior_pack/dialogue/_dialogue";
 import { dimensionSchemaTypeBP } from "../versionedChanges/behavior_pack/dimensions/_dimension";
+import { entitySchemaTypeBP } from "../versionedChanges/behavior_pack/entities/_entity";
 import { itemSchemaTypeBP } from "../versionedChanges/behavior_pack/items/_item";
 import { manifestSchemaTypeBP } from "../versionedChanges/behavior_pack/manifest";
 import { testSchemaType } from "../versionedChanges/behavior_pack/test";
@@ -26,6 +27,7 @@ export const schemaTypes: SchemaType[] = [
     cameraPresetSchemaTypeBP,
     dialogueSchemaTypeBP,
     dimensionSchemaTypeBP,
+    entitySchemaTypeBP,
     itemSchemaTypeBP,
     manifestSchemaTypeBP,
     testSchemaType

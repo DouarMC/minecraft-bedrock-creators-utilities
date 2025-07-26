@@ -1121,6 +1121,10 @@ const versionedChanges: SchemaChange[] = [
                 action: "add",
                 target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:geometry", "oneOf", "1", "properties", "uv_lock"],
                 value: {
+                    // Description for hover, stable mode (experimental)
+                    description: 
+                    "[ℹ️**Expérimentale**]: `Upcoming Creator Features`\n\n" +
+                    "Définit si l'orientation UV de tous les os du modèle est vérouillée, ou si l'orientation UV de certains os spécifiques est verrouillée. Pour des raisons de performance, il est recommandé d'utiliser un booléen. Notez que pour les cubes utilisant des UVs en boîte, plutôt que des UVs par face, `uv_lock` n'est pris en charge que si les faces du cube sont carrées.",
                     markdownDescription:
                     "[ℹ️**Expérimentale**]: `Upcoming Creator Features`\n\n" +
                     "Définit si l'orientation UV de tous les os du modèle est vérouillée, ou si l'orientation UV de certains os spécifiques est verrouillée. Pour des raisons de performance, il est recommandé d'utiliser un booléen. Notez que pour les cubes utilisant des UVs en boîte, plutôt que des UVs par face, `uv_lock` n'est pris en charge que si les faces du cube sont carrées.",
@@ -1498,12 +1502,183 @@ const versionedChanges: SchemaChange[] = [
 
 const previewVersionedChanges: SchemaChange[] = [
     {
-        version: "1.19.80",
+        version: "1.21.90",
+        changes: [
+            {
+                action: "add",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:geometry", "oneOf", "1", "properties", "uv_lock"],
+                value: {
+                    markdownDescription: "Définit si l'orientation UV de tous les os du modèle est vérouillée, ou si l'orientation UV de certains os spécifiques est verrouillée. Pour des raisons de performance, il est recommandé d'utiliser un booléen. Notez que pour les cubes utilisant des UVs en boîte, plutôt que des UVs par face, `uv_lock` n'est pris en charge que si les faces du cube sont carrées.",
+                    oneOf: [
+                        {
+                            type: "boolean"
+                        },
+                        {
+                            type: "array",
+                            items: {
+                                type: "string"
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:destruction_particles", "properties", "particle_count"],
+                value: {
+                    description: "Définit le nombre de particules à générer lors de la destruction du Bloc.",
+                    default: 100,
+                    type: "integer",
+                    minimum: 0,
+                    maximum: 255
+                }
+            }
+        ]
+    },
+    {
+        version: "1.0.0",
         changes: [
             {
                 action: "modify",
-                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:geometry", "oneOf", "1", "properties", "uv_lock", "markdownDescription"],
-                value: "Définit si l'orientation UV de tous les os du modèle est vérouillée, ou si l'orientation UV de certains os spécifiques est verrouillée. Pour des raisons de performance, il est recommandé d'utiliser un booléen. Notez que pour les cubes utilisant des UVs en boîte, plutôt que des UVs par face, `uv_lock` n'est pris en charge que si les faces du cube sont carrées."
+                target: ["properties", "format_version", "enum"],
+                value: [
+                    "1.8.0", "1.9.0", "1.10.0", "1.11.0", "1.12.0", "1.13.0", "1.14.0", "1.14.1", "1.14.20", "1.14.30", "1.15.0", "1.16.0", "1.16.20", "1.16.100", "1.16.200", "1.16.210", "1.16.220", "1.16.230", "1.17.0", "1.17.10", "1.17.20", "1.17.30", "1.17.40", "1.18.0", "1.18.10", "1.18.20", "1.18.30", "1.18.40", "1.19.0", "1.19.10", "1.19.20", "1.19.30", "1.19.40", "1.19.50", "1.19.60", "1.19.70", "1.19.80", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100"
+                ]
+            }
+        ]
+    },
+    {
+        version: "1.21.100",
+        changes: [
+            {
+                action: "add",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:movable"],
+                value: {
+                    markdownDescription: "Définit comment le Bloc réagit lorsqu'il est poussé par un piston.",
+                    type: "object",
+                    required: ["movement_type"],
+                    properties: {
+                        movement_type: {
+                            markdownDescription:
+                            "Définit le type de mouvement du Bloc lorsqu'il est poussé par un piston.\n\n" +
+                            "`push_pull`: La valeur par défaut. Le Bloc peut être poussé et tiré par un piston.\n\n" +
+                            "`push`: Le Bloc ne sera seulement poussé par un piston et ignorera les pistons collants\n\n" +
+                            "`popped`: Le Bloc sera détruit quand il est déplacé par un piston.\n\n" +
+                            "`immovable`: Le Bloc ne sera pas affecté par les pistons, il ne peut pas être poussé ou tiré.",
+                            type: "string",
+                            enum: ["push_pull", "push", "popped", "immovable"]
+                        },
+                        sticky: {
+                            markdownDescription:
+                            "Définit comment le loc doit gérer les blocs adjacents autour de lui lorsqu'il est poussé par un autre bloc comme un piston.\n\n" +
+                            "`none`: Valeur par défaut. N'ajoute aucun comportement en particulier.\n\n" +
+                            "`same`: Les blocs adjacents seront poussés ou tirés avec le Bloc. Celà exclut les autres blocs avec la propriété `same`. Celà ne marchera qu'avec un `movement_type` définit sur `push_pull`",
+                            default: "none",
+                            type: "string",
+                            enum: ["none", "same"]
+                        }
+                    }
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:random_offset"],
+                value: {
+                    description: "Définit un décalage aléatoire pour la position du Bloc.",
+                    type: "object",
+                    properties: {
+                        x: {
+                            description: "Les paramètres de décalage aléatoire en X.",
+                            type: "object",
+                            properties: {
+                                range: {
+                                    description: "La plage de décalage aléatoire.",
+                                    type: "object",
+                                    properties: {
+                                        min: {
+                                            description: "La valeur minimale du décalage aléatoire.",
+                                            default: 0,
+                                            type: "number",
+                                            minimum: -8,
+                                            maximum: 8
+                                        },
+                                        max: {
+                                            description: "La valeur maximale du décalage aléatoire.",
+                                            default: 0,
+                                            type: "number",
+                                            minimum: -8,
+                                            maximum: 8
+                                        }
+                                    }
+                                },
+                                steps: {
+                                    description: "Le nombre de pas/étapes pour le décalage aléatoire",
+                                    type: "integer"
+                                }
+                            }
+                        },
+                        y: {
+                            description: "Les paramètres de décalage aléatoire en Y.",
+                            type: "object",
+                            properties: {
+                                range: {
+                                    description: "La plage de décalage aléatoire.",
+                                    type: "object",
+                                    properties: {
+                                        min: {
+                                            description: "La valeur minimale du décalage aléatoire.",
+                                            default: 0,
+                                            type: "number",
+                                            minimum: -8,
+                                            maximum: 8
+                                        },
+                                        max: {
+                                            description: "La valeur maximale du décalage aléatoire.",
+                                            default: 0,
+                                            type: "number",
+                                            minimum: -8,
+                                            maximum: 8
+                                        }
+                                    }
+                                },
+                                steps: {
+                                    description: "Le nombre de pas/étapes pour le décalage aléatoire",
+                                    type: "integer"
+                                }
+                            }
+                        },
+                        z: {
+                            description: "Les paramètres de décalage aléatoire en Z.",
+                            type: "object",
+                            properties: {
+                                range: {
+                                    description: "La plage de décalage aléatoire.",
+                                    type: "object",
+                                    properties: {
+                                        min: {
+                                            description: "La valeur minimale du décalage aléatoire.",
+                                            default: 0,
+                                            type: "number",
+                                            minimum: -8,
+                                            maximum: 8
+                                        },
+                                        max: {
+                                            description: "La valeur maximale du décalage aléatoire.",
+                                            default: 0,
+                                            type: "number",
+                                            minimum: -8,
+                                            maximum: 8
+                                        }
+                                    }
+                                },
+                                steps: {
+                                    description: "Le nombre de pas/étapes pour le décalage aléatoire",
+                                    type: "integer"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         ]
     }
