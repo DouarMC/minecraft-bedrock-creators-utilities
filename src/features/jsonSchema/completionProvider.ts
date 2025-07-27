@@ -43,12 +43,11 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                     // Gestion intelligente des propriétés avec résolution oneOf améliorée
                     let propertiesForCompletion: any = resolvedNode.properties;
 
-                    // Cas spécial : si nous sommes dans un élément de tableau (path se termine par un nombre),
+                    // Cas spécial : si nous sommes dans un élément de tableau (path contient un nombre),
                     // nous devons vérifier si le schéma parent du tableau a un oneOf pour fusionner toutes les propriétés
-                    const isInArrayElement = typeof path[path.length - 1] === 'number';
+                    const isInArrayElement = path.some(segment => typeof segment === 'number');
                     
                     if (isInArrayElement && path.length >= 2) {
-                        
                         // Chercher dans le fullSchema pour trouver le schéma du tableau parent
                         const arrayPath = path.slice(0, -1); // Enlever l'index du tableau
                         
@@ -100,14 +99,21 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                         }
                         
                         if (arraySchema?.items?.oneOf) {
-                            // Fusionner les propriétés de TOUTES les branches oneOf pour la completion
-                            const allProperties = Object.assign(
-                                {},
-                                ...arraySchema.items.oneOf
-                                    .filter((v: any) => v && v.properties)
-                                    .map((v: any) => v.properties)
-                            );
-                            propertiesForCompletion = allProperties;
+                            console.log("🎯 Array oneOf detected in items!");
+                            console.log("arraySchema.items.oneOf:", arraySchema.items.oneOf);
+                            
+                            // Utiliser la nouvelle logique intelligente pour les éléments de tableau oneOf
+                            const mergedProperties = mergeOneOfPropertiesWithEnums(arraySchema.items.oneOf, valueAtPath);
+                            console.log("✅ Array merged properties:", mergedProperties);
+                            propertiesForCompletion = mergedProperties;
+                        } else if (arraySchema?.oneOf) {
+                            console.log("🎯 Array oneOf detected directly!");
+                            console.log("arraySchema.oneOf:", arraySchema.oneOf);
+                            
+                            // Utiliser la nouvelle logique intelligente pour les éléments de tableau oneOf
+                            const mergedProperties = mergeOneOfPropertiesWithEnums(arraySchema.oneOf, valueAtPath);
+                            console.log("✅ Array merged properties:", mergedProperties);
+                            propertiesForCompletion = mergedProperties;
                         } else if (rawSchema?.properties) {
                             // Si pas de oneOf au niveau du tableau mais rawSchema a des propriétés,
                             // c'est que la résolution oneOf a déjà été faite
@@ -116,28 +122,15 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                     }
                     // Pour les objets normaux (non dans des tableaux), utiliser la logique existante
                     else if (rawSchema.oneOf && typeof valueAtPath === "object" && valueAtPath !== null) {
-                        // Utiliser le nouveau système pour identifier les branches compatibles
-                        const compatibleBranches = rawSchema.oneOf.filter((branch: any) => {
-                            if (!branch || !branch.properties) return false;
-                            
-                            // Tester si cette branche est potentiellement compatible
-                            const branchValidation = validateSchema(branch, valueAtPath);
-                            return branchValidation.isValid || branchValidation.errors.length < 3;
-                        });
-
-                        if (compatibleBranches.length > 0) {
-                            // Fusionner les propriétés des branches compatibles avec les propriétés communes
-                            const branchProperties = Object.assign({}, ...compatibleBranches.map((v: any) => v.properties));
-                            propertiesForCompletion = Object.assign({}, propertiesForCompletion || {}, branchProperties);
-                        } else {
-                            // Fallback : toutes les propriétés de toutes les branches
-                            const allBranches = rawSchema.oneOf.filter((v: any) => v && v.properties);
-                            const allBranchProperties = Object.assign(
-                                {},
-                                ...allBranches.map((v: any) => v.properties)
-                            );
-                            propertiesForCompletion = Object.assign({}, propertiesForCompletion || {}, allBranchProperties);
-                        }
+                        console.log("🚀 OneOf detected for normal object!");
+                        console.log("rawSchema.oneOf:", rawSchema.oneOf);
+                        console.log("valueAtPath:", valueAtPath);
+                        
+                        // Nouvelle logique améliorée pour oneOf avec fusion intelligente des enums
+                        const mergedProperties = mergeOneOfPropertiesWithEnums(rawSchema.oneOf, valueAtPath);
+                        console.log("✅ Merged properties:", mergedProperties);
+                        propertiesForCompletion = Object.assign({}, propertiesForCompletion || {}, mergedProperties);
+                        console.log("🎯 Final propertiesForCompletion:", propertiesForCompletion);
                     }
 
                     // Déterminer le schéma pour les valeurs (nécessaire pour la détection précoce)
@@ -556,4 +549,57 @@ function getQuoteContentRange(document: vscode.TextDocument, position: vscode.Po
     }
 
     return null;
+}
+
+/**
+ * Fusionne intelligemment les propriétés des branches oneOf en combinant les enums
+ * des propriétés ayant le même nom
+ */
+function mergeOneOfPropertiesWithEnums(oneOfBranches: any[], currentValue: any): any {
+    const mergedProperties: any = {};
+    const propertyEnums: { [key: string]: Set<any> } = {};
+    
+    // Collecter toutes les propriétés et leurs enums
+    oneOfBranches.forEach(branch => {
+        if (!branch || !branch.properties) return;
+        
+        Object.keys(branch.properties).forEach(propName => {
+            const propSchema = branch.properties[propName];
+            
+            // Si cette propriété n'existe pas encore, l'ajouter
+            if (!mergedProperties[propName]) {
+                mergedProperties[propName] = { ...propSchema };
+                
+                // Initialiser le set d'enums si la propriété a un enum
+                if (propSchema.enum && Array.isArray(propSchema.enum)) {
+                    propertyEnums[propName] = new Set(propSchema.enum);
+                }
+            } else {
+                // La propriété existe déjà, fusionner les enums si applicable
+                if (propSchema.enum && Array.isArray(propSchema.enum)) {
+                    if (!propertyEnums[propName]) {
+                        propertyEnums[propName] = new Set();
+                    }
+                    propSchema.enum.forEach((enumValue: any) => {
+                        propertyEnums[propName].add(enumValue);
+                    });
+                }
+                
+                // Fusionner les autres propriétés du schéma (description, etc.)
+                mergedProperties[propName] = {
+                    ...mergedProperties[propName],
+                    ...propSchema
+                };
+            }
+        });
+    });
+    
+    // Appliquer les enums fusionnés
+    Object.keys(propertyEnums).forEach(propName => {
+        if (propertyEnums[propName].size > 0) {
+            mergedProperties[propName].enum = Array.from(propertyEnums[propName]);
+        }
+    });
+    
+    return mergedProperties;
 }
