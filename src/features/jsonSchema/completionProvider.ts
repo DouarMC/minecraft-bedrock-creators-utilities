@@ -148,13 +148,22 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                     const isInvalidStringInObjectArray = cursorContext.isInArrayElement && cursorContext.isInQuotes &&
                         schemaForValues?.type === 'object';
                     
+                    // Solution finale : détecter précisément quand on nomme de nouveaux component groups/events
+                    const isInsideExistingGroup = typeof valueAtPath === 'object' && valueAtPath !== null;
+                    const isNamingNewGroup = path.length === 3 && 
+                        path[0] === 'minecraft:entity' && 
+                        (path[1] === 'component_groups' || path[1] === 'events') &&
+                        !isInsideExistingGroup &&
+                        (cursorContext.isStartOfProperty || cursorContext.isInQuotes);
+                    
                     if (
                         propertiesForCompletion &&
                         parentObject?.type === 'object' &&
                         (cursorContext.isStartOfProperty || cursorContext.isInQuotes || cursorContext.isProbablyKeyWithoutQuotes) &&
                         !cursorContext.isAfterColon && !cursorContext.isTypingValue &&
                         !isStringValueInArray &&  // Array de strings : pas de completion de propriétés
-                        !isInvalidStringInObjectArray  // Array d'objets avec guillemets : pas de completion du tout
+                        !isInvalidStringInObjectArray &&  // Array d'objets avec guillemets : pas de completion du tout
+                        !isNamingNewGroup  // Bloquer SEULEMENT quand on nomme des component groups/events
                     ) {
                         const existingKeys = new Set<string>();
                         for (const prop of parentObject.children ?? []) {
