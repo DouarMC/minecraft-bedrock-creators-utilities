@@ -4144,7 +4144,7 @@ const baseSchema = {
     }
 };
 
-export const _uiElementSchemaTypeRP: SchemaType = {
+export const uiElementSchemaTypeRP: SchemaType = {
     fileMatch: ["**/addon/resource_pack/ui/**/*.json"],
     baseSchema: baseSchema,
     versionedChanges: []

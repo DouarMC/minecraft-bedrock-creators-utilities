@@ -47,16 +47,9 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                     const isInArrayElement = typeof path[path.length - 1] === 'number';
                     
                     if (isInArrayElement && path.length >= 2) {
-                        console.log("🔍 DEBUG oneOf resolution in array:");
-                        console.log("  - path:", path);
-                        console.log("  - rawSchema type:", rawSchema?.type);
-                        console.log("  - rawSchema has properties:", !!rawSchema?.properties);
-                        console.log("  - rawSchema has oneOf:", !!rawSchema?.oneOf);
-                        console.log("  - valueAtPath:", valueAtPath);
                         
                         // Chercher dans le fullSchema pour trouver le schéma du tableau parent
                         const arrayPath = path.slice(0, -1); // Enlever l'index du tableau
-                        console.log("  - arrayPath:", arrayPath);
                         
                         // Navigation améliorée dans le schéma pour gérer les oneOf imbriqués
                         let arraySchema: any = fullSchema;

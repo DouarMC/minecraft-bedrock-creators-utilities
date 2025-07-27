@@ -27,11 +27,48 @@ import { processorSchemaTypeBP } from "../versionedChanges/behavior_pack/worldge
 import { structureSetSchemaTypeBP } from "../versionedChanges/behavior_pack/worldgen/structure_sets/_structure_set";
 import { templatePoolSchemaTypeBP } from "../versionedChanges/behavior_pack/worldgen/template_pools/_template_pool";
 import { contentsSchemaTypeBP } from "../versionedChanges/behavior_pack/contents";
+import { animationControllersSchemaTypeRP } from "../versionedChanges/resource_pack/animation_controllers/_animation_controllers";
+import { animationsSchemaTypeRP } from "../versionedChanges/resource_pack/animations/_animations";
+import { atmosphericSettingsSchemaTypeRP } from "../versionedChanges/resource_pack/atmospherics/_atmospheric_settings";
+import { attachableSchemaTypeRP } from "../versionedChanges/resource_pack/attachables/_attachable";
+import { clientBiomeSchemaTypeRP } from "../versionedChanges/resource_pack/biomes/_client_biome";
+import { blockCullingRulesSchemaTypeRP } from "../versionedChanges/resource_pack/block_culling/_block_culling_rules";
+import { colorGradingSettingsSchemaTypeRP } from "../versionedChanges/resource_pack/color_grading/_color_grading_settings";
+import { creditsSchemaTypeRP } from "../versionedChanges/resource_pack/credits/credits";
+import { clientEntitySchemaTypeRP } from "../versionedChanges/resource_pack/entity/_client_entity";
+import { fogSettingsSchemaTypeRP } from "../versionedChanges/resource_pack/fogs/_fog_settings";
+import { itemSchemaTypeRP } from "../versionedChanges/resource_pack/items/_item";
+import { lightingSettingsSchemaTypeRP } from "../versionedChanges/resource_pack/lighting/_lighting_settings";
+import { geometrySchemaTypeRP } from "../versionedChanges/resource_pack/models/_geometry";
+import { particleEffectSchemaTypeRP } from "../versionedChanges/resource_pack/particles/_particle_effect";
+import { pbrFallbackSettingsSchemaTypeRP } from "../versionedChanges/resource_pack/pbr/global";
+import { renderControllerSchemaTypeRP } from "../versionedChanges/resource_pack/render_controllers/_render_controllers";
+import { shadowSettingsSchemaTypeRP } from "../versionedChanges/resource_pack/shadows/global";
+import { musicDefinitionsSchemaTypeRP } from "../versionedChanges/resource_pack/sounds/music_definitions";
+import { soundDefinitionsSchemaTypeRP } from "../versionedChanges/resource_pack/sounds/sound_definitions";
+import { languagesNamesSchemaTypeRP } from "../versionedChanges/resource_pack/texts/languages_names";
+import { languagesSchemaTypeRP } from "../versionedChanges/resource_pack/texts/languages";
+import { textureSetSchemaTypeRP } from "../versionedChanges/resource_pack/textures/_texture_set";
+import { flipbookTexturesSchemaTypeRP } from "../versionedChanges/resource_pack/textures/flipbook_textures";
+import { itemTextureSchemaTypeRP } from "../versionedChanges/resource_pack/textures/item_texture";
+import { terrainTextureSchemaTypeRP } from "../versionedChanges/resource_pack/textures/terrain_texture";
+import { texturesListSchemaTypeRP } from "../versionedChanges/resource_pack/textures/textures_list";
+import { _globalVariablesSchemaTypeRP } from "../versionedChanges/resource_pack/ui/_global_variables";
+import { _uiDefsSchemaTypeRP } from "../versionedChanges/resource_pack/ui/_ui_defs";
+import { uiElementSchemaTypeRP } from "../versionedChanges/resource_pack/ui/_ui_element";
+import { waterSettingsSchemaTypeRP } from "../versionedChanges/resource_pack/water/water";
+import { biomesClientSchemaType } from "../versionedChanges/resource_pack/biomes_client";
+import { blocksSchemaTypeRP } from "../versionedChanges/resource_pack/blocks";
+import { loadingMessagesSchemaTypeRP } from "../versionedChanges/resource_pack/loading_messages";
+import { manifestSchemaTypeRP } from "../versionedChanges/resource_pack/manifest";
+import { soundsSchemaTypeRP } from "../versionedChanges/resource_pack/sounds";
+import { splashesSchemaTypeRP } from "../versionedChanges/resource_pack/splashes";
 
 /**
  * Liste des types de schémas versionnés
  */
 export const schemaTypes: SchemaType[] = [
+    // Behavior Pack schemas
     aimAssistCategoriesSchemaTypeBP,
     aimAssistPresetSchemaTypeBP,
     animationControllersSchemaTypeBP,
@@ -58,5 +95,43 @@ export const schemaTypes: SchemaType[] = [
     processorSchemaTypeBP,
     structureSetSchemaTypeBP,
     templatePoolSchemaTypeBP,
-    contentsSchemaTypeBP
+    contentsSchemaTypeBP,
+
+    // Resource Pack schemas
+    animationControllersSchemaTypeRP,
+    animationsSchemaTypeRP,
+    atmosphericSettingsSchemaTypeRP,
+    attachableSchemaTypeRP,
+    clientBiomeSchemaTypeRP,
+    blockCullingRulesSchemaTypeRP,
+    colorGradingSettingsSchemaTypeRP,
+    creditsSchemaTypeRP,
+    clientEntitySchemaTypeRP,
+    fogSettingsSchemaTypeRP,
+    itemSchemaTypeRP,
+    lightingSettingsSchemaTypeRP,
+    geometrySchemaTypeRP,
+    particleEffectSchemaTypeRP,
+    pbrFallbackSettingsSchemaTypeRP,
+    renderControllerSchemaTypeRP,
+    shadowSettingsSchemaTypeRP,
+    musicDefinitionsSchemaTypeRP,
+    soundDefinitionsSchemaTypeRP,
+    languagesNamesSchemaTypeRP,
+    languagesSchemaTypeRP,
+    textureSetSchemaTypeRP,
+    flipbookTexturesSchemaTypeRP,
+    itemTextureSchemaTypeRP,
+    terrainTextureSchemaTypeRP,
+    texturesListSchemaTypeRP,
+    _globalVariablesSchemaTypeRP,
+    _uiDefsSchemaTypeRP,
+    uiElementSchemaTypeRP,
+    waterSettingsSchemaTypeRP,
+    biomesClientSchemaType,
+    blocksSchemaTypeRP,
+    loadingMessagesSchemaTypeRP,
+    manifestSchemaTypeRP,
+    soundsSchemaTypeRP,
+    splashesSchemaTypeRP
 ];
