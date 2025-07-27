@@ -21,16 +21,7 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                     // On récupère le schéma à la position actuelle, le chemin et la valeur à cette position, et le schéma complet
                     const {path, schema: rawSchema, valueAtPath, fullSchema} = getSchemaAtPosition(document, position);
                     
-                    // DEBUG LOGS
-                    console.log("=== COMPLETION DEBUG ===");
-                    console.log("path:", path);
-                    console.log("valueAtPath:", valueAtPath);
-                    console.log("rawSchema exists:", !!rawSchema);
-                    console.log("rawSchema.oneOf exists:", !!rawSchema?.oneOf);
-                    console.log("rawSchema.properties:", rawSchema?.properties ? Object.keys(rawSchema.properties) : "none");
-                    
                     if (!rawSchema) { // Si pas de schéma trouvé, on ne propose rien
-                        console.log("No rawSchema found, returning empty");
                         return [];
                     }
 
@@ -38,11 +29,7 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                     const validationResult: SchemaValidationResult = validateSchema(rawSchema, valueAtPath);
                     const resolvedNode = validationResult.matchedSchema || rawSchema;
                     
-                    console.log("resolvedNode exists:", !!resolvedNode);
-                    console.log("resolvedNode.properties:", resolvedNode?.properties ? Object.keys(resolvedNode.properties) : "none");
-                    
                     if (!resolvedNode) { // Si pas de schéma résolu, on ne propose rien
-                        console.log("No resolvedNode found, returning empty");
                         return [];
                     }
 
@@ -55,8 +42,6 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
 
                     // Gestion intelligente des propriétés avec résolution oneOf améliorée
                     let propertiesForCompletion: any = resolvedNode.properties;
-                    
-                    console.log("Initial propertiesForCompletion:", propertiesForCompletion ? Object.keys(propertiesForCompletion) : "none");
 
                     // Cas spécial : si nous sommes dans un élément de tableau (path se termine par un nombre),
                     // nous devons vérifier si le schéma parent du tableau a un oneOf pour fusionner toutes les propriétés
@@ -114,10 +99,6 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                             }
                         }
                         
-                        console.log("  - Navigation log:", navigationLog);
-                        console.log("  - arraySchema found:", !!arraySchema);
-                        console.log("  - arraySchema.items?.oneOf:", !!arraySchema?.items?.oneOf);
-                        
                         if (arraySchema?.items?.oneOf) {
                             // Fusionner les propriétés de TOUTES les branches oneOf pour la completion
                             const allProperties = Object.assign(
@@ -127,51 +108,35 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                                     .map((v: any) => v.properties)
                             );
                             propertiesForCompletion = allProperties;
-                            console.log("  - Merged properties from array oneOf:", Object.keys(allProperties));
                         } else if (rawSchema?.properties) {
                             // Si pas de oneOf au niveau du tableau mais rawSchema a des propriétés,
                             // c'est que la résolution oneOf a déjà été faite
                             propertiesForCompletion = rawSchema.properties;
-                            console.log("  - Using rawSchema properties:", Object.keys(rawSchema.properties));
                         }
                     }
                     // Pour les objets normaux (non dans des tableaux), utiliser la logique existante
                     else if (rawSchema.oneOf && typeof valueAtPath === "object" && valueAtPath !== null) {
-                        console.log("Entering oneOf logic for normal objects");
-                        console.log("rawSchema.oneOf length:", rawSchema.oneOf.length);
-                        
                         // Utiliser le nouveau système pour identifier les branches compatibles
                         const compatibleBranches = rawSchema.oneOf.filter((branch: any) => {
-                            const hasProperties = !!branch?.properties;
-                            console.log("Branch has properties:", hasProperties, branch?.properties ? Object.keys(branch.properties) : "none");
-                            
                             if (!branch || !branch.properties) return false;
                             
                             // Tester si cette branche est potentiellement compatible
                             const branchValidation = validateSchema(branch, valueAtPath);
-                            const isCompatible = branchValidation.isValid || branchValidation.errors.length < 3;
-                            console.log("Branch compatibility:", isCompatible, "errors:", branchValidation.errors.length);
-                            return isCompatible;
+                            return branchValidation.isValid || branchValidation.errors.length < 3;
                         });
-
-                        console.log("Compatible branches count:", compatibleBranches.length);
 
                         if (compatibleBranches.length > 0) {
                             // Fusionner les propriétés des branches compatibles avec les propriétés communes
                             const branchProperties = Object.assign({}, ...compatibleBranches.map((v: any) => v.properties));
                             propertiesForCompletion = Object.assign({}, propertiesForCompletion || {}, branchProperties);
-                            console.log("Using compatible branches properties:", Object.keys(propertiesForCompletion));
                         } else {
                             // Fallback : toutes les propriétés de toutes les branches
-                            console.log("Using fallback - all branches");
                             const allBranches = rawSchema.oneOf.filter((v: any) => v && v.properties);
-                            console.log("All branches with properties count:", allBranches.length);
                             const allBranchProperties = Object.assign(
                                 {},
                                 ...allBranches.map((v: any) => v.properties)
                             );
                             propertiesForCompletion = Object.assign({}, propertiesForCompletion || {}, allBranchProperties);
-                            console.log("Fallback properties:", Object.keys(propertiesForCompletion));
                         }
                     }
 
@@ -190,16 +155,6 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                     const isInvalidStringInObjectArray = cursorContext.isInArrayElement && cursorContext.isInQuotes &&
                         schemaForValues?.type === 'object';
                     
-                    console.log("=== COMPLETION CONDITIONS ===");
-                    console.log("propertiesForCompletion exists:", !!propertiesForCompletion);
-                    console.log("propertiesForCompletion keys:", propertiesForCompletion ? Object.keys(propertiesForCompletion) : "none");
-                    console.log("parentObject?.type:", parentObject?.type);
-                    console.log("cursorContext.isStartOfProperty:", cursorContext.isStartOfProperty);
-                    console.log("cursorContext.isInQuotes:", cursorContext.isInQuotes);
-                    console.log("cursorContext.isProbablyKeyWithoutQuotes:", cursorContext.isProbablyKeyWithoutQuotes);
-                    console.log("cursorContext.isAfterColon:", cursorContext.isAfterColon);
-                    console.log("cursorContext.isTypingValue:", cursorContext.isTypingValue);
-                    
                     if (
                         propertiesForCompletion &&
                         parentObject?.type === 'object' &&
@@ -208,7 +163,6 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                         !isStringValueInArray &&  // Array de strings : pas de completion de propriétés
                         !isInvalidStringInObjectArray  // Array d'objets avec guillemets : pas de completion du tout
                     ) {
-                        console.log("ENTERING PROPERTY COMPLETION SECTION");
                         const existingKeys = new Set<string>();
                         for (const prop of parentObject.children ?? []) {
                             const keyNode = prop.children?.[0];
