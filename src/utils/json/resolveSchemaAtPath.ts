@@ -62,10 +62,11 @@ function getSubSchemaForObject(current: any, segment: string | number): any {
         return current.properties[segment];
     }
 
-    // Si on a un oneOf, chercher dans toutes les branches qui sont des objets
+    // Si on a un oneOf, chercher dans toutes les branches qui ont des propriétés
     if (current?.oneOf) {
         for (const branch of current.oneOf) {
-            if (branch?.type === "object" && branch.properties?.[segment]) {
+            // Un objet JSON Schema est implicitement de type "object" s'il a des propriétés
+            if (branch.properties?.[segment]) {
                 return branch.properties[segment];
             }
         }
