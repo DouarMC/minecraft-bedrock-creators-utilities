@@ -148,13 +148,32 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                     const isInvalidStringInObjectArray = cursorContext.isInArrayElement && cursorContext.isInQuotes &&
                         schemaForValues?.type === 'object';
                     
-                    // Solution finale : détecter précisément quand on nomme de nouveaux component groups/events
-                    const isInsideExistingGroup = typeof valueAtPath === 'object' && valueAtPath !== null;
-                    const isNamingNewGroup = path.length === 3 && 
-                        path[0] === 'minecraft:entity' && 
-                        (path[1] === 'component_groups' || path[1] === 'events') &&
-                        !isInsideExistingGroup &&
-                        (cursorContext.isStartOfProperty || cursorContext.isInQuotes);
+                    // Solution universelle : détecter précisément quand on nomme une clé libre d'additionalProperties
+                    const isInsideExistingObject = typeof valueAtPath === 'object' && valueAtPath !== null;
+                    const isNamingAdditionalPropertyKey = !isInsideExistingObject && 
+                        path.length >= 2 && 
+                        (cursorContext.isStartOfProperty || cursorContext.isInQuotes) &&
+                        (() => {
+                            // Vérifier si la section parent utilise additionalProperties
+                            const parentPath = path.slice(0, -1);
+                            let currentSchema: any = fullSchema;
+                            
+                            // Naviguer jusqu'à la section parent
+                            for (const segment of parentPath) {
+                                if (typeof segment === 'number') {
+                                    currentSchema = currentSchema?.items;
+                                } else {
+                                    currentSchema = currentSchema?.properties?.[segment];
+                                }
+                                if (!currentSchema) return false;
+                            }
+                            
+                            // Vérifier si cette section a additionalProperties et si la clé actuelle n'est pas définie
+                            const currentKey = path[path.length - 1];
+                            return currentSchema?.additionalProperties && 
+                                   typeof currentKey === 'string' &&
+                                   (!currentSchema?.properties || !currentSchema.properties[currentKey]);
+                        })();
                     
                     if (
                         propertiesForCompletion &&
@@ -163,7 +182,7 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                         !cursorContext.isAfterColon && !cursorContext.isTypingValue &&
                         !isStringValueInArray &&  // Array de strings : pas de completion de propriétés
                         !isInvalidStringInObjectArray &&  // Array d'objets avec guillemets : pas de completion du tout
-                        !isNamingNewGroup  // Bloquer SEULEMENT quand on nomme des component groups/events
+                        !isNamingAdditionalPropertyKey  // Bloquer SEULEMENT quand on nomme des clés libres d'additionalProperties
                     ) {
                         const existingKeys = new Set<string>();
                         for (const prop of parentObject.children ?? []) {
