@@ -100,29 +100,70 @@ class MaxLengthConstraintValidator implements ConstraintValidator {
 class PatternConstraintValidator implements ConstraintValidator {
     constraint = 'pattern';
 
-    validate(value: any, constraintValue: string, schema: any, context: ValidationContext): SchemaError[] {
-        if (typeof value !== 'string' || typeof constraintValue !== 'string') {
+    validate(value: any, constraintValue: string | string[], schema: any, context: ValidationContext): SchemaError[] {
+        if (typeof value !== 'string') {
             return [];
         }
 
+        // Cas 1: pattern unique (string)
+        if (typeof constraintValue === 'string') {
+            return this.validateSinglePattern(value, constraintValue, context);
+        }
+
+        // Cas 2: liste de patterns (array) - au moins un doit matcher
+        if (Array.isArray(constraintValue)) {
+            return this.validateMultiplePatterns(value, constraintValue, context);
+        }
+
+        return [];
+    }
+
+    private validateSinglePattern(value: string, pattern: string, context: ValidationContext): SchemaError[] {
         try {
-            const regex = new RegExp(constraintValue);
+            const regex = new RegExp(pattern);
             if (!regex.test(value)) {
                 return [{
-                    error: `La valeur "${value}" ne correspond pas au pattern "${constraintValue}"`,
+                    error: `La valeur "${value}" ne correspond pas au pattern "${pattern}"`,
                     path: context.path.join('.'),
                     code: 'PATTERN_MISMATCH'
                 }];
             }
         } catch (error) {
             return [{
-                error: `Pattern regex invalide : "${constraintValue}"`,
+                error: `Pattern regex invalide : "${pattern}"`,
                 path: context.path.join('.'),
                 code: 'INVALID_PATTERN'
             }];
         }
-
         return [];
+    }
+
+    private validateMultiplePatterns(value: string, patterns: string[], context: ValidationContext): SchemaError[] {
+        if (patterns.length === 0) {
+            return [];
+        }
+
+        for (const pattern of patterns) {
+            try {
+                const regex = new RegExp(pattern);
+                if (regex.test(value)) {
+                    return []; // Au moins un pattern matche, c'est valide
+                }
+            } catch (error) {
+                return [{
+                    error: `Pattern regex invalide : "${pattern}"`,
+                    path: context.path.join('.'),
+                    code: 'INVALID_PATTERN'
+                }];
+            }
+        }
+
+        // Aucun pattern ne matche
+        return [{
+            error: `La valeur "${value}" ne correspond à aucun des patterns autorisés : [${patterns.join(', ')}]`,
+            path: context.path.join('.'),
+            code: 'PATTERN_MISMATCH'
+        }];
     }
 }
 

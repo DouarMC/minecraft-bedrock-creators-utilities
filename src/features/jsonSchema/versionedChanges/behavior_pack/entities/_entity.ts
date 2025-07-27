@@ -176,7 +176,8 @@ const baseSchema = {
                             description: "Attache des animations et des controlleurs d'animation à l'Entité.",
                             type: "object",
                             additionalProperties: {
-                                type: "string" // BUG FIX, mettre une liste de pattern pour animation et animation controller, mais faut changer algorithme de validation support liste pattern
+                                type: "string",
+                                pattern: [schemaPatterns.animation_identifier, schemaPatterns.animation_controller_identifier]
                             }
                         },
                         scripts: {

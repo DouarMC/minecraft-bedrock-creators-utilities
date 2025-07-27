@@ -3255,3 +3255,7 @@ export const VANILLA_ITEM_TAGS = [
     "minecraft:is_shears",
     "minecraft:is_armor"
 ];
+
+export const VANILLA_AIM_ASSIST_PRESET_IDS = [
+    "minecraft:aim_assist_default",
+];

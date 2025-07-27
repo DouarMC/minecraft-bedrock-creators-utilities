@@ -1,4 +1,5 @@
 import { SchemaType } from "../../../../../types/schema";
+import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
 import { schemaPatterns } from "../../../shared/schemaPatterns";
 
 const baseSchema = {
@@ -28,11 +29,7 @@ const baseSchema = {
                             description: "L'identifiant de la Dimension.",
                             type: "string",
                             pattern: schemaPatterns.identifier_with_namespace,
-                            enum: [
-                                "minecraft:overworld",
-                                "minecraft:the_nether",
-                                "minecraft:the_end"
-                            ]
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.dimension_ids
                         }
                     }
                 },

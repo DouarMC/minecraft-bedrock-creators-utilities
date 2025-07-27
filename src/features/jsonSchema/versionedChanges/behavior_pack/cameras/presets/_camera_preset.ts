@@ -1,5 +1,6 @@
 import { schemaPatterns } from "../../../../shared/schemaPatterns";
 import { SchemaType } from "../../../../../../types/schema";
+import { dynamicExamplesSourceKeys } from "../../../../shared/schemaEnums";
 
 const baseSchema = {
     $schema: "http://json-schema.org/draft-07/schema#",
@@ -17,56 +18,61 @@ const baseSchema = {
         "minecraft:camera_preset": {
             description: "Contient la définition d'un preset de caméra.",
             type: "object",
+            required: ["identifier"],
             properties: {
                 identifier: {
                     description: "L'identifiant du preset de caméra.",
                     type: "string",
-                    pattern: schemaPatterns.identifier_with_namespace
+                    pattern: schemaPatterns.identifier_with_namespace,
+                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.camera_preset_ids
                 },
                 inherit_from: {
                     description: "L'identifiant du preset de caméra dont celui-ci hérite de ses propriétés.",
                     type: "string",
-                    pattern: schemaPatterns.identifier_with_namespace
+                    pattern: schemaPatterns.identifier_with_namespace,
+                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.camera_preset_ids
                 },
                 pos_x: {
-                    description: "La position X par défaut de la caméra de type `free`.",
+                    description: "La position X par défaut de la caméra. Utile pour les caméras de type: `free`",
                     default: 0,
                     type: "number"
                 },
                 pos_y: {
-                    description: "La position Y par défaut de la caméra de type `free`.",
+                    description: "La position Y par défaut de la caméra. Utile pour les caméras de type: `free`",
                     default: 0,
                     type: "number"
                 },
                 pos_z: {
-                    description: "La position Z par défaut de la caméra de type `free`.",
+                    description: "La position Z par défaut de la caméra. Utile pour les caméras de type: `free`",
                     default: 0,
                     type: "number"
                 },
                 rot_x: {
-                    description: "La rotation X par défaut de la caméra de type `free`.",
+                    description: "La rotation X par défaut de la caméra. Utile pour les caméras de type: `free`",
                     default: 0,
                     type: "number",
                     minimum: -90,
                     maximum: 90
                 },
                 rot_y: {
-                    description: "La rotation Y par défaut de la caméra de type `free`.",
+                    description: "La rotation Y par défaut de la caméra. Utile pour les caméras de type: `free`",
                     default: 0,
                     type: "number"
                 },
                 rotation_speed: {
-                    description: "Définit la vitesse de rotation de la caméra en degrés par seconde. Si la valeur est `0`, le suivi est parfait toujours aligné avec la cible.",
+                    description: "Contrôle la vitesse de rotation de la caméra lors du suivi d'une cible (en degrés par seconde). Détermine la fluidité du mouvement de suivi : une valeur de `0` rend le suivi parfait et instantané (la caméra reste toujours alignée avec la cible), tandis qu'une valeur plus élevée crée un mouvement de rotation plus lent et fluide vers la cible. Fonctionne en combinaison avec `snap_to_target`, `continue_targeting` et `tracking_radius`. Utile pour les caméras de type: `free`",
                     default: 0,
                     type: "number",
-                    minimum: 0
+                    minimum: 0,
+                    maximum: 360
                 },
                 snap_to_target: {
-                    description: "Définit si la caméra doit s'aligner immédiatement avec la cible puis suivre à la vitesse définie par `rotation_speed`.",
+                    description: "Si activé, la caméra s'aligne instantanément avec la cible au début, puis la suit à la vitesse définie par `rotation_speed`. Si désactivé, la caméra tourne progressivement vers la cible dès le départ. Utile pour les caméras de type: `free`",
+                    default: false,
                     type: "boolean"
                 },
                 horizontal_rotation_limit: {
-                    description: "Définit la limite de rotation horizontale (gauche/droite). La somme des valeurs ne peut dépasser 360°.",
+                    description: "Limite l'angle de rotation horizontale (gauche/droite) lors du suivi d'une cible. Format : [limite_gauche, limite_droite] en degrés. La somme ne peut dépasser 360°. Utile pour les caméras de type: `free`",
                     type: "array",
                     minItems: 2,
                     maxItems: 2,
@@ -77,7 +83,7 @@ const baseSchema = {
                     }
                 },
                 vertical_rotation_limit: {
-                    description: "Définit la limite de rotation verticale (haut/bas). La somme des valeurs ne peut dépasser 180°.",
+                    description: "Limite l'angle de rotation verticale (haut/bas) lors du suivi d'une cible. Format : [limite_bas, limite_haut] en degrés. La somme ne peut dépasser 180°. Utile pour les caméras de type: `free`",
                     type: "array",
                     minItems: 2,
                     maxItems: 2,
@@ -88,12 +94,12 @@ const baseSchema = {
                     }
                 },
                 continue_targeting: {
-                    description: "Définit si la caméra doit continuer à suivre la cible même si elle sort des limites de rotation ou de suivi.",
+                    description: "Si activé, la caméra continue de suivre la cible même si elle sort des limites de rotation définies ou du rayon de suivi. Si désactivé, la caméra s'arrête de suivre quand ces limites sont atteintes. Utile pour les caméras de type: `free`",
                     default: false,
                     type: "boolean"
                 },
                 tracking_radius: {
-                    description: "Rayon (en blocs) autour de la caméra où elle peut détecter la cible.",
+                    description: "Rayon (en blocs) autour de la caméra où elle peut détecter la cible. Utile pour les caméras de type: `free`",
                     default: 50,
                     type: "number"
                 },
@@ -103,12 +109,12 @@ const baseSchema = {
                     enum: ["camera", "player"]
                 },
                 player_effects: {
-                    description: "Définit si ce Preset de Caméra contiendra les effets de potions du joueur comme Vision Nocturne ou Cécité.",
+                    description: "Si activé, les effets de potion du joueur (Vision Nocturne, Cécité, etc.) affectent le rendu visuel de la caméra. Si désactivé, la caméra affiche toujours une vue normale sans effets.",
                     default: false,
                     type: "boolean"
                 },
                 view_offset: {
-                    description: "Point d'ancrage qui est au centre de l'écran. Définit le décalage du joueur entre le centre de l'écran et lui.",
+                    description: "Décale visuellement le joueur par rapport au centre de l'écran. Format : [décalage_horizontal, décalage_vertical]. Exemple : [2, -1] décale le joueur vers la droite et vers le bas. Utile pour les caméras de type : `first_person`, `fixed_boom`, `follow_orbit`, `third_person`, `third_person_front`.",
                     type: "array",
                     minItems: 2,
                     maxItems: 2,
@@ -119,7 +125,7 @@ const baseSchema = {
                     }
                 },
                 entity_offset: {
-                    description: "Le décalage d'entité définit le point de pivot de la caméra sur le joueur (0, 0, 0 étant son centre) et est uniquement compatible avec le préréglage follow_orbit pour permettre une rotation précise autour du joueur.",
+                    description: "Déplace le point de pivot de la caméra sur le joueur. Format : [X, Y, Z] où (0, 0, 0) = centre du joueur. Exemple : [0, 1.5, 0] place le pivot à la hauteur de la tête. Principalement utilisé avec `follow_orbit` pour des rotations précises. Utile pour les caméras de type : `first_person`, `fixed_boom`, `follow_orbit`, `third_person`, `third_person_front`.",
                     type: "array",
                     minItems: 3,
                     maxItems: 3,
@@ -130,28 +136,28 @@ const baseSchema = {
                     }
                 },
                 starting_rot_x: {
-                    description: "Définit la rotation X initiale autour du joueur.",
+                    description: "Angle de rotation vertical initial de la caméra autour du joueur (en degrés). Détermine la hauteur de vue de départ : valeur positive = vue depuis le haut, négative = vue depuis le bas. Utile pour les caméras de type: `fixed_boom`, `follow_orbit`.",
                     type: "number"
                 },
                 starting_rot_y: {
-                    description: "Définit la rotation Y initiale autour du joueur.",
+                    description: "Angle de rotation horizontale initial de la caméra autour du joueur (en degrés). Détermine la position de départ : 0° = face au joueur, 90° = côté droit, 180° = derrière, 270° = côté gauche. Utile pour les caméras de type: `fixed_boom`, `follow_orbit`.",
                     type: "number"
                 },
                 radius: {
-                    description: "Distance entre la caméra et le joueur.",
+                    description: "Distance entre la caméra et le joueur. Utile pour les caméras de type: `follow_orbit`, `third_person`, `third_person_front`.",
                     default: 10,
                     type: "number",
                     minimum: 0.10000000149011612,
                     maximum: 64
                 },
                 yaw_limits_min: {
-                    description: "Définit la limite minimale de rotation horizontale (gauche/droite).",
+                    description: "Définit la limite minimale de rotation horizontale (gauche/droite). Utilisé pour les caméras de type: `follow_orbit`, `third_person`, `third_person_front`.",
                     type: "number",
                     minimum: -180,
                     maximum: 179.89999389648438
                 },
                 yaw_limits_max: {
-                    description: "Définit la limite maximale de rotation horizontale (gauche/droite).",
+                    description: "Définit la limite maximale de rotation horizontale (gauche/droite). Utilisé pour les caméras de type: `follow_orbit`, `third_person`, `third_person_front`.",
                     type: "number",
                     minimum: -179.89999389648438,
                     maximum: 180.0
@@ -161,22 +167,27 @@ const baseSchema = {
                     type: "boolean"
                 },
                 aim_assist: {
-                    description: "Définit le preset d'aim-assist à utiliser pour ce preset de caméra.",
+                    description: "Configure l'assistance à la visée pour ce preset de caméra.",
                     type: "object",
                     properties: {
                         preset: {
                             description: "L'identifiant du preset d'aim-assist à utiliser.",
                             type: "string",
-                            pattern: schemaPatterns.identifier_with_namespace
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.aim_assist_preset_ids
                         },
                         distance: {
-                            type: "number"
+                            description: "Distance maximale à laquelle l'assistance à la visée est active.",
+                            type: "number",
+                            minimum: 1,
+                            maximum: 16
                         },
                         target_mode: {
+                            description: "Mode de ciblage de l'assistance : `angle` pour cibler dans un cône d'angle, `distance` pour cibler dans un rayon de distance.",
                             type: "string",
                             enum: ["angle", "distance"]
                         },
                         angle: {
+                            description: "Angle de ciblage pour l'assistance à la visée. Format : [angle_horizontal, angle_vertical] ou {x: horizontal, y: vertical}.",
                             oneOf: [
                                 {
                                     type: "array",
@@ -202,7 +213,12 @@ const baseSchema = {
                     }
                 },
                 control_scheme: {
-                    description: "Définit le schéma de controle par défaut à utiliser pour ce preset de Caméra.",
+                    description: "Définit comment les contrôles réagissent avec cette caméra :\n\n" +
+                    "- `player_relative` : Clavier A/D tournent le joueur | Manette stick gauche tourne | Tactile joystick tourne\n" +
+                    "- `player_relative_strafe` : Clavier A/D = strafe, souris regarde | Manette stick gauche = strafe, stick droit regarde | Tactile joystick = strafe, glisser écran regarde\n" +
+                    "- `locked_player_relative_strafe` : Comme strafe + souris contrôle rotation/visée | Manette stick droit = rotation + visée | Tactile glisser = rotation + visée\n" +
+                    "- `camera_relative` : Joueur suit automatiquement la direction de mouvement | Contrôles identiques sur toutes plateformes\n" +
+                    "- `camera_relative_strafe` : Mouvement sans rotation auto, souris/stick droit/tactile pour regarder",
                     type: "string",
                     enum: [
                         "locked_player_relative_strafe",

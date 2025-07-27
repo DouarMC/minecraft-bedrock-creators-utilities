@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { VANILLA_BIOMES_IDS, VANILLA_BIOMES_TAGS, VANILLA_BLOCK_IDS, VANILLA_COOLDOWN_CATEGORY_IDS, VANILLA_DATA_DRIVEN_ITEM_IDS, VANILLA_EFFECT_IDS, VANILLA_ENTITY_IDS, VANILLA_ITEM_GROUP_IDS, VANILLA_ITEM_IDS, VANILLA_ITEM_TAGS } from "../data/vanillaMinecraftIdentifiers";
+import { VANILLA_AIM_ASSIST_PRESET_IDS, VANILLA_BIOMES_IDS, VANILLA_BIOMES_TAGS, VANILLA_BLOCK_IDS, VANILLA_CAMERA_PRESETS_IDS, VANILLA_COOLDOWN_CATEGORY_IDS, VANILLA_DATA_DRIVEN_ITEM_IDS, VANILLA_DIMENSION_IDS, VANILLA_EFFECT_IDS, VANILLA_ENTITY_IDS, VANILLA_ITEM_GROUP_IDS, VANILLA_ITEM_IDS, VANILLA_ITEM_TAGS } from "../data/vanillaMinecraftIdentifiers";
 
 export async function getBlockIds(): Promise<string[]> {
     const vanillaBlockIds = VANILLA_BLOCK_IDS;
@@ -113,7 +113,25 @@ export async function getAimAssistCategoryIds(): Promise<string[]> {
 }
 
 export async function getAimAssistPresetIds(): Promise<string[]> {
-    return ["minecraft:aim_assist_default"];
+    const vanillaAimAssistPresetIds = VANILLA_AIM_ASSIST_PRESET_IDS;
+    const uris = await vscode.workspace.findFiles('**/addon/behavior_pack/aim_assist/presets/**/*.json');
+    const customAimAssistPresetIds: string[] = [];
+    for (const uri of uris) {
+        try {
+            const fileData = await vscode.workspace.fs.readFile(uri);
+            const content = new TextDecoder('utf-8').decode(fileData);
+            const json = JSON.parse(content);
+
+            const id = json?.["minecraft:aim_assist_preset"]?.description?.identifier;
+            if (typeof id === "string") {
+                customAimAssistPresetIds.push(id);
+            }
+        } catch (error) {
+            console.warn(`⚠️ Erreur lecture fichier ${uri.fsPath}:`, error);
+        }
+    }
+
+    return Array.from(new Set([...vanillaAimAssistPresetIds, ...customAimAssistPresetIds]));
 }
 
 export async function getBiomeIds(): Promise<string[]> {
@@ -177,4 +195,31 @@ export async function getCooldownCategoryIds(): Promise<string[]> {
 export async function getItemTags(): Promise<string[]> {
     const vanillaItemTags = VANILLA_ITEM_TAGS;
     return vanillaItemTags;
+}
+
+export const getCameraPresetIds = async (): Promise<string[]> => {
+    const vanillaCameraPresetIds = VANILLA_CAMERA_PRESETS_IDS;
+
+    const uris = await vscode.workspace.findFiles('**/addon/behavior_pack/cameras/presets/**/*.json');
+    const customCameraPresetIds: string[] = [];
+    for (const uri of uris) {
+        try {
+            const fileData = await vscode.workspace.fs.readFile(uri);
+            const content = new TextDecoder('utf-8').decode(fileData);
+            const json = JSON.parse(content);
+
+            const id = json?.["minecraft:camera_preset"]?.description?.identifier;
+            if (typeof id === "string") {
+                customCameraPresetIds.push(id);
+            }
+        } catch (error) {
+            console.warn(`⚠️ Erreur lecture fichier ${uri.fsPath}:`, error);
+        }
+    }
+
+    return Array.from(new Set([...vanillaCameraPresetIds, ...customCameraPresetIds]));
+};
+
+export async function getDimensionIds(): Promise<string[]> {
+    return VANILLA_DIMENSION_IDS;
 }
