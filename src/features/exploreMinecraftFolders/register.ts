@@ -10,8 +10,6 @@ import {
  * Enregistre les commandes d'exploration des dossiers Minecraft
  */
 export function registerExploreMinecraftFolders(context: vscode.ExtensionContext): void {
-    console.log("🗂️ Enregistrement des commandes d'exploration des dossiers Minecraft...");
-
     // Commande : Ouvrir le dossier des packs Minecraft Stable
     const openStablePacksCommand = vscode.commands.registerCommand(
         'minecraft-bedrock-creators-utilities.openMinecraftStablePacksFolder',
@@ -51,6 +49,4 @@ export function registerExploreMinecraftFolders(context: vscode.ExtensionContext
         openStableVanillaCommand,
         openPreviewVanillaCommand
     );
-
-    console.log("✅ Commandes d'exploration des dossiers Minecraft enregistrées avec succès !");
 }

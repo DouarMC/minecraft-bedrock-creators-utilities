@@ -9,15 +9,12 @@ import { promptToLaunchMinecraft } from './launchMinecraft';
 async function compileTypeScriptIfNeeded(root: vscode.Uri): Promise<boolean> {
     const scriptsPath = vscode.Uri.joinPath(root, "addon", "scripts");
     if (!(await directoryExists(scriptsPath))) {
-        console.log(scriptsPath.fsPath);
-        console.log("Aucun dossier 'scripts' trouvé, pas de compilation nécessaire.");
         return true;
     }
 
     try {
         const execPromise = promisify(exec);
         const { stdout, stderr } = await execPromise(`tsc`, { cwd: root.fsPath });
-        console.log(stdout);
         if (stderr) {
             console.error(stderr);
             vscode.window.showErrorMessage("Erreur lors de la compilation TypeScript : " + stderr);

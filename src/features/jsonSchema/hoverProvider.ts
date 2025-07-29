@@ -199,15 +199,6 @@ function providePropertyHover(
 
     const propertyName = path[path.length - 1] as string;
     
-    // DEBUG: Ajoutons des informations pour comprendre le problème
-    console.log('=== HOVER DEBUG ===');
-    console.log('Property name:', propertyName);
-    console.log('Raw schema:', rawSchema);
-    console.log('Resolved schema:', resolvedSchema);
-    console.log('Unresolved schema:', unresolvedSchema);
-    console.log('Value at path:', valueAtPath);
-    console.log('==================');
-    
     // SOLUTION FINALE : Utiliser unresolvedSchema pour récupérer la description oneOf originale
     
     let propertySchema: any;

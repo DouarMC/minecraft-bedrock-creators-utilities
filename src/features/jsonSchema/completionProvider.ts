@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { parseTree } from 'jsonc-parser';
 import { validateSchema, SchemaValidationResult } from '../../utils/json/validation';
+import { resolveSchemaAtPath } from '../../utils/json/resolveSchemaAtPath';
 import { getBlockIds, getBlockModelIds, getLootTablePaths, getCraftingRecipeTagIds, getCullingLayerIds, getAimAssistCategoryIds, getEntityIds, getItemIds, getAimAssistPresetIds, getBiomeIds, getBiomeTags, getDataDrivenItemIds, getEffectIds, getCooldownCategoryIds, getItemTags, getItemGroupIds, getItemGroupIdsWithMinecraftNamespace, getDataDrivenEntityIds, getCameraPresetIds, getDimensionIds } from '../../utils/workspace/getContent';
 import { dynamicExamplesSourceKeys } from './shared/schemaEnums';
 import { getSchemaAtPosition } from './versioning/schemaContext';
@@ -49,7 +50,34 @@ export function registerCompletionProvider(
 
                     // Utilisation du nouveau système de validation pour résoudre le schéma
                     const validationResult: SchemaValidationResult = validateSchema(rawSchema, valueAtPath);
-                    const resolvedNode = validationResult.matchedSchema || rawSchema;
+                    let resolvedNode = validationResult.matchedSchema || rawSchema;
+                    
+                    // IMPORTANT: Résolution supplémentaire des $ref pour l'autocomplétion
+                    // Le système de validation ne résout pas toujours les $ref dans le contexte des definitions
+                    // On utilise resolveSchemaAtPath qui gère correctement les $ref
+                    try {
+                        const fullyResolvedSchema = resolveSchemaAtPath(fullSchema, path, valueAtPath);
+                        if (fullyResolvedSchema && fullyResolvedSchema !== resolvedNode) {
+                            resolvedNode = fullyResolvedSchema;
+                        }
+                    } catch (error) {
+                        // Si la résolution échoue, on garde le schéma déjà résolu
+                        console.debug('Error resolving schema with resolveSchemaAtPath:', error);
+                    }
+
+                    // DEBUG: Loguer des informations pour diagnostiquer
+                    console.debug('Completion DEBUG:', {
+                        path,
+                        isInArray: path.some(p => typeof p === 'number'),
+                        hasSchema: !!resolvedNode,
+                        schemaType: resolvedNode?.type,
+                        hasProperties: !!resolvedNode?.properties,
+                        hasOneOf: !!resolvedNode?.oneOf,
+                        hasRef: !!resolvedNode?.$ref,
+                        rawSchemaRef: rawSchema?.$ref,
+                        fullSchemaHasDefinitions: !!(fullSchema as any)?.definitions,
+                        valueAtPath
+                    });
                     
                     if (!resolvedNode) { // Si pas de schéma résolu, on ne propose rien
                         return [];
@@ -64,6 +92,49 @@ export function registerCompletionProvider(
 
                     // Gestion intelligente des propriétés avec résolution oneOf améliorée
                     let propertiesForCompletion: any = resolvedNode.properties;
+
+                    // Résolution manuelle spéciale pour les $ref vers definitions
+                    if (resolvedNode?.$ref && resolvedNode.$ref.startsWith('#/definitions/')) {
+                        const definitionPath = resolvedNode.$ref.slice(2).split('/'); // Enlever '#/' et diviser
+                        let refSchema: any = fullSchema;
+                        console.debug('Trying to resolve $ref:', resolvedNode.$ref, 'from fullSchema:', !!refSchema);
+                        
+                        for (const segment of definitionPath) {
+                            console.debug('  -> Looking for segment:', segment, 'in:', Object.keys(refSchema || {}));
+                            if (refSchema && refSchema[segment]) {
+                                refSchema = refSchema[segment];
+                                console.debug('  -> Found:', segment);
+                            } else {
+                                console.debug('  -> NOT FOUND:', segment);
+                                refSchema = undefined;
+                                break;
+                            }
+                        }
+                        if (refSchema) {
+                            console.debug('✅ Successfully resolved $ref:', resolvedNode.$ref, 'to schema with oneOf:', !!refSchema.oneOf);
+                            resolvedNode = refSchema;
+                            propertiesForCompletion = resolvedNode.properties;
+                        } else {
+                            console.debug('❌ Failed to resolve $ref:', resolvedNode.$ref);
+                        }
+                    }
+
+                    // NOUVEAU: Gestion spéciale des schémas oneOf pour l'autocomplétion
+                    if (resolvedNode?.oneOf && !propertiesForCompletion) {
+                        console.debug('🔄 Schema has oneOf, extracting all possible properties...');
+                        const allProperties: any = {};
+                        
+                        for (const branch of resolvedNode.oneOf) {
+                            if (branch?.properties) {
+                                // Fusionner toutes les propriétés de toutes les branches oneOf
+                                Object.assign(allProperties, branch.properties);
+                            }
+                        }
+                        
+                        if (Object.keys(allProperties).length > 0) {
+                            propertiesForCompletion = allProperties;
+                        }
+                    }
 
                     // Cas spécial : si nous sommes dans un élément de tableau (path contient un nombre),
                     // nous devons vérifier si le schéma parent du tableau a un oneOf pour fusionner toutes les propriétés

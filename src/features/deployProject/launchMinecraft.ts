@@ -17,7 +17,6 @@ export async function launchMinecraft(minecraftProduct: "stable" | "preview"): P
         // Commande PowerShell pour lancer l'application UWP
         const command = `powershell -Command "Start-Process '${launchUri}'"`;
         
-        console.log(`🚀 Lancement de Minecraft ${minecraftProduct}...`);
         await execPromise(command);
         
         vscode.window.showInformationMessage(`🎮 Minecraft ${minecraftProduct === "stable" ? "Stable" : "Preview"} en cours de lancement...`);

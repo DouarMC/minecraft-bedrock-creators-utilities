@@ -1,9 +1,14 @@
 import { SchemaChange, SchemaType } from "../../../../../types/schema";
+import { commonSchemas, getCommonDefinitions } from "../../../shared/commonSchemas";
 import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
 import { schemaPatterns } from "../../../shared/schemaPatterns";
 
 const baseSchema = {
     $schema: "http://json-schema.org/draft-07/schema#",
+    
+    // Definitions pour les schémas réutilisables et récursifs
+    definitions: getCommonDefinitions(),
+    
     type: "object",
     required: ["format_version", "minecraft:entity"],
     properties: {
@@ -268,17 +273,18 @@ const baseSchema = {
                             }
                         },
                         "minecraft:addrider": {
-                            description: "Ajoute un cavalier à l'Entité.  Type: `Object`. L'Entité doit avoir le composant `minecraft:rideable`.",
+                            description: "Ajoute un cavalier à l'Entité. L'Entité doit avoir le composant `minecraft:rideable`.",
                             type: "object",
                             properties: {
                                 entity_type: {
                                     description: "Définit le type de l'entité qui chevauchera cette Entité.",
-                                    type: "string"
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.entity_ids
                                 },
                                 spawn_event: {
                                     description: "Le spawn event qui sera déclenché sur l'Entité chevauchée quand son cavalier sera crée.",
                                     type: "string"
-                                },
+                                }
                             }
                         },
                         "minecraft:admire_item": {
@@ -298,18 +304,19 @@ const baseSchema = {
                             }
                         },
                         "minecraft:ageable": {
-                            description: "Ajoute un timer pour que l'Entité grandisse. Le timer peut être accéléré en donnant à l'Entité des items qu'elle aime comme défini par `feed_items`.",
+                            description: "Ajoute un timer pour que l'Entité grandisse. Le timer peut être accéléré en donnant à l'Entité des items qu'elle aime, ces items sont définis dans `feed_items`.",
                             type: "object",
                             properties: {
                                 drop_items: {
                                     description: "Items que l'Entité lâche quand elle grandit.",
                                     type: "array",
                                     items: {
-                                        type: "string"
+                                        type: "string",
+                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
                                     }
                                 },
                                 duration: {
-                                    description: "Temps en secondes avant que l'Entité grandisse.  Type: `Number`. Une valeur de `-1` signifie que l'Entité restera toujours un bébé.",
+                                    description: "Temps en secondes avant que l'Entité grandisse. Une valeur de `-1` signifie que l'Entité restera toujours un bébé.",
                                     default: 1200,
                                     type: "number"
                                 },
@@ -319,14 +326,16 @@ const baseSchema = {
                                     items: {
                                         oneOf: [
                                             {
-                                                type: "string"
+                                                type: "string",
+                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
                                             },
                                             {
                                                 type: "object",
                                                 properties: {
                                                     item: {
                                                         description: "Nom de l'item.",
-                                                        type: "string"
+                                                        type: "string",
+                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
                                                     },
                                                     growth: {
                                                         description: "Proportion de la croissance gagnée en utilisant cet item.",
@@ -339,6 +348,12 @@ const baseSchema = {
                                 },
                                 grow_up: {
                                     description: "Evenement d'entité à déclencher quand l'Entité grandit.",
+                                    oneOf: [
+                                        {
+                                            type: "string"
+                                        },
+                                        commonSchemas.entity_event_trigger
+                                    ]
                                 },
                                 interact_filters: {
                                     description: "Liste des conditions à remplir pour que l'Entité soit nourrie.",

@@ -13,8 +13,6 @@ async function openExplorer(folderPath: string): Promise<void> {
     // Commande pour ouvrir l'explorateur Windows
     const command = `explorer "${folderPath}"`;
     
-    console.log(`📂 Ouverture de l'explorateur : ${folderPath}`);
-    
     // Lancer la commande sans attendre les erreurs (explorer peut retourner des codes d'erreur même en cas de succès)
     await execPromise(command).catch(() => {
         // Ignorer les erreurs d'explorer, car il peut retourner des codes d'erreur même quand ça marche

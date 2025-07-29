@@ -291,7 +291,6 @@ export async function createAddonStructure(projectFolder: vscode.Uri, metadata: 
         const { stdout, stderr } = await execPromise("npm install", { cwd: projectFolder.fsPath });
 
         if (stderr) console.error(stderr);
-        console.log(stdout);
         vscode.window.showInformationMessage("📦 Modules npm installés !");
     } catch (error: any) {
         // Vérifie si le problème vient du fait que npm n'est pas reconnu

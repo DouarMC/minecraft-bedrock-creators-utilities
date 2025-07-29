@@ -30,15 +30,20 @@ export function registerValidationJson(
 
     vscode.workspace.onDidOpenTextDocument(validateDocumentIfNeeded);
     
-    // Debounce les changements pour éviter la validation excessive
+    // Debounce adaptatif selon la taille du fichier
     let validationTimeout: NodeJS.Timeout | undefined;
     vscode.workspace.onDidChangeTextDocument(e => {
         if (validationTimeout) {
             clearTimeout(validationTimeout);
         }
+        
+        // Délai adaptatif : plus court pour les petits fichiers
+        const documentSize = e.document.getText().length;
+        const delay = documentSize > 50000 ? 800 : 300; // 300ms pour petits fichiers, 800ms pour gros
+        
         validationTimeout = setTimeout(() => {
             validateDocumentIfNeeded(e.document);
-        }, 500); // Attendre 500ms après la dernière frappe
+        }, delay);
     });
     
     vscode.workspace.textDocuments.forEach(validateDocumentIfNeeded);
@@ -63,6 +68,12 @@ function validateDocument(document: vscode.TextDocument, diagnostics: vscode.Dia
         return;
     }
 
+    // Limitation intelligente pour les gros fichiers
+    const documentSize = document.getText().length;
+    const isLargeFile = documentSize > 50000; // Plus de 50KB
+    const maxValidationDepth = isLargeFile ? 3 : 10; // Limiter la profondeur pour les gros fichiers
+    const maxErrors = isLargeFile ? 20 : 100; // Limiter le nombre d'erreurs
+
     const allDiagnostics: vscode.Diagnostic[] = [];
     const parseErrors: ParseError[] = [];
     
@@ -74,7 +85,18 @@ function validateDocument(document: vscode.TextDocument, diagnostics: vscode.Dia
     }
 
     // Explore le JSON en utilisant une fonction récursive pour valider chaque noeud
+    let errorCount = 0;
     walkJsonTree(root, (node, path) => {
+        // Arrêter si on a déjà trop d'erreurs (évite la surcharge)
+        if (errorCount >= maxErrors) {
+            return;
+        }
+
+        // Limiter la profondeur pour les gros fichiers
+        if (path.length > maxValidationDepth) {
+            return;
+        }
+
         if (!node || node.type === undefined) {
             return;
         }
@@ -84,6 +106,8 @@ function validateDocument(document: vscode.TextDocument, diagnostics: vscode.Dia
 
         // Traitement des erreurs avec le nouveau système
         for (const validationError of validationResult.errors) {
+            if (errorCount >= maxErrors) break;
+
             const diagnostic = new vscode.Diagnostic(
                 toRange(document, node),
                 validationError.error,
@@ -107,11 +131,24 @@ function validateDocument(document: vscode.TextDocument, diagnostics: vscode.Dia
             (diagnostic as any)._errorCode = validationError.code;
 
             allDiagnostics.push(diagnostic);
+            errorCount++;
         }
     });
 
     // Filtrage intelligent des diagnostics redondants
     const filteredDiagnostics = filterRedundantDiagnostics(allDiagnostics);
+    
+    // Ajouter une note si la validation a été limitée
+    if (isLargeFile && errorCount >= maxErrors) {
+        const truncatedDiagnostic = new vscode.Diagnostic(
+            new vscode.Range(0, 0, 0, 0),
+            `Validation limitée pour ce gros fichier (${Math.round(documentSize/1024)}KB). Montrant les ${maxErrors} premières erreurs.`,
+            vscode.DiagnosticSeverity.Information
+        );
+        truncatedDiagnostic.source = 'JSON Schema';
+        filteredDiagnostics.push(truncatedDiagnostic);
+    }
+    
     diagnostics.set(document.uri, filteredDiagnostics);
 }
 

@@ -39,8 +39,6 @@ export function registerMolangEditorCommand(context: vscode.ExtensionContext) {
             // 🔁 Enregistrement automatique à chaque modification
             const autoSaveDisposable = vscode.workspace.onDidChangeTextDocument(async event => {
                 if (event.document.uri.toString() === virtualUri.toString()) {
-                    console.log("[AutoSave] Changement détecté pour :", virtualUri.toString());
-
                     try {
                         await virtualDoc.save();
                     } catch (error) {
@@ -75,8 +73,6 @@ export function registerMolangEditorCommand(context: vscode.ExtensionContext) {
                 const edit = new vscode.WorkspaceEdit();
                 edit.replace(context.originUri, range, JSON.stringify(updatedText));
                 await vscode.workspace.applyEdit(edit);
-
-                console.log("✅ Valeur Molang réinjectée avec succès.");
             });
 
 

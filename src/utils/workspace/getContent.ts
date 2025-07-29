@@ -48,6 +48,11 @@ export async function getItemIds(): Promise<string[]> {
 
 export async function getEntityIds(): Promise<string[]> {
     const vanillaEntityIds = VANILLA_ENTITY_IDS;
+
+    const vanillaEntityIdsWithoutNamespace = vanillaEntityIds.map(id =>
+        id.startsWith("minecraft:") ? id.slice("minecraft:".length) : id
+    );
+
     const uris = await vscode.workspace.findFiles('**/addon/behavior_pack/entities/**/*.json');
     const customEntityIds: string[] = [];
     for (const uri of uris) {
@@ -64,7 +69,8 @@ export async function getEntityIds(): Promise<string[]> {
             console.warn(`⚠️ Erreur lecture fichier ${uri.fsPath}:`, error);
         }
     }
-    return Array.from(new Set([...vanillaEntityIds, ...customEntityIds]));
+    
+    return Array.from(new Set([...vanillaEntityIds, ...vanillaEntityIdsWithoutNamespace, ...customEntityIds]));
 }
 
 export async function getDataDrivenEntityIds(): Promise<string[]> {

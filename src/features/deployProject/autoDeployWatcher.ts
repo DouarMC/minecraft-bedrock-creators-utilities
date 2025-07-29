@@ -36,7 +36,6 @@ async function startWatcher(root: vscode.Uri) {
 
     const onChange = async (uri: vscode.Uri) => {
         if (uri.fsPath.endsWith('.js')) return;
-        console.log(`📁 Fichier modifié : ${uri.fsPath}`);
         vscode.commands.executeCommand("minecraft-bedrock-creators-utilities.deployProject");
     };
 

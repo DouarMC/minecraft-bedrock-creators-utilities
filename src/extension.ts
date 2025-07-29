@@ -6,16 +6,12 @@ import { registerJsonSchemaFeatures } from './features/jsonSchema/register';
 import { registerMolangFeatures } from './features/molang/register';
 import { registerExploreMinecraftFolders } from './features/exploreMinecraftFolders/register';
 import { ExtensionCacheManager } from './cache/extensionCacheManager';
-import { PerformanceMonitor } from './utils/performanceMonitor';
 
 let cacheManager: ExtensionCacheManager;
 
 export async function activate(context: vscode.ExtensionContext) {
     // Initialisation du gestionnaire de cache en premier
     cacheManager = new ExtensionCacheManager(context);
-
-    // Initialisation du monitoring de performance
-    PerformanceMonitor.registerCommands(context);
 
     // Enregistrement des fonctionnalités
     registerInitEnvironmentCommand(context);
@@ -27,5 +23,4 @@ export async function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() {
     // Le nettoyage des caches est géré automatiquement par le CacheManager
-    PerformanceMonitor.disable();
 }
