@@ -5,19 +5,54 @@ import { validateSchema, SchemaValidationResult } from '../../utils/json/validat
 import { getSchemaAtNodePath } from './versioning/schemaContext';
 import { walkJsonTree } from '../../utils/json/walkJsonTree';
 import { getJsonTree } from '../../utils/json/optimizedParsing';
+import { ConflictAvoidance } from '../../utils/conflictAvoidance';
 
-export function registerValidationJson(context: vscode.ExtensionContext) {
+export function registerValidationJson(
+    context: vscode.ExtensionContext,
+    filePatterns?: Array<{ language: string; pattern: string }>
+) {
     const diagnostics = vscode.languages.createDiagnosticCollection("minecraft-bedrock-creators-utilities.jsonValidation");
     context.subscriptions.push(diagnostics);
 
-    vscode.workspace.onDidOpenTextDocument(doc => validateDocument(doc, diagnostics));
-    vscode.workspace.onDidChangeTextDocument(e => validateDocument(e.document, diagnostics));
-    vscode.workspace.textDocuments.forEach(doc => validateDocument(doc, diagnostics));
+    // Fonction de validation qui vérifie si le document correspond aux patterns
+    const shouldValidateDocument = (document: vscode.TextDocument): boolean => {
+        // Utilise le système de détection intelligent des conflits
+        return ConflictAvoidance.shouldHandleDocument(document);
+    };
+
+    const validateDocumentIfNeeded = (doc: vscode.TextDocument) => {
+        if (shouldValidateDocument(doc)) {
+            validateDocument(doc, diagnostics);
+        } else {
+            diagnostics.delete(doc.uri);
+        }
+    };
+
+    vscode.workspace.onDidOpenTextDocument(validateDocumentIfNeeded);
+    
+    // Debounce les changements pour éviter la validation excessive
+    let validationTimeout: NodeJS.Timeout | undefined;
+    vscode.workspace.onDidChangeTextDocument(e => {
+        if (validationTimeout) {
+            clearTimeout(validationTimeout);
+        }
+        validationTimeout = setTimeout(() => {
+            validateDocumentIfNeeded(e.document);
+        }, 500); // Attendre 500ms après la dernière frappe
+    });
+    
+    vscode.workspace.textDocuments.forEach(validateDocumentIfNeeded);
 }
 
 function validateDocument(document: vscode.TextDocument, diagnostics: vscode.DiagnosticCollection) {
     // Si le document n'est pas un JSON, on ne fait rien
     if (document.languageId !== 'json' && document.languageId !== 'jsonc') {
+        diagnostics.delete(document.uri);
+        return;
+    }
+
+    // Vérification supplémentaire : doit être un fichier Minecraft
+    if (!ConflictAvoidance.shouldHandleDocument(document)) {
         diagnostics.delete(document.uri);
         return;
     }

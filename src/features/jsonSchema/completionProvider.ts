@@ -7,17 +7,39 @@ import { getSchemaAtPosition } from './versioning/schemaContext';
 import { findNearestNodeAtPath } from '../../utils/json/findNearestNodeAtPath';
 import { getCursorContext } from '../../utils/json/getCursorContext';
 import { findNearestObjectAtNode } from '../../utils/json/findNearestObjectAtPath';
+import { ConflictAvoidance } from '../../utils/conflictAvoidance';
 
 /**
- * Enregistre le provider de complétion pour les fichiers JSON
+ * Enregistre le provider de complétion pour les fichiers JSON avec patterns spécifiques
  * @param context Le contexte de l'extension
+ * @param filePatterns Patterns de fichiers spécifiques (optionnel)
  */
-export function registerCompletionProvider(context: vscode.ExtensionContext) {
+export function registerCompletionProvider(
+    context: vscode.ExtensionContext, 
+    filePatterns?: Array<{ language: string; pattern: string }>
+) {
+    // Utilise des patterns spécifiques si fournis, sinon les patterns par défaut
+    const documentSelector = filePatterns || [
+        { language: "json", scheme: "file" }, 
+        { language: "jsonc", scheme: "file" }
+    ];
+
     context.subscriptions.push(
         vscode.languages.registerCompletionItemProvider(
-            [{ language: "json", scheme: "file" }, { language: "jsonc", scheme: "file" }],
+            documentSelector,
             {
                 async provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
+                    // Vérification rapide : est-ce un fichier Minecraft ?
+                    if (!ConflictAvoidance.shouldHandleDocument(document)) {
+                        return [];
+                    }
+
+                    // Vérification : VS Code est-il encore en train de traiter le document ?
+                    if (ConflictAvoidance.isVSCodeProcessingDocument(document)) {
+                        // Attendre un court instant pour éviter les conflits
+                        await ConflictAvoidance.waitForNativeValidation(document);
+                    }
+
                     // On récupère le schéma à la position actuelle, le chemin et la valeur à cette position, et le schéma complet
                     const {path, schema: rawSchema, valueAtPath, fullSchema} = getSchemaAtPosition(document, position);
                     

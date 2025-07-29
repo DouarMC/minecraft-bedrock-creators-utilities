@@ -69,11 +69,30 @@
                 "command": "minecraft-bedrock-creators-utilities.showCacheStats",
                 "title": "📊 Afficher les statistiques des caches",
                 "category": "Minecraft Bedrock Utilities"
+            },
+            {
+                "command": "minecraft-bedrock-creators-utilities.enablePerformanceMonitoring",
+                "title": "🔍 Activer le monitoring de performance",
+                "category": "Minecraft Bedrock Utilities"
+            },
+            {
+                "command": "minecraft-bedrock-creators-utilities.disablePerformanceMonitoring",
+                "title": "⏹️ Désactiver le monitoring de performance",
+                "category": "Minecraft Bedrock Utilities"
+            },
+            {
+                "command": "minecraft-bedrock-creators-utilities.showPerformanceReport",
+                "title": "📈 Afficher le rapport de performance",
+                "category": "Minecraft Bedrock Utilities"
             }
         ],
         "jsonValidation": [
             {
-                "fileMatch": ["*.json"],
+                "fileMatch": [
+                    "**/behavior_pack/**/*.json",
+                    "**/resource_pack/**/*.json",
+                    "**/addon/**/*.json"
+                ],
                 "url": "./schemas/empty.schema.json"
             }
         ],

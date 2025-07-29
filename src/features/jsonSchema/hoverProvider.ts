@@ -5,13 +5,33 @@ import { resolveSchemaAtPath } from "../../utils/json/resolveSchemaAtPath";
 import { getJsonTree } from "../../utils/json/optimizedParsing";
 import { parseTree } from "jsonc-parser";
 import { nodeToValue } from "../../utils/json/nodeToValue";
+import { ConflictAvoidance } from "../../utils/conflictAvoidance";
 
-export function registerHoverProvider(context: vscode.ExtensionContext) {
+export function registerHoverProvider(
+    context: vscode.ExtensionContext,
+    filePatterns?: Array<{ language: string; pattern: string }>
+) {
+    // Utilise des patterns spécifiques si fournis, sinon les patterns par défaut
+    const documentSelector = filePatterns || [
+        { language: "json", scheme: "file" }, 
+        { language: "jsonc", scheme: "file" }
+    ];
+
     context.subscriptions.push(
         vscode.languages.registerHoverProvider(
-            [{ language: "json", scheme: "file" }, { language: "jsonc", scheme: "file" }],
+            documentSelector,
             {
                 provideHover(document, position) {
+                    // Vérification rapide : est-ce un fichier Minecraft ?
+                    if (!ConflictAvoidance.shouldHandleDocument(document)) {
+                        return;
+                    }
+
+                    // Vérification : VS Code est-il encore en train de traiter le document ?
+                    if (ConflictAvoidance.isVSCodeProcessingDocument(document)) {
+                        return; // Laisser VS Code finir son traitement
+                    }
+
                     const { path, schema: rawSchema, fullSchema, valueAtPath } = getSchemaAtPosition(document, position);
                     if (!rawSchema || !fullSchema) {
                         return;
