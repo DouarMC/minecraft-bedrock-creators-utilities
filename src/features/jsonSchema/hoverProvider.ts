@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { validateSchema } from "../../utils/json/validation";
 import { getSchemaAtPosition } from "./versioning/schemaContext";
 import { resolveSchemaAtPath } from "../../utils/json/resolveSchemaAtPath";
+import { getJsonTree } from "../../utils/json/optimizedParsing";
 import { parseTree } from "jsonc-parser";
 import { nodeToValue } from "../../utils/json/nodeToValue";
 
@@ -23,17 +24,6 @@ export function registerHoverProvider(context: vscode.ExtensionContext) {
 
                     // Récupérer le schéma original (avec oneOf intact) via la navigation brute
                     const unresolvedSchema = getUnresolvedSchema(fullSchema, path);
-                    
-                    // DEBUG: Log pour détecter les problèmes de cache de schéma
-                    console.log('🔍 DEBUG Schema Context:');
-                    console.log('  - Document:', document.uri.fsPath);
-                    console.log('  - Path:', path);
-                    console.log('  - Raw schema keys:', Object.keys(rawSchema || {}));
-                    console.log('  - Unresolved schema keys:', Object.keys(unresolvedSchema || {}));
-                    console.log('  - Raw schema description:', rawSchema?.description);
-                    console.log('  - Raw schema markdownDescription:', rawSchema?.markdownDescription);
-                    console.log('  - Unresolved schema description:', unresolvedSchema?.description);
-                    console.log('  - Unresolved schema markdownDescription:', unresolvedSchema?.markdownDescription);
 
                     // Utilisation du système de validation pour résoudre le schéma
                     const validationResult = validateSchema(rawSchema, valueAtPath);

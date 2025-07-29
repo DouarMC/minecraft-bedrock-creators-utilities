@@ -4,78 +4,76 @@ import { getMinecraftProjectMetadataSync } from "../../../utils/workspace/getMin
 import * as vscode from "vscode";
 
 /**
- * Applique les modifications de schéma versionnées à un schéma de base.
+ * Applique les modifications de schéma versionnées à un schéma de base avec optimisations.
  * @param schemaType Le type de schéma contenant le schéma de base et les modifications versionnées.
  * @param formatVersion La version de format du document à modifier, sous forme de chaîne de caractères.
- * @returns 
+ * @param documentUri URI du document pour déterminer le contexte projet
+ * @returns Le schéma modifié et optimisé
  */
 export function applyVersionedSchema(schemaType: SchemaType, formatVersion: string | undefined, documentUri?: vscode.Uri): any {
     const result = cloneDeep(schemaType.baseSchema); // Crée une copie profonde du schéma de base
 
     // Si la version de format est définie, on applique les modifications versionnées
     if (formatVersion) {
-        for (const changeSet of schemaType.versionedChanges) { // Parcourt chaque ensemble de changements versionnés
-            if (compareVersions(formatVersion, changeSet.version) >= 0) { // Si la format version du document est supérieure ou égale à la version de l'ensemble de changements
-                for (const change of changeSet.changes) { // Pour chaque changement dans l'ensemble
-                    switch (change.action) {
-                        // Si l'action est "add" ou "modify", on ajoute ou modifie la valeur à l'emplacement spécifié par change.target
-                        case "add":
-                        case "modify":
-                            set(result, change.target, change.value);
-                            break;
-                        // Si l'action est "remove", on supprime la valeur à l'emplacement spécifié par change.target
-                        case "remove":
-                            unset(result, change.target);
-                            break;
-                    }
-                }
+        // Application des changements de version standard
+        for (const changeSet of schemaType.versionedChanges) {
+            if (compareVersions(formatVersion, changeSet.version) >= 0) {
+                applyChanges(result, changeSet.changes);
             }
         }
 
-        // Determine project metadata based on the document location, fallback to first workspace folder
-        const folderUri = documentUri 
-            ? vscode.workspace.getWorkspaceFolder(documentUri)?.uri 
-            : vscode.workspace.workspaceFolders?.[0].uri;
-        const projectMetadata = folderUri 
-            ? getMinecraftProjectMetadataSync(folderUri) 
-            : undefined;
+        // Détermination des métadonnées projet de manière optimisée
+        const projectMetadata = documentUri ? getProjectMetadataOptimized(documentUri) : undefined;
             
-        // DEBUG: Log pour détecter les problèmes de changement de mode
-        console.log('🔍 DEBUG Preview Detection:');
-        console.log('  - Document URI:', documentUri?.fsPath);
-        console.log('  - Folder URI:', folderUri?.fsPath);
-        console.log('  - Project metadata:', projectMetadata);
-        console.log('  - Is Preview?:', projectMetadata?.minecraftProduct === "preview");
-        console.log('  - Has preview changes?:', !!schemaType.previewVersionedChanges);
-            
+        // Application des changements preview si nécessaire
         if (projectMetadata?.minecraftProduct === "preview" && schemaType.previewVersionedChanges) {
             for (const changeSet of schemaType.previewVersionedChanges) {
                 if (compareVersions(formatVersion, changeSet.version) >= 0) {
-                    for (const change of changeSet.changes) {
-                        switch (change.action) {
-                            case "add":
-                            case "modify":
-                                set(result, change.target, change.value);
-                                break;
-                            case "remove":
-                                unset(result, change.target);
-                                break;
-                        }
-                    }
+                    applyChanges(result, changeSet.changes);
                 }
             }
         }
     }
 
-    // Retourne le schéma modifié
     return result;
 }
 
 /**
- * Compare deux versions de format en string.
+ * Applique un ensemble de changements à un schéma de manière optimisée
+ */
+function applyChanges(schema: any, changes: any[]): void {
+    for (const change of changes) {
+        switch (change.action) {
+            case "add":
+            case "modify":
+                set(schema, change.target, change.value);
+                break;
+            case "remove":
+                unset(schema, change.target);
+                break;
+        }
+    }
+}
+
+/**
+ * Récupère les métadonnées projet de manière optimisée
+ */
+function getProjectMetadataOptimized(documentUri: vscode.Uri): any {
+    try {
+        const folderUri = vscode.workspace.getWorkspaceFolder(documentUri)?.uri 
+            || vscode.workspace.workspaceFolders?.[0].uri;
+        
+        return folderUri ? getMinecraftProjectMetadataSync(folderUri) : undefined;
+    } catch {
+        return undefined;
+    }
+}
+
+/**
+ * Compare deux versions de format en string (fonction inchangée car déjà optimisée).
  * @param a La première version à comparer.
  * @param b La deuxième version à comparer.
- * @returns 
+ * @returns Résultat de la comparaison (-1, 0, 1)
  */
 function compareVersions(a: string, b: string): number {
     const aParts = a.split('.').map(Number);

@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
-import { parseTree, ParseError, Node } from 'jsonc-parser';
+import { ParseError, Node } from 'jsonc-parser';
 import { getVersionedSchemaForFile } from './versioning/getVersionedSchemaForFile';
 import { validateSchema, SchemaValidationResult } from '../../utils/json/validation';
 import { getSchemaAtNodePath } from './versioning/schemaContext';
 import { walkJsonTree } from '../../utils/json/walkJsonTree';
-import { nodeToValue } from '../../utils/json/nodeToValue';
+import { getJsonTree } from '../../utils/json/optimizedParsing';
 
 export function registerValidationJson(context: vscode.ExtensionContext) {
     const diagnostics = vscode.languages.createDiagnosticCollection("minecraft-bedrock-creators-utilities.jsonValidation");
@@ -22,17 +22,17 @@ function validateDocument(document: vscode.TextDocument, diagnostics: vscode.Dia
         return;
     }
 
-    const schema = getVersionedSchemaForFile(document); // Récupère le schéma versionné pour le fichier
-    // Si aucun schéma n'est trouvé, on supprime les diagnostics pour ce document
+    const schema = getVersionedSchemaForFile(document);
     if (!schema) {
         diagnostics.delete(document.uri);
         return;
     }
 
-    const allDiagnostics: vscode.Diagnostic[] = []; // Collecte TOUS les diagnostics avant filtrage
-    const parseErrors: ParseError[] = []; // Tableau pour stocker les erreurs de parsing
-    const root = parseTree(document.getText(), parseErrors); // Parse le document JSON en arbre
-    // Si on n'obtient pas de racine, on supprime les diagnostics pour ce document
+    const allDiagnostics: vscode.Diagnostic[] = [];
+    const parseErrors: ParseError[] = [];
+    
+    // Utilisation du parsing optimisé avec cache
+    const root = getJsonTree(document);
     if (!root) {
         diagnostics.delete(document.uri);
         return;
@@ -40,8 +40,7 @@ function validateDocument(document: vscode.TextDocument, diagnostics: vscode.Dia
 
     // Explore le JSON en utilisant une fonction récursive pour valider chaque noeud
     walkJsonTree(root, (node, path) => {
-        const value = nodeToValue(node); // Convertit le noeud en valeur JavaScript
-        if (value === undefined) { // Si la valeur est indéfinie, on ignore ce noeud
+        if (!node || node.type === undefined) {
             return;
         }
 
@@ -68,9 +67,9 @@ function validateDocument(document: vscode.TextDocument, diagnostics: vscode.Dia
             }
 
             // Ajouter métadonnées pour le filtrage intelligent
-            (diagnostic as any)._nodePath = path; // Chemin du nœud dans le JSON
-            (diagnostic as any)._nodeType = node.type; // Type du nœud (object, property, string, etc.)
-            (diagnostic as any)._errorCode = validationError.code; // Code d'erreur pour le filtrage
+            (diagnostic as any)._nodePath = path;
+            (diagnostic as any)._nodeType = node.type;
+            (diagnostic as any)._errorCode = validationError.code;
 
             allDiagnostics.push(diagnostic);
         }

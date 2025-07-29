@@ -99,20 +99,12 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                         }
                         
                         if (arraySchema?.items?.oneOf) {
-                            console.log("🎯 Array oneOf detected in items!");
-                            console.log("arraySchema.items.oneOf:", arraySchema.items.oneOf);
-                            
                             // Utiliser la nouvelle logique intelligente pour les éléments de tableau oneOf
                             const mergedProperties = mergeOneOfPropertiesWithEnums(arraySchema.items.oneOf, valueAtPath);
-                            console.log("✅ Array merged properties:", mergedProperties);
                             propertiesForCompletion = mergedProperties;
                         } else if (arraySchema?.oneOf) {
-                            console.log("🎯 Array oneOf detected directly!");
-                            console.log("arraySchema.oneOf:", arraySchema.oneOf);
-                            
                             // Utiliser la nouvelle logique intelligente pour les éléments de tableau oneOf
                             const mergedProperties = mergeOneOfPropertiesWithEnums(arraySchema.oneOf, valueAtPath);
-                            console.log("✅ Array merged properties:", mergedProperties);
                             propertiesForCompletion = mergedProperties;
                         } else if (rawSchema?.properties) {
                             // Si pas de oneOf au niveau du tableau mais rawSchema a des propriétés,
@@ -122,15 +114,9 @@ export function registerCompletionProvider(context: vscode.ExtensionContext) {
                     }
                     // Pour les objets normaux (non dans des tableaux), utiliser la logique existante
                     else if (rawSchema.oneOf && typeof valueAtPath === "object" && valueAtPath !== null) {
-                        console.log("🚀 OneOf detected for normal object!");
-                        console.log("rawSchema.oneOf:", rawSchema.oneOf);
-                        console.log("valueAtPath:", valueAtPath);
-                        
                         // Nouvelle logique améliorée pour oneOf avec fusion intelligente des enums
                         const mergedProperties = mergeOneOfPropertiesWithEnums(rawSchema.oneOf, valueAtPath);
-                        console.log("✅ Merged properties:", mergedProperties);
                         propertiesForCompletion = Object.assign({}, propertiesForCompletion || {}, mergedProperties);
-                        console.log("🎯 Final propertiesForCompletion:", propertiesForCompletion);
                     }
 
                     // Déterminer le schéma pour les valeurs (nécessaire pour la détection précoce)

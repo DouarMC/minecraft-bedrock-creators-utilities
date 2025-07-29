@@ -59,6 +59,16 @@
                 "command": "minecraft-bedrock-creators-utilities.openMinecraftPreviewVanillaFolder",
                 "title": "📂 Ouvrir les ressources vanilla Minecraft Preview",
                 "category": "Minecraft Bedrock Utilities"
+            },
+            {
+                "command": "minecraft-bedrock-creators-utilities.clearCaches",
+                "title": "🧹 Vider les caches de performance",
+                "category": "Minecraft Bedrock Utilities"
+            },
+            {
+                "command": "minecraft-bedrock-creators-utilities.showCacheStats",
+                "title": "📊 Afficher les statistiques des caches",
+                "category": "Minecraft Bedrock Utilities"
             }
         ],
         "jsonValidation": [
