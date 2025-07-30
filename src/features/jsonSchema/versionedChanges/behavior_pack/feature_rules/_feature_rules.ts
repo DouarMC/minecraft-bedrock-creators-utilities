@@ -1,4 +1,6 @@
 import { SchemaType } from "../../../../../types/schema";
+import { commonSchemas } from "../../../shared/commonSchemas";
+import { schemaPatterns } from "../../../shared/schemaPatterns";
 
 
 const baseSchema = {
@@ -27,7 +29,7 @@ const baseSchema = {
                         "identifier": {
                             "description": "L'identifiant de la Feature Rules. \nType: `String` \nNote: Doit être de la forme 'namespace:feature_rule_id' et 'feature_rule_id' doit correspondre au nom du fichier.",
                             "type": "string",
-                            "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                            pattern: schemaPatterns.identifier_with_namespace
                         },
                         "places_feature": {
                             "description": "L'identifiant de la Feature à placer. \nType: `String`",
@@ -48,12 +50,12 @@ const baseSchema = {
                             "description": "Liste des tests de filtre pour déterminer à quels biomes cette règle sera attachée. \nType: `(Minecraft Filter | Minecraft Filter[])`",
                             "oneOf": [
                                 {
-                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/minecraft_filter"
+                                    ...commonSchemas.minecraft_filter
                                 },
                                 {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/minecraft_filter"
+                                        ...commonSchemas.minecraft_filter,
                                     }
                                 }
                             ]
@@ -69,14 +71,7 @@ const baseSchema = {
                             "description": "Distribution pour la coordonnée (évaluée à chaque itération). \nType: `Molang | Object`",
                             "oneOf": [
                                 {
-                                    "oneOf": [
-                                        {
-                                            "type": "string"
-                                        },
-                                        {
-                                            "type": "number"
-                                        }
-                                    ]
+                                    type: "molang"
                                 },
                                 {
                                     "type": "object",
@@ -93,14 +88,7 @@ const baseSchema = {
                                             "minItems": 2,
                                             "maxItems": 2,
                                             "items": {
-                                                "oneOf": [
-                                                    {
-                                                        "type": "number"
-                                                    },
-                                                    {
-                                                        "type": "string"
-                                                    }
-                                                ]
+                                                type: "molang"
                                             }
                                         },
                                         "step_size": {
@@ -132,10 +120,7 @@ const baseSchema = {
                             "description": "Probabilité que cette dispersion se produise. Non évalué à chaque itération; soit aucune itération ne sera exécutée, soit toutes le seront. \nType: `Molang | Object`",
                             "oneOf": [
                                 {
-                                    "type": "number"
-                                },
-                                {
-                                    "type": "string"
+                                    "type": "molang"
                                 },
                                 {
                                     "type": "object",

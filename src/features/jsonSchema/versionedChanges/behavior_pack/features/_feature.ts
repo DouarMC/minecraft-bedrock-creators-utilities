@@ -1,4 +1,8 @@
+import { type } from "os";
 import { SchemaChange, SchemaType } from "../../../../../types/schema";
+import { schemaPatterns } from "../../../shared/schemaPatterns";
+import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
+import { commonSchemas } from "../../../shared/commonSchemas";
 
 const baseSchema = {
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -31,7 +35,7 @@ const baseSchema = {
                                 "identifier": {
                                     "description": "L'identifiant de la Feature. \nType: `String` \nNote: Doit être de la forme 'namespace:feature_id' où feature_id doit correspondre au nom du fichier.",
                                     "type": "string",
-                                    "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                                    pattern: schemaPatterns.identifier_with_namespace
                                 }
                             }
                         },
@@ -69,24 +73,23 @@ const baseSchema = {
                                 "identifier": {
                                     "description": "L'identifiant de la Feature. \nType: `String` \nNote: Doit être de la forme 'namespace:feature_id' où feature_id doit correspondre au nom du fichier.",
                                     "type": "string",
-                                    "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                                    pattern: schemaPatterns.identifier_with_namespace
                                 }
                             }
                         },
                         "fill_with": {
                             "description": "Le bloc à utiliser pour remplir la grotte. \nType: `BlockDescriptor`",
-                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                            oneOf: [
+                                {
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                },
+                                commonSchemas.block_descriptor
+                            ]
                         },
                         "width_modifier": {
                             "description": "De combien de blocs augmenter la largeur de la grotte à partir du point central de la grotte. \nType: `Molang`",
-                            "oneOf": [
-                                {
-                                    "type": "string"
-                                },
-                                {
-                                    "type": "integer"
-                                }
-                            ]
+                            type: "molang"
                         },
                         "skip_carve_chance": {
                             "description": "La chance de ne pas creuser la grotte (1 / valeur). \nType: `Integer`",
@@ -133,13 +136,19 @@ const baseSchema = {
                                 "identifier": {
                                     "description": "L'identifiant de la Feature. \nType: `String` \nNote: Doit être de la forme 'namespace:feature_id' où feature_id doit correspondre au nom du fichier.",
                                     "type": "string",
-                                    "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                                    pattern: schemaPatterns.identifier_with_namespace
                                 }
                             }
                         },
                         "ore_block": {
                             "description": "Le bloc à utiliser pour les blocs de minerai. \nType: `BlockDescriptor`",
-                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                            oneOf: [
+                                {
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                },
+                                commonSchemas.block_descriptor
+                            ]
                         },
                         "max_empty_corners": {
                             "description": "Le nombre maximum de coins vides autorisés dans la structure. \nType: `Integer`",
@@ -165,35 +174,71 @@ const baseSchema = {
                                 "identifier": {
                                     "description": "L'identifiant de la Feature. \nType: `String` \nNote: Doit être de la forme 'namespace:feature_id' où feature_id doit correspondre au nom du fichier.",
                                     "type": "string",
-                                    "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                                    pattern: schemaPatterns.identifier_with_namespace
                                 }
                             }
                         },
                         "filler": {
                             "description": "Le bloc à utiliser pour remplir l'intérieur de la géode. \nType: `BlockDescriptor`",
-                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                            oneOf: [
+                                {
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                },
+                                commonSchemas.block_descriptor
+                            ]
                         },
                         "inner_layer": {
                             "description": "Le bloc à utiliser pour la couche intérieure de la géode. \nType: `BlockDescriptor`",
-                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                            oneOf: [
+                                {
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                },
+                                commonSchemas.block_descriptor
+                            ]
                         },
                         "alternate_inner_layer": {
                             "description": "Le bloc qui a une chance de se générer à la place de 'inner_layer'. \nType: `BlockDescriptor`",
-                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                            oneOf: [
+                                {
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                },
+                                commonSchemas.block_descriptor
+                            ]
                         },
                         "middle_layer": {
                             "description": "Le bloc à utiliser pour la couche intermédiaire de la géode. \nType: `BlockDescriptor`",
-                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                            oneOf: [
+                                {
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                },
+                                commonSchemas.block_descriptor
+                            ]
                         },
                         "outer_layer": {
                             "description": "Le bloc qui forme la coquille extérieure de la géode. \nType: `BlockDescriptor`",
-                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                            oneOf: [
+                                {
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                },
+                                commonSchemas.block_descriptor
+                            ]
                         },
                         "inner_placements": {
                             "description": "Une liste de blocs qui peuvent être replacés lors de la génération de la géode. Omettez ce champ pour autoriser n'importe quel bloc à être remplacé. \nType: `BlockDescriptor[]`",
                             "type": "array",
                             "items": {
-                                "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                oneOf: [
+                                {
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                },
+                                commonSchemas.block_descriptor
+                            ]
                             }
                         },
                         "min_outer_wall_distance": {
@@ -298,7 +343,7 @@ const baseSchema = {
                                 "identifier": {
                                     "description": "L'identifiant de la Feature. \nType: `String` \nNote: Doit être de la forme 'namespace:feature_id' où feature_id doit correspondre au nom du fichier.",
                                     "type": "string",
-                                    "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                                    pattern: schemaPatterns.identifier_with_namespace
                                 }
                             }
                         },
@@ -360,7 +405,13 @@ const baseSchema = {
                                 "maxItems": 2,
                                 "items": [
                                     {
-                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                        oneOf: [
+                                            {
+                                                type: "string",
+                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                            },
+                                            commonSchemas.block_descriptor
+                                        ]
                                     },
                                     {
                                         "type": "integer"
@@ -377,7 +428,13 @@ const baseSchema = {
                                 "maxItems": 2,
                                 "items": [
                                     {
-                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                        oneOf: [
+                                            {
+                                                type: "string",
+                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                            },
+                                            commonSchemas.block_descriptor
+                                        ]
                                     },
                                     {
                                         "type": "integer"
@@ -409,13 +466,19 @@ const baseSchema = {
                                 "identifier": {
                                     "description": "L'identifiant de la Feature. \nType: `String` \nNote: Doit être de la forme 'namespace:feature_id' où feature_id doit correspondre au nom du fichier.",
                                     "type": "string",
-                                    "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                                    pattern: schemaPatterns.identifier_with_namespace
                                 }
                             }
                         },
                         "places_block": {
                             "description": "Le bloc à placer. \nType: `BlockDescriptor`",
-                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                            oneOf: [
+                                {
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                },
+                                commonSchemas.block_descriptor
+                            ]
                         },
                         "search_range": {
                             "description": "De combien de blocs cette Feature peut rechercher une position valide pour se placer. \nType: `Integer`",
@@ -446,7 +509,13 @@ const baseSchema = {
                             "type": "array",
                             "minItems": 1,
                             "items": {
-                                "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                oneOf: [
+                                    {
+                                        type: "string",
+                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                    },
+                                    commonSchemas.block_descriptor
+                                ]
                             }
                         }
                     }

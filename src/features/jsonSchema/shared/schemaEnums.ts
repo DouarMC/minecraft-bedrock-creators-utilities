@@ -7,6 +7,7 @@ export const schemaEnums = {
 export const dynamicExamplesSourceKeys = {
     block_ids: "block_ids",
     loot_table_file_paths: "loot_table_file_paths",
+    trading_file_paths: "trading_file_paths",
     block_model_ids: "block_model_ids",
     crafting_recipe_tags: "crafting_recipe_tags",
     culling_layer_ids: "culling_layer_ids",

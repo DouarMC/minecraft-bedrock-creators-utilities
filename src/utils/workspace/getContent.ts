@@ -102,6 +102,31 @@ function getLootTableRelativePath(uri: vscode.Uri): string | null {
     return match[1].replace(/\\/g, '/');
 }
 
+export async function getTradingFilePaths(): Promise<string[]> {
+    const uris = await vscode.workspace.findFiles(
+        "**/addon/behavior_pack/trading/**/*.json",
+        "**/node_modules/**"
+    );
+    const result: string[] = [];
+
+    for (const uri of uris) {
+        const relativePath = getTradingRelativePath(uri);
+        if (relativePath) {
+            result.push(relativePath);
+        }
+    }
+
+    return result;
+}
+
+function getTradingRelativePath(uri: vscode.Uri): string | null {
+    const match = /.*[\/\\]addon[\/\\]behavior_pack[\/\\](trading[\/\\].+\.json)$/i.exec(uri.fsPath);
+    if (!match) {return null;}
+
+    // Uniformise les slashs pour être cross-platform
+    return match[1].replace(/\\/g, '/');
+}
+
 export async function getBlockModelIds(): Promise<string[]> {
     return ["minecraft:geometry.full_block", "minecraft:geometry.cross"];
 }
