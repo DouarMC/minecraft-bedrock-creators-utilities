@@ -25,5 +25,6 @@ export const dynamicExamplesSourceKeys = {
     item_tags: "item_tags",
     vanilla_data_driven_entity_ids: "vanilla_data_driven_entity_ids",
     camera_preset_ids: "camera_preset_ids",
-    dimension_ids: "dimension_ids"
+    dimension_ids: "dimension_ids",
+    entity_family_ids: "entity_family_ids"
 };

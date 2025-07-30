@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { VANILLA_AIM_ASSIST_PRESET_IDS, VANILLA_BIOMES_IDS, VANILLA_BIOMES_TAGS, VANILLA_BLOCK_IDS, VANILLA_CAMERA_PRESETS_IDS, VANILLA_COOLDOWN_CATEGORY_IDS, VANILLA_DATA_DRIVEN_ITEM_IDS, VANILLA_DIMENSION_IDS, VANILLA_EFFECT_IDS, VANILLA_ENTITY_IDS, VANILLA_ITEM_GROUP_IDS, VANILLA_ITEM_IDS, VANILLA_ITEM_TAGS } from "../data/vanillaMinecraftIdentifiers";
+import { VANILLA_AIM_ASSIST_PRESET_IDS, VANILLA_BIOMES_IDS, VANILLA_BIOMES_TAGS, VANILLA_BLOCK_IDS, VANILLA_CAMERA_PRESETS_IDS, VANILLA_COOLDOWN_CATEGORY_IDS, VANILLA_DATA_DRIVEN_ITEM_IDS, VANILLA_DIMENSION_IDS, VANILLA_EFFECT_IDS, VANILLA_ENTITY_IDS, VANILLA_ITEM_GROUP_IDS, VANILLA_ITEM_IDS, VANILLA_ITEM_TAGS, VANILLA_ENTITY_FAMILY_IDS } from "../data/vanillaMinecraftIdentifiers";
 
 export async function getBlockIds(): Promise<string[]> {
     const vanillaBlockIds = VANILLA_BLOCK_IDS;
@@ -228,4 +228,8 @@ export const getCameraPresetIds = async (): Promise<string[]> => {
 
 export async function getDimensionIds(): Promise<string[]> {
     return VANILLA_DIMENSION_IDS;
+}
+
+export async function getEntityFamilyIds(): Promise<string[]> {
+    return VANILLA_ENTITY_FAMILY_IDS;
 }

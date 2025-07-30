@@ -11,7 +11,6 @@ function createCommonSchemas() {
 
     schemas.block_descriptor = {
         type: "object",
-        required: ["name"],
         properties: {
             name: {
                 description: "L'identifiant du bloc.",
@@ -136,7 +135,6 @@ export function getCommonDefinitions() {
                             oneOf: [
                                 { type: "string" },
                                 { type: "number" },
-                                { type: "integer" },
                                 { type: "boolean" }
                             ]
                         },
@@ -236,75 +234,6 @@ export function getCommonDefinitions() {
                     }
                 }
             ]
-        },
-        
-        block_descriptor: {
-            type: "object",
-            required: ["name"],
-            properties: {
-                name: {
-                    description: "L'identifiant du bloc.",
-                    type: "string",
-                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
-                },
-                states: {
-                    description: "Les états du bloc.",
-                    type: "object",
-                    additionalProperties: {
-                        oneOf: [
-                            { type: "string" },
-                            { type: "integer" },
-                            { type: "number" },
-                            { type: "boolean" }
-                        ]
-                    }
-                },
-                tags: {
-                    markdownDescription:
-                    "**ℹ️ Expression Molang supportée.**\n\n" +
-                    "Les tags du bloc.",
-                    type: "molang"
-                }
-            }
-        },
-
-        item_descriptor: {
-            type: "object",
-            required: ["name"],
-            properties: {
-                name: {
-                    description: "L'identifiant de l'item.",
-                    type: "string",
-                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
-                },
-                data: {
-                    description: "La valeur aux value de l'item.",
-                    type: "integer"
-                },
-                tags: {
-                    markdownDescription:
-                    "**ℹ️ Expression Molang supportée.**\n\n" +
-                    "Les tags de l'item.",
-                    type: "molang"
-                }
-            }
-        },
-
-        entity_event_trigger: {
-            type: "object",
-            properties: {
-                event: {
-                    description: "L'événement à déclencher (ex: minecraft:ageable_grow_up)",
-                    type: "string"
-                },
-                target: {
-                    description: "La cible de l'événement",
-                    default: "self",
-                    type: "string",
-                    enum: ["baby", "block", "damager", "other", "parent", "player", "self", "target"]
-                },
-                filters: { $ref: "#/definitions/minecraft_filter" }
-            }
         }
     };
 }
