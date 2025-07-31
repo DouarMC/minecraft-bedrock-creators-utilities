@@ -538,24 +538,23 @@ const baseSchema = {
                                 "identifier": {
                                     "description": "L'identifiant de la Feature. \nType: `String` \nNote: Doit être de la forme 'namespace:feature_id' où feature_id doit correspondre au nom du fichier.",
                                     "type": "string",
-                                    "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                                    pattern: schemaPatterns.identifier_with_namespace
                                 }
                             }
                         },
                         "fill_with": {
                             "description": "Le bloc à utiliser pour remplir la grotte. \nType: `BlockDescriptor`",
-                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                            oneOf: [
+                                {
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                },
+                                commonSchemas.block_descriptor
+                            ]
                         },
                         "width_modifier": {
                             "description": "De combien de blocs augmenter la largeur de la grotte à partir du point central de la grotte. \nType: `Molang`",
-                            "oneOf": [
-                                {
-                                    "type": "string"
-                                },
-                                {
-                                    "type": "integer"
-                                }
-                            ]
+                            type: "molang"
                         },
                         "skip_carve_chance": {
                             "description": "La chance de ne pas creuser la grotte (1 / valeur). \nType: `Integer`",
@@ -602,7 +601,7 @@ const baseSchema = {
                                 "identifier": {
                                     "description": "L'identifiant de la Feature. \nType: `String` \nNote: Doit être de la forme 'namespace:feature_id' où feature_id doit correspondre au nom du fichier.",
                                     "type": "string",
-                                    "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                                    pattern: schemaPatterns.identifier_with_namespace
                                 }
                             }
                         },
@@ -627,13 +626,25 @@ const baseSchema = {
                                 "properties": {
                                     "places_block": {
                                         "description": "Le bloc à placer. \nType: `BlockDescriptor`",
-                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                        oneOf: [
+                                            {
+                                                type: "string",
+                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                            },
+                                            commonSchemas.block_descriptor
+                                        ]
                                     },
                                     "may_replace": {
                                         "description": "Les blocs qui peuvent être remplacés par le bloc de cette règle. Omettez ce champ pour autoriser n'importe quel bloc à être remplacé. \nType: `BlockDescriptor[]`",
                                         "type": "array",
                                         "items": {
-                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                            oneOf: [
+                                                {
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                },
+                                                commonSchemas.block_descriptor
+                                            ]
                                         }
                                     }
                                 }
@@ -659,7 +670,7 @@ const baseSchema = {
                                 "identifier": {
                                     "description": "L'identifiant de la Feature. \nType: `String` \nNote: Doit être de la forme 'namespace:feature_id' où feature_id doit correspondre au nom du fichier.",
                                     "type": "string",
-                                    "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                                    pattern: schemaPatterns.identifier_with_namespace
                                 }
                             }
                         },
@@ -682,7 +693,13 @@ const baseSchema = {
                         },
                         "places_block": {
                             "description": "Le bloc à placer. \nType: `BlockDescriptor`",
-                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                            oneOf: [
+                                {
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                },
+                                commonSchemas.block_descriptor
+                            ]
                         }
                     }
                 }
@@ -704,7 +721,7 @@ const baseSchema = {
                                 "identifier": {
                                     "description": "L'identifiant de la Feature. \nType: `String` \nNote: Doit être de la forme 'namespace:feature_id' où feature_id doit correspondre au nom du fichier.",
                                     "type": "string",
-                                    "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                                    pattern: schemaPatterns.identifier_with_namespace
                                 }
                             }
                         },
@@ -720,14 +737,7 @@ const baseSchema = {
                             "description": "Distribution pour la coordonnée (évaluée à chaque itération). \nType: `Molang | Object`",
                             "oneOf": [
                                 {
-                                    "oneOf": [
-                                        {
-                                            "type": "string"
-                                        },
-                                        {
-                                            "type": "number"
-                                        }
-                                    ]
+                                    type: "molang"
                                 },
                                 {
                                     "type": "object",
@@ -744,14 +754,7 @@ const baseSchema = {
                                             "minItems": 2,
                                             "maxItems": 2,
                                             "items": {
-                                                "oneOf": [
-                                                    {
-                                                        "type": "number"
-                                                    },
-                                                    {
-                                                        "type": "string"
-                                                    }
-                                                ]
+                                                type: "molang"
                                             }
                                         },
                                         "step_size": {
@@ -770,23 +773,13 @@ const baseSchema = {
                         },
                         "iterations": { 
                             "description": "Nombre d'itérations pour générer des positions dispersées. \nType: `Molang`",
-                            "oneOf": [
-                                {
-                                    "type": "string"
-                                },
-                                {
-                                    "type": "integer"
-                                }
-                            ]
+                            type: "molang"
                         },
                         "scatter_chance": {
                             "description": "Probabilité que cette dispersion se produise. Non évalué à chaque itération; soit aucune itération ne sera exécutée, soit toutes le seront. \nType: `Molang | Object`",
                             "oneOf": [
                                 {
-                                    "type": "number"
-                                },
-                                {
-                                    "type": "string"
+                                    type: "molang"
                                 },
                                 {
                                     "type": "object",
@@ -807,10 +800,80 @@ const baseSchema = {
                             ]
                         },
                         "x": {
-                            "$ref": "#/properties/minecraft:feature_rules/properties/distribution/properties/z"
+                            "description": "Distribution pour la coordonnée (évaluée à chaque itération). \nType: `Molang | Object`",
+                            "oneOf": [
+                                {
+                                    type: "molang"
+                                },
+                                {
+                                    "type": "object",
+                                    "required": ["distribution", "extent"],
+                                    "properties": {
+                                        "distribution": {
+                                            "description": "Type de distribution à utiliser. \nType: `String`",
+                                            "type": "string",
+                                            "enum": ["uniform", "gaussian", "inverse_gaussian", "triangle", "fixed_grid", "jittered_grid"]
+                                        },
+                                        "extent": {
+                                            "description": "Les bornes inférieure et supérieure (incluses) définissent la plage de dispersion, en tant que décalage par rapport au point d'entrée autour duquel la feature est dispersée. \nType: `Molang[2]`",
+                                            "type": "array",
+                                            "minItems": 2,
+                                            "maxItems": 2,
+                                            "items": {
+                                                type: "molang"
+                                            }
+                                        },
+                                        "step_size": {
+                                            "description": "Lorsque le type de distribution est 'grid', définit la distance entre les étapes le long de cet axe. \nType: `Integer`",
+                                            "type": "integer",
+                                            "minimum": 1
+                                        },
+                                        "grid_offset": {
+                                            "description": "Lorsque le type de distribution est 'grid', définit le décalage le long de cet axe. \nType: `Integer`",
+                                            "type": "integer",
+                                            "minimum": 0
+                                        }
+                                    }
+                                }
+                            ]
                         },
                         "y": {
-                            "$ref": "#/properties/minecraft:feature_rules/properties/distribution/properties/z"
+                            "description": "Distribution pour la coordonnée (évaluée à chaque itération). \nType: `Molang | Object`",
+                            "oneOf": [
+                                {
+                                    type: "molang"
+                                },
+                                {
+                                    "type": "object",
+                                    "required": ["distribution", "extent"],
+                                    "properties": {
+                                        "distribution": {
+                                            "description": "Type de distribution à utiliser. \nType: `String`",
+                                            "type": "string",
+                                            "enum": ["uniform", "gaussian", "inverse_gaussian", "triangle", "fixed_grid", "jittered_grid"]
+                                        },
+                                        "extent": {
+                                            "description": "Les bornes inférieure et supérieure (incluses) définissent la plage de dispersion, en tant que décalage par rapport au point d'entrée autour duquel la feature est dispersée. \nType: `Molang[2]`",
+                                            "type": "array",
+                                            "minItems": 2,
+                                            "maxItems": 2,
+                                            "items": {
+                                                type: "molang"
+                                            }
+                                        },
+                                        "step_size": {
+                                            "description": "Lorsque le type de distribution est 'grid', définit la distance entre les étapes le long de cet axe. \nType: `Integer`",
+                                            "type": "integer",
+                                            "minimum": 1
+                                        },
+                                        "grid_offset": {
+                                            "description": "Lorsque le type de distribution est 'grid', définit le décalage le long de cet axe. \nType: `Integer`",
+                                            "type": "integer",
+                                            "minimum": 0
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -832,7 +895,7 @@ const baseSchema = {
                                 "identifier": {
                                     "description": "L'identifiant de la Feature. \nType: `String` \nNote: Doit être de la forme 'namespace:feature_id' où feature_id doit correspondre au nom du fichier.",
                                     "type": "string",
-                                    "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                                    pattern: schemaPatterns.identifier_with_namespace
                                 }
                             }
                         },
@@ -895,7 +958,7 @@ const baseSchema = {
                                 "identifier": {
                                     "description": "L'identifiant de la Feature. \nType: `String` \nNote: Doit être de la forme 'namespace:feature_id' où feature_id doit correspondre au nom du fichier.",
                                     "type": "string",
-                                    "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                                    pattern: schemaPatterns.identifier_with_namespace
                                 }
                             }
                         },
@@ -927,13 +990,19 @@ const baseSchema = {
                                 "identifier": {
                                     "description": "L'identifiant de la Feature. \nType: `String` \nNote: Doit être de la forme 'namespace:feature_id' où feature_id doit correspondre au nom du fichier.",
                                     "type": "string",
-                                    "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                                    pattern: schemaPatterns.identifier_with_namespace
                                 }
                             }
                         },
                         "places_block": {
                             "description": "Le bloc à placer. \nType: `BlockDescriptor`",
-                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                            oneOf: [
+                                {
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                },
+                                commonSchemas.block_descriptor
+                            ]
                         },
                         "enforce_placement_rules": {
                             "description": "Si vrai, applique les règles de placement du bloc. \nType: `Boolean`",
@@ -961,12 +1030,20 @@ const baseSchema = {
                                     "description": "Le ou les blocs qui peuvent être placés au-dessus du bloc de cette Feature. \nType: `BlockDescriptor | BlockDescriptor[]`",
                                     "oneOf": [
                                         {
-                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
+                                        commonSchemas.block_descriptor,
                                         {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                oneOf: [
+                                                    {
+                                                        type: "string",
+                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                    },
+                                                    commonSchemas.block_descriptor
+                                                ]
                                             }
                                         }
                                     ]
@@ -975,12 +1052,20 @@ const baseSchema = {
                                     "description": "Le ou les blocs qui peuvent être placés en dessous du bloc de cette Feature. \nType: `BlockDescriptor | BlockDescriptor[]`",
                                     "oneOf": [
                                         {
-                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
+                                        commonSchemas.block_descriptor,
                                         {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                oneOf: [
+                                                    {
+                                                        type: "string",
+                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                    },
+                                                    commonSchemas.block_descriptor
+                                                ]
                                             }
                                         }
                                     ]
@@ -989,12 +1074,20 @@ const baseSchema = {
                                     "description": "Le ou les blocs qui peuvent être placés au nord du bloc de cette Feature. \nType: `BlockDescriptor | BlockDescriptor[]`",
                                     "oneOf": [
                                         {
-                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
+                                        commonSchemas.block_descriptor,
                                         {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                oneOf: [
+                                                    {
+                                                        type: "string",
+                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                    },
+                                                    commonSchemas.block_descriptor
+                                                ]
                                             }
                                         }
                                     ]
@@ -1003,12 +1096,20 @@ const baseSchema = {
                                     "description": "Le ou les blocs qui peuvent être placés à l'est du bloc de cette Feature. \nType: `BlockDescriptor | BlockDescriptor[]`",
                                     "oneOf": [
                                         {
-                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
+                                        commonSchemas.block_descriptor,
                                         {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                oneOf: [
+                                                    {
+                                                        type: "string",
+                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                    },
+                                                    commonSchemas.block_descriptor
+                                                ]
                                             }
                                         }
                                     ]
@@ -1017,12 +1118,20 @@ const baseSchema = {
                                     "description": "Le ou les blocs qui peuvent être placés au sud du bloc de cette Feature. \nType: `BlockDescriptor | BlockDescriptor[]`",
                                     "oneOf": [
                                         {
-                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
+                                        commonSchemas.block_descriptor,
                                         {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                oneOf: [
+                                                    {
+                                                        type: "string",
+                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                    },
+                                                    commonSchemas.block_descriptor
+                                                ]
                                             }
                                         }
                                     ]
@@ -1031,12 +1140,20 @@ const baseSchema = {
                                     "description": "Le ou les blocs qui peuvent être placés à l'ouest du bloc de cette Feature. \nType: `BlockDescriptor | BlockDescriptor[]`",
                                     "oneOf": [
                                         {
-                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
+                                        commonSchemas.block_descriptor,
                                         {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                oneOf: [
+                                                    {
+                                                        type: "string",
+                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                    },
+                                                    commonSchemas.block_descriptor
+                                                ]
                                             }
                                         }
                                     ]
@@ -1045,12 +1162,20 @@ const baseSchema = {
                                     "description": "Le ou les blocs qui peuvent être placés de tous les côtés du bloc de cette Feature. \nType: `BlockDescriptor | BlockDescriptor[]`",
                                     "oneOf": [
                                         {
-                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
+                                        commonSchemas.block_descriptor,
                                         {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                oneOf: [
+                                                    {
+                                                        type: "string",
+                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                    },
+                                                    commonSchemas.block_descriptor
+                                                ]
                                             }
                                         }
                                     ]
@@ -1059,12 +1184,20 @@ const baseSchema = {
                                     "description": "Le ou les blocs qui peuvent être placés sur les côtés du bloc de cette Feature. \nType: `BlockDescriptor | BlockDescriptor[]`",
                                     "oneOf": [
                                         {
-                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
+                                        commonSchemas.block_descriptor,
                                         {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                oneOf: [
+                                                    {
+                                                        type: "string",
+                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                    },
+                                                    commonSchemas.block_descriptor
+                                                ]
                                             }
                                         }
                                     ]
@@ -1075,7 +1208,13 @@ const baseSchema = {
                             "description": "Les blocs qui peuvent être remplacés par le bloc de cette Feature. Omettez ce champ pour autoriser n'importe quel bloc à être remplacé. \nType: `BlockDescriptor[]`",
                             "type": "array",
                             "items": {
-                                "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                oneOf: [
+                                    {
+                                        type: "string",
+                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                    },
+                                    commonSchemas.block_descriptor
+                                ]
                             }
                         }
                     }
@@ -1098,7 +1237,7 @@ const baseSchema = {
                                 "identifier": {
                                     "description": "L'identifiant de la Feature. \nType: `String` \nNote: Doit être de la forme 'namespace:feature_id' où feature_id doit correspondre au nom du fichier.",
                                     "type": "string",
-                                    "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                                    pattern: schemaPatterns.identifier_with_namespace
                                 }
                             }
                         },
@@ -1145,7 +1284,7 @@ const baseSchema = {
                                 "identifier": {
                                     "description": "L'identifiant de la Feature. \nType: `String` \nNote: Doit être de la forme 'namespace:feature_id' où feature_id doit correspondre au nom du fichier.",
                                     "type": "string",
-                                    "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                                    pattern: schemaPatterns.identifier_with_namespace
                                 }
                             }
                         },
@@ -1185,7 +1324,13 @@ const baseSchema = {
                                             "description": "Les blocs qui peuvent être placés dans la structure. \nType: `BlockDescriptor[]`",
                                             "type": "array",
                                             "items": {
-                                                "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                oneOf: [
+                                                    {
+                                                        type: "string",
+                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                    },
+                                                    commonSchemas.block_descriptor
+                                                ]
                                             }
                                         }
                                     }
@@ -1212,7 +1357,7 @@ const baseSchema = {
                                 "identifier": {
                                     "description": "L'identifiant de la Feature. \nType: `String` \nNote: Doit être de la forme 'namespace:feature_id' où feature_id doit correspondre au nom du fichier.",
                                     "type": "string",
-                                    "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                                    pattern: schemaPatterns.identifier_with_namespace
                                 }
                             }
                         },
@@ -1253,12 +1398,20 @@ const baseSchema = {
                             "description": "Le ou les blocs qui peuvent être placés en dessous du tronc de l'arbre. \nType: `BlockDescriptor | BlockDescriptor[]`",
                             "oneOf": [
                                 {
-                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                 },
+                                commonSchemas.block_descriptor,
                                 {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                        oneOf: [
+                                            {
+                                                type: "string",
+                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                            },
+                                            commonSchemas.block_descriptor
+                                        ]
                                     }
                                 }
                             ]
@@ -1272,7 +1425,13 @@ const baseSchema = {
                                     "description": "Les blocs qui peuvent être remplacés par le cluster de base de l'arbre. \nType: `BlockDescriptor[]`",
                                     "type": "array",
                                     "items": {
-                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                        oneOf: [
+                                            {
+                                                type: "string",
+                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                            },
+                                            commonSchemas.block_descriptor
+                                        ]
                                     }
                                 },
                                 "num_clusters": {
@@ -1291,21 +1450,39 @@ const baseSchema = {
                             "description": "Liste des blocs sur lesquels un arbre peut pousser. \nType: `BlockDescriptor[]`",
                             "type": "array",
                             "items": {
-                                "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                oneOf: [
+                                    {
+                                        type: "string",
+                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                    },
+                                    commonSchemas.block_descriptor
+                                ]
                             }
                         },
                         "may_replace": {
                             "description": "Les blocs qui peuvent être remplacés par l'arbre. \nType: `BlockDescriptor[]`",
                             "type": "array",
                             "items": {
-                                "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                oneOf: [
+                                    {
+                                        type: "string",
+                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                    },
+                                    commonSchemas.block_descriptor
+                                ]
                             }
                         },
                         "may_grow_through": {
                             "description": "Liste des blocs à travers lesquels un arbre peut pousser. \nType: `BlockDescriptor[]`",
                             "type": "array",
                             "items": {
-                                "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                oneOf: [
+                                    {
+                                        type: "string",
+                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                    },
+                                    commonSchemas.block_descriptor
+                                ]
                             }
                         },
                         "acacia_trunk": {
@@ -1367,7 +1544,13 @@ const baseSchema = {
                                 },
                                 "trunk_block": {
                                     "description": "Le bloc qui forme le tronc d'acacia. \nType: `BlockDescriptor`",
-                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                        },
+                                        commonSchemas.block_descriptor
+                                    ]
                                 },
                                 "branches": {
                                     "description": "Configuration des branches de l'arbre d'acacia. \nType: `Object`",
@@ -1414,7 +1597,13 @@ const baseSchema = {
                                                         },
                                                         "leaf_block": {
                                                             "description": "Le bloc qui forme la canopée. \nType: `BlockDescriptor`",
-                                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         },
                                                         "simplify_canopy": {
                                                             "description": "Si 'true', la canopée utilise un motif simple. \nType: `Boolean`",
@@ -1501,7 +1690,13 @@ const baseSchema = {
                                                         },
                                                         "leaf_block": {
                                                             "description": "Le bloc qui forme la canopée. \nType: `BlockDescriptor`",
-                                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         },
                                                         "canopy_decoration": {
                                                             "description": "Configuration de la décoration de la canopée. \nType: `Object`",
@@ -1525,7 +1720,13 @@ const baseSchema = {
                                                                 },
                                                                 "decoration_block": {
                                                                     "description": "Le bloc à utilisé pour la décoration de la canopée. \nType: `BlockDescriptor`",
-                                                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                                    oneOf: [
+                                                                        {
+                                                                            type: "string",
+                                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                        },
+                                                                        commonSchemas.block_descriptor
+                                                                    ]
                                                                 },
                                                                 "num_steps": {
                                                                     "description": "Nombre de blocs de décoration à placer. \nType: `Integer`",
@@ -1547,7 +1748,13 @@ const baseSchema = {
                                                     "properties": {
                                                         "leaf_block": {
                                                             "description": "Le bloc qui forme la canopée de cerisier. \nType: `BlockDescriptor`",
-                                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         },
                                                         "height": {
                                                             "description": "Nombre de couches pour la canopée. \nType: `Integer`",
@@ -1641,7 +1848,13 @@ const baseSchema = {
                                                         },
                                                         "leaf_block": {
                                                             "description": "Le bloc qui forme la canopée fantaisie. \nType: `BlockDescriptor`",
-                                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         }
                                                     }
                                                 },
@@ -1672,7 +1885,13 @@ const baseSchema = {
                                                                 "maxItems": 2,
                                                                 "items": [
                                                                     {
-                                                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                                        oneOf: [
+                                                                            {
+                                                                                type: "string",
+                                                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                            },
+                                                                            commonSchemas.block_descriptor
+                                                                        ]
                                                                     },
                                                                     {
                                                                         "type": "number"
@@ -1702,7 +1921,13 @@ const baseSchema = {
                                                                 },
                                                                 "decoration_block": {
                                                                     "description": "Le bloc à utilisé pour la décoration de la canopée de mangrove. \nType: `BlockDescriptor`",
-                                                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                                    oneOf: [
+                                                                        {
+                                                                            type: "string",
+                                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                        },
+                                                                        commonSchemas.block_descriptor
+                                                                    ]
                                                                 },
                                                                 "num_steps": {
                                                                     "description": "Nombre de blocs de décoration à placer. \nType: `Integer`",
@@ -1717,7 +1942,13 @@ const baseSchema = {
                                                         },
                                                         "hanging_block": {
                                                             "description": "Le bloc à utiliser comme bloc suspendu. \nType: `BlockDescriptor`",
-                                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         },
                                                         "hanging_block_placement_chance": {
                                                             "description": "Probabilité de placer un bloc suspendu. \nType: `Object`",
@@ -1761,7 +1992,13 @@ const baseSchema = {
                                                         },
                                                         "leaf_block": {
                                                             "description": "Le bloc qui forme la canopée géante. \nType: `BlockDescriptor`",
-                                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         }
                                                     }
                                                 },
@@ -1791,7 +2028,13 @@ const baseSchema = {
                                                         },
                                                         "leaf_block": {
                                                             "description": "Le bloc qui forme la canopée de pin géant. \nType: `BlockDescriptor`",
-                                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         }
                                                     }
                                                 },
@@ -1811,7 +2054,13 @@ const baseSchema = {
                                                         },
                                                         "leaf_block": {
                                                             "description": "Le bloc qui forme la canopée de pin. \nType: `BlockDescriptor`",
-                                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         }
                                                     }
                                                 },
@@ -1842,7 +2091,13 @@ const baseSchema = {
                                                         },
                                                         "leaf_block": {
                                                             "description": "Le bloc qui forme la canopée de forêt sombre. \nType: `BlockDescriptor`",
-                                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         }
                                                     }
                                                 },
@@ -1866,7 +2121,13 @@ const baseSchema = {
                                                         },
                                                         "leaf_block": {
                                                             "description": "Le bloc qui forme la canopée d'épicéa. \nType: `BlockDescriptor`",
-                                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         }
                                                     }
                                                 }
@@ -1883,7 +2144,13 @@ const baseSchema = {
                             "properties": {
                                 "trunk_block": {
                                     "description": "Le bloc qui forme le tronc de cerisier. \nType: `BlockDescriptor`",
-                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                        },
+                                        commonSchemas.block_descriptor
+                                    ]
                                 },
                                 "trunk_height": {
                                     "description": "Configuration de la hauteur du tronc de cerisier. \nType: `Object`",
@@ -1961,7 +2228,13 @@ const baseSchema = {
                                                         },
                                                         "leaf_block": {
                                                             "description": "Le bloc qui forme la canopée. \nType: `BlockDescriptor`",
-                                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         },
                                                         "simplify_canopy": {
                                                             "description": "Si 'true', la canopée utilise un motif simple. \nType: `Boolean`",
@@ -2048,7 +2321,13 @@ const baseSchema = {
                                                         },
                                                         "leaf_block": {
                                                             "description": "Le bloc qui forme la canopée. \nType: `BlockDescriptor`",
-                                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         },
                                                         "canopy_decoration": {
                                                             "description": "Configuration de la décoration de la canopée. \nType: `Object`",
@@ -2072,7 +2351,13 @@ const baseSchema = {
                                                                 },
                                                                 "decoration_block": {
                                                                     "description": "Le bloc à utilisé pour la décoration de la canopée. \nType: `BlockDescriptor`",
-                                                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                                    oneOf: [
+                                                                        {
+                                                                            type: "string",
+                                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                        },
+                                                                        commonSchemas.block_descriptor
+                                                                    ]
                                                                 },
                                                                 "num_steps": {
                                                                     "description": "Nombre de blocs de décoration à placer. \nType: `Integer`",
@@ -2094,7 +2379,13 @@ const baseSchema = {
                                                     "properties": {
                                                         "leaf_block": {
                                                             "description": "Le bloc qui forme la canopée de cerisier. \nType: `BlockDescriptor`",
-                                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         },
                                                         "height": {
                                                             "description": "Nombre de couches pour la canopée. \nType: `Integer`",
@@ -2188,7 +2479,13 @@ const baseSchema = {
                                                         },
                                                         "leaf_block": {
                                                             "description": "Le bloc qui forme la canopée fantaisie. \nType: `BlockDescriptor`",
-                                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         }
                                                     }
                                                 },
@@ -2219,7 +2516,13 @@ const baseSchema = {
                                                                 "maxItems": 2,
                                                                 "items": [
                                                                     {
-                                                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                                        oneOf: [
+                                                                            {
+                                                                                type: "string",
+                                                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                            },
+                                                                            commonSchemas.block_descriptor
+                                                                        ]
                                                                     },
                                                                     {
                                                                         "type": "number"
@@ -2249,7 +2552,13 @@ const baseSchema = {
                                                                 },
                                                                 "decoration_block": {
                                                                     "description": "Le bloc à utilisé pour la décoration de la canopée de mangrove. \nType: `BlockDescriptor`",
-                                                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                                    oneOf: [
+                                                                        {
+                                                                            type: "string",
+                                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                        },
+                                                                        commonSchemas.block_descriptor
+                                                                    ]
                                                                 },
                                                                 "num_steps": {
                                                                     "description": "Nombre de blocs de décoration à placer. \nType: `Integer`",
@@ -2264,7 +2573,13 @@ const baseSchema = {
                                                         },
                                                         "hanging_block": {
                                                             "description": "Le bloc à utiliser comme bloc suspendu. \nType: `BlockDescriptor`",
-                                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         },
                                                         "hanging_block_placement_chance": {
                                                             "description": "Probabilité de placer un bloc suspendu. \nType: `Object`",
@@ -2308,7 +2623,13 @@ const baseSchema = {
                                                         },
                                                         "leaf_block": {
                                                             "description": "Le bloc qui forme la canopée géante. \nType: `BlockDescriptor`",
-                                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         }
                                                     }
                                                 },
@@ -2338,7 +2659,13 @@ const baseSchema = {
                                                         },
                                                         "leaf_block": {
                                                             "description": "Le bloc qui forme la canopée de pin géant. \nType: `BlockDescriptor`",
-                                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         }
                                                     }
                                                 },
@@ -2358,7 +2685,13 @@ const baseSchema = {
                                                         },
                                                         "leaf_block": {
                                                             "description": "Le bloc qui forme la canopée de pin. \nType: `BlockDescriptor`",
-                                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         }
                                                     }
                                                 },
@@ -2389,7 +2722,13 @@ const baseSchema = {
                                                         },
                                                         "leaf_block": {
                                                             "description": "Le bloc qui forme la canopée de forêt sombre. \nType: `BlockDescriptor`",
-                                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         }
                                                     }
                                                 },
@@ -2413,7 +2752,13 @@ const baseSchema = {
                                                         },
                                                         "leaf_block": {
                                                             "description": "Le bloc qui forme la canopée d'épicéa. \nType: `BlockDescriptor`",
-                                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         }
                                                     }
                                                 }
@@ -2442,7 +2787,13 @@ const baseSchema = {
                                 },
                                 "trunk_block": {
                                     "description": "Le bloc qui forme le tronc tombé. \nType: `BlockDescriptor`",
-                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                        },
+                                        commonSchemas.block_descriptor
+                                    ]
                                 },
                                 "log_decoration_feature": {
                                     "description": "Feature qui peut être utilisée pour décorer le tronc tombé. \nType: `String`",
@@ -2470,7 +2821,13 @@ const baseSchema = {
                                         },
                                         "decoration_block": {
                                             "description": "Le bloc à utilisé pour la décoration du tronc tombé. \nType: `BlockDescriptor`",
-                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                            oneOf: [
+                                                {
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                },
+                                                commonSchemas.block_descriptor
+                                            ]
                                         },
                                         "num_steps": {
                                             "description": "Nombre de blocs de décoration à placer. \nType: `Integer`",
@@ -2540,7 +2897,13 @@ const baseSchema = {
                                 },
                                 "trunk_block": {
                                     "description": "Le bloc qui forme le tronc de l'arbre fantaisie. \nType: `BlockDescriptor`",
-                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                        },
+                                        commonSchemas.block_descriptor
+                                    ]
                                 },
                                 "width_scale": {
                                     "description": "Modificateur d'échelle pour le rayon de l'arbre. \nType: `Number`",
@@ -2588,7 +2951,13 @@ const baseSchema = {
                                 },
                                 "trunk_block": {
                                     "description": "Le bloc qui forme le tronc de l'arbre de mangrove. \nType: `BlockDescriptor`",
-                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                        },
+                                        commonSchemas.block_descriptor
+                                    ]
                                 },
                                 "branches": {
                                     "description": "Configuration de l'objet pour les branches de l'arbre de mangrove. \nType: `Object`",
@@ -2642,7 +3011,13 @@ const baseSchema = {
                                         },
                                         "decoration_block": {
                                             "description": "Le bloc à utilisé pour la décoration du tronc de l'arbre de mangrove. \nType: `BlockDescriptor`",
-                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                            oneOf: [
+                                                {
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                },
+                                                commonSchemas.block_descriptor
+                                            ]
                                         },
                                         "num_steps": {
                                             "description": "Nombre de blocs de décoration à placer. \nType: `Integer`",
@@ -2688,7 +3063,13 @@ const baseSchema = {
                                 },
                                 "trunk_block": {
                                     "description": "Le bloc qui forme le tronc de l'arbre géant. \nType: `BlockDescriptor`",
-                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                        },
+                                        commonSchemas.block_descriptor
+                                    ]
                                 },
                                 "trunk_decoration": {
                                     "description": "Configuration de la décoration du tronc de l'arbre géant. \nType: `Object`",
@@ -2712,7 +3093,13 @@ const baseSchema = {
                                         },
                                         "decoration_block": {
                                             "description": "Le bloc à utilisé pour la décoration du tronc. \nType: `BlockDescriptor`",
-                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                            oneOf: [
+                                                {
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                },
+                                                commonSchemas.block_descriptor
+                                            ]
                                         },
                                         "num_steps": {
                                             "description": "Nombre de blocs de décoration à placer. \nType: `Integer`",
@@ -2778,7 +3165,13 @@ const baseSchema = {
                                                         },
                                                         "leaf_block": {
                                                             "description": "Le bloc qui forme la canopée. \nType: `BlockDescriptor`",
-                                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         },
                                                         "simplify_canopy": {
                                                             "description": "Si 'true', la canopée utilise un motif simple. \nType: `Boolean`",
@@ -2865,7 +3258,13 @@ const baseSchema = {
                                                         },
                                                         "leaf_block": {
                                                             "description": "Le bloc qui forme la canopée. \nType: `BlockDescriptor`",
-                                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         },
                                                         "canopy_decoration": {
                                                             "description": "Configuration de la décoration de la canopée. \nType: `Object`",
@@ -2889,7 +3288,13 @@ const baseSchema = {
                                                                 },
                                                                 "decoration_block": {
                                                                     "description": "Le bloc à utilisé pour la décoration de la canopée. \nType: `BlockDescriptor`",
-                                                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                                    oneOf: [
+                                                                        {
+                                                                            type: "string",
+                                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                        },
+                                                                        commonSchemas.block_descriptor
+                                                                    ]
                                                                 },
                                                                 "num_steps": {
                                                                     "description": "Nombre de blocs de décoration à placer. \nType: `Integer`",
@@ -2911,7 +3316,13 @@ const baseSchema = {
                                                     "properties": {
                                                         "leaf_block": {
                                                             "description": "Le bloc qui forme la canopée de cerisier. \nType: `BlockDescriptor`",
-                                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         },
                                                         "height": {
                                                             "description": "Nombre de couches pour la canopée. \nType: `Integer`",
@@ -3005,7 +3416,13 @@ const baseSchema = {
                                                         },
                                                         "leaf_block": {
                                                             "description": "Le bloc qui forme la canopée fantaisie. \nType: `BlockDescriptor`",
-                                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         }
                                                     }
                                                 },
@@ -3036,7 +3453,13 @@ const baseSchema = {
                                                                 "maxItems": 2,
                                                                 "items": [
                                                                     {
-                                                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                                        oneOf: [
+                                                                            {
+                                                                                type: "string",
+                                                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                            },
+                                                                            commonSchemas.block_descriptor
+                                                                        ]
                                                                     },
                                                                     {
                                                                         "type": "number"
@@ -3066,7 +3489,13 @@ const baseSchema = {
                                                                 },
                                                                 "decoration_block": {
                                                                     "description": "Le bloc à utilisé pour la décoration de la canopée de mangrove. \nType: `BlockDescriptor`",
-                                                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                                    oneOf: [
+                                                                        {
+                                                                            type: "string",
+                                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                        },
+                                                                        commonSchemas.block_descriptor
+                                                                    ]
                                                                 },
                                                                 "num_steps": {
                                                                     "description": "Nombre de blocs de décoration à placer. \nType: `Integer`",
@@ -3081,7 +3510,13 @@ const baseSchema = {
                                                         },
                                                         "hanging_block": {
                                                             "description": "Le bloc à utiliser comme bloc suspendu. \nType: `BlockDescriptor`",
-                                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         },
                                                         "hanging_block_placement_chance": {
                                                             "description": "Probabilité de placer un bloc suspendu. \nType: `Object`",
@@ -3125,7 +3560,13 @@ const baseSchema = {
                                                         },
                                                         "leaf_block": {
                                                             "description": "Le bloc qui forme la canopée géante. \nType: `BlockDescriptor`",
-                                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         }
                                                     }
                                                 },
@@ -3155,7 +3596,13 @@ const baseSchema = {
                                                         },
                                                         "leaf_block": {
                                                             "description": "Le bloc qui forme la canopée de pin géant. \nType: `BlockDescriptor`",
-                                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         }
                                                     }
                                                 },
@@ -3175,7 +3622,13 @@ const baseSchema = {
                                                         },
                                                         "leaf_block": {
                                                             "description": "Le bloc qui forme la canopée de pin. \nType: `BlockDescriptor`",
-                                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         }
                                                     }
                                                 },
@@ -3206,7 +3659,13 @@ const baseSchema = {
                                                         },
                                                         "leaf_block": {
                                                             "description": "Le bloc qui forme la canopée de forêt sombre. \nType: `BlockDescriptor`",
-                                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         }
                                                     }
                                                 },
@@ -3230,7 +3689,13 @@ const baseSchema = {
                                                         },
                                                         "leaf_block": {
                                                             "description": "Le bloc qui forme la canopée d'épicéa. \nType: `BlockDescriptor`",
-                                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         }
                                                     }
                                                 }
@@ -3272,7 +3737,13 @@ const baseSchema = {
                                 },
                                 "trunk_block": {
                                     "description": "Le bloc qui forme le tronc. \nType: `BlockDescriptor`",
-                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                        },
+                                        commonSchemas.block_descriptor
+                                    ]
                                 },
                                 "trunk_decoration": {
                                     "description": "Configuration de la décoration du tronc. \nType: `Object`",
@@ -3296,7 +3767,13 @@ const baseSchema = {
                                         },
                                         "decoration_block": {
                                             "description": "Le bloc à utilisé pour la décoration du tronc. \nType: `BlockDescriptor`",
-                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                            oneOf: [
+                                                {
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                },
+                                                commonSchemas.block_descriptor
+                                            ]
                                         },
                                         "num_steps": {
                                             "description": "Nombre de blocs de décoration à placer. \nType: `Integer`",
@@ -3323,7 +3800,13 @@ const baseSchema = {
                                 },
                                 "leaf_block": {
                                     "description": "Le bloc qui forme la canopée. \nType: `BlockDescriptor`",
-                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                        },
+                                        commonSchemas.block_descriptor
+                                    ]
                                 },
                                 "simplify_canopy": {
                                     "description": "Si 'true', la canopée utilise un motif simple. \nType: `Boolean`",
@@ -3410,7 +3893,13 @@ const baseSchema = {
                                 },
                                 "leaf_block": {
                                     "description": "Le bloc qui forme la canopée. \nType: `BlockDescriptor`",
-                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                        },
+                                        commonSchemas.block_descriptor
+                                    ]
                                 },
                                 "canopy_decoration": {
                                     "description": "Configuration de la décoration de la canopée. \nType: `Object`",
@@ -3434,7 +3923,13 @@ const baseSchema = {
                                         },
                                         "decoration_block": {
                                             "description": "Le bloc à utilisé pour la décoration de la canopée. \nType: `BlockDescriptor`",
-                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                            oneOf: [
+                                                {
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                },
+                                                commonSchemas.block_descriptor
+                                            ]
                                         },
                                         "num_steps": {
                                             "description": "Nombre de blocs de décoration à placer. \nType: `Integer`",
@@ -3456,7 +3951,13 @@ const baseSchema = {
                             "properties": {
                                 "leaf_block": {
                                     "description": "Le bloc qui forme la canopée de cerisier. \nType: `BlockDescriptor`",
-                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                        },
+                                        commonSchemas.block_descriptor
+                                    ]
                                 },
                                 "height": {
                                     "description": "Nombre de couches pour la canopée. \nType: `Integer`",
@@ -3550,7 +4051,13 @@ const baseSchema = {
                                 },
                                 "leaf_block": {
                                     "description": "Le bloc qui forme la canopée fantaisie. \nType: `BlockDescriptor`",
-                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                        },
+                                        commonSchemas.block_descriptor
+                                    ]
                                 }
                             }
                         },
@@ -3581,7 +4088,13 @@ const baseSchema = {
                                         "maxItems": 2,
                                         "items": [
                                             {
-                                                "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                oneOf: [
+                                                    {
+                                                        type: "string",
+                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                    },
+                                                    commonSchemas.block_descriptor
+                                                ]
                                             },
                                             {
                                                 "type": "number"
@@ -3611,7 +4124,13 @@ const baseSchema = {
                                         },
                                         "decoration_block": {
                                             "description": "Le bloc à utilisé pour la décoration de la canopée de mangrove. \nType: `BlockDescriptor`",
-                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                            oneOf: [
+                                                {
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                },
+                                                commonSchemas.block_descriptor
+                                            ]
                                         },
                                         "num_steps": {
                                             "description": "Nombre de blocs de décoration à placer. \nType: `Integer`",
@@ -3626,7 +4145,13 @@ const baseSchema = {
                                 },
                                 "hanging_block": {
                                     "description": "Le bloc à utiliser comme bloc suspendu. \nType: `BlockDescriptor`",
-                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                        },
+                                        commonSchemas.block_descriptor
+                                    ]
                                 },
                                 "hanging_block_placement_chance": {
                                     "description": "Probabilité de placer un bloc suspendu. \nType: `Object`",
@@ -3670,7 +4195,13 @@ const baseSchema = {
                                 },
                                 "leaf_block": {
                                     "description": "Le bloc qui forme la canopée géante. \nType: `BlockDescriptor`",
-                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                        },
+                                        commonSchemas.block_descriptor
+                                    ]
                                 }
                             }
                         },
@@ -3700,7 +4231,13 @@ const baseSchema = {
                                 },
                                 "leaf_block": {
                                     "description": "Le bloc qui forme la canopée de pin géant. \nType: `BlockDescriptor`",
-                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                        },
+                                        commonSchemas.block_descriptor
+                                    ]
                                 }
                             }
                         },
@@ -3720,7 +4257,13 @@ const baseSchema = {
                                 },
                                 "leaf_block": {
                                     "description": "Le bloc qui forme la canopée de pin. \nType: `BlockDescriptor`",
-                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                        },
+                                        commonSchemas.block_descriptor
+                                    ]
                                 }
                             }
                         },
@@ -3751,7 +4294,13 @@ const baseSchema = {
                                 },
                                 "leaf_block": {
                                     "description": "Le bloc qui forme la canopée de forêt sombre. \nType: `BlockDescriptor`",
-                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                        },
+                                        commonSchemas.block_descriptor
+                                    ]
                                 }
                             }
                         },
@@ -3774,8 +4323,13 @@ const baseSchema = {
                                     "minimum": 0
                                 },
                                 "leaf_block": {
-                                    "description": "Le bloc qui forme la canopée d'épicéa. \nType: `BlockDescriptor`",
-                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                        },
+                                        commonSchemas.block_descriptor
+                                    ]
                                 }
                             }
                         },
@@ -3806,7 +4360,13 @@ const baseSchema = {
                                         "maxItems": 2,
                                         "items": [
                                             {
-                                                "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                oneOf: [
+                                                    {
+                                                        type: "string",
+                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                    },
+                                                    commonSchemas.block_descriptor
+                                                ]
                                             },
                                             {
                                                 "type": "number"
@@ -3833,7 +4393,13 @@ const baseSchema = {
                                 },
                                 "root_block": {
                                     "description": "Le bloc qui forme les racines de mangrove. \nType: `BlockDescriptor`",
-                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                        },
+                                        commonSchemas.block_descriptor
+                                    ]
                                 },
                                 "above_root": {
                                     "description": "Configuration des blocs décorant le dessus des racines.",
@@ -3856,17 +4422,35 @@ const baseSchema = {
                                         },
                                         "above_root_block": {
                                             "description": "Le bloc à utilisé pour la décoration du dessus des racines. \nType: `BlockDescriptor`",
-                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                            oneOf: [
+                                                {
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                },
+                                                commonSchemas.block_descriptor
+                                            ]
                                         }
                                     }
                                 },
                                 "muddy_root_block": {
                                     "description": "Le bloc utilisé pour les racines boueuses.",
-                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                        },
+                                        commonSchemas.block_descriptor
+                                    ]
                                 },
                                 "mud_block": {
                                     "description": "Le bloc utilisé pour la boue. \nType: `BlockDescriptor`",
-                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                        },
+                                        commonSchemas.block_descriptor
+                                    ]
                                 },
                                 "y_offset": {
                                     "description": "Décalage de la racine par rapport au tronc. \nType: `Integer`",
@@ -3876,7 +4460,13 @@ const baseSchema = {
                                     "description": "Liste des blocs à travers lesquels une racine peut pousser. \nType: `BlockDescriptor[]`",
                                     "type": "array",
                                     "items": {
-                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                        oneOf: [
+                                            {
+                                                type: "string",
+                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                            },
+                                            commonSchemas.block_descriptor
+                                        ]
                                     }
                                 },
                                 "root_decoration": {
@@ -3901,7 +4491,13 @@ const baseSchema = {
                                         },
                                         "decoration_block": {
                                             "description": "Le bloc à utilisé pour la décoration des racines. \nType: `BlockDescriptor`",
-                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                            oneOf: [
+                                                {
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                },
+                                                commonSchemas.block_descriptor
+                                            ]
                                         },
                                         "num_steps": {
                                             "description": "Nombre de blocs de décoration à placer. \nType: `Integer`",
@@ -3936,24 +4532,23 @@ const baseSchema = {
                                 "identifier": {
                                     "description": "L'identifiant de la Feature. \nType: `String` \nNote: Doit être de la forme 'namespace:feature_id' où feature_id doit correspondre au nom du fichier.",
                                     "type": "string",
-                                    "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                                    pattern: schemaPatterns.identifier_with_namespace
                                 }
                             }
                         },
                         "fill_with": {
                             "description": "Le bloc à utiliser pour remplir la grotte. \nType: `BlockDescriptor`",
-                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                            oneOf: [
+                                {
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                },
+                                commonSchemas.block_descriptor
+                            ]
                         },
                         "width_modifier": {
                             "description": "De combien de blocs augmenter la largeur de la grotte à partir du point central de la grotte. \nType: `Molang`",
-                            "oneOf": [
-                                {
-                                    "type": "string"
-                                },
-                                {
-                                    "type": "integer"
-                                }
-                            ]
+                            type: "molang"
                         },
                         "skip_carve_chance": {
                             "description": "La chance de ne pas creuser la grotte (1 / valeur). \nType: `Integer`",
@@ -3982,7 +4577,13 @@ const baseSchema = {
                         },
                         "replace_air_with": {
                             "description": "Le bloc à utiliser pour remplacer l'air. \nType: `BlockDescriptor`",
-                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                            oneOf: [
+                                {
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                },
+                                commonSchemas.block_descriptor
+                            ]
                         }
                     }
                 }
@@ -4004,7 +4605,7 @@ const baseSchema = {
                                 "identifier": {
                                     "description": "L'identifiant de la Feature. \nType: `String` \nNote: Doit être de la forme 'namespace:feature_id' où feature_id doit correspondre au nom du fichier.",
                                     "type": "string",
-                                    "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                                    pattern: schemaPatterns.identifier_with_namespace
                                 }
                             }
                         },
@@ -4012,12 +4613,24 @@ const baseSchema = {
                             "description": "Les blocs qui peuvent être remplacés par les blocs de sol sur le patch. \nType: `BlockDescriptor[]`",
                             "type": "array",
                             "items": {
-                                "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                oneOf: [
+                                    {
+                                        type: "string",
+                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                    },
+                                    commonSchemas.block_descriptor
+                                ]
                             }
                         },
                         "ground_block": {
                             "description": "Le bloc utilisé pour créer une base pour le patch de végétation. \nType: `BlockDescriptor`",
-                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                            oneOf: [
+                                {
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                },
+                                commonSchemas.block_descriptor
+                            ]
                         },
                         "vegetation_feature": {
                             "description": "La Feature qui sera placée par le patch. \nType: `String`",
@@ -4076,7 +4689,7 @@ const baseSchema = {
                                 "identifier": {
                                     "description": "L'identifiant de la Feature. \nType: `String` \nNote: Doit être de la forme 'namespace:feature_id' où feature_id doit correspondre au nom du fichier.",
                                     "type": "string",
-                                    "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                                    pattern: schemaPatterns.identifier_with_namespace
                                 }
                             }
                         },
@@ -4127,7 +4740,7 @@ const versionedChanges: SchemaChange[] = [
                                         "identifier": {
                                             "description": "L'identifiant de la Feature. \nType: `String` \nNote: Doit être de la forme 'namespace:feature_id' où feature_id doit correspondre au nom du fichier.",
                                             "type": "string",
-                                            "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                                            pattern: schemaPatterns.identifier_with_namespace
                                         }
                                     }
                                 },
@@ -4148,14 +4761,7 @@ const versionedChanges: SchemaChange[] = [
                                             "description": "Distribution pour la coordonnée (évaluée à chaque itération). \nType: `Molang | Object`",
                                             "oneOf": [
                                                 {
-                                                    "oneOf": [
-                                                        {
-                                                            "type": "string"
-                                                        },
-                                                        {
-                                                            "type": "number"
-                                                        }
-                                                    ]
+                                                    type: "molang"
                                                 },
                                                 {
                                                     "type": "object",
@@ -4172,14 +4778,7 @@ const versionedChanges: SchemaChange[] = [
                                                             "minItems": 2,
                                                             "maxItems": 2,
                                                             "items": {
-                                                                "oneOf": [
-                                                                    {
-                                                                        "type": "number"
-                                                                    },
-                                                                    {
-                                                                        "type": "string"
-                                                                    }
-                                                                ]
+                                                                type: "molang"
                                                             }
                                                         },
                                                         "step_size": {
@@ -4198,23 +4797,13 @@ const versionedChanges: SchemaChange[] = [
                                         },
                                         "iterations": {
                                             "description": "Nombre d'itérations pour générer des positions dispersées. \nType: `Molang`",
-                                            "oneOf": [
-                                                {
-                                                    "type": "string"
-                                                },
-                                                {
-                                                    "type": "integer"
-                                                }
-                                            ]
+                                            type: "molang"
                                         },
                                         "scatter_chance": {
                                             "description": "Probabilité que cette dispersion se produise. Non évalué à chaque itération; soit aucune itération ne sera exécutée, soit toutes le seront. \nType: `Molang | Object`",
                                             "oneOf": [
                                                 {
-                                                    "type": "number"
-                                                },
-                                                {
-                                                    "type": "string"
+                                                    type: "molang"
                                                 },
                                                 {
                                                     "type": "object",
@@ -4241,10 +4830,80 @@ const versionedChanges: SchemaChange[] = [
                                             "enum": ["xzy", "xyz", "yxz", "yzx", "zxy", "zyx"]
                                         },
                                         "x": {
-                                            "$ref": "#/properties/minecraft:feature_rules/properties/distribution/properties/z"
+                                            "description": "Distribution pour la coordonnée (évaluée à chaque itération). \nType: `Molang | Object`",
+                                            "oneOf": [
+                                                {
+                                                    type: "molang"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": ["distribution", "extent"],
+                                                    "properties": {
+                                                        "distribution": {
+                                                            "description": "Type de distribution à utiliser. \nType: `String`",
+                                                            "type": "string",
+                                                            "enum": ["uniform", "gaussian", "inverse_gaussian", "triangle", "fixed_grid", "jittered_grid"]
+                                                        },
+                                                        "extent": {
+                                                            "description": "Les bornes inférieure et supérieure (incluses) définissent la plage de dispersion, en tant que décalage par rapport au point d'entrée autour duquel la feature est dispersée. \nType: `Molang[2]`",
+                                                            "type": "array",
+                                                            "minItems": 2,
+                                                            "maxItems": 2,
+                                                            "items": {
+                                                                type: "molang"
+                                                            }
+                                                        },
+                                                        "step_size": {
+                                                            "description": "Lorsque le type de distribution est 'grid', définit la distance entre les étapes le long de cet axe. \nType: `Integer`",
+                                                            "type": "integer",
+                                                            "minimum": 1
+                                                        },
+                                                        "grid_offset": {
+                                                            "description": "Lorsque le type de distribution est 'grid', définit le décalage le long de cet axe. \nType: `Integer`",
+                                                            "type": "integer",
+                                                            "minimum": 0
+                                                        }
+                                                    }
+                                                }
+                                            ]
                                         },
                                         "y": {
-                                            "$ref": "#/properties/minecraft:feature_rules/properties/distribution/properties/z"
+                                            "description": "Distribution pour la coordonnée (évaluée à chaque itération). \nType: `Molang | Object`",
+                                            "oneOf": [
+                                                {
+                                                    type: "molang"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": ["distribution", "extent"],
+                                                    "properties": {
+                                                        "distribution": {
+                                                            "description": "Type de distribution à utiliser. \nType: `String`",
+                                                            "type": "string",
+                                                            "enum": ["uniform", "gaussian", "inverse_gaussian", "triangle", "fixed_grid", "jittered_grid"]
+                                                        },
+                                                        "extent": {
+                                                            "description": "Les bornes inférieure et supérieure (incluses) définissent la plage de dispersion, en tant que décalage par rapport au point d'entrée autour duquel la feature est dispersée. \nType: `Molang[2]`",
+                                                            "type": "array",
+                                                            "minItems": 2,
+                                                            "maxItems": 2,
+                                                            "items": {
+                                                                type: "molang"
+                                                            }
+                                                        },
+                                                        "step_size": {
+                                                            "description": "Lorsque le type de distribution est 'grid', définit la distance entre les étapes le long de cet axe. \nType: `Integer`",
+                                                            "type": "integer",
+                                                            "minimum": 1
+                                                        },
+                                                        "grid_offset": {
+                                                            "description": "Lorsque le type de distribution est 'grid', définit le décalage le long de cet axe. \nType: `Integer`",
+                                                            "type": "integer",
+                                                            "minimum": 0
+                                                        }
+                                                    }
+                                                }
+                                            ]
                                         }
                                     }
                                 }
@@ -4277,7 +4936,7 @@ const versionedChanges: SchemaChange[] = [
                                         "identifier": {
                                             "description": "L'identifiant de la Feature. \nType: `String` \nNote: Doit être de la forme 'namespace:feature_id' où feature_id doit correspondre au nom du fichier.",
                                             "type": "string",
-                                            "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                                            pattern: schemaPatterns.identifier_with_namespace
                                         }
                                     }
                                 },
@@ -4285,8 +4944,10 @@ const versionedChanges: SchemaChange[] = [
                                     "description": "Le bloc à placer. \nType: `BlockDescriptor | Object[]`",
                                     "oneOf": [
                                         {
-                                            "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                         },
+                                        commonSchemas.block_descriptor,
                                         {
                                             "type": "array",
                                             "items": {
@@ -4294,7 +4955,14 @@ const versionedChanges: SchemaChange[] = [
                                                 "required": ["block", "weight"],
                                                 "properties": {
                                                     "block": {
-                                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                        "description": "Le bloc à placer. \nType: `BlockDescriptor`",
+                                                        oneOf: [
+                                                            {
+                                                                type: "string",
+                                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                            },
+                                                            commonSchemas.block_descriptor
+                                                        ]
                                                     },
                                                     "weight": {
                                                         "description": "Poids de chances du bloc. \nType: `Integer`",
@@ -4331,12 +4999,31 @@ const versionedChanges: SchemaChange[] = [
                                             "description": "Le ou les blocs qui peuvent être placés au-dessus du bloc de cette Feature. \nType: `BlockDescriptor | BlockDescriptor[]`",
                                             "oneOf": [
                                                 {
-                                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                                 },
+                                                commonSchemas.block_descriptor,
                                                 {
                                                     "type": "array",
                                                     "items": {
-                                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                        "type": "object",
+                                                        "required": ["block", "weight"],
+                                                        "properties": {
+                                                            "block": {
+                                                                "description": "Le bloc à placer. \nType: `BlockDescriptor`",
+                                                                oneOf: [
+                                                                    {
+                                                                        type: "string",
+                                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                    },
+                                                                    commonSchemas.block_descriptor
+                                                                ]
+                                                            },
+                                                            "weight": {
+                                                                "description": "Poids de chances du bloc. \nType: `Integer`",
+                                                                "type": "integer"
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             ]
@@ -4345,12 +5032,31 @@ const versionedChanges: SchemaChange[] = [
                                             "description": "Le ou les blocs qui peuvent être placés en dessous du bloc de cette Feature. \nType: `BlockDescriptor | BlockDescriptor[]`",
                                             "oneOf": [
                                                 {
-                                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                                 },
+                                                commonSchemas.block_descriptor,
                                                 {
                                                     "type": "array",
                                                     "items": {
-                                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                        "type": "object",
+                                                        "required": ["block", "weight"],
+                                                        "properties": {
+                                                            "block": {
+                                                                "description": "Le bloc à placer. \nType: `BlockDescriptor`",
+                                                                oneOf: [
+                                                                    {
+                                                                        type: "string",
+                                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                    },
+                                                                    commonSchemas.block_descriptor
+                                                                ]
+                                                            },
+                                                            "weight": {
+                                                                "description": "Poids de chances du bloc. \nType: `Integer`",
+                                                                "type": "integer"
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             ]
@@ -4359,12 +5065,31 @@ const versionedChanges: SchemaChange[] = [
                                             "description": "Le ou les blocs qui peuvent être placés au nord du bloc de cette Feature. \nType: `BlockDescriptor | BlockDescriptor[]`",
                                             "oneOf": [
                                                 {
-                                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                                 },
+                                                commonSchemas.block_descriptor,
                                                 {
                                                     "type": "array",
                                                     "items": {
-                                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                        "type": "object",
+                                                        "required": ["block", "weight"],
+                                                        "properties": {
+                                                            "block": {
+                                                                "description": "Le bloc à placer. \nType: `BlockDescriptor`",
+                                                                oneOf: [
+                                                                    {
+                                                                        type: "string",
+                                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                    },
+                                                                    commonSchemas.block_descriptor
+                                                                ]
+                                                            },
+                                                            "weight": {
+                                                                "description": "Poids de chances du bloc. \nType: `Integer`",
+                                                                "type": "integer"
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             ]
@@ -4373,12 +5098,31 @@ const versionedChanges: SchemaChange[] = [
                                             "description": "Le ou les blocs qui peuvent être placés à l'est du bloc de cette Feature. \nType: `BlockDescriptor | BlockDescriptor[]`",
                                             "oneOf": [
                                                 {
-                                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                                 },
+                                                commonSchemas.block_descriptor,
                                                 {
                                                     "type": "array",
                                                     "items": {
-                                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                        "type": "object",
+                                                        "required": ["block", "weight"],
+                                                        "properties": {
+                                                            "block": {
+                                                                "description": "Le bloc à placer. \nType: `BlockDescriptor`",
+                                                                oneOf: [
+                                                                    {
+                                                                        type: "string",
+                                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                    },
+                                                                    commonSchemas.block_descriptor
+                                                                ]
+                                                            },
+                                                            "weight": {
+                                                                "description": "Poids de chances du bloc. \nType: `Integer`",
+                                                                "type": "integer"
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             ]
@@ -4387,12 +5131,31 @@ const versionedChanges: SchemaChange[] = [
                                             "description": "Le ou les blocs qui peuvent être placés au sud du bloc de cette Feature. \nType: `BlockDescriptor | BlockDescriptor[]`",
                                             "oneOf": [
                                                 {
-                                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                                 },
+                                                commonSchemas.block_descriptor,
                                                 {
                                                     "type": "array",
                                                     "items": {
-                                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                        "type": "object",
+                                                        "required": ["block", "weight"],
+                                                        "properties": {
+                                                            "block": {
+                                                                "description": "Le bloc à placer. \nType: `BlockDescriptor`",
+                                                                oneOf: [
+                                                                    {
+                                                                        type: "string",
+                                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                    },
+                                                                    commonSchemas.block_descriptor
+                                                                ]
+                                                            },
+                                                            "weight": {
+                                                                "description": "Poids de chances du bloc. \nType: `Integer`",
+                                                                "type": "integer"
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             ]
@@ -4401,12 +5164,31 @@ const versionedChanges: SchemaChange[] = [
                                             "description": "Le ou les blocs qui peuvent être placés à l'ouest du bloc de cette Feature. \nType: `BlockDescriptor | BlockDescriptor[]`",
                                             "oneOf": [
                                                 {
-                                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                                 },
+                                                commonSchemas.block_descriptor,
                                                 {
                                                     "type": "array",
                                                     "items": {
-                                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                        "type": "object",
+                                                        "required": ["block", "weight"],
+                                                        "properties": {
+                                                            "block": {
+                                                                "description": "Le bloc à placer. \nType: `BlockDescriptor`",
+                                                                oneOf: [
+                                                                    {
+                                                                        type: "string",
+                                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                    },
+                                                                    commonSchemas.block_descriptor
+                                                                ]
+                                                            },
+                                                            "weight": {
+                                                                "description": "Poids de chances du bloc. \nType: `Integer`",
+                                                                "type": "integer"
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             ]
@@ -4415,12 +5197,31 @@ const versionedChanges: SchemaChange[] = [
                                             "description": "Le ou les blocs qui peuvent être placés de tous les côtés du bloc de cette Feature. \nType: `BlockDescriptor | BlockDescriptor[]`",
                                             "oneOf": [
                                                 {
-                                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                                 },
+                                                commonSchemas.block_descriptor,
                                                 {
                                                     "type": "array",
                                                     "items": {
-                                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                        "type": "object",
+                                                        "required": ["block", "weight"],
+                                                        "properties": {
+                                                            "block": {
+                                                                "description": "Le bloc à placer. \nType: `BlockDescriptor`",
+                                                                oneOf: [
+                                                                    {
+                                                                        type: "string",
+                                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                    },
+                                                                    commonSchemas.block_descriptor
+                                                                ]
+                                                            },
+                                                            "weight": {
+                                                                "description": "Poids de chances du bloc. \nType: `Integer`",
+                                                                "type": "integer"
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             ]
@@ -4429,12 +5230,31 @@ const versionedChanges: SchemaChange[] = [
                                             "description": "Le ou les blocs qui peuvent être placés sur les côtés du bloc de cette Feature. \nType: `BlockDescriptor | BlockDescriptor[]`",
                                             "oneOf": [
                                                 {
-                                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                                 },
+                                                commonSchemas.block_descriptor,
                                                 {
                                                     "type": "array",
                                                     "items": {
-                                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                        "type": "object",
+                                                        "required": ["block", "weight"],
+                                                        "properties": {
+                                                            "block": {
+                                                                "description": "Le bloc à placer. \nType: `BlockDescriptor`",
+                                                                oneOf: [
+                                                                    {
+                                                                        type: "string",
+                                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                    },
+                                                                    commonSchemas.block_descriptor
+                                                                ]
+                                                            },
+                                                            "weight": {
+                                                                "description": "Poids de chances du bloc. \nType: `Integer`",
+                                                                "type": "integer"
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             ]
@@ -4443,12 +5263,31 @@ const versionedChanges: SchemaChange[] = [
                                             "description": "Le ou les blocs qui peuvent être placés en diagonale du bloc de cette Feature. \nType: `BlockDescriptor | BlockDescriptor[]`",
                                             "oneOf": [
                                                 {
-                                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                                 },
+                                                commonSchemas.block_descriptor,
                                                 {
                                                     "type": "array",
                                                     "items": {
-                                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                        "type": "object",
+                                                        "required": ["block", "weight"],
+                                                        "properties": {
+                                                            "block": {
+                                                                "description": "Le bloc à placer. \nType: `BlockDescriptor`",
+                                                                oneOf: [
+                                                                    {
+                                                                        type: "string",
+                                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                    },
+                                                                    commonSchemas.block_descriptor
+                                                                ]
+                                                            },
+                                                            "weight": {
+                                                                "description": "Poids de chances du bloc. \nType: `Integer`",
+                                                                "type": "integer"
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             ]
@@ -4459,7 +5298,13 @@ const versionedChanges: SchemaChange[] = [
                                     "description": "Les blocs qui peuvent être remplacés par le bloc de cette Feature. Omettez ce champ pour autoriser n'importe quel bloc à être remplacé. \nType: `BlockDescriptor[]`",
                                     "type": "array",
                                     "items": {
-                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                        "oneOf": [
+                                            {
+                                                type: "string",
+                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                            },
+                                            commonSchemas.block_descriptor
+                                        ]
                                     }
                                 },
                                 "randomize_rotation": {
@@ -4474,12 +5319,31 @@ const versionedChanges: SchemaChange[] = [
                                             "description": "Le ou les blocs qui ne peuvent pas être placés au-dessus du bloc de cette Feature. \nType: `BlockDescriptor | BlockDescriptor[]`",
                                             "oneOf": [
                                                 {
-                                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                                 },
+                                                commonSchemas.block_descriptor,
                                                 {
                                                     "type": "array",
                                                     "items": {
-                                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                        "type": "object",
+                                                        "required": ["block", "weight"],
+                                                        "properties": {
+                                                            "block": {
+                                                                "description": "Le bloc à placer. \nType: `BlockDescriptor`",
+                                                                oneOf: [
+                                                                    {
+                                                                        type: "string",
+                                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                    },
+                                                                    commonSchemas.block_descriptor
+                                                                ]
+                                                            },
+                                                            "weight": {
+                                                                "description": "Poids de chances du bloc. \nType: `Integer`",
+                                                                "type": "integer"
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             ]
@@ -4488,12 +5352,31 @@ const versionedChanges: SchemaChange[] = [
                                             "description": "Le ou les blocs qui ne peuvent pas être placés en dessous du bloc de cette Feature. \nType: `BlockDescriptor | BlockDescriptor[]`",
                                             "oneOf": [
                                                 {
-                                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                                 },
+                                                commonSchemas.block_descriptor,
                                                 {
                                                     "type": "array",
                                                     "items": {
-                                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                        "type": "object",
+                                                        "required": ["block", "weight"],
+                                                        "properties": {
+                                                            "block": {
+                                                                "description": "Le bloc à placer. \nType: `BlockDescriptor`",
+                                                                oneOf: [
+                                                                    {
+                                                                        type: "string",
+                                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                    },
+                                                                    commonSchemas.block_descriptor
+                                                                ]
+                                                            },
+                                                            "weight": {
+                                                                "description": "Poids de chances du bloc. \nType: `Integer`",
+                                                                "type": "integer"
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             ]
@@ -4502,12 +5385,31 @@ const versionedChanges: SchemaChange[] = [
                                             "description": "Le ou les blocs qui ne peuvent pas être placés au nord du bloc de cette Feature. \nType: `BlockDescriptor | BlockDescriptor[]`",
                                             "oneOf": [
                                                 {
-                                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                                 },
+                                                commonSchemas.block_descriptor,
                                                 {
                                                     "type": "array",
                                                     "items": {
-                                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                        "type": "object",
+                                                        "required": ["block", "weight"],
+                                                        "properties": {
+                                                            "block": {
+                                                                "description": "Le bloc à placer. \nType: `BlockDescriptor`",
+                                                                oneOf: [
+                                                                    {
+                                                                        type: "string",
+                                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                    },
+                                                                    commonSchemas.block_descriptor
+                                                                ]
+                                                            },
+                                                            "weight": {
+                                                                "description": "Poids de chances du bloc. \nType: `Integer`",
+                                                                "type": "integer"
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             ]
@@ -4516,12 +5418,31 @@ const versionedChanges: SchemaChange[] = [
                                             "description": "Le ou les blocs qui ne peuvent pas être placés à l'est du bloc de cette Feature. \nType: `BlockDescriptor | BlockDescriptor[]`",
                                             "oneOf": [
                                                 {
-                                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                                 },
+                                                commonSchemas.block_descriptor,
                                                 {
                                                     "type": "array",
                                                     "items": {
-                                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                        "type": "object",
+                                                        "required": ["block", "weight"],
+                                                        "properties": {
+                                                            "block": {
+                                                                "description": "Le bloc à placer. \nType: `BlockDescriptor`",
+                                                                oneOf: [
+                                                                    {
+                                                                        type: "string",
+                                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                    },
+                                                                    commonSchemas.block_descriptor
+                                                                ]
+                                                            },
+                                                            "weight": {
+                                                                "description": "Poids de chances du bloc. \nType: `Integer`",
+                                                                "type": "integer"
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             ]
@@ -4530,12 +5451,31 @@ const versionedChanges: SchemaChange[] = [
                                             "description": "Le ou les blocs qui ne peuvent pas être placés au sud du bloc de cette Feature. \nType: `BlockDescriptor | BlockDescriptor[]`",
                                             "oneOf": [
                                                 {
-                                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                                 },
+                                                commonSchemas.block_descriptor,
                                                 {
                                                     "type": "array",
                                                     "items": {
-                                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                        "type": "object",
+                                                        "required": ["block", "weight"],
+                                                        "properties": {
+                                                            "block": {
+                                                                "description": "Le bloc à placer. \nType: `BlockDescriptor`",
+                                                                oneOf: [
+                                                                    {
+                                                                        type: "string",
+                                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                    },
+                                                                    commonSchemas.block_descriptor
+                                                                ]
+                                                            },
+                                                            "weight": {
+                                                                "description": "Poids de chances du bloc. \nType: `Integer`",
+                                                                "type": "integer"
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             ]
@@ -4544,12 +5484,31 @@ const versionedChanges: SchemaChange[] = [
                                             "description": "Le ou les blocs qui ne peuvent pas être placés à l'ouest du bloc de cette Feature. \nType: `BlockDescriptor | BlockDescriptor[]`",
                                             "oneOf": [
                                                 {
-                                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                                 },
+                                                commonSchemas.block_descriptor,
                                                 {
                                                     "type": "array",
                                                     "items": {
-                                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                        "type": "object",
+                                                        "required": ["block", "weight"],
+                                                        "properties": {
+                                                            "block": {
+                                                                "description": "Le bloc à placer. \nType: `BlockDescriptor`",
+                                                                oneOf: [
+                                                                    {
+                                                                        type: "string",
+                                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                    },
+                                                                    commonSchemas.block_descriptor
+                                                                ]
+                                                            },
+                                                            "weight": {
+                                                                "description": "Poids de chances du bloc. \nType: `Integer`",
+                                                                "type": "integer"
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             ]
@@ -4558,12 +5517,31 @@ const versionedChanges: SchemaChange[] = [
                                             "description": "Le ou les blocs qui ne peuvent pas être placés de tous les côtés du bloc de cette Feature. \nType: `BlockDescriptor | BlockDescriptor[]`",
                                             "oneOf": [
                                                 {
-                                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                                 },
+                                                commonSchemas.block_descriptor,
                                                 {
                                                     "type": "array",
                                                     "items": {
-                                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                        "type": "object",
+                                                        "required": ["block", "weight"],
+                                                        "properties": {
+                                                            "block": {
+                                                                "description": "Le bloc à placer. \nType: `BlockDescriptor`",
+                                                                oneOf: [
+                                                                    {
+                                                                        type: "string",
+                                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                    },
+                                                                    commonSchemas.block_descriptor
+                                                                ]
+                                                            },
+                                                            "weight": {
+                                                                "description": "Poids de chances du bloc. \nType: `Integer`",
+                                                                "type": "integer"
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             ]
@@ -4572,12 +5550,31 @@ const versionedChanges: SchemaChange[] = [
                                             "description": "Le ou les blocs qui ne peuvent pas être placés sur les côtés du bloc de cette Feature. \nType: `BlockDescriptor | BlockDescriptor[]`",
                                             "oneOf": [
                                                 {
-                                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                                 },
+                                                commonSchemas.block_descriptor,
                                                 {
                                                     "type": "array",
                                                     "items": {
-                                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                        "type": "object",
+                                                        "required": ["block", "weight"],
+                                                        "properties": {
+                                                            "block": {
+                                                                "description": "Le bloc à placer. \nType: `BlockDescriptor`",
+                                                                oneOf: [
+                                                                    {
+                                                                        type: "string",
+                                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                    },
+                                                                    commonSchemas.block_descriptor
+                                                                ]
+                                                            },
+                                                            "weight": {
+                                                                "description": "Poids de chances du bloc. \nType: `Integer`",
+                                                                "type": "integer"
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             ]
@@ -4586,12 +5583,31 @@ const versionedChanges: SchemaChange[] = [
                                             "description": "Le ou les blocs qui ne peuvent pas être placés en diagonale du bloc de cette Feature. \nType: `BlockDescriptor | BlockDescriptor[]`",
                                             "oneOf": [
                                                 {
-                                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
                                                 },
+                                                commonSchemas.block_descriptor,
                                                 {
                                                     "type": "array",
                                                     "items": {
-                                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/block_descriptor"
+                                                        "type": "object",
+                                                        "required": ["block", "weight"],
+                                                        "properties": {
+                                                            "block": {
+                                                                "description": "Le bloc à placer. \nType: `BlockDescriptor`",
+                                                                oneOf: [
+                                                                    {
+                                                                        type: "string",
+                                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                    },
+                                                                    commonSchemas.block_descriptor
+                                                                ]
+                                                            },
+                                                            "weight": {
+                                                                "description": "Poids de chances du bloc. \nType: `Integer`",
+                                                                "type": "integer"
+                                                            }
+                                                        }
                                                     }
                                                 }
                                             ]

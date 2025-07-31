@@ -392,7 +392,9 @@ export function registerCompletionProvider(
                                 schemaForValues = resolvedNode.properties[propertyName];
                             }
                             // Fallback : chercher dans toutes les branches oneOf du parent
-                            else if (rawSchema.oneOf && typeof valueAtPath === "object" && valueAtPath !== null) {
+                            // CORRECTION: Supprimer la condition sur valueAtPath pour permettre la résolution
+                            // des propriétés string avec x-dynamic-examples-source dans les schemas oneOf
+                            else if (rawSchema.oneOf) {
                                 for (const branch of rawSchema.oneOf) {
                                     if (branch?.type === "object" && branch.properties && branch.properties[propertyName]) {
                                         schemaForValues = branch.properties[propertyName];
@@ -404,7 +406,93 @@ export function registerCompletionProvider(
 
                         // Collecte des exemples dynamiques
                         let dynamicExamples: any[] = [];
-                        if ("x-dynamic-examples-source" in schemaForValues) {
+                        
+                        // NOUVEAU: Gestion des oneOf au niveau des valeurs de propriétés
+                        // Ceci résout le problème où une propriété peut être soit un string avec x-dynamic-examples-source
+                        // soit un objet (comme dans les features: fill_with peut être string ou block_descriptor)
+                        if (schemaForValues.oneOf && Array.isArray(schemaForValues.oneOf)) {
+                            // Parcourir toutes les branches oneOf pour collecter les sources dynamiques
+                            for (const branch of schemaForValues.oneOf) {
+                                if (branch && "x-dynamic-examples-source" in branch) {
+                                    const sources = Array.isArray(branch["x-dynamic-examples-source"])
+                                        ? branch["x-dynamic-examples-source"]
+                                        : [branch["x-dynamic-examples-source"]];
+                                    
+                                    for (const source of sources) {
+                                        switch (source) {
+                                            case dynamicExamplesSourceKeys.block_ids:
+                                                dynamicExamples.push(...await getBlockIds());
+                                                break;
+                                            case dynamicExamplesSourceKeys.loot_table_file_paths:
+                                                dynamicExamples.push(...await getLootTablePaths());
+                                                break;
+                                            case dynamicExamplesSourceKeys.block_model_ids:
+                                                dynamicExamples.push(...await getBlockModelIds());
+                                                break;
+                                            case dynamicExamplesSourceKeys.crafting_recipe_tags:
+                                                dynamicExamples.push(...await getCraftingRecipeTagIds());
+                                                break;
+                                            case dynamicExamplesSourceKeys.culling_layer_ids:
+                                                dynamicExamples.push(...await getCullingLayerIds());
+                                                break;
+                                            case dynamicExamplesSourceKeys.aim_assist_category_ids:
+                                                dynamicExamples.push(...await getAimAssistCategoryIds());
+                                                break;
+                                            case dynamicExamplesSourceKeys.aim_assist_preset_ids:
+                                                dynamicExamples.push(...await getAimAssistPresetIds());
+                                                break;
+                                            case dynamicExamplesSourceKeys.entity_ids:
+                                                dynamicExamples.push(...await getEntityIds());
+                                                break;
+                                            case dynamicExamplesSourceKeys.item_ids:
+                                                dynamicExamples.push(...await getItemIds());
+                                                break;
+                                            case dynamicExamplesSourceKeys.biome_ids:
+                                                dynamicExamples.push(...await getBiomeIds());
+                                                break;
+                                            case dynamicExamplesSourceKeys.biome_tags:
+                                                dynamicExamples.push(...await getBiomeTags());
+                                                break;
+                                            case dynamicExamplesSourceKeys.vanilla_data_driven_item_ids:
+                                                dynamicExamples.push(...await getDataDrivenItemIds());
+                                                break;
+                                            case dynamicExamplesSourceKeys.effect_ids:
+                                                dynamicExamples.push(...await getEffectIds());
+                                                break;
+                                            case dynamicExamplesSourceKeys.cooldown_category_ids:
+                                                dynamicExamples.push(...await getCooldownCategoryIds());
+                                                break;
+                                            case dynamicExamplesSourceKeys.item_tags:
+                                                dynamicExamples.push(...await getItemTags());
+                                                break;
+                                            case dynamicExamplesSourceKeys.item_group_ids:
+                                                dynamicExamples.push(...await getItemGroupIds());
+                                                break;
+                                            case dynamicExamplesSourceKeys.item_group_ids_with_minecraft_namespace:
+                                                dynamicExamples.push(...await getItemGroupIdsWithMinecraftNamespace());
+                                                break;
+                                            case dynamicExamplesSourceKeys.vanilla_data_driven_entity_ids:
+                                                dynamicExamples.push(...await getDataDrivenEntityIds());
+                                                break;
+                                            case dynamicExamplesSourceKeys.camera_preset_ids:
+                                                dynamicExamples.push(...await getCameraPresetIds());
+                                                break;
+                                            case dynamicExamplesSourceKeys.dimension_ids:
+                                                dynamicExamples.push(...await getDimensionIds());
+                                                break;
+                                            case dynamicExamplesSourceKeys.entity_family_ids:
+                                                dynamicExamples.push(...await getEntityFamilyIds());
+                                                break;
+                                            case dynamicExamplesSourceKeys.trading_file_paths:
+                                                dynamicExamples.push(...await getTradingFilePaths());
+                                                break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        // Gestion classique pour les schémas sans oneOf
+                        else if ("x-dynamic-examples-source" in schemaForValues) {
                             const sources = Array.isArray(schemaForValues["x-dynamic-examples-source"])
                                 ? schemaForValues["x-dynamic-examples-source"]
                                 : [schemaForValues["x-dynamic-examples-source"]];
@@ -482,13 +570,31 @@ export function registerCompletionProvider(
                         }
 
                         // Collecte de toutes les valeurs possibles
-                        const rawValues = [
-                            ...dynamicExamples,
-                            ...(schemaForValues.enum ?? []),
-                            ...(schemaForValues.examples ?? []),
-                            ...(schemaForValues.const !== undefined ? [schemaForValues.const] : []),
-                            ...(schemaForValues.default !== undefined ? [schemaForValues.default] : [])
-                        ];
+                        let rawValues: any[] = [...dynamicExamples];
+                        
+                        // NOUVEAU: Gestion des oneOf pour collecter toutes les valeurs possibles
+                        if (schemaForValues.oneOf && Array.isArray(schemaForValues.oneOf)) {
+                            // Collecter les enum, examples, const, default de toutes les branches oneOf
+                            for (const branch of schemaForValues.oneOf) {
+                                if (branch) {
+                                    rawValues.push(
+                                        ...(branch.enum ?? []),
+                                        ...(branch.examples ?? []),
+                                        ...(branch.const !== undefined ? [branch.const] : []),
+                                        ...(branch.default !== undefined ? [branch.default] : [])
+                                    );
+                                }
+                            }
+                        } else {
+                            // Gestion classique pour les schémas sans oneOf
+                            rawValues.push(
+                                ...(schemaForValues.enum ?? []),
+                                ...(schemaForValues.examples ?? []),
+                                ...(schemaForValues.const !== undefined ? [schemaForValues.const] : []),
+                                ...(schemaForValues.default !== undefined ? [schemaForValues.default] : [])
+                            );
+                        }
+                        
                         const uniqueValues = [...new Set(rawValues)];
 
                         return uniqueValues.map(value => {

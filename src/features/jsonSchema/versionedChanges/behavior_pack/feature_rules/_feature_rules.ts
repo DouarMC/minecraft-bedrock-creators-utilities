@@ -107,14 +107,7 @@ const baseSchema = {
                         },
                         "iterations": {
                             "description": "Nombre d'itérations pour générer des positions dispersées. \nType: `Molang`",
-                            "oneOf": [
-                                {
-                                    "type": "string"
-                                },
-                                {
-                                    "type": "integer"
-                                }
-                            ]
+                            type: "molang"
                         },
                         "scatter_chance": {
                             "description": "Probabilité que cette dispersion se produise. Non évalué à chaque itération; soit aucune itération ne sera exécutée, soit toutes le seront. \nType: `Molang | Object`",
