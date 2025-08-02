@@ -65,36 +65,6 @@ export function registerCompletionProvider(
                         // Si la résolution échoue, on garde le schéma déjà résolu
                         console.debug('Error resolving schema with resolveSchemaAtPath:', error);
                     }
-
-                    // DEBUG: Loguer des informations pour diagnostiquer
-                    console.debug('Completion DEBUG:', {
-                        path,
-                        isInArray: path.some(p => typeof p === 'number'),
-                        hasSchema: !!resolvedNode,
-                        schemaType: resolvedNode?.type,
-                        hasProperties: !!resolvedNode?.properties,
-                        hasOneOf: !!unresolvedNode?.oneOf || !!resolvedNode?.oneOf,
-                        hasRef: !!resolvedNode?.$ref,
-                        rawSchemaRef: rawSchema?.$ref,
-                        fullSchemaHasDefinitions: !!(fullSchema as any)?.definitions,
-                        valueAtPath,
-                        // NOUVEAU: Analyser rawSchema pour les arrays positionnels
-                        rawSchemaType: rawSchema?.type,
-                        rawSchemaItems: rawSchema?.items,
-                        rawSchemaItemsIsArray: Array.isArray(rawSchema?.items)
-                    });
-                    
-                    // DEBUG: Informations détaillées sur unresolvedNode et resolvedNode
-                    console.debug('Schema DEBUG:', {
-                        unresolvedNodeHasOneOf: !!unresolvedNode?.oneOf,
-                        resolvedNodeHasOneOf: !!resolvedNode?.oneOf,
-                        unresolvedNodeType: unresolvedNode?.type,
-                        resolvedNodeType: resolvedNode?.type,
-                        rawSchemaType: rawSchema?.type,
-                        rawSchemaHasOneOf: !!rawSchema?.oneOf,
-                        unresolvedNodeOneOfLength: unresolvedNode?.oneOf?.length,
-                        resolvedNodeOneOfLength: resolvedNode?.oneOf?.length
-                    });
                     
                     if (!resolvedNode) { // Si pas de schéma résolu, on ne propose rien
                         return [];
@@ -102,12 +72,6 @@ export function registerCompletionProvider(
 
                     const cursorContext = getCursorContext(document, position); // Récupère le contexte du curseur
                     
-                    // DEBUG: Informations sur le contexte du curseur
-                    console.debug('Cursor Context DEBUG:', {
-                        cursorIsInArrayElement: cursorContext.isInArrayElement,
-                        cursorIsInQuotes: cursorContext.isInQuotes,
-                        cursorIsTypingValue: cursorContext.isTypingValue
-                    });
 
                     // Trouve le bon objet parent à partir du curseur
                     const rootNode = parseTree(document.getText());
@@ -121,31 +85,25 @@ export function registerCompletionProvider(
                     if (resolvedNode?.$ref && resolvedNode.$ref.startsWith('#/definitions/')) {
                         const definitionPath = resolvedNode.$ref.slice(2).split('/'); // Enlever '#/' et diviser
                         let refSchema: any = fullSchema;
-                        console.debug('Trying to resolve $ref:', resolvedNode.$ref, 'from fullSchema:', !!refSchema);
                         
                         for (const segment of definitionPath) {
-                            console.debug('  -> Looking for segment:', segment, 'in:', Object.keys(refSchema || {}));
                             if (refSchema && refSchema[segment]) {
                                 refSchema = refSchema[segment];
-                                console.debug('  -> Found:', segment);
                             } else {
-                                console.debug('  -> NOT FOUND:', segment);
                                 refSchema = undefined;
                                 break;
                             }
                         }
                         if (refSchema) {
-                            console.debug('✅ Successfully resolved $ref:', resolvedNode.$ref, 'to schema with oneOf:', !!refSchema.oneOf);
                             resolvedNode = refSchema;
                             propertiesForCompletion = resolvedNode.properties;
                         } else {
-                            console.debug('❌ Failed to resolve $ref:', resolvedNode.$ref);
+                            // Si la référence n'est pas trouvée, on garde le schéma original
                         }
                     }
 
                     // NOUVEAU: Gestion spéciale des schémas oneOf pour l'autocomplétion
                     if ((resolvedNode?.oneOf || unresolvedNode?.oneOf) && !propertiesForCompletion) {
-                        console.debug('🔄 Schema has oneOf, extracting all possible properties...');
                         const allProperties: any = {};
                         
                         const oneOfSource = resolvedNode?.oneOf || unresolvedNode?.oneOf;
