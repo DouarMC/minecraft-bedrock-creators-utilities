@@ -77,7 +77,11 @@ export function registerCompletionProvider(
                         hasRef: !!resolvedNode?.$ref,
                         rawSchemaRef: rawSchema?.$ref,
                         fullSchemaHasDefinitions: !!(fullSchema as any)?.definitions,
-                        valueAtPath
+                        valueAtPath,
+                        // NOUVEAU: Analyser rawSchema pour les arrays positionnels
+                        rawSchemaType: rawSchema?.type,
+                        rawSchemaItems: rawSchema?.items,
+                        rawSchemaItemsIsArray: Array.isArray(rawSchema?.items)
                     });
                     
                     // DEBUG: Informations détaillées sur unresolvedNode et resolvedNode
@@ -97,6 +101,13 @@ export function registerCompletionProvider(
                     }
 
                     const cursorContext = getCursorContext(document, position); // Récupère le contexte du curseur
+                    
+                    // DEBUG: Informations sur le contexte du curseur
+                    console.debug('Cursor Context DEBUG:', {
+                        cursorIsInArrayElement: cursorContext.isInArrayElement,
+                        cursorIsInQuotes: cursorContext.isInQuotes,
+                        cursorIsTypingValue: cursorContext.isTypingValue
+                    });
 
                     // Trouve le bon objet parent à partir du curseur
                     const rootNode = parseTree(document.getText());
@@ -229,8 +240,113 @@ export function registerCompletionProvider(
                     // Déterminer le schéma pour les valeurs (nécessaire pour la détection précoce)
                     // Utiliser unresolvedNode pour préserver les oneOf non résolus
                     let schemaForValues = unresolvedNode?.oneOf ? unresolvedNode : (resolvedNode ?? rawSchema);
+                    
+                    // NOUVELLE LOGIQUE: Gestion spéciale pour les arrays avec items positionnels
+                    // Le problème est que rawSchema peut déjà être résolu au niveau de l'élément final
+                    // Nous devons analyser le fullSchema avec le path pour trouver les oneOf dans les items positionnels
+                    if (cursorContext.isInArrayElement && path.length >= 2) {
+                        console.debug('Analyzing positional array items for oneOf...');
+                        
+                        // Reconstruire le schéma en naviguant dans fullSchema avec le path
+                        let currentSchema: any = fullSchema;
+                        let navigationPath: any[] = [];
+                        
+                        for (let i = 0; i < path.length; i++) {
+                            const segment = path[i];
+                            navigationPath.push(segment);
+                            
+                            console.debug(`Navigation step ${i}: segment="${segment}", currentSchema type:`, currentSchema?.type);
+                            
+                            if (typeof segment === 'number') {
+                                // C'est un index de tableau
+                                if (currentSchema?.items) {
+                                    console.debug(`  -> Array items detected, isArray:`, Array.isArray(currentSchema.items));
+                                    
+                                    // IMPORTANT: Vérifier si items est un array (items positionnels)
+                                    if (Array.isArray(currentSchema.items)) {
+                                        // Items positionnels : utiliser le schéma à l'index spécifique
+                                        if (segment < currentSchema.items.length) {
+                                            const positionalSchema = currentSchema.items[segment];
+                                            console.debug(`  -> Using positional schema at index ${segment}:`, {
+                                                hasOneOf: !!positionalSchema?.oneOf,
+                                                schema: positionalSchema
+                                            });
+                                            
+                                            // Si c'est le dernier segment du path (notre position finale)
+                                            // ET que ce schéma positionnel a un oneOf, l'utiliser !
+                                            if (i === path.length - 1 && positionalSchema?.oneOf) {
+                                                console.debug('🎯 Found oneOf in positional schema!');
+                                                schemaForValues = positionalSchema;
+                                                break;
+                                            }
+                                            
+                                            currentSchema = positionalSchema;
+                                        } else {
+                                            console.debug(`  -> Index ${segment} out of bounds for positional items`);
+                                            break;
+                                        }
+                                    } else {
+                                        // Items uniforme : tous les éléments ont le même schéma
+                                        currentSchema = currentSchema.items;
+                                    }
+                                } else {
+                                    console.debug(`  -> No items found for array index ${segment}`);
+                                    break;
+                                }
+                            } else {
+                                // C'est une propriété
+                                if (currentSchema?.properties && currentSchema.properties[segment]) {
+                                    currentSchema = currentSchema.properties[segment];
+                                    console.debug(`  -> Found property ${segment}`);
+                                } else if (currentSchema?.oneOf) {
+                                    // Chercher dans les branches oneOf
+                                    let found = false;
+                                    for (const branch of currentSchema.oneOf) {
+                                        if (branch?.properties && branch.properties[segment]) {
+                                            currentSchema = branch.properties[segment];
+                                            console.debug(`  -> Found ${segment} in oneOf branch`);
+                                            found = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!found) {
+                                        console.debug(`  -> Property ${segment} not found in any oneOf branch`);
+                                        break;
+                                    }
+                                } else {
+                                    console.debug(`  -> Property ${segment} not found`);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Fallback original pour la rétrocompatibilité
                     if (cursorContext.isInArrayElement && rawSchema.items) {
-                        schemaForValues = rawSchema.items;
+                        // DEBUG: Analyser la structure des items pour arrays positionnels
+                        console.debug('Array items analysis (fallback):', {
+                            itemsIsArray: Array.isArray(rawSchema.items),
+                            itemsLength: Array.isArray(rawSchema.items) ? rawSchema.items.length : 'N/A',
+                            path,
+                            lastPathElement: path[path.length - 1],
+                            isLastPathElementNumber: typeof path[path.length - 1] === 'number'
+                        });
+                        
+                        // Gestion spéciale pour les arrays avec items positionnels (items: [schema1, schema2, ...])
+                        if (Array.isArray(rawSchema.items)) {
+                            const arrayIndex = path[path.length - 1];
+                            if (typeof arrayIndex === 'number' && arrayIndex < rawSchema.items.length) {
+                                const fallbackSchema = rawSchema.items[arrayIndex];
+                                if (!schemaForValues?.oneOf && fallbackSchema?.oneOf) {
+                                    schemaForValues = fallbackSchema;
+                                    console.debug('Using positional item schema (fallback):', {
+                                        arrayIndex,
+                                        selectedSchema: schemaForValues,
+                                        hasOneOf: !!schemaForValues?.oneOf
+                                    });
+                                }
+                            }
+                        }
                     }
 
                     // DEBUG: Vérifier le schéma pour les valeurs
