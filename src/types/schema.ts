@@ -22,6 +22,7 @@ export interface SchemaType {
 export interface SchemaContext {
     path: JSONPath;
     schema: any | undefined;
+    unresolvedSchema?: any | undefined; // Schéma non résolu (garde les oneOf)
     fullSchema: SchemaType | undefined;
     valueAtPath: any;
 }

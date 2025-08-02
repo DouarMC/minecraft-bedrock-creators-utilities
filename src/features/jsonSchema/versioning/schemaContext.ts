@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { getVersionedSchemaForFile } from "./getVersionedSchemaForFile";
 import { getJsonPathAt } from "../../../utils/json/getJsonPathAt";
 import { JSONPath, Node } from "jsonc-parser";
-import { resolveSchemaAtPath } from "../../../utils/json/resolveSchemaAtPath";
+import { resolveSchemaAtPath, resolveSchemaAtPathUnresolved } from "../../../utils/json/resolveSchemaAtPath";
 import { SchemaContext } from "../../../types/schema";
 import { getJsonTreeAndValue } from "../../../utils/json/optimizedParsing";
 
@@ -48,10 +48,12 @@ export function getSchemaAtPosition(document: vscode.TextDocument, position: vsc
     const path = rawPath[rawPath.length - 1] === "" ? rawPath.slice(0, -1) : rawPath;
     const valueAtPath = path.reduce((acc, key) => acc?.[key], rootValue);
     const schema = resolveSchemaAtPath(fullSchema, path, rootValue);
+    const unresolvedSchema = resolveSchemaAtPathUnresolved(fullSchema, path); // Sans résolution oneOf
 
     return {
         path,
         schema,
+        unresolvedSchema,
         fullSchema,
         valueAtPath
     };
@@ -75,10 +77,12 @@ export function getSchemaAtNodePath(document: vscode.TextDocument, node: Node, p
     const { value: rootValue } = getJsonTreeAndValue(document);
     const valueAtPath = path.reduce((acc, key) => acc?.[key], rootValue);
     const schema = resolveSchemaAtPath(fullSchema, path, rootValue);
+    const unresolvedSchema = resolveSchemaAtPathUnresolved(fullSchema, path); // Sans résolution oneOf
 
     return {
         path,
         schema,
+        unresolvedSchema,
         fullSchema,
         valueAtPath
     };

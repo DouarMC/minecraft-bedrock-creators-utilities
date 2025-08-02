@@ -57,6 +57,47 @@ export function resolveSchemaAtPath(schema: any, path: (string | number)[], root
     return resolveInlineRefs(current, schema);
 }
 
+/**
+ * Version non résolue qui préserve les oneOf - navigue dans un schéma JSON sans résoudre les oneOf
+ * @param schema Le schéma JSON complet.
+ * @param path Le chemin à suivre dans le schéma, sous forme de tableau de segments.
+ * @returns Le sous-schéma NON résolu à la position indiquée par le chemin (garde les oneOf).
+ */
+export function resolveSchemaAtPathUnresolved(schema: any, path: (string | number)[]): any {
+    let current = schema;
+
+    for (const segment of path) {
+        current = resolveInlineRefs(current, schema);
+
+        const isIndex = typeof segment === 'number' || (typeof segment === 'string' && /^\d+$/.test(segment));
+
+        if (isIndex) {
+            const index = typeof segment === 'number' ? segment : Number(segment);
+
+            // Pas de résolution oneOf ici - juste la navigation
+            let itemSchema;
+            if (Array.isArray(current?.items)) {
+                itemSchema = current.items[index] ?? {};
+            } else if (current?.items) {
+                itemSchema = current.items;
+            } else {
+                itemSchema = {};
+            }
+
+            current = itemSchema;
+            continue;
+        }
+
+        let nextSchema = getSubSchemaForObject(current, segment);
+        nextSchema = resolveInlineRefs(nextSchema, schema);
+
+        // IMPORTANT: Pas de getErrorsForSchema ici pour préserver les oneOf
+        current = nextSchema;
+    }
+
+    return resolveInlineRefs(current, schema);
+}
+
 function getSubSchemaForObject(current: any, segment: string | number): any {
     if (current?.properties?.[segment]) {
         return current.properties[segment];
@@ -64,11 +105,19 @@ function getSubSchemaForObject(current: any, segment: string | number): any {
 
     // Si on a un oneOf, chercher dans toutes les branches qui ont des propriétés
     if (current?.oneOf) {
+        const oneOfBranches = [];
         for (const branch of current.oneOf) {
             // Un objet JSON Schema est implicitement de type "object" s'il a des propriétés
             if (branch.properties?.[segment]) {
-                return branch.properties[segment];
+                oneOfBranches.push(branch.properties[segment]);
             }
+        }
+        
+        // Si on a trouvé des branches, créer un nouveau oneOf avec ces branches
+        if (oneOfBranches.length > 0) {
+            return {
+                oneOf: oneOfBranches
+            };
         }
     }
 

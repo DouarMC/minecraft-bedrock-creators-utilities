@@ -1530,15 +1530,66 @@ const baseSchema = {
                                         },
                                         "lean_height": {
                                             "description": "Nombre de blocs sous la hauteur de l'arbre auxquels des branches diagonales peuvent être créées. \nType: `Integer`",
-                                            "type": "integer"
+                                            oneOf: [
+                                                {
+                                                    type: "integer"
+                                                },
+                                                {
+                                                    type: "object",
+                                                    properties: {
+                                                        range_min: {
+                                                            description: "Valeur minimale.",
+                                                            type: "integer"
+                                                        },
+                                                        range_max: {
+                                                            description: "Valeur maximale.",
+                                                            type: "integer"
+                                                        }
+                                                    }
+                                                }
+                                            ]
                                         },
                                         "lean_steps": {
                                             "description": "Nombre d'étapes prises dans la direction X/Z lors de la création d'une branche diagonale. \nType: `Integer`",
-                                            "type": "integer"
+                                            oneOf: [
+                                                {
+                                                    type: "integer"
+                                                },
+                                                {
+                                                    type: "object",
+                                                    properties: {
+                                                        range_min: {
+                                                            description: "Valeur minimale.",
+                                                            type: "integer"
+                                                        },
+                                                        range_max: {
+                                                            description: "Valeur maximale.",
+                                                            type: "integer"
+                                                        }
+                                                    }
+                                                }
+                                            ]
                                         },
                                         "lean_length": {
                                             "description": "Longueur pour la branche diagonale dans l'axe Y. \nType: `Integer`",
-                                            "type": "integer"
+                                            oneOf: [
+                                                {
+                                                    type: "integer"
+                                                },
+                                                {
+                                                    type: "object",
+                                                    properties: {
+                                                        range_min: {
+                                                            description: "Valeur minimale.",
+                                                            type: "integer"
+                                                        },
+                                                        range_max: {
+                                                            description: "Valeur maximale.",
+                                                            type: "integer"
+                                                        }
+                                                    }
+                                                }
+                                            ]
                                         }
                                     }
                                 },

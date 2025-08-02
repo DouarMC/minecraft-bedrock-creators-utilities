@@ -42,7 +42,7 @@ export function registerCompletionProvider(
                     }
 
                     // On récupère le schéma à la position actuelle, le chemin et la valeur à cette position, et le schéma complet
-                    const {path, schema: rawSchema, valueAtPath, fullSchema} = getSchemaAtPosition(document, position);
+                    const {path, schema: rawSchema, unresolvedSchema, valueAtPath, fullSchema} = getSchemaAtPosition(document, position);
                     
                     if (!rawSchema) { // Si pas de schéma trouvé, on ne propose rien
                         return [];
@@ -55,6 +55,7 @@ export function registerCompletionProvider(
                     // IMPORTANT: Résolution supplémentaire des $ref pour l'autocomplétion
                     // Le système de validation ne résout pas toujours les $ref dans le contexte des definitions
                     // On utilise resolveSchemaAtPath qui gère correctement les $ref
+                    let unresolvedNode = unresolvedSchema || rawSchema; // Utiliser unresolvedSchema de schemaContext
                     try {
                         const fullyResolvedSchema = resolveSchemaAtPath(fullSchema, path, valueAtPath);
                         if (fullyResolvedSchema && fullyResolvedSchema !== resolvedNode) {
@@ -72,11 +73,23 @@ export function registerCompletionProvider(
                         hasSchema: !!resolvedNode,
                         schemaType: resolvedNode?.type,
                         hasProperties: !!resolvedNode?.properties,
-                        hasOneOf: !!resolvedNode?.oneOf,
+                        hasOneOf: !!unresolvedNode?.oneOf || !!resolvedNode?.oneOf,
                         hasRef: !!resolvedNode?.$ref,
                         rawSchemaRef: rawSchema?.$ref,
                         fullSchemaHasDefinitions: !!(fullSchema as any)?.definitions,
                         valueAtPath
+                    });
+                    
+                    // DEBUG: Informations détaillées sur unresolvedNode et resolvedNode
+                    console.debug('Schema DEBUG:', {
+                        unresolvedNodeHasOneOf: !!unresolvedNode?.oneOf,
+                        resolvedNodeHasOneOf: !!resolvedNode?.oneOf,
+                        unresolvedNodeType: unresolvedNode?.type,
+                        resolvedNodeType: resolvedNode?.type,
+                        rawSchemaType: rawSchema?.type,
+                        rawSchemaHasOneOf: !!rawSchema?.oneOf,
+                        unresolvedNodeOneOfLength: unresolvedNode?.oneOf?.length,
+                        resolvedNodeOneOfLength: resolvedNode?.oneOf?.length
                     });
                     
                     if (!resolvedNode) { // Si pas de schéma résolu, on ne propose rien
@@ -120,11 +133,12 @@ export function registerCompletionProvider(
                     }
 
                     // NOUVEAU: Gestion spéciale des schémas oneOf pour l'autocomplétion
-                    if (resolvedNode?.oneOf && !propertiesForCompletion) {
+                    if ((resolvedNode?.oneOf || unresolvedNode?.oneOf) && !propertiesForCompletion) {
                         console.debug('🔄 Schema has oneOf, extracting all possible properties...');
                         const allProperties: any = {};
                         
-                        for (const branch of resolvedNode.oneOf) {
+                        const oneOfSource = resolvedNode?.oneOf || unresolvedNode?.oneOf;
+                        for (const branch of oneOfSource) {
                             if (branch?.properties) {
                                 // Fusionner toutes les propriétés de toutes les branches oneOf
                                 Object.assign(allProperties, branch.properties);
@@ -213,9 +227,28 @@ export function registerCompletionProvider(
                     }
 
                     // Déterminer le schéma pour les valeurs (nécessaire pour la détection précoce)
-                    let schemaForValues = resolvedNode ?? rawSchema;
+                    // Utiliser unresolvedNode pour préserver les oneOf non résolus
+                    let schemaForValues = unresolvedNode?.oneOf ? unresolvedNode : (resolvedNode ?? rawSchema);
                     if (cursorContext.isInArrayElement && rawSchema.items) {
                         schemaForValues = rawSchema.items;
+                    }
+
+                    // DEBUG: Vérifier le schéma pour les valeurs
+                    console.debug('SchemaForValues DEBUG:', {
+                        schemaForValuesHasOneOf: !!schemaForValues?.oneOf,
+                        schemaForValuesType: schemaForValues?.type,
+                        schemaForValuesOneOfLength: schemaForValues?.oneOf?.length,
+                        unresolvedNodeHasOneOf: !!unresolvedNode?.oneOf,
+                        firstBranch: schemaForValues?.oneOf?.[0]
+                    });
+                    
+                    // DEBUG: Vérifier le contenu détaillé du oneOf
+                    if (schemaForValues?.oneOf) {
+                        console.debug('OneOf branches detailed:', {
+                            totalBranches: schemaForValues.oneOf.length,
+                            branch0: schemaForValues.oneOf[0],
+                            branch1: schemaForValues.oneOf[1]
+                        });
                     }
 
                     // COMPLETION DE PROPRIÉTÉS (CLÉS)
@@ -407,89 +440,103 @@ export function registerCompletionProvider(
                         // Collecte des exemples dynamiques
                         let dynamicExamples: any[] = [];
                         
-                        // NOUVEAU: Gestion des oneOf au niveau des valeurs de propriétés
+                        // NOUVEAU: Gestion des oneOf au niveau des valeurs de propriétés (avec support des oneOf imbriqués)
                         // Ceci résout le problème où une propriété peut être soit un string avec x-dynamic-examples-source
                         // soit un objet (comme dans les features: fill_with peut être string ou block_descriptor)
-                        if (schemaForValues.oneOf && Array.isArray(schemaForValues.oneOf)) {
-                            // Parcourir toutes les branches oneOf pour collecter les sources dynamiques
-                            for (const branch of schemaForValues.oneOf) {
-                                if (branch && "x-dynamic-examples-source" in branch) {
-                                    const sources = Array.isArray(branch["x-dynamic-examples-source"])
-                                        ? branch["x-dynamic-examples-source"]
-                                        : [branch["x-dynamic-examples-source"]];
-                                    
-                                    for (const source of sources) {
-                                        switch (source) {
-                                            case dynamicExamplesSourceKeys.block_ids:
-                                                dynamicExamples.push(...await getBlockIds());
-                                                break;
-                                            case dynamicExamplesSourceKeys.loot_table_file_paths:
-                                                dynamicExamples.push(...await getLootTablePaths());
-                                                break;
-                                            case dynamicExamplesSourceKeys.block_model_ids:
-                                                dynamicExamples.push(...await getBlockModelIds());
-                                                break;
-                                            case dynamicExamplesSourceKeys.crafting_recipe_tags:
-                                                dynamicExamples.push(...await getCraftingRecipeTagIds());
-                                                break;
-                                            case dynamicExamplesSourceKeys.culling_layer_ids:
-                                                dynamicExamples.push(...await getCullingLayerIds());
-                                                break;
-                                            case dynamicExamplesSourceKeys.aim_assist_category_ids:
-                                                dynamicExamples.push(...await getAimAssistCategoryIds());
-                                                break;
-                                            case dynamicExamplesSourceKeys.aim_assist_preset_ids:
-                                                dynamicExamples.push(...await getAimAssistPresetIds());
-                                                break;
-                                            case dynamicExamplesSourceKeys.entity_ids:
-                                                dynamicExamples.push(...await getEntityIds());
-                                                break;
-                                            case dynamicExamplesSourceKeys.item_ids:
-                                                dynamicExamples.push(...await getItemIds());
-                                                break;
-                                            case dynamicExamplesSourceKeys.biome_ids:
-                                                dynamicExamples.push(...await getBiomeIds());
-                                                break;
-                                            case dynamicExamplesSourceKeys.biome_tags:
-                                                dynamicExamples.push(...await getBiomeTags());
-                                                break;
-                                            case dynamicExamplesSourceKeys.vanilla_data_driven_item_ids:
-                                                dynamicExamples.push(...await getDataDrivenItemIds());
-                                                break;
-                                            case dynamicExamplesSourceKeys.effect_ids:
-                                                dynamicExamples.push(...await getEffectIds());
-                                                break;
-                                            case dynamicExamplesSourceKeys.cooldown_category_ids:
-                                                dynamicExamples.push(...await getCooldownCategoryIds());
-                                                break;
-                                            case dynamicExamplesSourceKeys.item_tags:
-                                                dynamicExamples.push(...await getItemTags());
-                                                break;
-                                            case dynamicExamplesSourceKeys.item_group_ids:
-                                                dynamicExamples.push(...await getItemGroupIds());
-                                                break;
-                                            case dynamicExamplesSourceKeys.item_group_ids_with_minecraft_namespace:
-                                                dynamicExamples.push(...await getItemGroupIdsWithMinecraftNamespace());
-                                                break;
-                                            case dynamicExamplesSourceKeys.vanilla_data_driven_entity_ids:
-                                                dynamicExamples.push(...await getDataDrivenEntityIds());
-                                                break;
-                                            case dynamicExamplesSourceKeys.camera_preset_ids:
-                                                dynamicExamples.push(...await getCameraPresetIds());
-                                                break;
-                                            case dynamicExamplesSourceKeys.dimension_ids:
-                                                dynamicExamples.push(...await getDimensionIds());
-                                                break;
-                                            case dynamicExamplesSourceKeys.entity_family_ids:
-                                                dynamicExamples.push(...await getEntityFamilyIds());
-                                                break;
-                                            case dynamicExamplesSourceKeys.trading_file_paths:
-                                                dynamicExamples.push(...await getTradingFilePaths());
-                                                break;
-                                        }
+                        
+                        // Fonction récursive pour collecter les sources dynamiques dans les oneOf imbriqués
+                        const collectDynamicSourcesFromSchema = async (schema: any): Promise<void> => {
+                            if (!schema) return;
+                            
+                            // Vérifier si ce schéma a directement x-dynamic-examples-source
+                            if ("x-dynamic-examples-source" in schema) {
+                                const sources = Array.isArray(schema["x-dynamic-examples-source"])
+                                    ? schema["x-dynamic-examples-source"]
+                                    : [schema["x-dynamic-examples-source"]];
+                                
+                                for (const source of sources) {
+                                    switch (source) {
+                                        case dynamicExamplesSourceKeys.block_ids:
+                                            dynamicExamples.push(...await getBlockIds());
+                                            break;
+                                        case dynamicExamplesSourceKeys.loot_table_file_paths:
+                                            dynamicExamples.push(...await getLootTablePaths());
+                                            break;
+                                        case dynamicExamplesSourceKeys.block_model_ids:
+                                            dynamicExamples.push(...await getBlockModelIds());
+                                            break;
+                                        case dynamicExamplesSourceKeys.crafting_recipe_tags:
+                                            dynamicExamples.push(...await getCraftingRecipeTagIds());
+                                            break;
+                                        case dynamicExamplesSourceKeys.culling_layer_ids:
+                                            dynamicExamples.push(...await getCullingLayerIds());
+                                            break;
+                                        case dynamicExamplesSourceKeys.aim_assist_category_ids:
+                                            dynamicExamples.push(...await getAimAssistCategoryIds());
+                                            break;
+                                        case dynamicExamplesSourceKeys.aim_assist_preset_ids:
+                                            dynamicExamples.push(...await getAimAssistPresetIds());
+                                            break;
+                                        case dynamicExamplesSourceKeys.entity_ids:
+                                            dynamicExamples.push(...await getEntityIds());
+                                            break;
+                                        case dynamicExamplesSourceKeys.item_ids:
+                                            dynamicExamples.push(...await getItemIds());
+                                            break;
+                                        case dynamicExamplesSourceKeys.biome_ids:
+                                            dynamicExamples.push(...await getBiomeIds());
+                                            break;
+                                        case dynamicExamplesSourceKeys.biome_tags:
+                                            dynamicExamples.push(...await getBiomeTags());
+                                            break;
+                                        case dynamicExamplesSourceKeys.vanilla_data_driven_item_ids:
+                                            dynamicExamples.push(...await getDataDrivenItemIds());
+                                            break;
+                                        case dynamicExamplesSourceKeys.effect_ids:
+                                            dynamicExamples.push(...await getEffectIds());
+                                            break;
+                                        case dynamicExamplesSourceKeys.cooldown_category_ids:
+                                            dynamicExamples.push(...await getCooldownCategoryIds());
+                                            break;
+                                        case dynamicExamplesSourceKeys.item_tags:
+                                            dynamicExamples.push(...await getItemTags());
+                                            break;
+                                        case dynamicExamplesSourceKeys.item_group_ids:
+                                            dynamicExamples.push(...await getItemGroupIds());
+                                            break;
+                                        case dynamicExamplesSourceKeys.item_group_ids_with_minecraft_namespace:
+                                            dynamicExamples.push(...await getItemGroupIdsWithMinecraftNamespace());
+                                            break;
+                                        case dynamicExamplesSourceKeys.vanilla_data_driven_entity_ids:
+                                            dynamicExamples.push(...await getDataDrivenEntityIds());
+                                            break;
+                                        case dynamicExamplesSourceKeys.camera_preset_ids:
+                                            dynamicExamples.push(...await getCameraPresetIds());
+                                            break;
+                                        case dynamicExamplesSourceKeys.dimension_ids:
+                                            dynamicExamples.push(...await getDimensionIds());
+                                            break;
+                                        case dynamicExamplesSourceKeys.entity_family_ids:
+                                            dynamicExamples.push(...await getEntityFamilyIds());
+                                            break;
+                                        case dynamicExamplesSourceKeys.trading_file_paths:
+                                            dynamicExamples.push(...await getTradingFilePaths());
+                                            break;
                                     }
                                 }
                             }
+                            
+                            // Vérifier récursivement dans les oneOf imbriqués
+                            if (schema.oneOf && Array.isArray(schema.oneOf)) {
+                                for (const branch of schema.oneOf) {
+                                    await collectDynamicSourcesFromSchema(branch);
+                                }
+                            }
+                        };
+                        
+                        // Appeler la fonction pour collecter les sources dynamiques
+                        if (schemaForValues.oneOf && Array.isArray(schemaForValues.oneOf)) {
+                            await collectDynamicSourcesFromSchema(schemaForValues);
                         }
                         // Gestion classique pour les schémas sans oneOf
                         else if ("x-dynamic-examples-source" in schemaForValues) {
