@@ -241,11 +241,11 @@ export function registerCompletionProvider(
                     // Utiliser unresolvedNode pour préserver les oneOf non résolus
                     let schemaForValues = unresolvedNode?.oneOf ? unresolvedNode : (resolvedNode ?? rawSchema);
                     
-                    // NOUVELLE LOGIQUE: Gestion spéciale pour les arrays avec items positionnels
+                    // NOUVELLE LOGIQUE: Gestion spéciale pour les arrays avec items positionnels ET uniformes
                     // Le problème est que rawSchema peut déjà être résolu au niveau de l'élément final
-                    // Nous devons analyser le fullSchema avec le path pour trouver les oneOf dans les items positionnels
+                    // Nous devons analyser le fullSchema avec le path pour trouver les oneOf dans les items
                     if (cursorContext.isInArrayElement && path.length >= 2) {
-                        console.debug('Analyzing positional array items for oneOf...');
+                        console.debug('Analyzing array items for oneOf (positional + uniform)...');
                         
                         // Reconstruire le schéma en naviguant dans fullSchema avec le path
                         let currentSchema: any = fullSchema;
@@ -262,7 +262,7 @@ export function registerCompletionProvider(
                                 if (currentSchema?.items) {
                                     console.debug(`  -> Array items detected, isArray:`, Array.isArray(currentSchema.items));
                                     
-                                    // IMPORTANT: Vérifier si items est un array (items positionnels)
+                                    // CAS 1: Items positionnels (items: [schema1, schema2, ...])
                                     if (Array.isArray(currentSchema.items)) {
                                         // Items positionnels : utiliser le schéma à l'index spécifique
                                         if (segment < currentSchema.items.length) {
@@ -285,11 +285,58 @@ export function registerCompletionProvider(
                                             console.debug(`  -> Index ${segment} out of bounds for positional items`);
                                             break;
                                         }
-                                    } else {
+                                    } 
+                                    // CAS 2: Items uniformes (items: {oneOf: [...]}) 
+                                    else {
+                                        console.debug(`  -> Using uniform items schema:`, {
+                                            hasOneOf: !!currentSchema.items?.oneOf,
+                                            itemsSchema: currentSchema.items
+                                        });
+                                        
+                                        // Si c'est le dernier segment du path ET que les items ont un oneOf, l'utiliser !
+                                        if (i === path.length - 1 && currentSchema.items?.oneOf) {
+                                            console.debug('🎯 Found oneOf in uniform items schema!');
+                                            schemaForValues = currentSchema.items;
+                                            break;
+                                        }
+                                        
                                         // Items uniforme : tous les éléments ont le même schéma
                                         currentSchema = currentSchema.items;
                                     }
-                                } else {
+                                } 
+                                // CAS 3: Pas d'items direct, mais oneOf qui peut contenir une branche array
+                                else if (currentSchema?.oneOf) {
+                                    console.debug(`  -> No direct items, but oneOf detected. Looking for array branch...`);
+                                    
+                                    // Chercher la branche array dans le oneOf
+                                    let arrayBranch = null;
+                                    for (const branch of currentSchema.oneOf) {
+                                        if (branch?.type === 'array' && branch.items) {
+                                            arrayBranch = branch;
+                                            console.debug(`  -> Found array branch in oneOf:`, {
+                                                hasItems: !!branch.items,
+                                                itemsHasOneOf: !!branch.items?.oneOf
+                                            });
+                                            break;
+                                        }
+                                    }
+                                    
+                                    if (arrayBranch) {
+                                        // Si c'est le dernier segment ET que cette branche array a des items avec oneOf
+                                        if (i === path.length - 1 && arrayBranch.items?.oneOf) {
+                                            console.debug('🎯 Found oneOf in array branch items!');
+                                            schemaForValues = arrayBranch.items;
+                                            break;
+                                        }
+                                        
+                                        // Continuer la navigation avec les items de la branche array
+                                        currentSchema = arrayBranch.items;
+                                    } else {
+                                        console.debug(`  -> No array branch found in oneOf`);
+                                        break;
+                                    }
+                                } 
+                                else {
                                     console.debug(`  -> No items found for array index ${segment}`);
                                     break;
                                 }
@@ -317,6 +364,68 @@ export function registerCompletionProvider(
                                     console.debug(`  -> Property ${segment} not found`);
                                     break;
                                 }
+                            }
+                        }
+                    }
+                    
+                    // NOUVEAU: Gestion spéciale des tableaux vides
+                    // Quand on est dans un tableau vide "[]", il n'y a pas d'index numérique dans le path
+                    // mais cursorContext.isInArrayElement est true
+                    if (cursorContext.isInArrayElement && !path.some(p => typeof p === 'number')) {
+                        console.debug('🔍 Detected empty array context, looking for array schema...');
+                        
+                        // Naviguer dans fullSchema pour trouver le schéma du tableau actuel
+                        let currentSchema: any = fullSchema;
+                        for (const segment of path) {
+                            if (typeof segment === 'string') {
+                                if (currentSchema?.properties && currentSchema.properties[segment]) {
+                                    currentSchema = currentSchema.properties[segment];
+                                    console.debug(`  -> Found property ${segment}`);
+                                } else if (currentSchema?.oneOf) {
+                                    // Chercher dans les branches oneOf
+                                    let found = false;
+                                    for (const branch of currentSchema.oneOf) {
+                                        if (branch?.properties && branch.properties[segment]) {
+                                            currentSchema = branch.properties[segment];
+                                            console.debug(`  -> Found ${segment} in oneOf branch`);
+                                            found = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!found) {
+                                        console.debug(`  -> Property ${segment} not found in any oneOf branch`);
+                                        currentSchema = null;
+                                        break;
+                                    }
+                                } else {
+                                    console.debug(`  -> Property ${segment} not found`);
+                                    currentSchema = null;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        if (currentSchema) {
+                            console.debug('Found array schema:', {
+                                hasOneOf: !!currentSchema.oneOf,
+                                type: currentSchema.type,
+                                schema: currentSchema
+                            });
+                            
+                            // Si c'est un oneOf, chercher la branche array
+                            if (currentSchema.oneOf) {
+                                for (const branch of currentSchema.oneOf) {
+                                    if (branch?.type === 'array' && branch.items) {
+                                        console.debug('🎯 Found array branch in oneOf for empty array!');
+                                        schemaForValues = branch.items;
+                                        break;
+                                    }
+                                }
+                            }
+                            // Si c'est directement un array
+                            else if (currentSchema.type === 'array' && currentSchema.items) {
+                                console.debug('🎯 Found direct array schema for empty array!');
+                                schemaForValues = currentSchema.items;
                             }
                         }
                     }
@@ -370,7 +479,10 @@ export function registerCompletionProvider(
                     // COMPLETION DE PROPRIÉTÉS (CLÉS)
                     // Amélioration : éviter la completion de propriétés quand on est dans une valeur string d'un tableau
                     const isStringValueInArray = cursorContext.isInArrayElement && cursorContext.isInQuotes && 
-                        schemaForValues?.type === 'string';
+                        (schemaForValues?.type === 'string' || 
+                         // NOUVEAU: Vérifier si le oneOf contient une branche string avec x-dynamic-examples-source
+                         (schemaForValues?.oneOf && schemaForValues.oneOf.some((branch: any) => 
+                             branch?.type === 'string' && "x-dynamic-examples-source" in branch)));
                         
                     // Nouvelle amélioration : détecter quand on est dans des guillemets dans un array qui attend des objets
                     const isInvalidStringInObjectArray = cursorContext.isInArrayElement && cursorContext.isInQuotes &&
@@ -403,6 +515,22 @@ export function registerCompletionProvider(
                                    (!currentSchema?.properties || !currentSchema.properties[currentKey]);
                         })();
                     
+                    // NOUVEAU: Bloquer la completion de propriétés dans les tableaux vides quand string est possible
+                    const isInEmptyArrayWithStringOption = cursorContext.isInArrayElement && 
+                        !cursorContext.isInQuotes && 
+                        !path.some(p => typeof p === 'number') && // Tableau vide (pas d'index)
+                        schemaForValues?.oneOf && 
+                        schemaForValues.oneOf.some((branch: any) => branch?.type === 'string');
+                    
+                    console.debug('Empty array detection:', {
+                        isInArrayElement: cursorContext.isInArrayElement,
+                        isInQuotes: cursorContext.isInQuotes,
+                        hasNumericIndex: path.some(p => typeof p === 'number'),
+                        hasOneOf: !!schemaForValues?.oneOf,
+                        hasStringBranch: schemaForValues?.oneOf?.some((branch: any) => branch?.type === 'string'),
+                        isInEmptyArrayWithStringOption
+                    });
+                    
                     if (
                         propertiesForCompletion &&
                         parentObject?.type === 'object' &&
@@ -410,7 +538,8 @@ export function registerCompletionProvider(
                         !cursorContext.isAfterColon && !cursorContext.isTypingValue &&
                         !isStringValueInArray &&  // Array de strings : pas de completion de propriétés
                         !isInvalidStringInObjectArray &&  // Array d'objets avec guillemets : pas de completion du tout
-                        !isNamingAdditionalPropertyKey  // Bloquer SEULEMENT quand on nomme des clés libres d'additionalProperties
+                        !isNamingAdditionalPropertyKey &&  // Bloquer SEULEMENT quand on nomme des clés libres d'additionalProperties
+                        !isInEmptyArrayWithStringOption  // NOUVEAU: Bloquer dans les tableaux vides quand string est possible
                     ) {
                         const existingKeys = new Set<string>();
                         for (const prop of parentObject.children ?? []) {
