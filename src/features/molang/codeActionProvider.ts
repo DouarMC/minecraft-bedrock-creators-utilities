@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { findNodeAtLocation, parseTree } from 'jsonc-parser';
-import { getSchemaAtPosition } from '../jsonSchema/versioning/schemaContext';
+import { SchemaResolver } from '../jsonSchema/core/schemaResolver';
+import { JsonContextAnalyzer } from '../jsonSchema/core/jsonContextAnalyzer';
 
 export function registerCodeActionProvider(context: vscode.ExtensionContext) {
     context.subscriptions.push(
@@ -21,14 +22,38 @@ class MolangCodeActionProvider implements vscode.CodeActionProvider {
         context: vscode.CodeActionContext,
         token: vscode.CancellationToken
     ): vscode.ProviderResult<vscode.CodeAction[]> {
-        const { schema, path } = getSchemaAtPosition(document, range.start);
-        if (!schema || schema.type !== "molang" || !path.length) {
+        
+        // Utiliser le nouveau système
+        const schemaResolver = new SchemaResolver();
+        const contextAnalyzer = new JsonContextAnalyzer();
+
+        const schema = schemaResolver.resolveSchemaForFile(document.uri.fsPath, document.getText());
+        if (!schema) {
+            return;
+        }
+
+        const offset = document.offsetAt(range.start);
+        const jsonContext = contextAnalyzer.analyzePosition(document.getText(), offset);
+
+        // Naviguer vers le schema à la position
+        let schemaAtPath = schema;
+        for (const segment of jsonContext.path) {
+            if (schemaAtPath.properties && schemaAtPath.properties[segment]) {
+                schemaAtPath = schemaAtPath.properties[segment];
+            } else if (schemaAtPath.items) {
+                schemaAtPath = schemaAtPath.items;
+            } else {
+                return;
+            }
+        }
+
+        if (!schemaAtPath || schemaAtPath.format !== "molang" || !jsonContext.path.length) {
             return;
         }
 
         // 🧠 Optionnel mais sûr : vérifier que la valeur existe à ce chemin
         const root = parseTree(document.getText());
-        const node = root ? findNodeAtLocation(root, path) : undefined;
+        const node = root ? findNodeAtLocation(root, jsonContext.path) : undefined;
         if (!node) {
             return;
         }
@@ -42,7 +67,7 @@ class MolangCodeActionProvider implements vscode.CodeActionProvider {
         action.command = {
             command: 'minecraft-bedrock-creators-utilities.openMolangEditor',
             title: "Ouvrir l'éditeur Molang",
-            arguments: [document.uri, path]
+            arguments: [document.uri, jsonContext.path]
         };
         return [action];
     }
