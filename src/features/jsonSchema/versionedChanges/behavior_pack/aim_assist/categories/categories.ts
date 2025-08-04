@@ -44,6 +44,7 @@ const baseSchema = {
                                     blocks: {
                                         description: "Les priorités spécifiques pour les blocs dans cette catégorie.",
                                         type: "object",
+                                        "x-key-suggestions": dynamicExamplesSourceKeys.block_ids,
                                         additionalProperties: {
                                             type: "integer",
                                             minimum: 0,
@@ -59,6 +60,7 @@ const baseSchema = {
                                     entities: {
                                         description: "Les priorités spécifiques pour les entités dans cette catégorie.",
                                         type: "object",
+                                        "x-key-suggestions": dynamicExamplesSourceKeys.entity_ids,
                                         additionalProperties: {
                                             type: "integer",
                                             minimum: 0,

@@ -448,30 +448,82 @@ export function registerCompletionProvider(
                     
                     // Solution universelle : détecter précisément quand on nomme une clé libre d'additionalProperties
                     const isInsideExistingObject = typeof valueAtPath === 'object' && valueAtPath !== null;
-                    const isNamingAdditionalPropertyKey = !isInsideExistingObject && 
-                        path.length >= 2 && 
-                        (cursorContext.isStartOfProperty || cursorContext.isInQuotes) &&
-                        (() => {
-                            // Vérifier si la section parent utilise additionalProperties
-                            const parentPath = path.slice(0, -1);
-                            let currentSchema: any = fullSchema;
-                            
-                            // Naviguer jusqu'à la section parent
-                            for (const segment of parentPath) {
-                                if (typeof segment === 'number') {
-                                    currentSchema = currentSchema?.items;
-                                } else {
-                                    currentSchema = currentSchema?.properties?.[segment];
-                                }
-                                if (!currentSchema) return false;
+                    
+                    // Fonction pour détecter si on est dans un contexte additionalProperties avec x-key-suggestions
+                    const getAdditionalPropertiesContext = () => {
+                        // Vérifier si on est dans un contexte où on peut taper une clé d'objet
+                        const isTypingKey = (cursorContext.isStartOfProperty || 
+                                           cursorContext.isInQuotes || 
+                                           cursorContext.isProbablyKeyWithoutQuotes) && 
+                                          !cursorContext.isAfterColon && 
+                                          !cursorContext.isTypingValue;
+                        
+                        if (!isTypingKey) return null;
+                        
+                        // Ne pas traiter si on est clairement dans un objet existant avec des propriétés définies
+                        if (isInsideExistingObject && typeof valueAtPath === 'object' && valueAtPath !== null) {
+                            // Vérifier si c'est un objet vide {} - dans ce cas, on peut proposer des clés
+                            const isEmptyObject = Object.keys(valueAtPath).length === 0;
+                            if (!isEmptyObject) return null;
+                        }
+                        
+                        // Obtenir le chemin vers le schéma parent (l'objet qui contient additionalProperties)
+                        let parentPath = path.slice();
+                        
+                        // Si le dernier élément du path est une clé string qu'on est en train de taper, l'enlever
+                        if (parentPath.length > 0 && typeof parentPath[parentPath.length - 1] === 'string') {
+                            parentPath = parentPath.slice(0, -1);
+                        }
+                        
+                        let currentSchema: any = fullSchema;
+                        
+                        // Naviguer jusqu'à la section parent
+                        for (const segment of parentPath) {
+                            if (typeof segment === 'number') {
+                                currentSchema = currentSchema?.items;
+                            } else {
+                                currentSchema = currentSchema?.properties?.[segment];
                             }
-                            
-                            // Vérifier si cette section a additionalProperties et si la clé actuelle n'est pas définie
-                            const currentKey = path[path.length - 1];
-                            return currentSchema?.additionalProperties && 
-                                   typeof currentKey === 'string' &&
-                                   (!currentSchema?.properties || !currentSchema.properties[currentKey]);
-                        })();
+                            if (!currentSchema) return null;
+                        }
+                        
+                        // Vérifier si cette section a additionalProperties
+                        if (!currentSchema?.additionalProperties) return null;
+                        
+                        // Si on a une clé spécifique et qu'elle est définie dans properties, ce n'est pas additionalProperties
+                        const currentKey = path[path.length - 1];
+                        if (typeof currentKey === 'string' && 
+                            currentSchema?.properties && 
+                            currentSchema.properties[currentKey]) {
+                            return null; // C'est une propriété définie, pas additionalProperties
+                        }
+                        
+                        return {
+                            schema: currentSchema,
+                            hasKeySuggestions: !!currentSchema["x-key-suggestions"]
+                        };
+                    };
+                    
+                    const additionalPropsContext = getAdditionalPropertiesContext();
+                    const isNamingAdditionalPropertyKey = !!additionalPropsContext && !additionalPropsContext.hasKeySuggestions;
+                    const isNamingKeyWithSuggestions = !!additionalPropsContext && additionalPropsContext.hasKeySuggestions;
+                    
+                    // DEBUG: Ajouter des logs pour le debug
+                    console.debug('AdditionalProperties Context:', {
+                        additionalPropsContext,
+                        isNamingAdditionalPropertyKey,
+                        isNamingKeyWithSuggestions,
+                        cursorContext: {
+                            isStartOfProperty: cursorContext.isStartOfProperty,
+                            isInQuotes: cursorContext.isInQuotes,
+                            isProbablyKeyWithoutQuotes: cursorContext.isProbablyKeyWithoutQuotes,
+                            isAfterColon: cursorContext.isAfterColon,
+                            isTypingValue: cursorContext.isTypingValue
+                        },
+                        path,
+                        valueAtPath,
+                        isInsideExistingObject
+                    });
                     
                     // NOUVEAU: Bloquer la completion de propriétés dans les tableaux vides quand string est possible
                     const isInEmptyArrayWithStringOption = cursorContext.isInArrayElement && 
@@ -496,7 +548,7 @@ export function registerCompletionProvider(
                         !cursorContext.isAfterColon && !cursorContext.isTypingValue &&
                         !isStringValueInArray &&  // Array de strings : pas de completion de propriétés
                         !isInvalidStringInObjectArray &&  // Array d'objets avec guillemets : pas de completion du tout
-                        !isNamingAdditionalPropertyKey &&  // Bloquer SEULEMENT quand on nomme des clés libres d'additionalProperties
+                        !isNamingAdditionalPropertyKey &&  // Bloquer SEULEMENT les clés additionalProperties SANS suggestions
                         !isInEmptyArrayWithStringOption  // NOUVEAU: Bloquer dans les tableaux vides quand string est possible
                     ) {
                         const existingKeys = new Set<string>();
@@ -556,6 +608,98 @@ export function registerCompletionProvider(
 
                                 return item;
                             });
+                    }
+
+                    // COMPLETION DES CLÉS ADDITIONALPROPERTIES AVEC X-KEY-SUGGESTIONS
+                    if (isNamingKeyWithSuggestions) {
+                        
+                        const currentSchema = additionalPropsContext!.schema;
+                        
+                        // Vérifier si ce schéma a x-key-suggestions
+                        if (currentSchema?.["x-key-suggestions"]) {
+                            const keySuggestionSource = currentSchema["x-key-suggestions"];
+                            let keySuggestions: string[] = [];
+                            
+                            // Collecter les suggestions de clés basées sur la source
+                            switch (keySuggestionSource) {
+                                case dynamicExamplesSourceKeys.block_ids:
+                                    keySuggestions = await getBlockIds();
+                                    break;
+                                case dynamicExamplesSourceKeys.entity_ids:
+                                    keySuggestions = await getEntityIds();
+                                    break;
+                                case dynamicExamplesSourceKeys.item_ids:
+                                    keySuggestions = await getItemIds();
+                                    break;
+                                // Ajouter d'autres sources selon les besoins
+                            }
+                            
+                            // Créer les items de completion pour les clés suggérées
+                            if (keySuggestions.length > 0) {
+                                // Obtenir les clés existantes pour éviter les doublons
+                                const existingKeys = new Set<string>();
+                                if (parentObject?.children) {
+                                    for (const prop of parentObject.children) {
+                                        const keyNode = prop.children?.[0];
+                                        if (keyNode?.type === 'string') {
+                                            existingKeys.add(keyNode.value);
+                                        }
+                                    }
+                                }
+                                
+                                return keySuggestions
+                                    .filter(key => !existingKeys.has(key))
+                                    .map(key => {
+                                        const item = new vscode.CompletionItem(key, vscode.CompletionItemKind.Property);
+                                        item.sortText = '1'; // Légèrement moins priorité que les propriétés définies
+                                        
+                                        // Gestion intelligente des guillemets et insertion
+                                        if (cursorContext.isInQuotes) {
+                                            // L'utilisateur tape déjà dans des guillemets
+                                            const snippet = generateAdvancedInsertTextForKey(key, currentSchema.additionalProperties);
+                                            const fullInsert = snippet.value;
+                                            const match = /^"([^"]+)"\s*:\s*([\s\S]*)$/.exec(fullInsert);
+
+                                            if (match) {
+                                                const [_, keyPart, valuePart] = match;
+                                                const range = getQuoteContentRange(document, position);
+                                                if (range) {
+                                                    const extendedRange = new vscode.Range(
+                                                        range.start,
+                                                        new vscode.Position(range.end.line, range.end.character + 1)
+                                                    );
+                                                    item.range = extendedRange;
+                                                }
+                                                item.insertText = new vscode.SnippetString(`${keyPart}": ${valuePart}`);
+                                            } else {
+                                                item.insertText = new vscode.SnippetString(`${key}": $1`);
+                                            }
+                                        } else {
+                                            // L'utilisateur ne tape pas encore dans des guillemets
+                                            item.insertText = generateAdvancedInsertTextForKey(key, currentSchema.additionalProperties);
+                                            const wordRange = document.getWordRangeAtPosition(position);
+                                            if (wordRange) {
+                                                item.range = wordRange;
+                                            }
+                                        }
+
+                                        // Documentation
+                                        const additionalPropsDesc = currentSchema.additionalProperties?.description || 
+                                                                   currentSchema.additionalProperties?.markdownDescription || '';
+                                        if (additionalPropsDesc) {
+                                            item.documentation = new vscode.MarkdownString(additionalPropsDesc);
+                                        }
+
+                                        // Détails sur le type attendu pour la valeur
+                                        const typeInfo = getTypeInfo(currentSchema.additionalProperties);
+                                        if (typeInfo) {
+                                            item.detail = typeInfo;
+                                        }
+
+                                        return item;
+                                    });
+                            }
+                        }
                     }
 
                     // COMPLETION DE VALEURS
