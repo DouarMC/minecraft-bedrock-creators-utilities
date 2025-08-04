@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as jsonc from 'jsonc-parser';
 import { AjvCompiler } from './ajvCompiler';
 import { SchemaResolver } from './schemaResolver';
 
@@ -108,7 +109,10 @@ export class JsonSchemaDiagnosticProvider {
     ): vscode.Diagnostic[] {
         const diagnostics: vscode.Diagnostic[] = [];
         
-        for (const error of errors) {
+        // Filter out non-significant errors within oneOf
+        const filteredErrors = this.filterOneOfErrors(errors);
+        
+        for (const error of filteredErrors) {
             const diagnostic = this.createDiagnosticFromAjvError(error, document);
             if (diagnostic) {
                 diagnostics.push(diagnostic);
@@ -116,6 +120,38 @@ export class JsonSchemaDiagnosticProvider {
         }
         
         return diagnostics;
+    }
+
+    /**
+     * Filter out non-significant errors within oneOf alternatives
+     */
+    private filterOneOfErrors(errors: any[]): any[] {
+        const filtered: any[] = [];
+        const oneOfErrors = new Map<string, any[]>();
+        
+        // Group errors by instance path
+        for (const error of errors) {
+            const path = error.instancePath || '';
+            
+            if (error.keyword === 'oneOf') {
+                // Keep oneOf errors as they are now clustered in AJV
+                filtered.push(error);
+            } else {
+                // Check if this error is part of a oneOf validation
+                const isPartOfOneOf = errors.some(e => 
+                    e.keyword === 'oneOf' && 
+                    e.instancePath === path && 
+                    e.schemaPath.includes(error.schemaPath.split('/').slice(-2, -1)[0])
+                );
+                
+                if (!isPartOfOneOf) {
+                    // This is a significant error, not just a oneOf branch failing
+                    filtered.push(error);
+                }
+            }
+        }
+        
+        return filtered;
     }
 
     private createDiagnosticFromAjvError(
@@ -154,10 +190,9 @@ export class JsonSchemaDiagnosticProvider {
         try {
             const text = document.getText();
             
-            // Convert JSON path to position
+            // Use jsonc-parser to map AJV instancePath to editor ranges
             if (error.instancePath) {
-                const path = error.instancePath.replace(/^\//, '').split('/');
-                const position = this.findPositionByPath(path, text, document);
+                const position = this.mapInstancePathToRange(error.instancePath, text, document);
                 if (position) {
                     return position;
                 }
@@ -191,6 +226,69 @@ export class JsonSchemaDiagnosticProvider {
         } catch (err) {
             console.warn('Error finding error position:', err);
             return new vscode.Range(0, 0, 0, 1);
+        }
+    }
+
+    /**
+     * Map AJV instancePath to editor ranges using jsonc-parser
+     */
+    private mapInstancePathToRange(instancePath: string, text: string, document: vscode.TextDocument): vscode.Range | null {
+        try {
+            // Parse the JSON to get node information
+            const parseErrors: jsonc.ParseError[] = [];
+            const jsonNode = jsonc.parseTree(text, parseErrors);
+            
+            if (!jsonNode || parseErrors.length > 0) {
+                return null;
+            }
+            
+            // Convert instancePath to JSON pointer path
+            const path = instancePath.replace(/^\//, '').split('/').filter(segment => segment !== '');
+            
+            // Navigate to the target node
+            let currentNode = jsonNode;
+            for (const segment of path) {
+                if (!currentNode || !currentNode.children) {
+                    return null;
+                }
+                
+                if (currentNode.type === 'object') {
+                    // Find property in object
+                    const propertyNode = currentNode.children.find(child => 
+                        child.type === 'property' && 
+                        child.children && 
+                        child.children[0] && 
+                        child.children[0].value === segment
+                    );
+                    
+                    if (propertyNode && propertyNode.children && propertyNode.children[1]) {
+                        currentNode = propertyNode.children[1]; // Value node
+                    } else {
+                        return null;
+                    }
+                } else if (currentNode.type === 'array') {
+                    // Find array element
+                    const index = parseInt(segment, 10);
+                    if (isNaN(index) || index >= currentNode.children.length) {
+                        return null;
+                    }
+                    currentNode = currentNode.children[index];
+                } else {
+                    return null;
+                }
+            }
+            
+            // Convert node offset to position
+            if (currentNode.offset !== undefined && currentNode.length !== undefined) {
+                const startPos = document.positionAt(currentNode.offset);
+                const endPos = document.positionAt(currentNode.offset + currentNode.length);
+                return new vscode.Range(startPos, endPos);
+            }
+            
+            return null;
+        } catch (err) {
+            console.warn('Error mapping instance path to range:', err);
+            return null;
         }
     }
 

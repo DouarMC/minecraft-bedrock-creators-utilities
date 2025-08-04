@@ -95,11 +95,18 @@ export class JsonSchemaCompletionProvider implements vscode.CompletionItemProvid
         for (const segment of path) {
             if (!current) break;
             
-            // Naviguer dans le schema selon le type
+            // Handle oneOf/anyOf/allOf during schema navigation
+            current = this.resolveSchemaAlternatives(current);
+            
+            // Navigate in the schema according to type
             if (current.type === 'object' && current.properties) {
                 current = current.properties[segment];
             } else if (current.type === 'array' && current.items) {
                 current = current.items;
+                // Handle items.oneOf in arrays
+                if (current.oneOf || current.anyOf || current.allOf) {
+                    current = this.resolveSchemaAlternatives(current);
+                }
             } else if (current.properties) {
                 current = current.properties[segment];
             } else {
@@ -110,12 +117,78 @@ export class JsonSchemaCompletionProvider implements vscode.CompletionItemProvid
         return current;
     }
 
+    /**
+     * Resolves schema alternatives (oneOf/anyOf/allOf) by merging them
+     */
+    private resolveSchemaAlternatives(schema: any): any {
+        if (!schema) return schema;
+        
+        const alternatives = schema.oneOf || schema.anyOf || schema.allOf;
+        if (!alternatives || !Array.isArray(alternatives)) {
+            return schema;
+        }
+        
+        // Merge all alternatives into a single schema
+        const merged: any = { ...schema };
+        delete merged.oneOf;
+        delete merged.anyOf;
+        delete merged.allOf;
+        
+        const mergedProperties: any = {};
+        const mergedRequired: string[] = [];
+        let mergedType: string | undefined;
+        
+        for (const alternative of alternatives) {
+            // Merge properties
+            if (alternative.properties) {
+                Object.assign(mergedProperties, alternative.properties);
+            }
+            
+            // Merge required arrays (for anyOf, union; for allOf, intersection)
+            if (alternative.required) {
+                if (schema.allOf) {
+                    // For allOf, all requirements must be met
+                    mergedRequired.push(...alternative.required);
+                } else {
+                    // For oneOf/anyOf, add to possible requirements
+                    for (const req of alternative.required) {
+                        if (!mergedRequired.includes(req)) {
+                            mergedRequired.push(req);
+                        }
+                    }
+                }
+            }
+            
+            // Merge type information
+            if (alternative.type && !mergedType) {
+                mergedType = alternative.type;
+            }
+        }
+        
+        if (Object.keys(mergedProperties).length > 0) {
+            merged.properties = mergedProperties;
+        }
+        
+        if (mergedRequired.length > 0) {
+            merged.required = [...new Set(mergedRequired)];
+        }
+        
+        if (mergedType) {
+            merged.type = mergedType;
+        }
+        
+        return merged;
+    }
+
     private async getPropertyKeyCompletions(schema: any, context: any): Promise<vscode.CompletionItem[]> {
         const completions: vscode.CompletionItem[] = [];
         
         if (!schema || !schema.properties) {
             return completions;
         }
+        
+        // Get required properties for prioritization
+        const requiredProperties = new Set(schema.required || []);
         
         // Ajouter toutes les propriétés disponibles
         for (const [propertyName, propertySchema] of Object.entries(schema.properties)) {
@@ -126,8 +199,18 @@ export class JsonSchemaCompletionProvider implements vscode.CompletionItemProvid
             
             completion.detail = (propertySchema as any).type || 'property';
             completion.documentation = (propertySchema as any).description || `Property: ${propertyName}`;
-            completion.insertText = `"${propertyName}": `;
-            completion.sortText = propertyName;
+            
+            // Enhanced snippet insertion with proper value suggestions
+            const valueSnippet = this.generateValueSnippet(propertySchema as any);
+            completion.insertText = new vscode.SnippetString(`"${propertyName}": ${valueSnippet}`);
+            
+            // Prioritize required properties
+            if (requiredProperties.has(propertyName)) {
+                completion.sortText = `0_${propertyName}`; // Sort required properties first
+                completion.detail = `${completion.detail} (required)`;
+            } else {
+                completion.sortText = `1_${propertyName}`;
+            }
             
             completions.push(completion);
         }
@@ -135,11 +218,77 @@ export class JsonSchemaCompletionProvider implements vscode.CompletionItemProvid
         return completions;
     }
 
+    /**
+     * Generate appropriate value snippets for property insertion
+     */
+    private generateValueSnippet(propertySchema: any): string {
+        if (!propertySchema) {
+            return '${1:value}';
+        }
+        
+        // Handle oneOf/anyOf by taking the first alternative
+        if (propertySchema.oneOf || propertySchema.anyOf) {
+            const alternatives = propertySchema.oneOf || propertySchema.anyOf;
+            if (alternatives.length > 0) {
+                return this.generateValueSnippet(alternatives[0]);
+            }
+        }
+        
+        // Handle allOf by merging (simple case)
+        if (propertySchema.allOf && propertySchema.allOf.length > 0) {
+            return this.generateValueSnippet(propertySchema.allOf[0]);
+        }
+        
+        // Handle enum values
+        if (propertySchema.enum && propertySchema.enum.length > 0) {
+            const firstValue = propertySchema.enum[0];
+            return typeof firstValue === 'string' ? `"\${1:${firstValue}}"` : `\${1:${firstValue}}`;
+        }
+        
+        // Handle type-based snippets
+        switch (propertySchema.type) {
+            case 'boolean':
+                return '${1|true,false|}';
+            case 'string':
+                if (propertySchema.format === 'molang') {
+                    return '"${1:0.0}"';
+                }
+                return '"${1:value}"';
+            case 'number':
+            case 'integer':
+                return '${1:0}';
+            case 'object':
+                return '{\n\t$0\n}';
+            case 'array':
+                return '[\n\t$0\n]';
+            default:
+                return '${1:value}';
+        }
+    }
+
     private async getPropertyValueCompletions(schema: any, context: any): Promise<vscode.CompletionItem[]> {
         const completions: vscode.CompletionItem[] = [];
         
         if (!schema) {
             return completions;
+        }
+        
+        // Handle oneOf/anyOf alternatives by merging suggestions
+        if (schema.oneOf || schema.anyOf || schema.allOf) {
+            const alternatives = schema.oneOf || schema.anyOf || schema.allOf;
+            const mergedCompletions = new Map<string, vscode.CompletionItem>();
+            
+            for (const alternative of alternatives) {
+                const altCompletions = await this.getPropertyValueCompletions(alternative, context);
+                for (const completion of altCompletions) {
+                    const key = completion.label.toString();
+                    if (!mergedCompletions.has(key)) {
+                        mergedCompletions.set(key, completion);
+                    }
+                }
+            }
+            
+            return Array.from(mergedCompletions.values());
         }
         
         // Enum values
@@ -212,8 +361,27 @@ export class JsonSchemaCompletionProvider implements vscode.CompletionItemProvid
             return completions;
         }
         
+        // Handle items.oneOf in arrays by merging alternatives
+        let itemsSchema = schema.items;
+        if (itemsSchema.oneOf || itemsSchema.anyOf || itemsSchema.allOf) {
+            const alternatives = itemsSchema.oneOf || itemsSchema.anyOf || itemsSchema.allOf;
+            const mergedCompletions = new Map<string, vscode.CompletionItem>();
+            
+            for (const alternative of alternatives) {
+                const altCompletions = await this.getPropertyValueCompletions(alternative, context);
+                for (const completion of altCompletions) {
+                    const key = completion.label.toString();
+                    if (!mergedCompletions.has(key)) {
+                        mergedCompletions.set(key, completion);
+                    }
+                }
+            }
+            
+            return Array.from(mergedCompletions.values());
+        }
+        
         // Récursion avec le schema des items
-        return this.getPropertyValueCompletions(schema.items, context);
+        return this.getPropertyValueCompletions(itemsSchema, context);
     }
 
     private async getRootCompletions(schema: any, context: any): Promise<vscode.CompletionItem[]> {

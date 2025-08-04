@@ -3,19 +3,25 @@ export interface JsonContext {
     path: string[];           // Chemin JSON jusqu'à la position
     isInQuotes: boolean;      // Si le curseur est dans des guillemets
     currentToken: string;     // Le token actuel (mot à compléter)
+    arrayIndex?: number;      // Index in array if in array context
     parentSchema?: any;       // Schema du parent pour autocomplétion
+    isPrimitive?: boolean;    // If the current token is a primitive value
 }
 
 export class JsonContextAnalyzer {
     
     public analyzePosition(document: string, position: number): JsonContext {
-        return {
+        const context = {
             type: this.determineContextType(document, position),
             path: this.extractPath(document, position),
             isInQuotes: this.isInQuotes(document, position),
             currentToken: this.getCurrentToken(document, position),
-            parentSchema: undefined // On ajoutera ça plus tard avec le schema
+            arrayIndex: this.getArrayIndex(document, position),
+            parentSchema: undefined, // On ajoutera ça plus tard avec le schema
+            isPrimitive: this.isPrimitiveToken(document, position)
         };
+        
+        return context;
     }
     
     private extractPath(document: string, position: number): string[] {
@@ -30,10 +36,14 @@ export class JsonContextAnalyzer {
         let currentKey = '';
         let collectingKey = false;
         
+        // Track array indices
+        const arrayIndices: number[] = [];
+        let currentArrayItemCount = 0;
+        
         for (let i = 0; i < position && i < document.length; i++) {
             const char = document[i];
             
-            // Gestion des échappements
+            // Robust escape handling
             if (escapeNext) {
                 escapeNext = false;
                 if (collectingKey) currentKey += char;
@@ -46,7 +56,7 @@ export class JsonContextAnalyzer {
                 continue;
             }
             
-            // Gestion des strings
+            // Gestion des strings with better escape handling
             if (char === '"') {
                 if (inString) {
                     inString = false;
@@ -91,14 +101,93 @@ export class JsonContextAnalyzer {
                     break;
                 case '[':
                     bracketDepth++;
+                    currentArrayItemCount = 0;
                     break;
                 case ']':
                     bracketDepth--;
+                    if (arrayIndices.length > 0) {
+                        arrayIndices.pop();
+                    }
+                    break;
+                case ',':
+                    if (bracketDepth > braceDepth) {
+                        // We're in an array
+                        currentArrayItemCount++;
+                    }
                     break;
             }
         }
         
         return path;
+    }
+
+    /**
+     * Get the current array index if we're in an array context
+     */
+    private getArrayIndex(document: string, position: number): number | undefined {
+        let bracketDepth = 0;
+        let braceDepth = 0;
+        let inString = false;
+        let escapeNext = false;
+        let arrayItemCount = 0;
+        
+        for (let i = 0; i < position && i < document.length; i++) {
+            const char = document[i];
+            
+            if (escapeNext) {
+                escapeNext = false;
+                continue;
+            }
+            
+            if (char === '\\') {
+                escapeNext = true;
+                continue;
+            }
+            
+            if (char === '"') {
+                inString = !inString;
+                continue;
+            }
+            
+            if (inString) {
+                continue;
+            }
+            
+            switch (char) {
+                case '{':
+                    braceDepth++;
+                    break;
+                case '}':
+                    braceDepth--;
+                    break;
+                case '[':
+                    bracketDepth++;
+                    if (bracketDepth > braceDepth) {
+                        arrayItemCount = 0;
+                    }
+                    break;
+                case ']':
+                    bracketDepth--;
+                    break;
+                case ',':
+                    if (bracketDepth > braceDepth) {
+                        arrayItemCount++;
+                    }
+                    break;
+            }
+        }
+        
+        return bracketDepth > braceDepth ? arrayItemCount : undefined;
+    }
+
+    /**
+     * Detect if the current token is a primitive value
+     */
+    private isPrimitiveToken(document: string, position: number): boolean {
+        const token = this.getCurrentToken(document, position);
+        
+        // Check if it's a boolean, number, or null
+        return /^(true|false|null|\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)$/.test(token);
     }
 
     private findNextNonWhitespace(document: string, start: number): number {
@@ -174,8 +263,21 @@ export class JsonContextAnalyzer {
         let i = 0;
         
         while (i < position && i < document.length) {
-            if (document[i] === '"' && (i === 0 || document[i-1] !== '\\')) {
-                quoteCount++;
+            const char = document[i];
+            
+            if (char === '"') {
+                // Count consecutive backslashes before this quote
+                let escapeCount = 0;
+                let checkPos = i - 1;
+                while (checkPos >= 0 && document[checkPos] === '\\') {
+                    escapeCount++;
+                    checkPos--;
+                }
+                
+                // If even number of escapes (including 0), the quote is not escaped
+                if (escapeCount % 2 === 0) {
+                    quoteCount++;
+                }
             }
             i++;
         }

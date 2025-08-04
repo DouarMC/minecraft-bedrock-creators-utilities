@@ -102,41 +102,11 @@ export class JsonSchemaHoverProvider implements vscode.HoverProvider {
             
             console.log(`🔍 getSchemaAtPath: Looking for segment "${segment}" in schema:`, current);
             
-            // Gestion des oneOf/anyOf/allOf
-            if (current.oneOf || current.anyOf || current.allOf) {
-                const alternatives = current.oneOf || current.anyOf || current.allOf;
-                console.log(`🔍 getSchemaAtPath: Found alternatives (${current.oneOf ? 'oneOf' : current.anyOf ? 'anyOf' : 'allOf'}):`, alternatives.length);
-                
-                // Chercher dans chaque alternative celle qui a la propriété
-                for (const alternative of alternatives) {
-                    if (alternative.properties && alternative.properties[segment]) {
-                        console.log(`✅ getSchemaAtPath: Found segment "${segment}" in alternative`);
-                        current = alternative.properties[segment];
-                        break;
-                    }
-                }
-                
-                // Si on n'a pas trouvé dans les alternatives, essayer de fusionner les propriétés
-                if (!current.properties) {
-                    const mergedProperties: any = {};
-                    for (const alternative of alternatives) {
-                        if (alternative.properties) {
-                            Object.assign(mergedProperties, alternative.properties);
-                        }
-                    }
-                    if (mergedProperties[segment]) {
-                        console.log(`✅ getSchemaAtPath: Found segment "${segment}" in merged properties`);
-                        current = mergedProperties[segment];
-                    } else {
-                        console.log(`❌ getSchemaAtPath: Segment "${segment}" not found in alternatives`);
-                        return null;
-                    }
-                } else {
-                    continue; // On a déjà trouvé dans la boucle précédente
-                }
-            }
+            // Resolve schema alternatives first
+            current = this.resolveSchemaAlternatives(current);
+            
             // Navigation standard dans le schema
-            else if (current.type === 'object' && current.properties) {
+            if (current.type === 'object' && current.properties) {
                 current = current.properties[segment];
             } else if (current.type === 'array' && current.items) {
                 current = current.items;
@@ -150,6 +120,63 @@ export class JsonSchemaHoverProvider implements vscode.HoverProvider {
         
         console.log(`✅ getSchemaAtPath: Final schema:`, current);
         return current;
+    }
+
+    /**
+     * Resolves schema alternatives (oneOf/anyOf/allOf) by merging them
+     */
+    private resolveSchemaAlternatives(schema: any): any {
+        if (!schema) return schema;
+        
+        const alternatives = schema.oneOf || schema.anyOf || schema.allOf;
+        if (!alternatives || !Array.isArray(alternatives)) {
+            return schema;
+        }
+        
+        console.log(`🔍 resolveSchemaAlternatives: Found alternatives (${schema.oneOf ? 'oneOf' : schema.anyOf ? 'anyOf' : 'allOf'}):`, alternatives.length);
+        
+        // Merge all alternatives into a single schema for better hover experience
+        const merged: any = { ...schema };
+        delete merged.oneOf;
+        delete merged.anyOf;
+        delete merged.allOf;
+        
+        const mergedProperties: any = {};
+        const mergedDescriptions: string[] = [];
+        let mergedType: string | undefined;
+        
+        for (const alternative of alternatives) {
+            // Merge properties
+            if (alternative.properties) {
+                Object.assign(mergedProperties, alternative.properties);
+            }
+            
+            // Collect descriptions for merging
+            if (alternative.description) {
+                mergedDescriptions.push(alternative.description);
+            }
+            
+            // Merge type information
+            if (alternative.type && !mergedType) {
+                mergedType = alternative.type;
+            }
+        }
+        
+        if (Object.keys(mergedProperties).length > 0) {
+            merged.properties = mergedProperties;
+        }
+        
+        if (mergedType) {
+            merged.type = mergedType;
+        }
+        
+        // Create merged description for combinators
+        if (mergedDescriptions.length > 0) {
+            const combinator = schema.oneOf ? 'oneOf' : schema.anyOf ? 'anyOf' : 'allOf';
+            merged.description = `${combinator} alternatives:\n${mergedDescriptions.map((desc, i) => `${i + 1}. ${desc}`).join('\n')}`;
+        }
+        
+        return merged;
     }
 
     private isOnPropertyName(document: string, position: number): boolean {
@@ -201,41 +228,72 @@ export class JsonSchemaHoverProvider implements vscode.HoverProvider {
     }
 
     private getCurrentPropertyName(document: string, position: number): string | null {
-        // Trouver le début et la fin de la string qui contient le curseur
+        // Enhanced property name extraction that handles : in key names correctly
         let start = position;
         let end = position;
         
-        // Aller vers la gauche pour trouver le guillemet d'ouverture
-        // On doit ignorer les ':' qui sont DANS la string
+        // Find the start of the current string (going backwards)
         while (start > 0) {
             start--;
-            if (document[start] === '"') {
-                // Vérifier que ce n'est pas un guillemet échappé
-                if (start === 0 || document[start - 1] !== '\\') {
+            const char = document[start];
+            
+            if (char === '"') {
+                // Check if this quote is escaped
+                let escapeCount = 0;
+                let checkPos = start - 1;
+                while (checkPos >= 0 && document[checkPos] === '\\') {
+                    escapeCount++;
+                    checkPos--;
+                }
+                
+                // If even number of escapes (including 0), the quote is not escaped
+                if (escapeCount % 2 === 0) {
                     break;
                 }
             }
         }
         
-        // Vérifier qu'on a trouvé un guillemet d'ouverture
-        if (document[start] !== '"') return null;
+        // Verify we found an opening quote
+        if (start < 0 || document[start] !== '"') return null;
         
-        // Aller vers la droite pour trouver le guillemet de fermeture
+        // Find the end of the current string (going forwards)
+        end = position;
         while (end < document.length) {
-            if (document[end] === '"') {
-                // Vérifier que ce n'est pas un guillemet échappé
-                if (end === 0 || document[end - 1] !== '\\') {
+            const char = document[end];
+            
+            if (char === '"') {
+                // Check if this quote is escaped
+                let escapeCount = 0;
+                let checkPos = end - 1;
+                while (checkPos >= 0 && document[checkPos] === '\\') {
+                    escapeCount++;
+                    checkPos--;
+                }
+                
+                // If even number of escapes (including 0), the quote is not escaped
+                if (escapeCount % 2 === 0) {
                     break;
                 }
             }
             end++;
         }
         
-        // Vérifier qu'on a trouvé un guillemet de fermeture
+        // Verify we found a closing quote
         if (end >= document.length || document[end] !== '"') return null;
         
-        // Extraire le nom de la propriété (entre les guillemets)
+        // Extract the property name (between the quotes)
         const propertyName = document.substring(start + 1, end);
+        
+        // Verify this is actually a property key by checking for : after the closing quote
+        let afterQuote = end + 1;
+        while (afterQuote < document.length && /\s/.test(document[afterQuote])) {
+            afterQuote++;
+        }
+        
+        if (afterQuote >= document.length || document[afterQuote] !== ':') {
+            return null; // Not a property key
+        }
+        
         console.log(`🔍 getCurrentPropertyName: Extracted "${propertyName}" from position ${position}`);
         return propertyName;
     }

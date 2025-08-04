@@ -129,7 +129,57 @@ export class SchemaResolver {
             }
         }
         
+        // Handle oneOf/anyOf/allOf during schema resolution by merging versioned changes
+        this.mergeVersionedCombinators(result, formatVersion);
+        
         return result;
+    }
+
+    /**
+     * Merge versioned changes with base schemas based on format_version for combinators
+     */
+    private mergeVersionedCombinators(schema: any, formatVersion: string): void {
+        if (!schema || typeof schema !== 'object') {
+            return;
+        }
+        
+        // Process oneOf/anyOf/allOf recursively
+        if (schema.oneOf || schema.anyOf || schema.allOf) {
+            const alternatives = schema.oneOf || schema.anyOf || schema.allOf;
+            
+            for (const alternative of alternatives) {
+                if (alternative.format_version) {
+                    // Check if this alternative should be included based on version
+                    if (this.compareVersions(formatVersion, alternative.format_version) >= 0) {
+                        this.mergeVersionedCombinators(alternative, formatVersion);
+                    }
+                } else {
+                    this.mergeVersionedCombinators(alternative, formatVersion);
+                }
+            }
+        }
+        
+        // Recursively process properties and items
+        if (schema.properties) {
+            for (const property of Object.values(schema.properties)) {
+                this.mergeVersionedCombinators(property, formatVersion);
+            }
+        }
+        
+        if (schema.items) {
+            this.mergeVersionedCombinators(schema.items, formatVersion);
+        }
+        
+        // Handle patternProperties and additionalProperties
+        if (schema.patternProperties) {
+            for (const pattern of Object.values(schema.patternProperties)) {
+                this.mergeVersionedCombinators(pattern, formatVersion);
+            }
+        }
+        
+        if (schema.additionalProperties && typeof schema.additionalProperties === 'object') {
+            this.mergeVersionedCombinators(schema.additionalProperties, formatVersion);
+        }
     }
 
     private compareVersions(a: string, b: string): number {
