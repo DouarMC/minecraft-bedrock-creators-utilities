@@ -11,7 +11,7 @@
     ],
     "activationEvents": [
         "onStartupFinished"
-    ],  
+    ],
     "main": "./out/extension.js",
     "contributes": {
         "commands": [
@@ -84,8 +84,13 @@
         "languages": [
             {
                 "id": "molang",
-                "aliases": ["Molang", "molang"],
-                "extensions": [".molang"],
+                "aliases": [
+                    "Molang",
+                    "molang"
+                ],
+                "extensions": [
+                    ".molang"
+                ],
                 "icon": {
                     "dark": "./resources/molang_icon.png",
                     "light": "./resources/molang_icon.png"
@@ -134,6 +139,8 @@
     "dependencies": {
         "@minecraft/vanilla-data": "^1.21.90",
         "ajv": "^8.17.1",
+        "ajv-formats": "^3.0.1",
+        "ajv-keywords": "^5.1.0",
         "jsonc-parser": "^3.3.1",
         "lodash": "^4.17.21",
         "micromatch": "^4.0.8",

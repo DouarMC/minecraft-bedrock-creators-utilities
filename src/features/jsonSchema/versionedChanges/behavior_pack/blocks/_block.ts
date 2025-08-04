@@ -2,6 +2,7 @@ import { schemaPatterns } from "../../../shared/schemaPatterns";
 import { schemaEnums, dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
 import { commonSchemas } from "../../../shared/commonSchemas";
 import { SchemaChange, SchemaType } from "../../../../../types/schema";
+import { format } from "path";
 
 const baseSchema = {
     "$schema": "https://json-schema.org/draft-07/schema#",
@@ -1046,7 +1047,8 @@ const versionedChanges: SchemaChange[] = [
                                 markdownDescription:
                                 "**ℹ️ Expression Molang supportée.**\n\n" +
                                 "La condition Molang qui doit être remplie pour que cette permutation soit appliquée.",
-                                type: "molang"
+                                type: ["string", "number", "boolean"],
+                                format: "molang"
                             },
                             components: {
                                 description: "Les composants du Bloc pour cette permutation.",
@@ -1155,7 +1157,8 @@ const versionedChanges: SchemaChange[] = [
                     "Définit la visivilité de chaque os du modèle. Par défaut, tous les os sont visibles.",
                     type: "object",
                     additionalProperties: {
-                        type: "molang"
+                        type: ["string", "number", "boolean"],
+                        format: "molang"
                     }
                 }
             },

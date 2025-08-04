@@ -33,7 +33,8 @@ function createCommonSchemas() {
                 markdownDescription:
                 "**ℹ️ Expression Molang supportée.**\n\n" +
                 "Les tags du bloc.",
-                type: "molang"
+                type: ["string", "number", "boolean"],
+                format: "molang"
             }
         }
     };
@@ -55,7 +56,8 @@ function createCommonSchemas() {
                 markdownDescription:
                 "**ℹ️ Expression Molang supportée.**\n\n" +
                 "Les tags de l'item.",
-                type: "molang"
+                type: ["string", "number", "boolean"],
+                format: "molang"
             }
         }
     };
