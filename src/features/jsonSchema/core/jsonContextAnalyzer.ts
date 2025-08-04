@@ -20,9 +20,13 @@ export class JsonContextAnalyzer {
     
     private extractPath(document: string, position: number): string[] {
         const path: string[] = [];
-        let depth = 0;
         let inString = false;
         let escapeNext = false;
+        let braceDepth = 0;
+        let bracketDepth = 0;
+        
+        // Stack pour suivre les clés au fur et à mesure qu'on entre dans les objets
+        const keyStack: string[] = [];
         let currentKey = '';
         let collectingKey = false;
         
@@ -47,13 +51,19 @@ export class JsonContextAnalyzer {
                 if (inString) {
                     inString = false;
                     if (collectingKey) {
-                        path.push(currentKey);
+                        // Vérifier si c'est suivi de ':' (donc c'est une clé)
+                        const nextNonSpace = this.findNextNonWhitespace(document, i + 1);
+                        if (nextNonSpace !== -1 && document[nextNonSpace] === ':') {
+                            // C'est une clé, la stocker pour quand on entrera dans l'objet
+                            keyStack.push(currentKey);
+                        }
                         currentKey = '';
                         collectingKey = false;
                     }
                 } else {
                     inString = true;
                     collectingKey = true;
+                    currentKey = '';
                 }
                 continue;
             }
@@ -63,133 +73,138 @@ export class JsonContextAnalyzer {
                 continue;
             }
             
-            // Navigation dans la structure JSON
-            if (char === '{') {
-                depth++;
-            } else if (char === '}') {
-                depth--;
-                if (path.length > 0) path.pop();
-            } else if (char === '[') {
-                depth++;
-            } else if (char === ']') {
-                depth--;
-                if (path.length > 0) path.pop();
+            // Gestion des structures JSON
+            switch (char) {
+                case '{':
+                    braceDepth++;
+                    // Quand on entre dans un objet, ajouter la clé correspondante au path
+                    if (keyStack.length > 0) {
+                        path.push(keyStack.pop()!);
+                    }
+                    break;
+                case '}':
+                    braceDepth--;
+                    // Quand on sort d'un objet, enlever du path
+                    if (path.length > 0) {
+                        path.pop();
+                    }
+                    break;
+                case '[':
+                    bracketDepth++;
+                    break;
+                case ']':
+                    bracketDepth--;
+                    break;
             }
         }
         
         return path;
     }
-    
-    private determineContextType(document: string, position: number): JsonContext['type'] {
-        // Analyser les caractères autour de la position
-        let i = position - 1;
+
+    private findNextNonWhitespace(document: string, start: number): number {
+        for (let i = start; i < document.length; i++) {
+            if (!/\s/.test(document[i])) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private determineContextType(document: string, position: number): 'property-key' | 'property-value' | 'array-item' | 'root' {
+        // Vérifier d'abord si on est dans une string
+        const inString = this.isInQuotes(document, position);
         
-        // Remonter pour ignorer les espaces
+        if (inString) {
+            // Si on est dans une string, déterminer si c'est une clé ou une valeur
+            return this.isPropertyKey(document, position) ? 'property-key' : 'property-value';
+        }
+        
+        // Si on n'est pas dans une string, analyser le contexte autour
+        let i = position - 1;
+        let lastMeaningfulChar = '';
+        
+        // Rechercher le dernier caractère significatif (ignorer les espaces)
         while (i >= 0 && /\s/.test(document[i])) {
             i--;
         }
         
-        if (i < 0) return 'root';
-        
-        const prevChar = document[i];
-        
-        // Chercher vers l'avant pour voir ce qui suit
-        let j = position;
-        while (j < document.length && /\s/.test(document[j])) {
-            j++;
+        if (i >= 0) {
+            lastMeaningfulChar = document[i];
         }
         
-        const nextChar = j < document.length ? document[j] : '';
-        
-        // Logique de détermination du contexte
-        if (prevChar === '{' || prevChar === ',') {
-            return 'property-key';
-        } else if (prevChar === ':') {
-            return 'property-value';
-        } else if (prevChar === '[' || (prevChar === ',' && this.isInArray(document, position))) {
-            return 'array-item';
-        } else if (this.isInQuotes(document, position)) {
-            // Dans une string, déterminer si c'est une clé ou valeur
-            return this.isPropertyKey(document, position) ? 'property-key' : 'property-value';
+        // Déterminer le contexte selon le caractère précédent
+        switch (lastMeaningfulChar) {
+            case '{':
+            case ',':
+                return 'property-key';
+            case ':':
+                return 'property-value';
+            case '[':
+                return 'array-item';
+            default:
+                return 'root';
         }
-        
-        return 'root';
-    }
-
-    private isInArray(document: string, position: number): boolean {
-        let depth = 0;
-        for (let i = position - 1; i >= 0; i--) {
-            if (document[i] === ']') depth++;
-            else if (document[i] === '[') {
-                depth--;
-                if (depth < 0) return true;
-            }
-            else if (document[i] === '}') depth++;
-            else if (document[i] === '{') {
-                depth--;
-                if (depth < 0) return false;
-            }
-        }
-        return false;
-    }
-
-    private isPropertyKey(document: string, position: number): boolean {
-        // Chercher le prochain caractère non-espace après la string
-        let i = position;
-        while (i < document.length && document[i] !== '"') i++;
-        i++; // Passer le guillemet fermant
-        while (i < document.length && /\s/.test(document[i])) i++;
-        
-        return i < document.length && document[i] === ':';
     }
     
-    private getCurrentToken(document: string, position: number): string {
-        // Chercher le début du token (vers la gauche)
-        let start = position;
-        while (start > 0) {
-            const char = document[start - 1];
-            if (char.match(/[\s,:{}\[\]"]/)) {
-                break;
+    private isPropertyKey(document: string, position: number): boolean {
+        // Vérifier si la string actuelle est suivie de ':' (donc c'est une clé)
+        let i = position;
+        
+        // Aller à la fin de la string courante
+        while (i < document.length && document[i] !== '"') {
+            if (document[i] === '\\') {
+                i++; // Ignorer le caractère échappé
             }
-            start--;
+            i++;
         }
         
-        // Chercher la fin du token (vers la droite)
-        let end = position;
-        while (end < document.length) {
-            const char = document[end];
-            if (char.match(/[\s,:{}\[\]"]/)) {
-                break;
-            }
-            end++;
+        if (i >= document.length) return false;
+        
+        // Maintenant on est sur le guillemet de fermeture, chercher ':'
+        i++;
+        while (i < document.length && /\s/.test(document[i])) {
+            i++;
         }
         
-        return document.substring(start, end);
+        return i < document.length && document[i] === ':';
     }
     
     private isInQuotes(document: string, position: number): boolean {
         let quoteCount = 0;
         let i = 0;
         
-        // Compter les guillemets non-échappés jusqu'à la position
         while (i < position && i < document.length) {
-            if (document[i] === '"') {
-                // Vérifier si le guillemet n'est pas échappé
-                let backslashCount = 0;
-                let j = i - 1;
-                while (j >= 0 && document[j] === '\\') {
-                    backslashCount++;
-                    j--;
-                }
-                // Si nombre pair de backslashes, le guillemet n'est pas échappé
-                if (backslashCount % 2 === 0) {
-                    quoteCount++;
-                }
+            if (document[i] === '"' && (i === 0 || document[i-1] !== '\\')) {
+                quoteCount++;
             }
             i++;
         }
         
-        // Si nombre impair de guillemets, on est dans une string
         return quoteCount % 2 === 1;
+    }
+    
+    private getCurrentToken(document: string, position: number): string {
+        let start = position;
+        let end = position;
+        
+        // Chercher le début du token
+        while (start > 0) {
+            const char = document[start - 1];
+            if (/[\s{}[\],:"]/.test(char)) {
+                break;
+            }
+            start--;
+        }
+        
+        // Chercher la fin du token
+        while (end < document.length) {
+            const char = document[end];
+            if (/[\s{}[\],:"]/.test(char)) {
+                break;
+            }
+            end++;
+        }
+        
+        return document.substring(start, end);
     }
 }

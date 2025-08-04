@@ -12,51 +12,32 @@ import { JsonSchemaHoverProvider } from './core/hoverProvider';
 import { JsonSchemaDiagnosticProvider } from './core/diagnosticProvider';
 
 export function registerJsonSchemaFeatures(context: vscode.ExtensionContext): void {
-    console.log('Initializing AJV-based JSON Schema system...');
-
     try {
-        console.log("AAAAAAAAAAAAAAAAAAA");
 
         // 1. Initialize core components
         const ajvCompiler = new AjvCompiler();
 
-        console.log("111111111111111111");
-
         const schemaResolver = new SchemaResolver();
-
-        console.log("22222222222222222222");
 
         const jsonContextAnalyzer = new JsonContextAnalyzer();
 
-        console.log("3333333333333333333");
-
         const dynamicExamplesProvider = new DynamicExamplesProvider();
-
-        console.log("BBBBBBBBBBBBBBBBBB");
 
         // 2. Create diagnostic collection
         const diagnosticCollection = vscode.languages.createDiagnosticCollection('json-schema');
         context.subscriptions.push(diagnosticCollection);
 
-        console.log("CCCCCCCCCCCCCCCCCCCC");
-
         // 3. Initialize providers
         const completionProvider = new JsonSchemaCompletionProvider(
-            ajvCompiler,
             schemaResolver,
             jsonContextAnalyzer,
             dynamicExamplesProvider
         );
 
-        console.log("DDDDDDDDDDDDDDDDDDDDDDDD");
-
         const hoverProvider = new JsonSchemaHoverProvider(
-            ajvCompiler,
             schemaResolver,
             jsonContextAnalyzer
         );
-
-        console.log("EEEEEEEEEEEEEEEEEEEEEEEEEE");
 
         const diagnosticProvider = new JsonSchemaDiagnosticProvider(
             ajvCompiler,
@@ -64,22 +45,14 @@ export function registerJsonSchemaFeatures(context: vscode.ExtensionContext): vo
             diagnosticCollection
         );
 
-        console.log("FFFFFFFFFFFFFFFFFFFFFFFFF");
-
         // 4. Register VS Code providers
         registerProviders(context, completionProvider, hoverProvider);
-
-        console.log("GGGGGGGGGGGGGGGGGGGGGGGGGG");
 
         // 5. Setup document validation events
         setupValidationEvents(context, diagnosticProvider);
 
-        console.log("HHHHHHHHHHHHHHHHHHHHHHHH");
-
         // 6. Setup cleanup
         setupCleanup(context, diagnosticProvider);
-
-        console.log("IIIIIIIIIIIIIIIIIIIIIIIII");
 
         console.log('AJV-based JSON Schema system initialized successfully');
 

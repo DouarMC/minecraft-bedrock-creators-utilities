@@ -4,7 +4,6 @@ import { entitySchemaTypeBP } from "../versionedChanges/behavior_pack/entities/_
 import { blockSchemaTypeBP } from "../versionedChanges/behavior_pack/blocks/_block";
 
 export const ALL_SCHEMAS: SchemaType[] = [
-    entitySchemaTypeBP,
     blockSchemaTypeBP,
     // Ajouter d'autres schémas ici
 ];

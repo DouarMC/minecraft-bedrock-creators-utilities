@@ -4,14 +4,24 @@ import { SchemaType, SchemaModification } from '../../../types/schema';
 export class SchemaResolver {
     
     public resolveSchemaForFile(filePath: string, fileContent?: string): any {
+        console.log(`🔍 SchemaResolver: Resolving schema for file: ${filePath}`);
+        
         // 1. Déterminer le type de schema selon le chemin
         const schemaType = this.getSchemaTypeFromPath(filePath);
+        console.log(`📋 SchemaResolver: Schema type found:`, schemaType ? schemaType.fileMatch : 'NONE');
+        
+        if (!schemaType) {
+            console.log(`❌ SchemaResolver: No schema type found for file: ${filePath}`);
+            return undefined;
+        }
         
         // 2. Extraire la format_version du contenu
         const formatVersion = this.extractFormatVersion(fileContent);
+        console.log(`📅 SchemaResolver: Format version extracted: ${formatVersion}`);
         
         // 3. Appliquer les changements versionnés
         const finalSchema = this.applyVersioning(schemaType, formatVersion);
+        console.log(`✅ SchemaResolver: Final schema resolved successfully`);
         
         return finalSchema;
     }
@@ -19,12 +29,19 @@ export class SchemaResolver {
     private getSchemaTypeFromPath(filePath: string): SchemaType | undefined {
         // Normaliser le chemin (remplacer les \ par /)
         const normalizedPath = filePath.replace(/\\/g, '/');
+        console.log(`🔍 SchemaResolver: Normalized path: ${normalizedPath}`);
+        console.log(`🔍 SchemaResolver: Available schemas count: ${ALL_SCHEMAS.length}`);
         
         // Chercher le premier schema qui match
         for (const schema of ALL_SCHEMAS) {
+            console.log(`🔍 SchemaResolver: Checking schema with patterns:`, schema.fileMatch);
             for (const pattern of schema.fileMatch) {
+                console.log(`🔍 SchemaResolver: Testing pattern "${pattern}" against "${normalizedPath}"`);
                 if (this.matchesPattern(normalizedPath, pattern)) {
+                    console.log(`✅ SchemaResolver: Pattern "${pattern}" MATCHED!`);
                     return schema;
+                } else {
+                    console.log(`❌ SchemaResolver: Pattern "${pattern}" did not match`);
                 }
             }
         }
@@ -33,24 +50,46 @@ export class SchemaResolver {
     }
 
     private matchesPattern(filePath: string, pattern: string): boolean {
-        // Convertir le pattern glob en regex
-        let regexPattern = pattern
-            // Échapper les caractères spéciaux sauf * et **
-            .replace(/[.+^${}()|[\]\\]/g, '\\$&')
-            // ** = n'importe quel chemin (y compris vide)
-            .replace(/\*\*/g, '§DOUBLESTAR§')
-            // * = n'importe quoi sauf /
-            .replace(/\*/g, '[^/]*')
-            // Remettre ** 
-            .replace(/§DOUBLESTAR§/g, '.*');
+        console.log(`🔍 matchesPattern: Testing "${filePath}" against "${pattern}"`);
         
-        // Si le pattern commence par **, permettre qu'il match n'importe où dans le chemin
+        // Approche plus simple : utiliser micromatch ou une logique basique
+        // Pour les patterns **/xxx, on vérifie juste si le chemin contient xxx
         if (pattern.startsWith('**/')) {
-            regexPattern = '(^|.*/)' + regexPattern.substring(2);
+            const suffix = pattern.substring(3); // Enlever "**/", garder le reste
+            
+            // Convertir le suffix en regex, mais traiter **/ spécialement
+            let suffixRegex = suffix
+                // Remplacer **/ par un placeholder spécial
+                .replace(/\*\*\//g, '§DOUBLESTARSLASH§')
+                // Échapper les caractères spéciaux
+                .replace(/[.+^${}()|[\]\\]/g, '\\$&')
+                // Remplacer * par [^/]*
+                .replace(/\*/g, '[^/]*')
+                // Remettre **/ comme (?:.*/)? (optionnel avec le /)
+                .replace(/§DOUBLESTARSLASH§/g, '(?:.*/)?');
+            
+            // Vérifier si le chemin CONTIENT ce pattern
+            const regex = new RegExp('(^|.*/)' + suffixRegex + '$');
+            const matches = regex.test(filePath);
+            
+            console.log(`🔍 matchesPattern: Suffix pattern: (^|.*/)${suffixRegex}$`);
+            console.log(`🔍 matchesPattern: Result: ${matches}`);
+            return matches;
+        } else {
+            // Pattern normal - match exact
+            let regexPattern = pattern
+                .replace(/\*\*/g, '§DOUBLESTAR§')
+                .replace(/[.+^${}()|[\]\\]/g, '\\$&')
+                .replace(/\*/g, '[^/]*')
+                .replace(/§DOUBLESTAR§/g, '.*');
+            
+            const regex = new RegExp('^' + regexPattern + '$');
+            const matches = regex.test(filePath);
+            
+            console.log(`🔍 matchesPattern: Full pattern: ^${regexPattern}$`);
+            console.log(`🔍 matchesPattern: Result: ${matches}`);
+            return matches;
         }
-        
-        const regex = new RegExp('^' + regexPattern + '$');
-        return regex.test(filePath);
     }
 
     private extractFormatVersion(content?: string): string | undefined {

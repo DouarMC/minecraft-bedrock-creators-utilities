@@ -1,23 +1,19 @@
 import * as vscode from 'vscode';
-import { AjvCompiler } from './ajvCompiler';
 import { SchemaResolver } from './schemaResolver';
 import { JsonContextAnalyzer } from './jsonContextAnalyzer';
 import { DynamicExamplesProvider } from './dynamicExamplesProvider';
 import { MolangService } from './molangService';
 
 export class JsonSchemaCompletionProvider implements vscode.CompletionItemProvider {
-    private ajvCompiler: AjvCompiler;
     private schemaResolver: SchemaResolver;
     private jsonContextAnalyzer: JsonContextAnalyzer;
     private dynamicExamplesProvider: DynamicExamplesProvider;
 
     constructor(
-        ajvCompiler: AjvCompiler,
         schemaResolver: SchemaResolver,
         jsonContextAnalyzer: JsonContextAnalyzer,
         dynamicExamplesProvider: DynamicExamplesProvider
     ) {
-        this.ajvCompiler = ajvCompiler;
         this.schemaResolver = schemaResolver;
         this.jsonContextAnalyzer = jsonContextAnalyzer;
         this.dynamicExamplesProvider = dynamicExamplesProvider;
@@ -27,27 +23,30 @@ export class JsonSchemaCompletionProvider implements vscode.CompletionItemProvid
         document: vscode.TextDocument,
         position: vscode.Position
     ): Promise<vscode.CompletionItem[]> {
+        console.log(`🎯 CompletionProvider: Triggered for file: ${document.uri.fsPath} at position ${position.line}:${position.character}`);
+        
         try {
             // 1. Analyser le contexte JSON
             const offset = document.offsetAt(position);
             const context = this.jsonContextAnalyzer.analyzePosition(document.getText(), offset);
+            console.log(`📍 CompletionProvider: JSON context:`, context);
             
             // 2. Résoudre le schema pour ce fichier
             const schema = this.schemaResolver.resolveSchemaForFile(
                 document.uri.fsPath,
                 document.getText()
             );
+            console.log(`📋 CompletionProvider: Schema resolved:`, schema ? 'YES' : 'NO');
             
             if (!schema) {
+                console.log(`❌ CompletionProvider: No schema found, returning empty completions`);
                 return [];
             }
             
-            // 3. Compiler le schema
-            const schemaId = document.uri.fsPath;
-            this.ajvCompiler.compileSchema(schema, schemaId);
-            
-            // 4. Générer les suggestions selon le contexte
-            return await this.generateCompletions(context, schema, document, position);
+            // 3. Générer les suggestions selon le contexte (pas besoin d'AJV ici)
+            const completions = await this.generateCompletions(context, schema, document, position);
+            console.log(`✅ CompletionProvider: Generated ${completions.length} completions`);
+            return completions;
             
         } catch (error) {
             console.error('Erreur dans CompletionProvider:', error);
@@ -94,10 +93,15 @@ export class JsonSchemaCompletionProvider implements vscode.CompletionItemProvid
         let current = schema;
         
         for (const segment of path) {
-            if (current.properties && current.properties[segment]) {
+            if (!current) break;
+            
+            // Naviguer dans le schema selon le type
+            if (current.type === 'object' && current.properties) {
                 current = current.properties[segment];
-            } else if (current.items) {
+            } else if (current.type === 'array' && current.items) {
                 current = current.items;
+            } else if (current.properties) {
+                current = current.properties[segment];
             } else {
                 return null;
             }
@@ -109,33 +113,23 @@ export class JsonSchemaCompletionProvider implements vscode.CompletionItemProvid
     private async getPropertyKeyCompletions(schema: any, context: any): Promise<vscode.CompletionItem[]> {
         const completions: vscode.CompletionItem[] = [];
         
-        if (!schema.properties) {
+        if (!schema || !schema.properties) {
             return completions;
         }
         
-        // Générer des suggestions pour chaque propriété du schema
+        // Ajouter toutes les propriétés disponibles
         for (const [propertyName, propertySchema] of Object.entries(schema.properties)) {
-            const item = new vscode.CompletionItem(propertyName, vscode.CompletionItemKind.Property);
+            const completion = new vscode.CompletionItem(
+                propertyName,
+                vscode.CompletionItemKind.Property
+            );
             
-            // Description de la propriété
-            if ((propertySchema as any).description) {
-                item.documentation = new vscode.MarkdownString((propertySchema as any).description);
-            }
+            completion.detail = (propertySchema as any).type || 'property';
+            completion.documentation = (propertySchema as any).description || `Property: ${propertyName}`;
+            completion.insertText = `"${propertyName}": `;
+            completion.sortText = propertyName;
             
-            // Détail du type
-            if ((propertySchema as any).type) {
-                item.detail = `Type: ${(propertySchema as any).type}`;
-            }
-            
-            // Marquer comme requis si nécessaire
-            if (schema.required && schema.required.includes(propertyName)) {
-                item.detail = (item.detail || '') + ' (required)';
-            }
-            
-            // Snippet avec guillemets
-            item.insertText = new vscode.SnippetString(`"${propertyName}": $0`);
-            
-            completions.push(item);
+            completions.push(completion);
         }
         
         return completions;
@@ -144,56 +138,86 @@ export class JsonSchemaCompletionProvider implements vscode.CompletionItemProvid
     private async getPropertyValueCompletions(schema: any, context: any): Promise<vscode.CompletionItem[]> {
         const completions: vscode.CompletionItem[] = [];
         
+        if (!schema) {
+            return completions;
+        }
+        
         // Enum values
         if (schema.enum) {
-            for (const enumValue of schema.enum) {
-                const item = new vscode.CompletionItem(String(enumValue), vscode.CompletionItemKind.EnumMember);
-                item.insertText = typeof enumValue === 'string' ? `"${enumValue}"` : String(enumValue);
-                completions.push(item);
+            for (const value of schema.enum) {
+                const completion = new vscode.CompletionItem(
+                    String(value),
+                    vscode.CompletionItemKind.EnumMember
+                );
+                completion.insertText = typeof value === 'string' ? `"${value}"` : String(value);
+                completion.detail = 'enum value';
+                completions.push(completion);
             }
         }
         
-        // Dynamic examples from x-dynamic-example-source
-        if (schema['x-dynamic-example-source']) {
-            try {
-                const examples = await this.dynamicExamplesProvider.getExamples(schema['x-dynamic-example-source']);
-                for (const example of examples) {
-                    const item = new vscode.CompletionItem(String(example), vscode.CompletionItemKind.Value);
-                    item.insertText = `"${example}"`;
-                    item.detail = 'Dynamic example';
-                    completions.push(item);
-                }
-            } catch (error) {
-                console.warn('Erreur lors de la récupération des exemples dynamiques:', error);
+        // Type-based suggestions
+        if (schema.type) {
+            switch (schema.type) {
+                case 'boolean':
+                    completions.push(
+                        new vscode.CompletionItem('true', vscode.CompletionItemKind.Value),
+                        new vscode.CompletionItem('false', vscode.CompletionItemKind.Value)
+                    );
+                    break;
+                case 'string':
+                    if (schema.format === 'molang') {
+                        // Suggestions Molang basiques
+                        const molangSuggestions = ['math.random', 'query.health', 'variable.', 'temp.'];
+                        for (const suggestion of molangSuggestions) {
+                            const completion = new vscode.CompletionItem(suggestion, vscode.CompletionItemKind.Function);
+                            completion.insertText = `"${suggestion}"`;
+                            completion.detail = 'Molang expression';
+                            completions.push(completion);
+                        }
+                    } else {
+                        const completion = new vscode.CompletionItem('""', vscode.CompletionItemKind.Value);
+                        completion.insertText = '""';
+                        completion.detail = 'string value';
+                        completions.push(completion);
+                    }
+                    break;
+                case 'number':
+                case 'integer':
+                    const numberCompletion = new vscode.CompletionItem('0', vscode.CompletionItemKind.Value);
+                    numberCompletion.detail = schema.type;
+                    completions.push(numberCompletion);
+                    break;
+                case 'object':
+                    const objectCompletion = new vscode.CompletionItem('{}', vscode.CompletionItemKind.Struct);
+                    objectCompletion.insertText = '{}';
+                    objectCompletion.detail = 'object';
+                    completions.push(objectCompletion);
+                    break;
+                case 'array':
+                    const arrayCompletion = new vscode.CompletionItem('[]', vscode.CompletionItemKind.Struct);
+                    arrayCompletion.insertText = '[]';
+                    arrayCompletion.detail = 'array';
+                    completions.push(arrayCompletion);
+                    break;
             }
-        }
-        
-        // Molang type
-        if (schema.type === 'molang') {
-            completions.push(...MolangService.getMolangCompletions());
-        }
-        
-        // Basic type suggestions
-        if (schema.type === 'boolean') {
-            completions.push(
-                new vscode.CompletionItem('true', vscode.CompletionItemKind.Constant),
-                new vscode.CompletionItem('false', vscode.CompletionItemKind.Constant)
-            );
         }
         
         return completions;
     }
 
     private async getArrayItemCompletions(schema: any, context: any): Promise<vscode.CompletionItem[]> {
-        // Pour les arrays, utiliser le schema des items
-        if (schema.items) {
-            return await this.getPropertyValueCompletions(schema.items, context);
+        const completions: vscode.CompletionItem[] = [];
+        
+        if (!schema || !schema.items) {
+            return completions;
         }
-        return [];
+        
+        // Récursion avec le schema des items
+        return this.getPropertyValueCompletions(schema.items, context);
     }
 
     private async getRootCompletions(schema: any, context: any): Promise<vscode.CompletionItem[]> {
-        // Pour la racine, suggérer les propriétés principales
-        return await this.getPropertyKeyCompletions(schema, context);
+        // Pour le root, on suggère la structure de base
+        return this.getPropertyKeyCompletions(schema, context);
     }
 }

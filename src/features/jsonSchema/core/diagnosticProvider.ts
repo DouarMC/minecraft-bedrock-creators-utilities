@@ -7,6 +7,7 @@ export class JsonSchemaDiagnosticProvider {
     private schemaResolver: SchemaResolver;
     private diagnosticCollection: vscode.DiagnosticCollection;
     private validateTimeouts = new Map<string, NodeJS.Timeout>();
+    private compiledSchemas = new Map<string, string>(); // Cache des schemas compilés
 
     constructor(
         ajvCompiler: AjvCompiler,
@@ -19,6 +20,8 @@ export class JsonSchemaDiagnosticProvider {
     }
 
     public validateDocument(document: vscode.TextDocument): void {
+        console.log(`🔍 DiagnosticProvider: Validation triggered for: ${document.uri.fsPath}`);
+        
         // Clear previous timeout
         const timeout = this.validateTimeouts.get(document.uri.toString());
         if (timeout) {
@@ -53,22 +56,33 @@ export class JsonSchemaDiagnosticProvider {
             );
             
             if (!schema) {
+                console.log(`🔍 DiagnosticProvider: No schema found for ${document.uri.fsPath}`);
                 return; // No schema = no validation
             }
             
-            // 3. Compile and validate with AJV
+            // 3. Compile schema if not already compiled (avec cache)
             const schemaId = document.uri.fsPath;
-            this.ajvCompiler.compileSchema(schema, schemaId);
+            const schemaHash = JSON.stringify(schema);
             
-            const validationResult = this.ajvCompiler.validate(schemaId, jsonData);
+            if (this.compiledSchemas.get(schemaId) !== schemaHash) {
+                console.log(`⚙️ DiagnosticProvider: Compiling schema for ${schemaId}`);
+                this.ajvCompiler.compileSchema(schema, schemaId);
+                this.compiledSchemas.set(schemaId, schemaHash);
+            }
             
-            // 4. Convert AJV errors to VS Code diagnostics
+            // 4. Validate
+            const validationResult = this.ajvCompiler.validate(jsonData, schemaId);
+            
+            // 5. Convert AJV errors to VS Code diagnostics
             if (!validationResult.valid && validationResult.errors) {
+                console.log(`🔍 DiagnosticProvider: Found ${validationResult.errors.length} validation errors`);
                 const diagnostics = this.convertAjvErrorsToDiagnostics(
                     validationResult.errors,
                     document
                 );
                 this.diagnosticCollection.set(document.uri, diagnostics);
+            } else {
+                console.log(`✅ DiagnosticProvider: No validation errors found`);
             }
             
         } catch (error) {
@@ -143,18 +157,39 @@ export class JsonSchemaDiagnosticProvider {
             // Convert JSON path to position
             if (error.instancePath) {
                 const path = error.instancePath.replace(/^\//, '').split('/');
-                return this.findPositionByPath(path, text, document);
+                const position = this.findPositionByPath(path, text, document);
+                if (position) {
+                    return position;
+                }
             }
             
             // Fallback to property name if available
             if (error.params && error.params.missingProperty) {
-                return this.findPropertyPosition(error.params.missingProperty, text, document);
+                const position = this.findPropertyPosition(error.params.missingProperty, text, document);
+                if (position) {
+                    return position;
+                }
+            }
+            
+            // Additional fallback for different error types
+            if (error.schemaPath) {
+                // Try to find property based on schema path
+                const schemaSegments = error.schemaPath.split('/');
+                for (const segment of schemaSegments) {
+                    if (segment && segment !== '#' && segment !== 'properties') {
+                        const position = this.findPropertyPosition(segment, text, document);
+                        if (position) {
+                            return position;
+                        }
+                    }
+                }
             }
             
             // Default to start of document
             return new vscode.Range(0, 0, 0, 1);
             
         } catch (err) {
+            console.warn('Error finding error position:', err);
             return new vscode.Range(0, 0, 0, 1);
         }
     }
@@ -165,21 +200,45 @@ export class JsonSchemaDiagnosticProvider {
         document: vscode.TextDocument
     ): vscode.Range | null {
         try {
-            // Simple implementation - find property by name
-            // For a more robust solution, you'd use a proper JSON parser with position tracking
-            let currentPath = '';
+            // Parser JSON pour avoir une structure précise
+            const jsonObj = JSON.parse(text);
+            let current = jsonObj;
+            let searchText = '';
+            
+            // Naviguer dans l'objet JSON
+            for (let i = 0; i < path.length; i++) {
+                const segment = path[i];
+                if (!segment) continue;
+                
+                if (current && typeof current === 'object' && segment in current) {
+                    current = current[segment];
+                    searchText = `"${segment}"`;
+                    
+                    // Chercher cette propriété dans le texte
+                    const index = text.indexOf(searchText);
+                    if (index !== -1) {
+                        const position = document.positionAt(index);
+                        return new vscode.Range(position, position.translate(0, searchText.length));
+                    }
+                } else {
+                    break;
+                }
+            }
+            
+            return null;
+        } catch {
+            // Fallback vers l'ancienne méthode
+            let searchPattern = '';
             for (const segment of path) {
                 if (segment) {
-                    currentPath += `"${segment}"`;
-                    const index = text.indexOf(currentPath);
+                    searchPattern = `"${segment}"`;
+                    const index = text.indexOf(searchPattern);
                     if (index !== -1) {
                         const position = document.positionAt(index);
                         return new vscode.Range(position, position.translate(0, segment.length + 2));
                     }
                 }
             }
-            return null;
-        } catch {
             return null;
         }
     }

@@ -25,6 +25,9 @@ export class AjvCompiler {
         // Ajouter les plugins
         addFormats(this.ajv);
         addKeywords(this.ajv);
+        
+        // AJV 8.x gère automatiquement les méta-schemas, on peut juste ajouter l'ID
+        this.ajv.addMetaSchema({}, "https://json-schema.org/draft-07/schema#");
     
         // Initialiser les providers
         this.dynamicExamplesProvider = new DynamicExamplesProvider();
