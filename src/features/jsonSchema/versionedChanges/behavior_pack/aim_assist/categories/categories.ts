@@ -1,5 +1,6 @@
 import { SchemaType } from "../../../../../../types/schema";
 import { dynamicExamplesSourceKeys } from "../../../../shared/schemaEnums";
+import { schemaPatterns } from "../../../../shared/schemaPatterns";
 
 const baseSchema = {
     $schema: "https://json-schema.org/draft-07/schema#",
@@ -27,15 +28,8 @@ const baseSchema = {
                             name: {
                                 description: "Le nom de la catégorie d'Aim-Assist.",
                                 type: "string",
+                                pattern: schemaPatterns.identifier_with_namespace,
                                 "x-dynamic-examples-source": dynamicExamplesSourceKeys.aim_assist_category_ids
-                            },
-                            entity_default: {
-                                description: "La priorité par défaut de la catégorie d'Aim-Assist pour les entités.",
-                                type: "integer"
-                            },
-                            block_default: {
-                                description: "La priorité par défaut de la catégorie d'Aim-Assist pour les blocs.",
-                                type: "integer"
                             },
                             priorities: {
                                 description: "Les priorités pour les entités et les blocs dans cette catégorie.",
