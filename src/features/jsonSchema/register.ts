@@ -1,21 +1,14 @@
 import * as vscode from 'vscode';
+import { createMinecraftDocumentSelector } from './utils/createMinecraftDocumentSelector';
 import { registerCompletionProvider } from './completionProvider';
 import { registerHoverProvider } from './hoverProvider';
-import { registerValidationJson } from './validationJson';
-import { ConflictAvoidance } from '../../utils/conflictAvoidance';
+import { registerDiagnosticCollection } from './diagnosticCollection';
 
 export function registerJsonSchemaFeatures(context: vscode.ExtensionContext) {
-    // Utilise le document selector optimisé pour éviter les conflits
-    const documentSelector = ConflictAvoidance.createOptimizedDocumentSelector() as vscode.DocumentFilter[];
-    
-    // Conversion en format compatible avec les providers
-    const filePatterns = documentSelector.map(selector => ({
-        language: selector.language as string,
-        pattern: selector.pattern as string
-    }));
+    // Contient les patterns de fichier pour les schémas Minecraft
+    const minecraftDocumentSelector = createMinecraftDocumentSelector();
 
-    // Enregistre les fournisseurs avec des patterns spécifiques pour éviter les conflits
-    registerCompletionProvider(context, filePatterns);
-    registerHoverProvider(context, filePatterns);
-    registerValidationJson(context, filePatterns);
+    registerHoverProvider(context, minecraftDocumentSelector);
+    registerCompletionProvider(context, minecraftDocumentSelector);
+    registerDiagnosticCollection(context, minecraftDocumentSelector);
 }
