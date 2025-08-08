@@ -1,130 +1,179 @@
 import * as vscode from 'vscode';
 import { analyzeInsertionContext, createQuoteAwareRange } from '../../utils/insertionHelpers';
 
-// Dans createValueCompletions.ts, après les imports
+interface CreateValueItemParams {
+    label: string;
+    kind: vscode.CompletionItemKind;
+    detail: string;
+    documentation: string;
+    insertValue: any;
+    needsQuotes: boolean;
+    isSnippet?: boolean;
+    isDefault?: boolean;
+}
+
 function applySmartValueInsertion(
     item: vscode.CompletionItem,
-    value: string,
+    value: any,
     needsQuotes: boolean,
     document?: vscode.TextDocument,
     position?: vscode.Position,
-    isSnippet = false // 🆕 Nouveau paramètre
+    isSnippet = false
 ): void {
+    const valueStr = typeof value === "string" ? value : JSON.stringify(value);
+
     if (!document || !position) {
-        item.insertText = needsQuotes ? `"${value}"` : value;
+        item.insertText = needsQuotes ? `"${valueStr}"` : valueStr;
         return;
     }
-
     const context = analyzeInsertionContext(document, position);
-    
     if (context.isInQuotes && needsQuotes) {
         const replaceRange = createQuoteAwareRange(document, position, context);
-        
         if (replaceRange) {
             item.range = replaceRange;
-            item.insertText = new vscode.SnippetString(`${value}"`);
+            item.insertText = new vscode.SnippetString(`${valueStr}"`);
         } else {
-            item.insertText = isSnippet ? new vscode.SnippetString(value) : value;
+            item.insertText = isSnippet ? new vscode.SnippetString(valueStr) : valueStr;
         }
     } else {
         if (needsQuotes) {
-            item.insertText = new vscode.SnippetString(`"${value}"`);
+            item.insertText = new vscode.SnippetString(`"${valueStr}"`);
         } else {
-            item.insertText = isSnippet ? new vscode.SnippetString(value) : value;
+            item.insertText = isSnippet ? new vscode.SnippetString(valueStr) : valueStr;
         }
     }
 }
 
-export function createValueCompletions(
-    schema: any,
-    document?: vscode.TextDocument,
-    position?: vscode.Position
-): vscode.CompletionItem[] {
-    const completionItems: vscode.CompletionItem[] = [];
+// Helper pour créer un CompletionItem
+function createValueItem(params: CreateValueItemParams, document?: vscode.TextDocument, position?: vscode.Position): vscode.CompletionItem {
+    const item = new vscode.CompletionItem(params.label, params.kind);
+    item.documentation = params.documentation;
+    if (params.isDefault === true) {
+        item.label = {
+            label: params.label,
+            description: "Default value"
+        };
+    }
+    applySmartValueInsertion(item, params.insertValue, params.needsQuotes, document, position, params.isSnippet);
+    return item;
+}
 
-    // 🎯 FACTORISATION : Fonction helper pour créer les items
-    const createValueItem = (
-        label: string,
-        kind: vscode.CompletionItemKind,
-        detail: string,
-        documentation: string,
-        insertValue: string,
-        needsQuotes: boolean,
-        isSnippet = false
-    ) => {
-        const item = new vscode.CompletionItem(label, kind);
-        item.detail = detail;
-        item.documentation = documentation;
-        applySmartValueInsertion(item, insertValue, needsQuotes, document, position, isSnippet);
-        return item;
-    };
+// --- Handlers de complétion ---
+function handleDefault(schema: any, seen: Set<string>, items: vscode.CompletionItem[], document?: vscode.TextDocument, position?: vscode.Position) {
+    if (schema.default !== undefined) {
+        const key = String(schema.default);
+        if (!seen.has(key)) {
+            seen.add(key);
+            items.push(createValueItem({
+                insertValue: schema.default,
+                kind: vscode.CompletionItemKind.Value,
+                label: key,
+                documentation: "Default value for this property",
+                detail: 'Default value',
+                needsQuotes: typeof schema.default === 'string',
+                isSnippet: true,
+                isDefault: true
+            }, document, position));
+        }
 
+        console.log("DFDF : ", typeof schema.default);
+    }
+}
+
+function handleEnum(schema: any, seen: Set<string>, items: vscode.CompletionItem[], document?: vscode.TextDocument, position?: vscode.Position) {
     if (schema.enum) {
         for (const enumValue of schema.enum) {
-            const item = createValueItem(
-                String(enumValue),
-                vscode.CompletionItemKind.Enum,
-                'Enum value',
-                'One of the allowed values for this property',
-                String(enumValue),
-                true
-            );
-            completionItems.push(item);
+            const key = String(enumValue);
+            if (!seen.has(key)) {
+                seen.add(key);
+                items.push(createValueItem({
+                    insertValue: enumValue,
+                    kind: vscode.CompletionItemKind.Enum,
+                    label: key,
+                    documentation: "One of the allowed values for this property",
+                    detail: 'Enum value',
+                    needsQuotes: typeof enumValue === 'string',
+                    isSnippet: true
+                }, document, position));
+            }
         }
-    } else if (schema.type === 'object') {
-        const item = createValueItem(
-            '{}',
-            vscode.CompletionItemKind.Snippet,
-            'Empty object',
-            'Create an empty object',
-            '{\n\t$0\n}',
-            false,
-            true
-        );
-        completionItems.push(item);
-    } else if (schema.type === 'string') {
-        const item = createValueItem(
-            '""',
-            vscode.CompletionItemKind.Snippet,
-            'Empty string',
-            schema.description || 'String value',
-            '$0',
-            true,
-            true
-        );
-        completionItems.push(item);
-    } else if (schema.type === 'array') {
-        const item = createValueItem(
-            '[]',
-            vscode.CompletionItemKind.Snippet,
-            'Empty array',
-            'Create an empty array',
-            '[\n\t$0\n]',
-            false,
-            true
-        );
-        completionItems.push(item);
-    } else if (schema.type === 'boolean') {
-        completionItems.push(
-            createValueItem('true', vscode.CompletionItemKind.Keyword, 'Boolean value', '', 'true', false),
-            createValueItem('false', vscode.CompletionItemKind.Keyword, 'Boolean value', '', 'false', false)
-        );
-    } else if (schema.type === 'number' || schema.type === 'integer') {
-        const constraints = [];
-        if (schema.minimum !== undefined) constraints.push(`min: ${schema.minimum}`);
-        if (schema.maximum !== undefined) constraints.push(`max: ${schema.maximum}`);
-        
-        const item = createValueItem(
-            '0',
-            vscode.CompletionItemKind.Snippet,
-            `${schema.type} value`,
-            constraints.length > 0 ? `Constraints: ${constraints.join(', ')}` : '',
-            '$0',
-            false,
-            true
-        );
-        completionItems.push(item);
     }
+}
+
+function handleTypeSnippets(schema: any, seen: Set<string>, items: vscode.CompletionItem[], document?: vscode.TextDocument, position?: vscode.Position) {
+    let valueItemParams: CreateValueItemParams | undefined;
+    switch (schema.type) {
+        case "object":
+            valueItemParams = {
+                insertValue: '{\n\t$0\n}',
+                kind: vscode.CompletionItemKind.Snippet,
+                label: '{}',
+                documentation: 'Create an empty object',
+                detail: 'Empty object',
+                needsQuotes: false,
+                isSnippet: true
+            };
+            break;
+        case "string":
+            valueItemParams = {
+                insertValue: '"$0"',
+                kind: vscode.CompletionItemKind.Snippet,
+                label: '""',
+                documentation: 'Create an empty string',
+                detail: 'Empty string',
+                needsQuotes: false,
+                isSnippet: true
+            };
+            break;
+        case "array":
+            valueItemParams = {
+                insertValue: '[$0]',
+                kind: vscode.CompletionItemKind.Snippet,
+                label: '[]',
+                documentation: 'Create an empty array',
+                detail: 'Empty array',
+                needsQuotes: false,
+                isSnippet: true
+            };
+            break;
+        case "boolean":
+            for (const boolValue of [true, false]) {
+                const key = String(boolValue);
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    items.push(createValueItem({
+                        insertValue: boolValue,
+                        kind: vscode.CompletionItemKind.Value,
+                        label: key,
+                        documentation: 'Boolean value',
+                        detail: 'Boolean value',
+                        needsQuotes: false,
+                        isSnippet: false
+                    }, document, position));
+                }
+            }
+            break;
+    }
+    if (valueItemParams && !seen.has(valueItemParams.label)) {
+        seen.add(valueItemParams.label);
+        items.push(createValueItem(valueItemParams, document, position));
+    }
+}
+
+// --- Fonction principale ---
+export function createValueCompletions(schema: any, document: vscode.TextDocument, position: vscode.Position): vscode.CompletionItem[] {
+    const completionItems: vscode.CompletionItem[] = [];
+    const seen = new Set<string>();
+
+    handleDefault(schema, seen, completionItems, document, position);
+    handleEnum(schema, seen, completionItems, document, position);
+
+    // N’ajoute les snippets génériques QUE si enum n’est pas défini
+    if (!schema.enum) {
+        handleTypeSnippets(schema, seen, completionItems, document, position);
+    }
+
+    // Plus tard, tu pourras ajouter handleExamples, handleXDynamicExamples, etc.
 
     return completionItems;
 }

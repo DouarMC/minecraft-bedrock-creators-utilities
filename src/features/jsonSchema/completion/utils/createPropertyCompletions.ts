@@ -24,28 +24,43 @@ function sortPropertiesByPriority(
     ];
 }
 
+function getDefaultSnippet(propertySchema: any, propertyType: string): string {
+    if (propertySchema && propertySchema.default !== undefined) {
+        // Pour les strings, ajoute les guillemets si besoin
+        if (propertyType === 'string') {
+            return `"${propertySchema.default}"`;
+        }
+        // Pour les objets/arrays, tu pourrais faire mieux plus tard (ex: JSON.stringify)
+        return String(propertySchema.default);
+    }
+    return '$0';
+}
+
 function applyInQuotesInsertion(
     item: vscode.CompletionItem,
     propertyName: string,
     propertyType: string,
     document: vscode.TextDocument,
     position: vscode.Position,
-    context: { afterCursor: string }
+    context: { afterCursor: string },
+    propertySchema?: any
 ): void {
     const replaceRange = createQuoteAwareRange(document, position, context);
-    
+
     if (replaceRange) {
         item.range = replaceRange;
-        
-        // Insérer SANS les guillemets (puisqu'ils existent déjà)
+
+        // Utilise la valeur par défaut si elle existe
+        const defaultSnippet = getDefaultSnippet(propertySchema, propertyType);
+
         if (propertyType === 'object') {
-            item.insertText = new vscode.SnippetString(`${propertyName}": {\n\t$0\n}`);
+            item.insertText = new vscode.SnippetString(`${propertyName}": ${defaultSnippet === '$0' ? '{\n\t$0\n}' : defaultSnippet}`);
         } else if (propertyType === 'string') {
-            item.insertText = new vscode.SnippetString(`${propertyName}": "$0"`);
+            item.insertText = new vscode.SnippetString(`${propertyName}": ${defaultSnippet}`);
         } else if (propertyType === 'array') {
-            item.insertText = new vscode.SnippetString(`${propertyName}": [\n\t$0\n]`);
+            item.insertText = new vscode.SnippetString(`${propertyName}": ${defaultSnippet === '$0' ? '[\n\t$0\n]' : defaultSnippet}`);
         } else {
-            item.insertText = new vscode.SnippetString(`${propertyName}": $0`);
+            item.insertText = new vscode.SnippetString(`${propertyName}": ${defaultSnippet}`);
         }
     }
 }
@@ -53,17 +68,19 @@ function applyInQuotesInsertion(
 function applyNormalInsertion(
     item: vscode.CompletionItem,
     propertyName: string,
-    propertyType: string
+    propertyType: string,
+    propertySchema?: any
 ): void {
-    // Insertion complète avec guillemets
+    const defaultSnippet = getDefaultSnippet(propertySchema, propertyType);
+
     if (propertyType === 'object') {
-        item.insertText = new vscode.SnippetString(`"${propertyName}": {\n\t$0\n}`);
+        item.insertText = new vscode.SnippetString(`"${propertyName}": ${defaultSnippet === '$0' ? '{\n\t$0\n}' : defaultSnippet}`);
     } else if (propertyType === 'string') {
-        item.insertText = new vscode.SnippetString(`"${propertyName}": "$0"`);
+        item.insertText = new vscode.SnippetString(`"${propertyName}": ${defaultSnippet}`);
     } else if (propertyType === 'array') {
-        item.insertText = new vscode.SnippetString(`"${propertyName}": [\n\t$0\n]`);
+        item.insertText = new vscode.SnippetString(`"${propertyName}": ${defaultSnippet === '$0' ? '[\n\t$0\n]' : defaultSnippet}`);
     } else {
-        item.insertText = new vscode.SnippetString(`"${propertyName}": $0`);
+        item.insertText = new vscode.SnippetString(`"${propertyName}": ${defaultSnippet}`);
     }
 }
 
@@ -73,14 +90,15 @@ function applySmartInsertion(
     propertyName: string,
     propertyType: string,
     document: vscode.TextDocument,
-    position: vscode.Position
+    position: vscode.Position,
+    propertySchema?: any
 ): void {
     const context = analyzeInsertionContext(document, position);
 
     if (context.isInQuotes) {
-        applyInQuotesInsertion(item, propertyName, propertyType, document, position, context);
+        applyInQuotesInsertion(item, propertyName, propertyType, document, position, context, propertySchema);
     } else {
-        applyNormalInsertion(item, propertyName, propertyType);
+        applyNormalInsertion(item, propertyName, propertyType, propertySchema);
     }
 }
 
@@ -110,7 +128,7 @@ function createPropertyCompletionItem(
     }
 
     // 🎯 Logique d'insertion intelligente
-    applySmartInsertion(item, propertyName, propertyType, document, position);
+    applySmartInsertion(item, propertyName, propertyType, document, position, propertySchema);
     
     // 🎯 Re-trigger completion après insertion
     item.command = { 
