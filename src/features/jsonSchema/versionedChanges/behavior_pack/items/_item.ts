@@ -1205,7 +1205,7 @@ const versionedChanges: SchemaChange[] = [
         changes: [
             {
                 action: "modify",
-                target: ["properties", "minecraft:item", "properties", "components", "properties", "minecraft:icon", "oneOf", "1"],
+                target: ["properties", "minecraft:item", "properties", "components", "properties", "minecraft:icon", "oneOf", 1],
                 value: {
                     type: "object",
                     required: ["textures"],
@@ -1401,7 +1401,7 @@ const versionedChanges: SchemaChange[] = [
             },
             {
                 action: "add",
-                target: ["properties", "minecraft:item", "properties", "components", "properties", "minecraft:icon", "oneOf", "1", "properties", "textures", "properties", "dyed"],
+                target: ["properties", "minecraft:item", "properties", "components", "properties", "minecraft:icon", "oneOf", 1, "properties", "textures", "properties", "dyed"],
                 value: {
                     description: "Définit la texture à superposer sur l'icône de l'Item lorsqu'il est teinté.",
                     type: "string"
@@ -1484,7 +1484,7 @@ const versionedChanges: SchemaChange[] = [
             },
             {
                 action: "add",
-                target: ["properties", "minecraft:item", "properties", "components", "properties", "minecraft:icon", "oneOf", "1", "properties", "textures", "properties", "bundle_open_back"],
+                target: ["properties", "minecraft:item", "properties", "components", "properties", "minecraft:icon", "oneOf", 1, "properties", "textures", "properties", "bundle_open_back"],
                 value: {
                     description: "Définit la texture à utiliser pour l'arrière de l'icône de l'Item lorsqu'il est ouvert dans un Item de stockage.",
                     type: "string"
@@ -1492,7 +1492,7 @@ const versionedChanges: SchemaChange[] = [
             },
             {
                 action: "add",
-                target: ["properties", "minecraft:item", "properties", "components", "properties", "minecraft:icon", "oneOf", "1", "properties", "textures", "properties", "bundle_open_front"],
+                target: ["properties", "minecraft:item", "properties", "components", "properties", "minecraft:icon", "oneOf", 1, "properties", "textures", "properties", "bundle_open_front"],
                 value: {
                     description: "Définit la texture à utiliser pour l'avant de l'icône de l'Item lorsqu'il est ouvert dans un Item de stockage.",
                     type: "string"

@@ -1,7 +1,8 @@
 import { JSONPath } from "jsonc-parser";
+import { PropertyPath } from "lodash";
 
 export interface SchemaModification {
-    target: string[]; // ex.: ["minecraft:block", "components", "minecraft:block_light_absorption"]
+    target: PropertyPath
     action: "add" | "remove" | "modify";
     value?: any;
     notes?: string;

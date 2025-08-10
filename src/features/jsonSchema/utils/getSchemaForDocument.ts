@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { detectMinecraftFileType } from './detectMinecraftFileType';
-import { cloneDeep, set, unset } from 'lodash';
+import { cloneDeep, set, unset, get} from 'lodash';
 
 export function getSchemaForDocument(document: vscode.TextDocument): any | null {
     const schemaType = detectMinecraftFileType(document);
@@ -13,7 +13,7 @@ export function getSchemaForDocument(document: vscode.TextDocument): any | null 
     
     const versionedSchema = formatVersion && schemaType.versionedChanges?.length
         ? generateVersionedSchema(schemaType.baseSchema, schemaType.versionedChanges, formatVersion)
-        : schemaType.baseSchema;
+        : cloneDeep(schemaType.baseSchema);
     
     // 🆕 2. Résoudre toutes les références $ref
     const resolvedSchema = resolveAllReferences(versionedSchema);
@@ -95,7 +95,8 @@ function applyChanges(schema: any, changes: any[]): void {
         switch (change.action) {
             case "add":
             case "modify":
-                set(schema, change.target, change.value);
+                const value = cloneDeep(change.value); // ⬅️ éviter toute fuite de référence
+                set(schema, change.target, value);
                 break;
             case "remove":
                 unset(schema, change.target);

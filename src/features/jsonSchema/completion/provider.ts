@@ -5,6 +5,8 @@ import { createPropertyCompletions } from './utils/createPropertyCompletions';
 import { createValueCompletions } from './utils/createValueCompletions';
 import { getSchemaForDocument } from '../utils/getSchemaForDocument';
 
+import * as fs from 'fs';
+
 export const completionProvider: vscode.CompletionItemProvider = {
     provideCompletionItems(document, position, token, context) {
         // 🎯 EXACTEMENT le même début que hover !
@@ -15,6 +17,10 @@ export const completionProvider: vscode.CompletionItemProvider = {
         // 🎯 Détection du type de fichier (fonction réutilisable)
         const schema = getSchemaForDocument(document);
         if (!schema) return null;
+
+        
+        fs.writeFileSync('schema_dump.json', JSON.stringify(schema, null, 4), 'utf8');
+
 
         // 🎯 ÉTAPE 3 : Navigation conditionnelle selon le contexte
         let targetPath = [...location.path];
@@ -31,13 +37,12 @@ export const completionProvider: vscode.CompletionItemProvider = {
 
         // --- Ajout : récupération du node courant ---
         const root = parseTree(text);
-        let currentNode: JsonNode | undefined = root;
-        if (root) {
-            currentNode = findNodeAtLocation(root, targetPath);
+        if (!root) {
+            return;
         }
         
         // 🎯 Navigation dans le schéma (fonction réutilisable)
-        const currentSchema = navigateToSchemaAtPath(schema, targetPath, currentNode, "completion");
+        const currentSchema = navigateToSchemaAtPath(schema, targetPath, root, "completion");
         if (!currentSchema) {
             return null; // Pas de schéma trouvé
         }

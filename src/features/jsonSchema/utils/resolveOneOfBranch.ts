@@ -26,6 +26,10 @@ export function resolveOneOfBranch(oneOfSchemas: any[], node?: JsonNode): any[] 
         return { schema, score: scoreErrors(errors) };
     });
 
+    for (const s of scored) {
+        console.log("SCORE", s.score, "SCHEMA", s.schema);
+    }
+
     const minScore = Math.min(...scored.map(s => s.score));
     const best = scored.filter(s => s.score === minScore).map(s => s.schema);
 

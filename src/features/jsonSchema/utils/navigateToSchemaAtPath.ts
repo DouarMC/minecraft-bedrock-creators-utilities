@@ -15,9 +15,9 @@ export function navigateToSchemaAtPath(baseSchema: any, path: JSONPath, node: Js
             }
         }
         for (const segment of path) {
-            if (currentSchema?.type === "object") {
+            if (typeof segment === "string") {
                 if (currentSchema?.properties !== undefined && currentSchema?.additionalProperties !== undefined) {
-                    const propertyName = segment as string;
+                    const propertyName = segment;
                     if (currentSchema.properties[propertyName]) {
                         currentSchema = currentSchema.properties[propertyName];
                     } else if (typeof currentSchema.additionalProperties === "object") {
@@ -25,21 +25,42 @@ export function navigateToSchemaAtPath(baseSchema: any, path: JSONPath, node: Js
                     }
                 } else if (currentSchema?.properties !== undefined) {
                     currentSchema = currentSchema.properties[segment];
+                } else if (currentSchema?.additionalProperties !== undefined) {
+                    currentSchema = currentSchema.additionalProperties;
                 }
-            } else if (currentSchema?.type === "array" && currentSchema?.items) {
-                if (Array.isArray(currentSchema.items)) {
-                    const index = segment as number;
-                    if (!isNaN(index) && currentSchema.items[index]) {
-                        currentSchema = currentSchema.items[index];
-                    } else {
-                        // Par défaut, rien
-                        return null;
+
+                if (currentNode?.type === "object" && currentNode?.children) {
+                    for (const child of currentNode.children) {
+                        if (child.type === "property") {
+                            if (child?.children && child.children[0]?.value === segment) {
+                                currentNode = child.children[1];
+                                break;
+                            }
+                        }
                     }
-                } else {
-                    currentSchema = currentSchema.items;
                 }
-            } else {
-                return null; // Si le type n'est pas géré, on arrête la navigation
+            } else if (typeof segment === "number") {
+                if (currentSchema?.items) {
+                    if (Array.isArray(currentSchema.items)) {
+                        const index = segment;
+                        if (!isNaN(index) && currentSchema.items[index]) {
+                            currentSchema = currentSchema.items[index];
+                        } else {
+                            // Par défaut, rien
+                            return null;
+                        }
+                    } else {
+                        currentSchema = currentSchema.items;
+                    }
+                }
+
+                if (currentNode?.type === "array" && currentNode?.children) {
+                    if (currentNode.children[segment]) {
+                        currentNode = currentNode.children[segment];
+                    } else {
+                        return null; // Si l'index n'existe pas, on arrête la navigation
+                    }
+                }
             }
 
             if (currentSchema?.oneOf !== undefined && currentSchema?.oneOf.length > 0) {
@@ -64,11 +85,6 @@ export function navigateToSchemaAtPath(baseSchema: any, path: JSONPath, node: Js
                 // On garde le schéma courant pour la complétion
             }
         }
-
-        if (path.length > 0) {
-
-        }
-
 
         for (const segment of path) {
             if (currentSchema?.oneOf !== undefined && currentSchema?.oneOf.length > 0) {

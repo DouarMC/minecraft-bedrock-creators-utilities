@@ -20,6 +20,11 @@ export const hoverProvider: vscode.HoverProvider = {
             currentPath = currentPath.slice(0, -1);
         }
 
+        if (typeof currentPath[currentPath.length - 1] === "number" ) {
+            // Si le dernier segment est un index de tableau, on ne peut pas fournir de hover
+            return null;
+        }
+
         const root = parseTree(text);
         if (!root) {
             return;

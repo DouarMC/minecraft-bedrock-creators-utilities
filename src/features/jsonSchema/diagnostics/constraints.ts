@@ -118,8 +118,6 @@ export function validateObjectConstraints(node: JsonNode, schema: any): NodeVali
                             code: "additionalProperties",
                             priority: ERROR_WEIGHTS.default
                         });
-
-                        console.log("OH NOOOOOO");
                     }
                 }
             }
