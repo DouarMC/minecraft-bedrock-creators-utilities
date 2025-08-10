@@ -1,11 +1,12 @@
 import * as vscode from 'vscode';
 import { analyzeInsertionContext, createQuoteAwareRange } from '../../utils/insertionHelpers';
+import { resolveOneOfBranch } from '../../utils/resolveOneOfBranch';
+import { getNodeValueAtPosition } from '../../utils/getNodeValueAtPosition';
+import { isTypeValid } from '../../diagnostics/helpers';
 
 interface CreateValueItemParams {
     label: string;
     kind: vscode.CompletionItemKind;
-    detail: string;
-    documentation: string;
     insertValue: any;
     needsQuotes: boolean;
     isSnippet?: boolean;
@@ -47,7 +48,6 @@ function applySmartValueInsertion(
 // Helper pour créer un CompletionItem
 function createValueItem(params: CreateValueItemParams, document?: vscode.TextDocument, position?: vscode.Position): vscode.CompletionItem {
     const item = new vscode.CompletionItem(params.label, params.kind);
-    item.documentation = params.documentation;
     if (params.isDefault === true) {
         item.label = {
             label: params.label,
@@ -68,15 +68,11 @@ function handleDefault(schema: any, seen: Set<string>, items: vscode.CompletionI
                 insertValue: schema.default,
                 kind: vscode.CompletionItemKind.Value,
                 label: key,
-                documentation: "Default value for this property",
-                detail: 'Default value',
                 needsQuotes: typeof schema.default === 'string',
                 isSnippet: true,
                 isDefault: true
             }, document, position));
         }
-
-        console.log("DFDF : ", typeof schema.default);
     }
 }
 
@@ -90,8 +86,6 @@ function handleEnum(schema: any, seen: Set<string>, items: vscode.CompletionItem
                     insertValue: enumValue,
                     kind: vscode.CompletionItemKind.Enum,
                     label: key,
-                    documentation: "One of the allowed values for this property",
-                    detail: 'Enum value',
                     needsQuotes: typeof enumValue === 'string',
                     isSnippet: true
                 }, document, position));
@@ -108,8 +102,6 @@ function handleTypeSnippets(schema: any, seen: Set<string>, items: vscode.Comple
                 insertValue: '{\n\t$0\n}',
                 kind: vscode.CompletionItemKind.Snippet,
                 label: '{}',
-                documentation: 'Create an empty object',
-                detail: 'Empty object',
                 needsQuotes: false,
                 isSnippet: true
             };
@@ -119,8 +111,6 @@ function handleTypeSnippets(schema: any, seen: Set<string>, items: vscode.Comple
                 insertValue: '"$0"',
                 kind: vscode.CompletionItemKind.Snippet,
                 label: '""',
-                documentation: 'Create an empty string',
-                detail: 'Empty string',
                 needsQuotes: false,
                 isSnippet: true
             };
@@ -130,8 +120,6 @@ function handleTypeSnippets(schema: any, seen: Set<string>, items: vscode.Comple
                 insertValue: '[$0]',
                 kind: vscode.CompletionItemKind.Snippet,
                 label: '[]',
-                documentation: 'Create an empty array',
-                detail: 'Empty array',
                 needsQuotes: false,
                 isSnippet: true
             };
@@ -145,8 +133,6 @@ function handleTypeSnippets(schema: any, seen: Set<string>, items: vscode.Comple
                         insertValue: boolValue,
                         kind: vscode.CompletionItemKind.Value,
                         label: key,
-                        documentation: 'Boolean value',
-                        detail: 'Boolean value',
                         needsQuotes: false,
                         isSnippet: false
                     }, document, position));
@@ -172,6 +158,30 @@ export function createValueCompletions(schema: any, document: vscode.TextDocumen
     if (!schema.enum) {
         handleTypeSnippets(schema, seen, completionItems, document, position);
     }
+
+    // --- Ajout gestion oneOf ---
+    /*
+    if (schema.oneOf && Array.isArray(schema.oneOf)) {
+        // Récupère la valeur courante à la position du curseur
+        const value = getNodeValueAtPosition(document, position);
+
+        // Fonction de validation simple (tu peux l'améliorer)
+        const validateFn = (subSchema: any, val: any) => isTypeValid({ value: val }, subSchema.type);
+
+        const branches = resolveOneOfBranch(schema.oneOf, value, validateFn);
+
+        for (const subSchema of branches) {
+            const subItems = createValueCompletions(subSchema, document, position);
+            for (const item of subItems) {
+                if (!seen.has(item.label as string)) {
+                    seen.add(item.label as string);
+                    completionItems.push(item);
+                }
+            }
+        }
+    }
+        */
+    // --- Fin ajout gestion oneOf ---
 
     // Plus tard, tu pourras ajouter handleExamples, handleXDynamicExamples, etc.
 

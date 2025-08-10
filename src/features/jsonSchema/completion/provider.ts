@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { getLocation } from 'jsonc-parser';
+import { findNodeAtLocation, getLocation, parseTree, Node as JsonNode } from 'jsonc-parser';
 import { navigateToSchemaAtPath } from '../utils/navigateToSchemaAtPath';
 import { createPropertyCompletions } from './utils/createPropertyCompletions';
 import { createValueCompletions } from './utils/createValueCompletions';
@@ -29,9 +29,15 @@ export const completionProvider: vscode.CompletionItemProvider = {
             suggestingProperties = false;
         }
 
-        // 🎯 Navigation dans le schéma (fonction réutilisable)
-        const currentSchema = navigateToSchemaAtPath(schema, targetPath);
+        // --- Ajout : récupération du node courant ---
+        const root = parseTree(text);
+        let currentNode: JsonNode | undefined = root;
+        if (root) {
+            currentNode = findNodeAtLocation(root, targetPath);
+        }
         
+        // 🎯 Navigation dans le schéma (fonction réutilisable)
+        const currentSchema = navigateToSchemaAtPath(schema, targetPath, currentNode, "completion");
         if (!currentSchema) {
             return null; // Pas de schéma trouvé
         }

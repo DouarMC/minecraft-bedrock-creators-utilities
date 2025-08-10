@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { getSchemaForDocument } from "../utils/getSchemaForDocument";
 import { parseTree } from "jsonc-parser";
 import { validateNode } from "./validateNode";
+import { createDiagnostic } from "./helpers";
 
 export function updateDiagnostics(document: vscode.TextDocument, diagnostics: vscode.DiagnosticCollection) {
     const schema = getSchemaForDocument(document);
@@ -17,7 +18,13 @@ export function updateDiagnostics(document: vscode.TextDocument, diagnostics: vs
     }
 
     const diags: vscode.Diagnostic[] = [];
-    validateNode(root, schema, document, diags);
-
+    const errors = validateNode(root, schema);
+    for (const error of errors) {
+        const diagnostic = createDiagnostic(error.node, document, error.message);
+        if (diagnostic) {
+            diags.push(diagnostic);
+        }
+    }
+    
     diagnostics.set(document.uri, diags);
 }

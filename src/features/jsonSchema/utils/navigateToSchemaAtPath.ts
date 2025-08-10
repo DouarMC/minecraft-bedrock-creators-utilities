@@ -1,50 +1,137 @@
-import { JSONPath } from "jsonc-parser";
+import { JSONPath, Node as JsonNode, getNodeValue } from "jsonc-parser";
+import { resolveOneOfBranch } from "./resolveOneOfBranch";
 
-export function navigateToSchemaAtPath(baseSchema: any, path: JSONPath): any {
+export function navigateToSchemaAtPath(baseSchema: any, path: JSONPath, node: JsonNode | undefined, navigateFor: "completion" | "hover"): any {
     let currentSchema = baseSchema;
-    
-    for (const segment of path) {
-        // Navigation dans un objet
-        if (currentSchema?.type === "object") {
-            // Géré le cas si on a des propriétés définies mais aussi des propriétés additionnelles
-            if (currentSchema?.properties !== undefined && currentSchema?.additionalProperties !== undefined) {
-                const propertyName = typeof segment === 'string' ? segment : segment.toString();
-                if (currentSchema.properties[propertyName]) {
-                    currentSchema = currentSchema.properties[propertyName];
-                } else if (typeof currentSchema.additionalProperties === "object") {
-                    // Si la propriété n'existe pas dans properties, on utilise additionalProperties
-                    currentSchema = currentSchema.additionalProperties;
-                } else {
-                    return null; // Si aucune propriété correspondante, on arrête la navigation
-                }
-            } else if (currentSchema?.properties !== undefined) { // Juste des propriétés
-                currentSchema = currentSchema.properties[segment];
-            } else if (currentSchema?.additionalProperties !== undefined) { // Juste des propriétés additionnelles
-                if (typeof currentSchema.additionalProperties === "object") {
-                    currentSchema = currentSchema.additionalProperties;
-                }
+    let currentNode = node;
+
+    if (navigateFor === "completion") {
+        if (currentSchema?.oneOf !== undefined && currentSchema?.oneOf.length > 0) {
+            const brancheSchemas = resolveOneOfBranch(currentSchema.oneOf, currentNode);
+            if (brancheSchemas.length === 1) {
+                currentSchema = brancheSchemas[0];
+            } else {
+                // On garde le schéma courant pour la complétion
             }
-        } else if (currentSchema?.type === "array" && currentSchema?.items) {
-            // Support arrays positionnels
-            const index = typeof segment === 'number' ? segment : parseInt(segment.toString());
-            if (Array.isArray(currentSchema.items)) {
-                // items: [schema0, schema1, ...]
-                if (!isNaN(index) && currentSchema.items[index]) {
-                    currentSchema = currentSchema.items[index];
+        }
+        for (const segment of path) {
+            if (currentSchema?.type === "object") {
+                if (currentSchema?.properties !== undefined && currentSchema?.additionalProperties !== undefined) {
+                    const propertyName = segment as string;
+                    if (currentSchema.properties[propertyName]) {
+                        currentSchema = currentSchema.properties[propertyName];
+                    } else if (typeof currentSchema.additionalProperties === "object") {
+                        currentSchema = currentSchema.additionalProperties;
+                    }
+                } else if (currentSchema?.properties !== undefined) {
+                    currentSchema = currentSchema.properties[segment];
+                }
+            } else if (currentSchema?.type === "array" && currentSchema?.items) {
+                if (Array.isArray(currentSchema.items)) {
+                    const index = segment as number;
+                    if (!isNaN(index) && currentSchema.items[index]) {
+                        currentSchema = currentSchema.items[index];
+                    } else {
+                        // Par défaut, rien
+                        return null;
+                    }
                 } else {
-                    // Par défaut, rien
-                    return null;
+                    currentSchema = currentSchema.items;
                 }
             } else {
-                // items: { ... }
-                currentSchema = currentSchema.items;
+                return null; // Si le type n'est pas géré, on arrête la navigation
             }
-        } else {
-            return null;
+
+            if (currentSchema?.oneOf !== undefined && currentSchema?.oneOf.length > 0) {
+                const brancheSchemas = resolveOneOfBranch(currentSchema.oneOf, currentNode);
+                if (brancheSchemas.length === 1) {
+                    currentSchema = brancheSchemas[0];
+                } else {
+                    // On garde le schéma courant pour la complétion
+                }
+            }
+            
+            if (!currentSchema) {
+                return null;
+            }
         }
-        
-        if (!currentSchema) {
-            return null;
+    } else if (navigateFor === "hover") {
+        if (currentSchema?.oneOf !== undefined && currentSchema?.oneOf.length > 0) {
+            const brancheSchemas = resolveOneOfBranch(currentSchema.oneOf, currentNode);
+            if (brancheSchemas.length === 1) {
+                currentSchema = brancheSchemas[0];
+            } else {
+                // On garde le schéma courant pour la complétion
+            }
+        }
+
+        if (path.length > 0) {
+
+        }
+
+
+        for (const segment of path) {
+            if (currentSchema?.oneOf !== undefined && currentSchema?.oneOf.length > 0) {
+                const brancheSchemas = resolveOneOfBranch(currentSchema.oneOf, currentNode);
+
+                if (brancheSchemas.length === 1) {
+                    currentSchema = brancheSchemas[0];
+                } else {
+                    // On garde le schéma courant pour la complétion
+                }
+            }
+
+            if (typeof segment === "string") {
+                if (currentSchema?.properties !== undefined && currentSchema?.additionalProperties !== undefined) {
+                    const propertyName = segment;
+                    if (currentSchema.properties[propertyName]) {
+                        currentSchema = currentSchema.properties[propertyName];
+                    } else if (typeof currentSchema.additionalProperties === "object") {
+                        currentSchema = currentSchema.additionalProperties;
+                    }
+                } else if (currentSchema?.properties !== undefined) {
+                    currentSchema = currentSchema.properties[segment];
+                } else if (currentSchema?.additionalProperties !== undefined) {
+                    currentSchema = currentSchema.additionalProperties;
+                }
+
+                if (currentNode?.type === "object" && currentNode?.children) {
+                    for (const child of currentNode.children) {
+                        if (child.type === "property") {
+                            if (child?.children && child.children[0]?.value === segment) {
+                                currentNode = child.children[1];
+                                break;
+                            }
+                        }
+                    }
+                }
+            } else if (typeof segment === "number") {
+                if (currentSchema?.items) {
+                    if (Array.isArray(currentSchema.items)) {
+                        const index = segment;
+                        if (!isNaN(index) && currentSchema.items[index]) {
+                            currentSchema = currentSchema.items[index];
+                        } else {
+                            // Par défaut, rien
+                            return null;
+                        }
+                    } else {
+                        currentSchema = currentSchema.items;
+                    }
+                }
+
+                if (currentNode?.type === "array" && currentNode?.children) {
+                    if (currentNode.children[segment]) {
+                        currentNode = currentNode.children[segment];
+                    } else {
+                        return null; // Si l'index n'existe pas, on arrête la navigation
+                    }
+                }
+            }
+            
+            if (!currentSchema) {
+                return null;
+            }
         }
     }
     

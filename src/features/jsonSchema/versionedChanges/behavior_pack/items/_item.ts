@@ -623,13 +623,20 @@ const versionedChanges: SchemaChange[] = [
                             items: {
                                 oneOf: [
                                     {
-                                        type: "string",
-                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
+                                        type: "array",
+                                        items: {
+                                            oneOf: [
+                                                {
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
+                                                },
+                                                commonSchemas.item_descriptor
+                                            ]
+                                        }
                                     },
-                                    commonSchemas.item_descriptor,
                                     {
                                         type: "object",
-                                        required: ["items", "repair_amount"],
+                                        required: ["items"],
                                         properties: {
                                             items: {
                                                 description: "Les items qui peuvent être utilisés pour réparer cet Item.",

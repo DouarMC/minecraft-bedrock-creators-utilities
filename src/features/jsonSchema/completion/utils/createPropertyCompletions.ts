@@ -36,69 +36,61 @@ function getDefaultSnippet(propertySchema: any, propertyType: string): string {
     return '$0';
 }
 
-function applyInQuotesInsertion(
-    item: vscode.CompletionItem,
-    propertyName: string,
-    propertyType: string,
-    document: vscode.TextDocument,
-    position: vscode.Position,
-    context: { afterCursor: string },
-    propertySchema?: any
-): void {
-    const replaceRange = createQuoteAwareRange(document, position, context);
-
-    if (replaceRange) {
-        item.range = replaceRange;
-
-        // Utilise la valeur par défaut si elle existe
-        const defaultSnippet = getDefaultSnippet(propertySchema, propertyType);
-
-        if (propertyType === 'object') {
-            item.insertText = new vscode.SnippetString(`${propertyName}": ${defaultSnippet === '$0' ? '{\n\t$0\n}' : defaultSnippet}`);
-        } else if (propertyType === 'string') {
-            item.insertText = new vscode.SnippetString(`${propertyName}": ${defaultSnippet}`);
-        } else if (propertyType === 'array') {
-            item.insertText = new vscode.SnippetString(`${propertyName}": ${defaultSnippet === '$0' ? '[\n\t$0\n]' : defaultSnippet}`);
-        } else {
-            item.insertText = new vscode.SnippetString(`${propertyName}": ${defaultSnippet}`);
-        }
-    }
-}
-
-function applyNormalInsertion(
-    item: vscode.CompletionItem,
-    propertyName: string,
-    propertyType: string,
-    propertySchema?: any
-): void {
-    const defaultSnippet = getDefaultSnippet(propertySchema, propertyType);
-
-    if (propertyType === 'object') {
-        item.insertText = new vscode.SnippetString(`"${propertyName}": ${defaultSnippet === '$0' ? '{\n\t$0\n}' : defaultSnippet}`);
-    } else if (propertyType === 'string') {
-        item.insertText = new vscode.SnippetString(`"${propertyName}": ${defaultSnippet}`);
-    } else if (propertyType === 'array') {
-        item.insertText = new vscode.SnippetString(`"${propertyName}": ${defaultSnippet === '$0' ? '[\n\t$0\n]' : defaultSnippet}`);
-    } else {
-        item.insertText = new vscode.SnippetString(`"${propertyName}": ${defaultSnippet}`);
-    }
-}
-
-// Après analyzeInsertionContext et avant createPropertyCompletionItem
-function applySmartInsertion(
-    item: vscode.CompletionItem,
-    propertyName: string,
-    propertyType: string,
-    document: vscode.TextDocument,
-    position: vscode.Position,
-    propertySchema?: any
+export function applySmartInsertion(
+  item: vscode.CompletionItem,
+  propertyName: string,
+  propertyType: string,
+  document: vscode.TextDocument,
+  position: vscode.Position,
+  propertySchema: any
 ): void {
     const context = analyzeInsertionContext(document, position);
 
-    if (context.isInQuotes) {
-        applyInQuotesInsertion(item, propertyName, propertyType, document, position, context, propertySchema);
-    } else {
-        applyNormalInsertion(item, propertyName, propertyType, propertySchema);
+    // Déterminer le range à remplacer si on est "dans" des guillemets
+    const replaceRange = context.isInQuotes
+        ? createQuoteAwareRange(document, position, context)
+        : undefined;
+
+    if (replaceRange) { // Si on est dans des guillemets, on remplace le contenu entre les quotes
+        item.range = replaceRange;
+    }
+
+    // Récupérer le snippet par défaut pour la *valeur*
+    const defaultSnippet = getDefaultSnippet(propertySchema, propertyType);
+
+    // Construire le snippet de valeur selon le type en prenant en compte le defaultSnippet
+    const valueSnippet = buildValueSnippet(propertyType, defaultSnippet);
+
+    // Construire la partie "clé"
+    //    - en quotes: on remplace juste le contenu entre quotes, donc pas de quote ouvrante
+    //      => on écrit propertyName" (la quote fermante fait partie du range remplacé)
+    //    - normal: on écrit "propertyName"
+    const keySnippet = context.isInQuotes ? `${propertyName}"` : `"${propertyName}"`;
+
+    // Construire le snippet final
+    const finalSnippet = `${keySnippet}: ${valueSnippet}`;
+
+    // Affecter une seule fois
+    item.insertText = new vscode.SnippetString(finalSnippet);
+}
+
+/** Convertit un defaultSnippet (déjà correctement quoté pour string) en snippet final selon le type. */
+function buildValueSnippet(propertyType: string, defaultSnippet: string): string {
+    switch (propertyType) {
+        case 'object':
+            // si pas de défaut, insérer un bloc éditable
+            return defaultSnippet === '$0' ? '{\n\t$0\n}' : defaultSnippet;
+
+        case 'array':
+            return defaultSnippet === '$0' ? '[\n\t$0\n]' : defaultSnippet;
+
+        case 'string':
+            // getDefaultSnippet met déjà les quotes pour string
+            return defaultSnippet === '$0' ? '"$0"' : defaultSnippet;
+
+        // number, integer, boolean, null, ou autres types custom
+        default:
+            return defaultSnippet;
     }
 }
 
@@ -129,12 +121,6 @@ function createPropertyCompletionItem(
 
     // 🎯 Logique d'insertion intelligente
     applySmartInsertion(item, propertyName, propertyType, document, position, propertySchema);
-    
-    // 🎯 Re-trigger completion après insertion
-    item.command = { 
-        command: 'editor.action.triggerSuggest', 
-        title: 'Re-trigger completions' 
-    };
     
     return item;
 }

@@ -40,7 +40,6 @@ function createCommonSchemas() {
 
     schemas.item_descriptor = {
         type: "object",
-        required: ["name"],
         properties: {
             name: {
                 description: "L'identifiant de l'item.",

@@ -422,6 +422,26 @@ const baseSchema = {
                                     }
                                 }
                             }
+                        },
+                        "test:caca": {
+                            description: "Juste test !",
+                            oneOf: [
+                                {
+                                    type: "string"
+                                },
+                                {
+                                    type: "integer"
+                                },
+                                {
+                                    type: "object",
+                                    properties: {
+                                        "test": {
+                                            description: "AHHAHAHA !",
+                                            type: "string"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -770,7 +790,7 @@ const versionedChanges: SchemaChange[] = [
                 action: "add",
                 target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:material_instances"],
                 value: {
-                    markdownDescription: "Permet d'assigner des textures et des propriétés de rendu spécifiques aux différentes faces du Bloc. Utilisez `*` pour définir des propriétés par défaut pour toutes les faces.",
+                    description: "Permet d'assigner des textures et des propriétés de rendu spécifiques aux différentes faces du Bloc. Utilisez `*` pour définir des propriétés par défaut pour toutes les faces.",
                     type: "object",
                     properties: {
                         "*": {$ref: "#/definitions/material_instance"},

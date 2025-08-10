@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { getLocation } from 'jsonc-parser';
+import { findNodeAtLocation, getLocation, parseTree, Node as JsonNode } from 'jsonc-parser';
 import { navigateToSchemaAtPath } from '../utils/navigateToSchemaAtPath';
 import { getSchemaForDocument } from '../utils/getSchemaForDocument';
 
@@ -20,53 +20,55 @@ export const hoverProvider: vscode.HoverProvider = {
             currentPath = currentPath.slice(0, -1);
         }
 
-        const currentSchema = navigateToSchemaAtPath(schema, currentPath);
+        const root = parseTree(text);
+        if (!root) {
+            return;
+        }
+
+        const currentSchema = navigateToSchemaAtPath(schema, currentPath, root, "hover");
         if (!currentSchema) {
             return null; // Si aucun schéma trouvé, on ne fournit pas de hover
         }
 
         const hoverContent = new vscode.MarkdownString();
-        
         // Titre principal
         const propertyName = currentPath.length > 0 ? currentPath[currentPath.length - 1] : 'Document';
-        hoverContent.appendMarkdown(`## ${propertyName}`);
-        
-        // Type
-        if (currentSchema.type) {
-            hoverContent.appendMarkdown(`\n\n**Type**: \`${currentSchema.type}\``);
-        }
-        
+        hoverContent.appendMarkdown(`### ${propertyName}`);
+
         // Description
         if (currentSchema.description) {
             hoverContent.appendMarkdown(`\n\n${currentSchema.description}`);
         }
-        
-        // Enum (valeurs possibles)
-        if (currentSchema.enum && Array.isArray(currentSchema.enum)) {
-            hoverContent.appendMarkdown(`\n\n**Valeurs possibles**:`);
-            currentSchema.enum.forEach((value: any) => {
-                hoverContent.appendMarkdown(`\n• \`${value}\``);
-            });
+
+        if (currentSchema.default) {
+            hoverContent.appendMarkdown(`\n\n**Valeur par défaut**: \`${currentSchema.default}\``);
         }
 
-        // Contraintes numériques
-        if (currentSchema.type === 'number' || currentSchema.type === 'integer') {
-            const constraints = [];
-            if (currentSchema.minimum !== undefined) constraints.push(`min: ${currentSchema.minimum}`);
-            if (currentSchema.maximum !== undefined) constraints.push(`max: ${currentSchema.maximum}`);
-            if (constraints.length > 0) {
-                hoverContent.appendMarkdown(`\n\n**Contraintes**: ${constraints.join(', ')}`);
+        if (currentSchema.oneOf && currentSchema.oneOf.length > 1) {
+            hoverContent.appendMarkdown(`\n\n**Options disponibles**:`);
+            currentSchema.oneOf.forEach((option: any, index: number) => {
+                hoverContent.appendMarkdown(`\n- **Option ${index + 1}**:`);
+                if (option.description) {
+                    hoverContent.appendMarkdown(`\n  ${option.description}`);
+                }
+                if (option.type) {
+                    hoverContent.appendMarkdown(`\n  **Type**: \`${option.type}\``);
+                }
+                if (option.enum && Array.isArray(option.enum)) {
+                    hoverContent.appendMarkdown(`\n  **Valeurs possibles**: ${option.enum.map((value: any) => `\`${value}\``).join(', ')}`);
+                }
+            });
+        } else {
+            if (currentSchema.type) {
+                hoverContent.appendMarkdown(`\n\n**Type**: \`${currentSchema.type}\``);
             }
-        }
-        
-        // Pattern pour les strings
-        if (currentSchema.type === 'string' && currentSchema.pattern) {
-            hoverContent.appendMarkdown(`\n\n**Pattern**: \`${currentSchema.pattern}\``);
-        }
-        
-        // Required (si on est dans un objet)
-        if (currentSchema.type === 'object' && currentSchema.required && currentSchema.required.length > 0) {
-            hoverContent.appendMarkdown(`\n\n**Propriétés requises**: ${currentSchema.required.map((r: string) => `\`${r}\``).join(', ')}`);
+
+            if (currentSchema.enum && Array.isArray(currentSchema.enum)) {
+                hoverContent.appendMarkdown(`\n\n**Valeurs possibles**:`);
+                currentSchema.enum.forEach((value: any) => {
+                    hoverContent.appendMarkdown(`\n• \`${value}\``);
+                });
+            }
         }
 
         return new vscode.Hover(hoverContent);
