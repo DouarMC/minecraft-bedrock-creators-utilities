@@ -1,5 +1,6 @@
 import {Node as JsonNode} from 'jsonc-parser';
 import { validateOneOf, validateArrayConstraints, validateNumberConstraints, validateObjectConstraints, validateStringConstraints, validateType } from './constraints';
+import { resolveOneOfBranch } from '../utils/resolveOneOfBranch';
 
 export interface NodeValidationError {
     node: JsonNode;
@@ -31,9 +32,33 @@ export function validateNode(node: JsonNode, schema: any): NodeValidationError[]
 
     // OneOf
     if (schema.oneOf && Array.isArray(schema.oneOf)) {
+        /*
         const error = validateOneOf(node, schema.oneOf);
         if (error) {
             errors.push(...error);
+        }
+        */
+        const validSchemas = resolveOneOfBranch(schema.oneOf, node);
+        if (validSchemas.length === 1) {
+            // Si une seule branche valide, on continue la validation avec cette branche
+            schema = validSchemas[0];
+        } else if (validSchemas.length === 0) {
+            // Si aucune branche valide, on ajoute une erreur
+            errors.push({
+                node: node,
+                message: `Aucune branche valide trouvée pour 'oneOf'.`,
+                code: "oneOf",
+                priority: ERROR_WEIGHTS.type
+            });
+        } else {
+            // Si plusieurs branches valides, on peut choisir de ne pas valider plus loin
+            errors.push({
+                node: node,
+                message: `Plusieurs branches valides trouvées pour 'oneOf'.`,
+                code: "oneOf",
+                priority: ERROR_WEIGHTS.type
+            });
+            return errors; // On arrête ici car on ne peut pas continuer avec plusieurs schémas valides
         }
     }
 

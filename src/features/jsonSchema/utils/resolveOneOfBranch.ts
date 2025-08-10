@@ -22,13 +22,9 @@ export function resolveOneOfBranch(oneOfSchemas: any[], node?: JsonNode): any[] 
     // 2) Aucune valide ⇒ on choisit la/les plus proches
     type Scored = { schema: any; score: number };
     const scored: Scored[] = oneOfSchemas.map(schema => {
-        const errors = validateNode(node, schema);
+        const errors = validateNode(node, schema).filter(e => e.node === node);
         return { schema, score: scoreErrors(errors) };
     });
-
-    for (const s of scored) {
-        console.log("SCORE", s.score, "SCHEMA", s.schema);
-    }
 
     const minScore = Math.min(...scored.map(s => s.score));
     const best = scored.filter(s => s.score === minScore).map(s => s.schema);

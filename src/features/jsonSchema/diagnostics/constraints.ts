@@ -12,7 +12,9 @@ export function validateOneOf(node: JsonNode, oneOfSchemas: any[]): NodeValidati
     if (validSchemas.length !== 1) {
         errors.push({
             node: node,
-            message: `Aucune ou plusieurs branches valides trouvées pour 'oneOf'.`
+            message: `Aucune ou plusieurs branches valides trouvées pour 'oneOf'.`,
+            code: "oneOf",
+            priority: ERROR_WEIGHTS.type
         });
     } else {
         const validSchema = validSchemas[0];
