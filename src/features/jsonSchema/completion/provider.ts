@@ -18,10 +18,6 @@ export const completionProvider: vscode.CompletionItemProvider = {
         const schema = getSchemaForDocument(document);
         if (!schema) return null;
 
-        
-        fs.writeFileSync('schema_dump.json', JSON.stringify(schema, null, 4), 'utf8');
-
-
         // 🎯 ÉTAPE 3 : Navigation conditionnelle selon le contexte
         let targetPath = [...location.path];
         let suggestingProperties = false;
@@ -52,6 +48,7 @@ export const completionProvider: vscode.CompletionItemProvider = {
             return createPropertyCompletions(currentSchema, document, position, targetPath);
         } else {
             // 💡 CAS 2 & 3 : Suggérer des valeurs selon le type (FACTORISÉ)
+            console.log("Suggesting values for schema:", currentSchema);
             return createValueCompletions(currentSchema, document, position);
         }
     }

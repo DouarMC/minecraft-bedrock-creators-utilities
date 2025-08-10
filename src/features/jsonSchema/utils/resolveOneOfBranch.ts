@@ -6,7 +6,6 @@ function scoreErrors(errs: NodeValidationError[]): number {
     return errs.reduce((s, e) => s + (e.priority ?? ERROR_WEIGHTS.default), 0);
 }
 
-
 export function resolveOneOfBranch(oneOfSchemas: any[], node?: JsonNode): any[] {
     if (!Array.isArray(oneOfSchemas) || oneOfSchemas.length === 0) return [];
     if (!node) return oneOfSchemas;

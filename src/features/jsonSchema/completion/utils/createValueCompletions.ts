@@ -46,7 +46,7 @@ function applySmartValueInsertion(
 }
 
 // Helper pour créer un CompletionItem
-function createValueItem(params: CreateValueItemParams, document?: vscode.TextDocument, position?: vscode.Position): vscode.CompletionItem {
+function createValueItem(params: CreateValueItemParams, document: vscode.TextDocument, position: vscode.Position): vscode.CompletionItem {
     const item = new vscode.CompletionItem(params.label, params.kind);
     if (params.isDefault === true) {
         item.label = {
@@ -59,7 +59,7 @@ function createValueItem(params: CreateValueItemParams, document?: vscode.TextDo
 }
 
 // --- Handlers de complétion ---
-function handleDefault(schema: any, seen: Set<string>, items: vscode.CompletionItem[], document?: vscode.TextDocument, position?: vscode.Position) {
+function handleDefault(schema: any, seen: Set<string>, items: vscode.CompletionItem[], document: vscode.TextDocument, position: vscode.Position) {
     if (schema.default !== undefined) {
         const key = String(schema.default);
         if (!seen.has(key)) {
@@ -76,7 +76,7 @@ function handleDefault(schema: any, seen: Set<string>, items: vscode.CompletionI
     }
 }
 
-function handleEnum(schema: any, seen: Set<string>, items: vscode.CompletionItem[], document?: vscode.TextDocument, position?: vscode.Position) {
+function handleEnum(schema: any, seen: Set<string>, items: vscode.CompletionItem[], document: vscode.TextDocument, position: vscode.Position) {
     if (schema.enum) {
         for (const enumValue of schema.enum) {
             const key = String(enumValue);
@@ -94,7 +94,7 @@ function handleEnum(schema: any, seen: Set<string>, items: vscode.CompletionItem
     }
 }
 
-function handleTypeSnippets(schema: any, seen: Set<string>, items: vscode.CompletionItem[], document?: vscode.TextDocument, position?: vscode.Position) {
+function handleTypeSnippets(schema: any, seen: Set<string>, items: vscode.CompletionItem[], document: vscode.TextDocument, position: vscode.Position) {
     let valueItemParams: CreateValueItemParams | undefined;
     switch (schema.type) {
         case "object":
@@ -146,44 +146,27 @@ function handleTypeSnippets(schema: any, seen: Set<string>, items: vscode.Comple
     }
 }
 
+function handleOneOf(schema: any, seen: Set<string>, items: vscode.CompletionItem[], document: vscode.TextDocument, position: vscode.Position) {
+    if (schema.oneOf && Array.isArray(schema.oneOf)) {
+        for (const subSchema of schema.oneOf) {
+            items.push(...createValueCompletions(subSchema, document, position, seen));
+        }
+    }
+}
+
 // --- Fonction principale ---
-export function createValueCompletions(schema: any, document: vscode.TextDocument, position: vscode.Position): vscode.CompletionItem[] {
+export function createValueCompletions(schema: any, document: vscode.TextDocument, position: vscode.Position, seen?: Set<string>): vscode.CompletionItem[] {
     const completionItems: vscode.CompletionItem[] = [];
-    const seen = new Set<string>();
+    seen = seen ?? new Set<string>();
 
     handleDefault(schema, seen, completionItems, document, position);
+    handleOneOf(schema, seen, completionItems, document, position);
     handleEnum(schema, seen, completionItems, document, position);
 
     // N’ajoute les snippets génériques QUE si enum n’est pas défini
     if (!schema.enum) {
         handleTypeSnippets(schema, seen, completionItems, document, position);
     }
-
-    // --- Ajout gestion oneOf ---
-    /*
-    if (schema.oneOf && Array.isArray(schema.oneOf)) {
-        // Récupère la valeur courante à la position du curseur
-        const value = getNodeValueAtPosition(document, position);
-
-        // Fonction de validation simple (tu peux l'améliorer)
-        const validateFn = (subSchema: any, val: any) => isTypeValid({ value: val }, subSchema.type);
-
-        const branches = resolveOneOfBranch(schema.oneOf, value, validateFn);
-
-        for (const subSchema of branches) {
-            const subItems = createValueCompletions(subSchema, document, position);
-            for (const item of subItems) {
-                if (!seen.has(item.label as string)) {
-                    seen.add(item.label as string);
-                    completionItems.push(item);
-                }
-            }
-        }
-    }
-        */
-    // --- Fin ajout gestion oneOf ---
-
-    // Plus tard, tu pourras ajouter handleExamples, handleXDynamicExamples, etc.
 
     return completionItems;
 }

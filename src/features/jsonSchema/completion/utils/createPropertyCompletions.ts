@@ -31,7 +31,7 @@ function getDefaultSnippet(propertySchema: any, propertyType: string): string {
             return `"${propertySchema.default}"`;
         }
         // Pour les objets/arrays, tu pourrais faire mieux plus tard (ex: JSON.stringify)
-        return String(propertySchema.default);
+        return JSON.stringify(propertySchema.default);
     }
     return '$0';
 }
