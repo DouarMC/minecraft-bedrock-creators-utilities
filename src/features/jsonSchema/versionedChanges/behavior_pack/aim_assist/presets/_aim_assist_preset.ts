@@ -27,6 +27,9 @@ const baseSchema = {
                 item_settings: {
                     description: "La catégorie d'Aim-Assist à utiliser pour des items spécifiques que le joueur tient dans sa main.",
                     type: "object",
+                    propertyNames: {
+                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
+                    },
                     additionalProperties: {
                         type: "string",
                         "x-dynamic-examples-source": dynamicExamplesSourceKeys.aim_assist_category_ids

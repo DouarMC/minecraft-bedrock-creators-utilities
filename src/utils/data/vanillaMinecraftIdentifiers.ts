@@ -3395,3 +3395,9 @@ export const VANILLA_ENTITY_FAMILY_IDS = [
     "zombie_villager",
     "zombiehorse",
 ];
+
+export const VANILLA_AIM_ASSIST_CATEGORY_IDS = [
+    "minecraft:bucket",
+    "minecraft:empty_hand",
+    "minecraft:default"
+];

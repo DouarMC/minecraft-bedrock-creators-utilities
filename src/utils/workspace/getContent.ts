@@ -1,5 +1,55 @@
 import * as vscode from "vscode";
-import { VANILLA_AIM_ASSIST_PRESET_IDS, VANILLA_BIOMES_IDS, VANILLA_BIOMES_TAGS, VANILLA_BLOCK_IDS, VANILLA_CAMERA_PRESETS_IDS, VANILLA_COOLDOWN_CATEGORY_IDS, VANILLA_DATA_DRIVEN_ITEM_IDS, VANILLA_DIMENSION_IDS, VANILLA_EFFECT_IDS, VANILLA_ENTITY_IDS, VANILLA_ITEM_GROUP_IDS, VANILLA_ITEM_IDS, VANILLA_ITEM_TAGS, VANILLA_ENTITY_FAMILY_IDS } from "../data/vanillaMinecraftIdentifiers";
+import { VANILLA_AIM_ASSIST_PRESET_IDS, VANILLA_BIOMES_IDS, VANILLA_BIOMES_TAGS, VANILLA_BLOCK_IDS, VANILLA_CAMERA_PRESETS_IDS, VANILLA_COOLDOWN_CATEGORY_IDS, VANILLA_DATA_DRIVEN_ITEM_IDS, VANILLA_DIMENSION_IDS, VANILLA_EFFECT_IDS, VANILLA_ENTITY_IDS, VANILLA_ITEM_GROUP_IDS, VANILLA_ITEM_IDS, VANILLA_ITEM_TAGS, VANILLA_ENTITY_FAMILY_IDS, VANILLA_AIM_ASSIST_CATEGORY_IDS } from "../data/vanillaMinecraftIdentifiers";
+
+export async function getAimAssistCategoryIds(): Promise<string[]> {
+    const vanilleAimAssistCategoryIds = VANILLA_AIM_ASSIST_CATEGORY_IDS;
+
+    const uris = await vscode.workspace.findFiles("**/addon/behavior_pack/aim_assist/categories/categories.json");
+    const customAimAssistCategoryIds: string[] = [];
+    for (const uri of uris) {
+        try {
+            const fileData = await vscode.workspace.fs.readFile(uri);
+            const content = new TextDecoder('utf-8').decode(fileData);
+            const json = JSON.parse(content);
+
+            const aimAssistCategories = json?.["minecraft:aim_assist_categories"]?.categories as any[];
+            if (Array.isArray(aimAssistCategories)) {
+                for (const category of aimAssistCategories) {
+                    const id = category?.name;
+                    if (typeof id === "string") {
+                        customAimAssistCategoryIds.push(id);
+                    }
+                }
+            }
+        } catch (error) {
+            console.warn(`⚠️ Erreur lecture fichier ${uri.fsPath}:`, error);
+        }
+    }
+
+    return Array.from(new Set([...vanilleAimAssistCategoryIds, ...customAimAssistCategoryIds]));
+}
+
+export async function getAimAssistPresetIds(): Promise<string[]> {
+    const vanillaAimAssistPresetIds = VANILLA_AIM_ASSIST_PRESET_IDS;
+    const uris = await vscode.workspace.findFiles('**/addon/behavior_pack/aim_assist/presets/**/*.json');
+    const customAimAssistPresetIds: string[] = [];
+    for (const uri of uris) {
+        try {
+            const fileData = await vscode.workspace.fs.readFile(uri);
+            const content = new TextDecoder('utf-8').decode(fileData);
+            const json = JSON.parse(content);
+
+            const id = json?.["minecraft:aim_assist_preset"]?.description?.identifier;
+            if (typeof id === "string") {
+                customAimAssistPresetIds.push(id);
+            }
+        } catch (error) {
+            console.warn(`⚠️ Erreur lecture fichier ${uri.fsPath}:`, error);
+        }
+    }
+
+    return Array.from(new Set([...vanillaAimAssistPresetIds, ...customAimAssistPresetIds]));
+}
 
 export async function getBlockIds(): Promise<string[]> {
     const vanillaBlockIds = VANILLA_BLOCK_IDS;
@@ -23,27 +73,6 @@ export async function getBlockIds(): Promise<string[]> {
     }
 
     return Array.from(new Set([...vanillaBlockIds, ...customBlockIds]));
-}
-
-export async function getItemIds(): Promise<string[]> {
-    const vanillaItemIds = VANILLA_ITEM_IDS;
-    const uris = await vscode.workspace.findFiles('**/addon/behavior_pack/items/**/*.json');
-    const customItemIds: string[] = [];
-    for (const uri of uris) {
-        try {
-            const fileData = await vscode.workspace.fs.readFile(uri);
-            const content = new TextDecoder('utf-8').decode(fileData);
-            const json = JSON.parse(content);
-
-            const id = json?.["minecraft:item"]?.description?.identifier;
-            if (typeof id === "string") {
-                customItemIds.push(id);
-            }
-        } catch (error) {
-            console.warn(`⚠️ Erreur lecture fichier ${uri.fsPath}:`, error);
-        }
-    }
-    return Array.from(new Set([...vanillaItemIds, ...customItemIds]));
 }
 
 export async function getEntityIds(): Promise<string[]> {
@@ -71,6 +100,27 @@ export async function getEntityIds(): Promise<string[]> {
     }
     
     return Array.from(new Set([...vanillaEntityIds, ...vanillaEntityIdsWithoutNamespace, ...customEntityIds]));
+}
+
+export async function getItemIds(): Promise<string[]> {
+    const vanillaItemIds = VANILLA_ITEM_IDS;
+    const uris = await vscode.workspace.findFiles('**/addon/behavior_pack/items/**/*.json');
+    const customItemIds: string[] = [];
+    for (const uri of uris) {
+        try {
+            const fileData = await vscode.workspace.fs.readFile(uri);
+            const content = new TextDecoder('utf-8').decode(fileData);
+            const json = JSON.parse(content);
+
+            const id = json?.["minecraft:item"]?.description?.identifier;
+            if (typeof id === "string") {
+                customItemIds.push(id);
+            }
+        } catch (error) {
+            console.warn(`⚠️ Erreur lecture fichier ${uri.fsPath}:`, error);
+        }
+    }
+    return Array.from(new Set([...vanillaItemIds, ...customItemIds]));
 }
 
 export async function getDataDrivenEntityIds(): Promise<string[]> {
@@ -137,32 +187,6 @@ export async function getCraftingRecipeTagIds(): Promise<string[]> {
 
 export async function getCullingLayerIds(): Promise<string[]> {
     return ["minecraft:culling_layer.undefined", "minecraft:culling_layer.leaves"];
-}
-
-export async function getAimAssistCategoryIds(): Promise<string[]> {
-    return ["minecraft:bucket", "minecraft:empty_hand", "minecraft:default"];
-}
-
-export async function getAimAssistPresetIds(): Promise<string[]> {
-    const vanillaAimAssistPresetIds = VANILLA_AIM_ASSIST_PRESET_IDS;
-    const uris = await vscode.workspace.findFiles('**/addon/behavior_pack/aim_assist/presets/**/*.json');
-    const customAimAssistPresetIds: string[] = [];
-    for (const uri of uris) {
-        try {
-            const fileData = await vscode.workspace.fs.readFile(uri);
-            const content = new TextDecoder('utf-8').decode(fileData);
-            const json = JSON.parse(content);
-
-            const id = json?.["minecraft:aim_assist_preset"]?.description?.identifier;
-            if (typeof id === "string") {
-                customAimAssistPresetIds.push(id);
-            }
-        } catch (error) {
-            console.warn(`⚠️ Erreur lecture fichier ${uri.fsPath}:`, error);
-        }
-    }
-
-    return Array.from(new Set([...vanillaAimAssistPresetIds, ...customAimAssistPresetIds]));
 }
 
 export async function getBiomeIds(): Promise<string[]> {

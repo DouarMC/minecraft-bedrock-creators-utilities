@@ -3,6 +3,8 @@ import { analyzeInsertionContext, createQuoteAwareRange } from '../../utils/inse
 import { resolveOneOfBranch } from '../../utils/resolveOneOfBranch';
 import { getNodeValueAtPosition } from '../../utils/getNodeValueAtPosition';
 import { isTypeValid } from '../../diagnostics/helpers';
+import { getDynamicExampleSourceValues } from './getDynamicExampleSourceValues';
+import { values } from 'lodash';
 
 interface CreateValueItemParams {
     label: string;
@@ -146,22 +148,46 @@ function handleTypeSnippets(schema: any, seen: Set<string>, items: vscode.Comple
     }
 }
 
-function handleOneOf(schema: any, seen: Set<string>, items: vscode.CompletionItem[], document: vscode.TextDocument, position: vscode.Position) {
+async function handleOneOf(schema: any, seen: Set<string>, items: vscode.CompletionItem[], document: vscode.TextDocument, position: vscode.Position) {
     if (schema.oneOf && Array.isArray(schema.oneOf)) {
         for (const subSchema of schema.oneOf) {
-            items.push(...createValueCompletions(subSchema, document, position, seen));
+            items.push(...await createValueCompletions(subSchema, document, position, seen));
         }
     }
 }
 
+async function handleDynamicExamples(schema: any, seen: Set<string>, items: vscode.CompletionItem[], document: vscode.TextDocument, position: vscode.Position) {
+    if (schema["x-dynamic-examples-source"]) {
+        const dynamicValues = await getDynamicExampleSourceValues(schema["x-dynamic-examples-source"]);
+        for (const value of dynamicValues) {
+            const key = String(value);
+            if (!seen.has(key)) {
+                seen.add(key);
+                items.push(createValueItem({
+                    insertValue: value,
+                    kind: vscode.CompletionItemKind.Value,
+                    label: key,
+                    needsQuotes: typeof value === 'string',
+                    isSnippet: true
+                }, document, position));
+            }
+        }
+
+        console.warn(`Dynamic examples source "${schema["x-dynamic-examples-source"]}" is not yet implemented.`);
+    } else {
+        console.log("NOOOOOO OUINNN ");
+    }
+}
+
 // --- Fonction principale ---
-export function createValueCompletions(schema: any, document: vscode.TextDocument, position: vscode.Position, seen?: Set<string>): vscode.CompletionItem[] {
+export async function createValueCompletions(schema: any, document: vscode.TextDocument, position: vscode.Position, seen?: Set<string>): Promise<vscode.CompletionItem[]> {
     const completionItems: vscode.CompletionItem[] = [];
     seen = seen ?? new Set<string>();
 
     handleDefault(schema, seen, completionItems, document, position);
-    handleOneOf(schema, seen, completionItems, document, position);
+    await handleOneOf(schema, seen, completionItems, document, position);
     handleEnum(schema, seen, completionItems, document, position);
+    await handleDynamicExamples(schema, seen, completionItems, document, position);
 
     // N’ajoute les snippets génériques QUE si enum n’est pas défini
     if (!schema.enum) {

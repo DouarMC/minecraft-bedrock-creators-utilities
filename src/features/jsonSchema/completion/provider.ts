@@ -1,14 +1,12 @@
 import * as vscode from 'vscode';
-import { findNodeAtLocation, getLocation, parseTree, Node as JsonNode } from 'jsonc-parser';
+import { getLocation, parseTree, Node as JsonNode } from 'jsonc-parser';
 import { navigateToSchemaAtPath } from '../utils/navigateToSchemaAtPath';
 import { createPropertyCompletions } from './utils/createPropertyCompletions';
 import { createValueCompletions } from './utils/createValueCompletions';
 import { getSchemaForDocument } from '../utils/getSchemaForDocument';
 
-import * as fs from 'fs';
-
 export const completionProvider: vscode.CompletionItemProvider = {
-    provideCompletionItems(document, position, token, context) {
+    async provideCompletionItems(document, position, token, context) {
         // 🎯 EXACTEMENT le même début que hover !
         const text = document.getText();
         const offset = document.offsetAt(position);
@@ -44,12 +42,9 @@ export const completionProvider: vscode.CompletionItemProvider = {
         }
 
         if (suggestingProperties) {
-            // 🎯 SIMPLIFIÉ : Passer juste les paramètres essentiels
-            return createPropertyCompletions(currentSchema, document, position, targetPath);
+            return await createPropertyCompletions(currentSchema, document, position, targetPath);
         } else {
-            // 💡 CAS 2 & 3 : Suggérer des valeurs selon le type (FACTORISÉ)
-            console.log("Suggesting values for schema:", currentSchema);
-            return createValueCompletions(currentSchema, document, position);
+            return await createValueCompletions(currentSchema, document, position);
         }
     }
 };

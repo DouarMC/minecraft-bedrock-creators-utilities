@@ -2,6 +2,7 @@ import { JSONPath } from 'jsonc-parser';
 import * as vscode from 'vscode';
 import { getExistingProperties } from './getExistingProperties';
 import { analyzeInsertionContext, createQuoteAwareRange } from '../../utils/insertionHelpers';
+import { getDynamicExampleSourceValues } from './getDynamicExampleSourceValues';
 
 function sortPropertiesByPriority(
     properties: Record<string, any>,
@@ -125,12 +126,12 @@ function createPropertyCompletionItem(
     return item;
 }
 
-export function createPropertyCompletions(
+export async function createPropertyCompletions(
     schema: any,
     document: vscode.TextDocument,
     position: vscode.Position,
     targetPath: JSONPath
-): vscode.CompletionItem[] {
+): Promise<vscode.CompletionItem[]> {
     // Vérification de base
     if (schema.type !== 'object') return [];
 
@@ -177,6 +178,18 @@ export function createPropertyCompletions(
         // examples
         if (Array.isArray(schema.propertyNames.examples)) {
             for (const exampleName of schema.propertyNames.examples) {
+                if (!existing.has(exampleName)) {
+                    completionItems.push(
+                        createPropertyCompletionItem(exampleName, schema.additionalProperties, false, document, position)
+                    );
+                }
+            }
+        }
+
+        // x-dynamic-examples-source
+        if (schema.propertyNames['x-dynamic-examples-source']) {
+            const values = await getDynamicExampleSourceValues(schema.propertyNames['x-dynamic-examples-source']);
+            for (const exampleName of values) {
                 if (!existing.has(exampleName)) {
                     completionItems.push(
                         createPropertyCompletionItem(exampleName, schema.additionalProperties, false, document, position)
