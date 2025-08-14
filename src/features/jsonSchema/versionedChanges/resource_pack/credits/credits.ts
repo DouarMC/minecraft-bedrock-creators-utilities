@@ -1,7 +1,6 @@
 import { SchemaType } from "../../../../../types/schema";
 
 const baseSchema = {
-    "$schema": "http://json-schema.org/draft-07/schema#",
     "description": "Ce fichier sert à définir les crédits du jeu. \nType : `Object[]`",
     "type": "array",
     "items": {

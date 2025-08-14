@@ -13,7 +13,7 @@ const baseSchema = {
             description: "La version du format à utiliser.",
             type: "string",
             enum: [
-                "1.8.0", "1.9.0", "1.10.0", "1.11.0", "1.12.0", "1.13.0", "1.14.0", "1.14.1", "1.14.20", "1.14.30", "1.15.0", "1.16.0", "1.16.20", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90"
+                "1.8.0", "1.9.0", "1.10.0", "1.11.0", "1.12.0", "1.13.0", "1.14.0", "1.14.1", "1.14.20", "1.14.30", "1.15.0", "1.16.0", "1.16.20", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100"
             ],
         },
         "minecraft:item": {
@@ -30,7 +30,7 @@ const baseSchema = {
                             description: "L'identifiant de l'Item.",
                             type: "string",
                             pattern: schemaPatterns.identifier_with_namespace,
-                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.vanilla_data_driven_item_ids
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.data_driven_item_ids
                         }
                     }
                 },
@@ -1217,11 +1217,13 @@ const versionedChanges: SchemaChange[] = [
                             properties: {
                                 default: {
                                     description: "La texture par défaut de l'Item.",
-                                    type: "string"
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_texture_references
                                 },
                                 icon_trim: {
                                     description: "La texture qui sera superposée sur l'icône de l'Item si ce dernier possède une personnalisation d'armure.",
-                                    type: "string"
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_texture_references
                                 },
                                 amethyst_palette: {
                                     description: "Le chemin d'accès vers la texture de la palette d'améthyste de l'Item.",
@@ -1329,7 +1331,8 @@ const versionedChanges: SchemaChange[] = [
                                     },
                                     particle_type: {
                                         description: "L'effet de particule à jouer lorsque le seuil de durabilité est atteint.",
-                                        type: "string"
+                                        type: "string",
+                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.particle_effect_ids
                                     },
                                     sound_event: {
                                         description: "L'événement sonore à jouer lorsque le seuil de durabilité est atteint.",
@@ -1404,7 +1407,8 @@ const versionedChanges: SchemaChange[] = [
                 target: ["properties", "minecraft:item", "properties", "components", "properties", "minecraft:icon", "oneOf", 1, "properties", "textures", "properties", "dyed"],
                 value: {
                     description: "Définit la texture à superposer sur l'icône de l'Item lorsqu'il est teinté.",
-                    type: "string"
+                    type: "string",
+                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_texture_references
                 }
             },
             {
@@ -1487,7 +1491,8 @@ const versionedChanges: SchemaChange[] = [
                 target: ["properties", "minecraft:item", "properties", "components", "properties", "minecraft:icon", "oneOf", 1, "properties", "textures", "properties", "bundle_open_back"],
                 value: {
                     description: "Définit la texture à utiliser pour l'arrière de l'icône de l'Item lorsqu'il est ouvert dans un Item de stockage.",
-                    type: "string"
+                    type: "string",
+                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_texture_references
                 }
             },
             {
@@ -1495,7 +1500,8 @@ const versionedChanges: SchemaChange[] = [
                 target: ["properties", "minecraft:item", "properties", "components", "properties", "minecraft:icon", "oneOf", 1, "properties", "textures", "properties", "bundle_open_front"],
                 value: {
                     description: "Définit la texture à utiliser pour l'avant de l'icône de l'Item lorsqu'il est ouvert dans un Item de stockage.",
-                    type: "string"
+                    type: "string",
+                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_texture_references
                 }
             }
         ]
@@ -1571,7 +1577,7 @@ const versionedChanges: SchemaChange[] = [
                     type: "string",
                     maxLength: 256,
                     pattern: schemaPatterns.identifier_with_namespace,
-                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_group_ids_with_minecraft_namespace
+                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_group_ids
                 }
             },
             {

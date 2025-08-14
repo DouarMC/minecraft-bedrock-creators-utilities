@@ -67,7 +67,7 @@ function generateVersionedSchema(
  * @param b La deuxième version à comparer.
  * @returns Résultat de la comparaison (-1, 0, 1)
  */
-function compareVersions(a: string, b: string): number {
+export function compareVersions(a: string, b: string): number {
     const aParts = a.split('.').map(Number);
     const bParts = b.split('.').map(Number);
     const maxLength = Math.max(aParts.length, bParts.length);

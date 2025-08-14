@@ -1,4 +1,6 @@
 import { SchemaType } from "../../../../../types/schema";
+import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
+import { schemaPatterns } from "../../../shared/schemaPatterns";
 
 const baseSchema = {
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -10,14 +12,15 @@ const baseSchema = {
             "description": "La version du Format à utiliser. \nType: `String`",
             "type": "string",
             enum: [
-                "1.8.0", "1.9.0", "1.10.0", "1.11.0", "1.12.0", "1.13.0", "1.14.0", "1.14.1", "1.14.20", "1.14.30", "1.15.0", "1.16.0", "1.16.20", "1.16.100", "1.16.200", "1.16.210", "1.16.220", "1.16.230", "1.17.0", "1.17.10", "1.17.20", "1.17.30", "1.17.40", "1.18.0", "1.18.10", "1.18.20", "1.18.30", "1.18.40", "1.19.0", "1.19.10", "1.19.20", "1.19.30", "1.19.40", "1.19.50", "1.19.60", "1.19.70", "1.19.80", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90"
+                "1.8.0", "1.9.0", "1.10.0", "1.11.0", "1.12.0", "1.13.0", "1.14.0", "1.14.1", "1.14.20", "1.14.30", "1.15.0", "1.16.0", "1.16.20", "1.16.100", "1.16.200", "1.16.210", "1.16.220", "1.16.230", "1.17.0", "1.17.10", "1.17.20", "1.17.30", "1.17.40", "1.18.0", "1.18.10", "1.18.20", "1.18.30", "1.18.40", "1.19.0", "1.19.10", "1.19.20", "1.19.30", "1.19.40", "1.19.50", "1.19.60", "1.19.70", "1.19.80", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100"
             ]
         },
         "animations": {
             "description": "Définit les animations. \nType: `Object`",
             "type": "object",
             "propertyNames": {
-                "pattern": "^animation\\."
+                pattern: schemaPatterns.animation_identifier,
+                "x-dynamic-examples-source": dynamicExamplesSourceKeys.data_driven_resource_animation_ids
             },
             "additionalProperties": {
                 "type": "object",
@@ -36,46 +39,18 @@ const baseSchema = {
                     },
                     "start_delay": {
                         "description": "Combien de temps en secondes attendre avant de jouer cette animation. \nType: `Molang` \nNote: Cette expression est évaluée une fois avant de jouer, et seulement réévaluée si on lui demande de jouer depuis le début. \nUne animation en boucle devrait utiliser 'loop_delay' si elle veut un délai entre les boucles.",
-                        "oneOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "number"
-                            }
-                        ]
+                        type: "molang"
                     },
                     "loop_delay": {
                         "description": "Combien de temps en secondes attendre avant de relancer cette animation. \nType: `Molang` \nNote: Cette expression est évaluée après chaque boucle et seulement réévaluée sur une animation en boucle.",
-                        "oneOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "number"
-                            }
-                        ]
+                        type: "molang"
                     },
                     "anim_time_update": {
                         "description": "Détermine l'écoulement du temps lors de la lecture de l'animation. \nType: `Molang` \nNote: Par défaut, il s'agit de 'query.anim_time + query.delta_time', ce qui signifie une progression en secondes.",
-                        "oneOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "number"
-                            }
-                        ]
+                        type: "molang"
                     },
                     "blend_weight": {
-                        "oneOf": [
-                            {
-                                "type": "number"
-                            },
-                            {
-                                "type": "string"
-                            }
-                        ]
+                        type: "molang"
                     },
                     "override_previous_animation": {
                         "description": "Définit si les os de cette animation doivent revenir à leur pose par défaut avant d'appliquer cette animation. \nType: `Boolean`",

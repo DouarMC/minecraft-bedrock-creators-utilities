@@ -1,4 +1,6 @@
 import { SchemaChange, SchemaType } from "../../../../../types/schema";
+import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
+import { schemaPatterns } from "../../../shared/schemaPatterns";
 
 const baseSchema = {
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -10,7 +12,7 @@ const baseSchema = {
             "description": "La version du Format à utiliser. \nType: `String`",
             "type": "string",
             enum: [
-                "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90"
+                "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100"
             ]
         },
         "minecraft:client_biome": {
@@ -26,16 +28,7 @@ const baseSchema = {
                         "identifier": {
                             "description": "L'identifiant du biome. \nType: `String`",
                             "type": "string",
-                            "oneOf": [
-                                {
-                                    "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/vanilla_biomes_id"
-                                },
-                                {
-                                    "not": {
-                                        "$ref": "https://douarmc.github.io/minecraft_bedrock_json_schemas/common.json#/definitions/vanilla_biomes_id"
-                                    }
-                                }
-                            ]
+                            "x-dynamic-examples-source": [dynamicExamplesSourceKeys.biome_ids, dynamicExamplesSourceKeys.vanilla_biome_ids_without_namespace]
                         }
                     }
                 },
@@ -80,7 +73,8 @@ const baseSchema = {
                             "properties": {
                                 "fog_identifier": {
                                     "description": "Identifier du brouillard à utiliser. \nType: `String`",
-                                    "type": "string"
+                                    "type": "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.fog_ids
                                 }
                             }
                         },
@@ -242,7 +236,8 @@ const versionedChanges: SchemaChange[] = [
                     "properties": {
                         "atmosphere_identifier": {
                             "description": "Identifiant de l'atmosphère à utiliser. \nType: `String`",
-                            "type": "string"
+                            "type": "string",
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.atmosphere_settings_ids
                         }
                     }
                 }
@@ -257,7 +252,8 @@ const versionedChanges: SchemaChange[] = [
                     "properties": {
                         "color_grading_identifier": {
                             "description": "Identifiant du color grading à utiliser. \nType: `String`",
-                            "type": "string"
+                            "type": "string",
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.color_grading_settings_ids
                         }
                     }
                 }
@@ -302,7 +298,8 @@ const versionedChanges: SchemaChange[] = [
                     "properties": {
                         "lighting_identifier": {
                             "description": "Identifiant de l'éclairage à utiliser. \nType: `String`",
-                            "type": "string"
+                            "type": "string",
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.lighting_settings_ids
                         }
                     }
                 }
@@ -317,9 +314,25 @@ const versionedChanges: SchemaChange[] = [
                     "properties": {
                         "water_identifier": {
                             "description": "Identifiant de l'eau à utiliser. \nType: `String`",
-                            "type": "string"
+                            "type": "string",
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.water_settings_ids
                         }
                     }
+                }
+            }
+        ]
+    },
+    {
+        version: "1.21.90",
+        changes: [
+            {
+                action: "modify",
+                target: ["properties", "minecraft:client_biome", "properties", "description", "properties", "identifier"],
+                value: {
+                    description: "L'identifiant du biome.",
+                    type: "string",
+                    pattern: schemaPatterns.identifier_with_namespace,
+                    "x-dynamic-examples-source": [dynamicExamplesSourceKeys.biome_ids]
                 }
             }
         ]

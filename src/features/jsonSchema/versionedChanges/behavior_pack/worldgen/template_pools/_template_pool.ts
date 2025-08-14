@@ -1,7 +1,7 @@
 import { SchemaType } from "../../../../../../types/schema";
+import { dynamicExamplesSourceKeys } from "../../../../shared/schemaEnums";
 
 const baseSchema = {
-    "$schema": "http://json-schema.org/draft-07/schema#",
     "description": "[EXPERIMENTALE]: Data Driven Jigsaw Structures \nCe fichier sert à définir une Template Pool pour les structures Jigsaw. Les Template Pools sont des groupes de structures templates liées avec des poids et des processeurs assignés. Pendant la génération du monde, la Jigsaw Structure \"Start Pool\" spécifie quelle Template Pool utiliser en premier. Un Structure Template est ensuite choisi aléatoirement dans le pool et placé comme première pièce de structure. Les blocs Jigsaw à l'intérieur de la structure placée peuvent également spécifier des Template Pools à partir desquels les pièces de structure suivantes sont placées récursivement jusqu'à ce que la Jigsaw Structure soit entièrement générée. \nType: `Object`",
     "type": "object",
     "required": ["format_version", "minecraft:template_pool"],
@@ -10,7 +10,7 @@ const baseSchema = {
             "description": "La version du Format à utiliser. \nType: `String`",
             "type": "string",
             enum: [
-                "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90"
+                "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100"
             ]
         },
         "minecraft:template_pool": {
@@ -26,7 +26,8 @@ const baseSchema = {
                         "identifier": {
                             "description": "L'identifiant de la Template Pool. \nType: `String`",
                             "type": "string",
-                            "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_/]+$"
+                            "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_/]+$",
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.data_driven_template_pool_ids
                         }
                     }
                 },

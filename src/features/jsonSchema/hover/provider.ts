@@ -40,6 +40,18 @@ export const hoverProvider: vscode.HoverProvider = {
         const propertyName = currentPath.length > 0 ? currentPath[currentPath.length - 1] : 'Document';
         hoverContent.appendMarkdown(`### ${propertyName}`);
 
+
+        if (currentSchema["x-experimental_options"] && currentSchema["x-experimental_options"].length > 0) {
+            hoverContent.appendMarkdown(`\n\n**Options expérimentales**:`);
+            currentSchema["x-experimental_options"].forEach((option: string) => {
+                hoverContent.appendMarkdown(`\n- \`${option}\``);
+            });
+        }
+
+        if (currentSchema["x-localized"]) {
+            hoverContent.appendMarkdown(`\n\n**Texte traduisable**`);
+        }
+
         // Description
         if (currentSchema.description) {
             hoverContent.appendMarkdown(`\n\n${currentSchema.description}`);

@@ -1,4 +1,5 @@
 import { SchemaType } from "../../../../../../types/schema";
+import { dynamicExamplesSourceKeys } from "../../../../shared/schemaEnums";
 
 const baseSchema = {
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -10,7 +11,7 @@ const baseSchema = {
             "description": "La version du Format à utiliser. \nType: `String`",
             "type": "string",
             enum: [
-                "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90"
+                "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100"
             ]
         },
         "minecraft:jigsaw": {
@@ -26,7 +27,8 @@ const baseSchema = {
                         "identifier": {
                             "description": "L'identifiant de la structure Jigsaw. \nType: `String`",
                             "type": "string",
-                            "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                            "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$",
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.data_driven_jigsaw_structure_ids
                         }
                     }
                 },
@@ -352,7 +354,7 @@ const baseSchema = {
 };
 
 export const jigsawStructureSchemaTypeBP: SchemaType = {
-    fileMatch: ["**/addon/behavior_pack/worldgen/jigsaw_structures/*.json"],
+    fileMatch: ["**/addon/behavior_pack/worldgen/structures/*.json"],
     baseSchema: baseSchema,
     versionedChanges: []
 };

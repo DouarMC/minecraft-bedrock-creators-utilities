@@ -1,7 +1,6 @@
 import { SchemaType } from "../../../../../types/schema";
 
 const baseSchema = {
-    "$schema": "http://json-schema.org/draft-07/schema#",
     "description": "Ce fichier permet de définir une Loot Table. \nType: `Object`",
     "type": "object",
     "required": ["pools"],

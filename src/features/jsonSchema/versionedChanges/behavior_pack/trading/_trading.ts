@@ -1,7 +1,6 @@
 import { SchemaType, SchemaChange } from "../../../../../types/schema";
 
 const baseSchema = {
-    "$schema": "http://json-schema.org/draft-07/schema#",
     "description": "Ce fichier sert à définir une table d'échanges avec une entité qui peut marchander. \nType: `Object`",
     "type": "object",
     "required": ["tiers"],
@@ -10,7 +9,7 @@ const baseSchema = {
             description: "La version du Format à utiliser.",
             type: "string",
             enum: [
-                "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90"
+                "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100"
             ]
         },
         "tiers": {

@@ -3,7 +3,6 @@ import { SchemaType } from "../../../../../../types/schema";
 import { dynamicExamplesSourceKeys } from "../../../../shared/schemaEnums";
 
 const baseSchema = {
-    $schema: "http://json-schema.org/draft-07/schema#",
     description: "Ce fichier sert à créer un preset de Caméra.",
     type: "object",
     required: ["format_version", "minecraft:camera_preset"],
@@ -12,7 +11,7 @@ const baseSchema = {
             description: "La version du format à utiliser.",
             type: "string",
             enum: [
-                "1.19.50", "1.19.60", "1.19.70", "1.19.80", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90"
+                "1.19.50", "1.19.60", "1.19.70", "1.19.80", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100"
             ]
         },
         "minecraft:camera_preset": {
@@ -24,13 +23,13 @@ const baseSchema = {
                     description: "L'identifiant du preset de caméra.",
                     type: "string",
                     pattern: schemaPatterns.identifier_with_namespace,
-                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.camera_preset_ids
+                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.data_driven_camera_preset_ids
                 },
                 inherit_from: {
                     description: "L'identifiant du preset de caméra dont celui-ci hérite de ses propriétés.",
                     type: "string",
                     pattern: schemaPatterns.identifier_with_namespace,
-                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.camera_preset_ids
+                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.inheritable_camera_preset_ids
                 },
                 pos_x: {
                     description: "La position X par défaut de la caméra. Utile pour les caméras de type: `free`",

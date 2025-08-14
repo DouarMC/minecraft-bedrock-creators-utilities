@@ -1,4 +1,6 @@
 import { SchemaChange, SchemaType } from "../../../../../types/schema";
+import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
+import { schemaPatterns } from "../../../shared/schemaPatterns";
 
 const baseSchema = {
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -9,7 +11,7 @@ const baseSchema = {
             "description": "La version du format à utiliser. \nType: `String`",
             "type": "string",
             enum: [
-                "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90"
+                "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100"
             ]
         },
         "minecraft:color_grading_settings": {
@@ -25,7 +27,8 @@ const baseSchema = {
                         "identifier": {
                             "description": "L'identifiant de la description des paramètres de color grading. \nType: `String`",
                             "type": "string",
-                            "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                            pattern: schemaPatterns.identifier_with_namespace,
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.data_driven_color_grading_settings_ids
                         }
                     }
                 },

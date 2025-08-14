@@ -1,7 +1,6 @@
 import { SchemaType } from "../../../../../types/schema";
 
 const baseSchema = {
-    $schema: "http://json-schema.org/draft-07/schema#",
     description: "Ce fichier sert à executer en boucle des fonctions de commandes. \n Type : Object",
     type: "object",
     required: ["values"],

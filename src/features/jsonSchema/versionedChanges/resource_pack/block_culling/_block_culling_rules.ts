@@ -1,4 +1,5 @@
 import { SchemaChange, SchemaType } from "../../../../../types/schema";
+import { schemaPatterns } from "../../../shared/schemaPatterns";
 
 const baseSchema = {
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -10,7 +11,7 @@ const baseSchema = {
             "description": "La version du Format à utiliser. \nType: `String`",
             "type": "string",
             enum: [
-                "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90"
+                "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100"
             ]
         },
         "minecraft:block_culling_rules": {
@@ -26,7 +27,7 @@ const baseSchema = {
                         "identifier": {
                             "description": "L'identifiant des Règles de Block Culling. \nType: `String`",
                             "type": "string",
-                            "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                            "pattern": schemaPatterns.identifier_with_namespace
                         }
                     }
                 },

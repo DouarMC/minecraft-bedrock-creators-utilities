@@ -1,4 +1,5 @@
 import { SchemaType } from "../../../../../types/schema";
+import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
 
 const baseSchema = {
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -9,7 +10,7 @@ const baseSchema = {
         "format_version": {
             "description": "La version du Format à utiliser. \nType: `String`",
             "type": "string",
-            enum: ["1.21.60", "1.21.70", "1.21.80", "1.21.90"]
+            enum: ["1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100"]
         },
         "minecraft:crafting_items_catalog": {
             "description": "Contient la définition de l'organisation des items dans le menu créatif et dans le livre de recettes. \nType: `Object`",
@@ -62,7 +63,8 @@ const baseSchema = {
                                                 "name": {
                                                     "description": "Une clé de localisation représentant le nom du groupe qui commence par un espace de noms. L'espace de noms 'minecraft' est réservé pour le jeu Vanilla. Créer de nouveaux noms de groupe commençant par 'minecraft' risque d'être écrasé lors de mises à jour ultérieures. \nType: `String`",
                                                     "type": "string",
-                                                    "pattern": "^(?:.)+:(?:.)+$"
+                                                    "pattern": "^(?:.)+:(?:.)+$",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_group_ids
                                                 }
                                             }
                                         },
@@ -73,7 +75,8 @@ const baseSchema = {
                                                 "oneOf": [
                                                     {
                                                         "type": "string",
-                                                        "pattern": "^(?:.)+:(?:.)+$"
+                                                        "pattern": "^(?:.)+:(?:.)+$",
+                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
                                                     },
                                                     {
                                                         "type": "object",
@@ -82,7 +85,8 @@ const baseSchema = {
                                                             "name": {
                                                                 "description": "Le nom de l'item ou du bloc. Un espace de noms pour l'item est requis. Vous pouvez éventuellement fournir une valeur auxiliaire pour les items qui l'utilisent à la fin. Exemple: namespace:my_item:1 \nType: `String`",
                                                                 "type": "string",
-                                                                "pattern": "^(?:.)+:(?:.)+$"
+                                                                "pattern": "^(?:.)+:(?:.)+$",
+                                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
                                                             }
                                                         }
                                                     }

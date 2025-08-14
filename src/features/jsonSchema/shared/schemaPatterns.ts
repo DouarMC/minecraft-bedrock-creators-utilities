@@ -1,4 +1,8 @@
 export const schemaPatterns = {
+    animation_timeline_keyframe: "^([0-9]+(\.[0-9]+)?)$",
+    
+
+
     identifier_with_namespace: "^[a-z0-9_\\-]+:[a-zA-Z0-9_.\\-]+$",
     loot_tables_file: "^loot_tables\\/.*\\.json$",
     trading_file: "^trading\\/.*\\.json$",

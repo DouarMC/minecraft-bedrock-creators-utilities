@@ -1,12 +1,12 @@
 import { SchemaType } from "../../../../../types/schema";
+import { experimentalOptions } from "../../../../../utils/data/experimentalOptions";
 import { commonSchemas } from "../../../shared/commonSchemas";
 import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
+import { schemaPatterns } from "../../../shared/schemaPatterns";
 
 const baseSchema = {
-    $schema: "https://json-schema.org/draft-07/schema#",
-    markdownDescription:
-    "[ℹ️**Expérimentale**]: `Custom Biomes`\n\n" +
-    "Ce fichier crée un Biome.",
+    description: "Ce fichier définit un Biome.",
+    "x-experimental_options": [experimentalOptions.custom_biomes],
     type: "object",
     required: ["format_version", "minecraft:biome"],
     properties: {
@@ -14,7 +14,7 @@ const baseSchema = {
             description: "La version du format à utiliser.",
             type: "string",
             enum: [
-                "1.13.0", "1.14.0", "1.14.1", "1.14.20", "1.14.30", "1.15.0", "1.16.0", "1.16.20", "1.16.100", "1.16.200", "1.16.210", "1.16.220", "1.16.230", "1.17.0", "1.17.10", "1.17.20", "1.17.30", "1.17.40", "1.18.0", "1.18.10", "1.18.20", "1.18.30", "1.18.40", "1.19.0", "1.19.10", "1.19.20", "1.19.30", "1.19.40", "1.19.50", "1.19.60", "1.19.70", "1.19.80", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90"
+                "1.13.0", "1.14.0", "1.14.1", "1.14.20", "1.14.30", "1.15.0", "1.16.0", "1.16.20", "1.16.100", "1.16.200", "1.16.210", "1.16.220", "1.16.230", "1.17.0", "1.17.10", "1.17.20", "1.17.30", "1.17.40", "1.18.0", "1.18.10", "1.18.20", "1.18.30", "1.18.40", "1.19.0", "1.19.10", "1.19.20", "1.19.30", "1.19.40", "1.19.50", "1.19.60", "1.19.70", "1.19.80", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100"
             ]
         },
         "minecraft:biome": {
@@ -30,7 +30,8 @@ const baseSchema = {
                         identifier: {
                             description: "L'identifiant du Biome.",
                             type: "string",
-                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.biome_ids
+                            pattern: schemaPatterns.identifier_with_namespace,
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.data_driven_biome_ids
                         }
                     }
                 },
@@ -38,81 +39,24 @@ const baseSchema = {
                     description: "Contient les components du Biome.",
                     type: "object",
                     properties: {
-                        "minecraft:capped_surface": {
-                            description: "Génère une surface sur les blocs avec des blocs non solides au-dessus ou en dessous.",
-                            type: "object",
-                            required: ["floor_materials", "ceiling_materials", "sea_material", "foundation_material"],
-                            properties: {
-                                beach_material: {
-                                    description: "Le bloc utilisé pour décorer la surface près du niveau de la mer.",
-                                    oneOf: [
-                                        {
-                                            type: "string",
-                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
-                                        },
-                                        commonSchemas.block_descriptor
-                                    ]
-                                },
-                                floor_materials: {
-                                    description: "Blocs utilisés pour la surface au niveau du sol.",
-                                    type: "array",
-                                    minItems: 1,
-                                    items: {
-                                        oneOf: [
-                                            {
-                                                type: "string",
-                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
-                                            },
-                                            commonSchemas.block_descriptor
-                                        ]
-                                    }
-                                },
-                                ceiling_materials: {
-                                    description: "Blocs utilisés pour la surface au niveau du plafond.",
-                                    type: "array",
-                                    minItems: 1,
-                                    items: {
-                                        oneOf: [
-                                            {
-                                                type: "string",
-                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
-                                            },
-                                            commonSchemas.block_descriptor
-                                        ]
-                                    }
-                                },
-                                foundation_material: {
-                                    description: "Bloc utilisé pour remplacer les blocs solides qui ne sont pas des blocs de surface.",
-                                    oneOf: [
-                                        {
-                                            type: "string",
-                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
-                                        },
-                                        commonSchemas.block_descriptor
-                                    ]
-                                },
-                                sea_material: {
-                                    description: "Bloc utilisé pour remplacer les blocs d'air sous le niveau de la mer.",
-                                    oneOf: [
-                                        {
-                                            type: "string",
-                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
-                                        },
-                                        commonSchemas.block_descriptor
-                                    ]
-                                }
-                            }
-                        },
                         "minecraft:climate": {
-                            description: "Définit la temprature, l'humidité, les précipitations et similaires. Les Biomes sans ce composant auront des valeurs par défaut.",
+                            description: "Définit la temprature, l'humidité, les précipitations, etc. Les Biomes sans ce composant auront des valeurs par défaut.",
                             type: "object",
                             properties: {
+                                ash: {
+                                    description: "Densité des particules de cendres dans l'air de ce biome. Utilisé dans le biome `soulsand_valley`.",
+                                    type: "number"
+                                },
                                 blue_spores: {
-                                    description: "Densité des visuels de précipitations de spores bleues.",
+                                    description: "Densité des particules de spores bleues dans l'air de ce biome. Utilisé dans le biome `warped_forest`.",
                                     type: "number"
                                 },
                                 downfall: {
-                                    description: "Quantité que les précipitations affectent les couleurs et les changements de blocs.",
+                                    description: "Cette valeur influence la couleur de la végétation et de l'eau. La valeur doit être comprise entre 0.0 et 1.0, où 0.0 donne des couleurs ternes et 1.0 des couleurs vives.",
+                                    type: "number"
+                                },
+                                red_spores: {
+                                    description: "Densité des particules de spores rouges dans l'air de ce biome. Utilisé dans le biome `crimson_forest`.",
                                     type: "number"
                                 },
                                 snow_accumulation: {
@@ -124,20 +68,12 @@ const baseSchema = {
                                         type: "number"
                                     }
                                 },
-                                white_ash: {
-                                    description: "Densité des visuels de précipitations de cendres blanches.",
-                                    type: "number"
-                                },
                                 temperature: {
-                                    description: "La temperature affecte une variété de choses visuelles et comportementales, y compris le placement de la neige et de la glace, le séchage de l'éponge et la couleur du ciel.",
+                                    description: "La temperature affecte une variété de choses visuelles et comportementales, y compris le placement de la neige et de la glace, le séchage des blocs d'éponge, la couleur de l'eau, et la couleur de la végétation. Si la température est froide, la pluie sera remplacée par la neige et des couches de neige seront placées sur les blocs.",
                                     type: "number"
                                 },
-                                red_spores: {
-                                    description: "Densité des visuels de précipitations de spores rouges.",
-                                    type: "number"
-                                },
-                                ash: {
-                                    description: "Densité des visuels de précipitations de cendres.",
+                                white_ash: {
+                                    description: "Densité des particules de cendres blanches dans l'air de ce biome. Utilisé dans le biome `basalt_deltas`.",
                                     type: "number"
                                 }
                             }
@@ -154,153 +90,85 @@ const baseSchema = {
                                 }
                             }
                         },
-                        "minecraft:frozen_ocean_surface": {
-                            description: "Définit la surface de l'océan gelé en ajoutant des icebergs.",
+                        "minecraft:humidity": {
+                            description: "Force un biome à être soit toujours humide, soit jamais humide. L'humidité affecte les chances de propagation des plantes et la vitesse de propagation du feu dans le biome.",
                             type: "object",
-                            required: ["sea_floor_depth", "mid_material", "sea_floor_material", "foundation_material", "top_material", "sea_material"],
+                            required: ["is_humid"],
                             properties: {
-                                mid_material: {
-                                    description: "Controle le type de bloc utilisé dans une couche sous la surface de ce biome.",
-                                    oneOf: [
-                                        {
-                                            type: "string",
-                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
-                                        },
-                                        commonSchemas.block_descriptor
-                                    ]
-                                },
-                                sea_floor_depth: {
-                                    description: "Contrôle à quelle profondeur sous le niveau mondial des eaux le fond de l'océan devrait se produire.",
-                                    type: "integer"
-                                },
-                                sea_floor_material: {
-                                    description: "Contrôle le type de bloc utilisé comme sol pour les étendues d'eau dans ce biome.",
-                                    oneOf: [
-                                        {
-                                            type: "string",
-                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
-                                        },
-                                        commonSchemas.block_descriptor
-                                    ]
-                                },
-                                sea_material: {
-                                    description: "Contrôle le type de bloc utilisé pour les étendues d'eau dans ce biome.",
-                                    oneOf: [
-                                        {
-                                            type: "string",
-                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
-                                        },
-                                        commonSchemas.block_descriptor
-                                    ]
-                                },
-                                top_material: {
-                                    description: "Contrôle le type de bloc utilisé pour la surface de ce biome.",
-                                    oneOf: [
-                                        {
-                                            type: "string",
-                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
-                                        },
-                                        commonSchemas.block_descriptor
-                                    ]
-                                },
-                                foundation_material: {
-                                    description: "Contrôle le type de bloc utilisé profondément sous terre dans ce biome.",
-                                    oneOf: [
-                                        {
-                                            type: "string",
-                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
-                                        },
-                                        commonSchemas.block_descriptor
-                                    ]
+                                is_humid: {
+                                    description: "Si `true`, le biome est considéré comme humide. Si `false`, le biome est considéré comme sec.",
+                                    type: "boolean"
                                 }
                             }
                         },
-                        "minecraft:mesa_surface": {
-                            description: "Ajoute des strates colorées et des piliers optionnels.",
+                        "minecraft:map_tints": {
+                            description: "Définit la couleur avec laquelle l'herbe et le feuillage seront teintés dans ce biome sur la carte.",
                             type: "object",
-                            required: ["mid_material", "sea_floor_depth", "sea_floor_material", "hard_clay_material", "sea_material", "top_material", "foundation_material", "clay_material", "bryce_pillars", "has_forest"],
                             properties: {
-                                sea_floor_depth: {
-                                    description: "Contrôle à quelle profondeur sous le niveau mondial des eaux le fond de l'océan devrait se produire.",
-                                    type: "integer"
-                                },
-                                mid_material: {
-                                    description: "Contrôle le type de bloc utilisé dans une couche sous la surface de ce biome.",
+                                foliage: {
+                                    description: "Définit la couleur du feuillage dans ce biome sur la carte.",
                                     oneOf: [
                                         {
                                             type: "string",
-                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                            pattern: schemaPatterns.color_hex
                                         },
-                                        commonSchemas.block_descriptor
+                                        {
+                                            type: "array",
+                                            minItems: 3,
+                                            maxItems: 3,
+                                            items: {
+                                                type: "number",
+                                                minimum: 0,
+                                                maximum: 255
+                                            }
+                                        }
                                     ]
                                 },
-                                sea_floor_material: {
-                                    description: "Contrôle le type de bloc utilisé comme sol pour les étendues d'eau dans ce biome.",
+                                grass: {
+                                    description: "Définit si l'herbe utilisera une couleur de teinte personnalisée ou une couleur de teinte basée sur le bruit.",
                                     oneOf: [
                                         {
-                                            type: "string",
-                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                            type: "object",
+                                            required: ["tint", "type"],
+                                            properties: {
+                                                tint: {
+                                                    description: "La couleur de teinte utilisée dans ce biome sur la carte.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "string",
+                                                            pattern: schemaPatterns.color_hex
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 3,
+                                                            maxItems: 3,
+                                                            items: {
+                                                                type: "number",
+                                                                minimum: 0,
+                                                                maximum: 255
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                type: {
+                                                    description: "Contrôle le type de teinte d'herbe à utiliser.",
+                                                    type: "string",
+                                                    enum: ["tint"]
+                                                }
+                                            }
                                         },
-                                        commonSchemas.block_descriptor
-                                    ]
-                                },
-                                foundation_material: {
-                                    description: "Contrôle le type de bloc utilisé profondément sous terre dans ce biome.",
-                                    oneOf: [
                                         {
-                                            type: "string",
-                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
-                                        },
-                                        commonSchemas.block_descriptor
+                                            type: "object",
+                                            required: ["type"],
+                                            properties: {
+                                                type: {
+                                                    description: "Contrôle le type de teinte d'herbe à utiliser.",
+                                                    type: "string",
+                                                    enum: ["noise"]
+                                                }
+                                            }
+                                        }
                                     ]
-                                },
-                                top_material: {
-                                    description: "Contrôle le type de bloc utilisé pour la surface de ce biome.",
-                                    oneOf: [
-                                        {
-                                            type: "string",
-                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
-                                        },
-                                        commonSchemas.block_descriptor
-                                    ]
-                                },
-                                sea_material: {
-                                    description: "Contrôle le type de bloc utilisé pour les étendues d'eau dans ce biome.",
-                                    oneOf: [
-                                        {
-                                            type: "string",
-                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
-                                        },
-                                        commonSchemas.block_descriptor
-                                    ]
-                                },
-                                hard_clay_material: {
-                                    description: "Contrôle le type de bloc utilisé pour les strates de terre cuite dure dans ce biome.",
-                                    oneOf: [
-                                        {
-                                            type: "string",
-                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
-                                        },
-                                        commonSchemas.block_descriptor
-                                    ]
-                                },
-                                clay_material: {
-                                    description: "Contrôle le type de bloc utilisé pour les strates d'argile dans ce biome.",
-                                    oneOf: [
-                                        {
-                                            type: "string",
-                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
-                                        },
-                                        commonSchemas.block_descriptor
-                                    ]
-                                },
-                                bryce_pillars: {
-                                    description: "Si vrai, ajoute des piliers Bryce dans le biome.",
-                                    type: "boolean"
-                                },
-                                has_forest: {
-                                    description: "Si vrai, place de la terre grossière et de l'herbe à haute altitude.",
-                                    type: "boolean"
                                 }
                             }
                         },
@@ -309,7 +177,7 @@ const baseSchema = {
                             type: "object",
                             properties: {
                                 steep_material_adjustment: {
-                                    description: "Définit le bloc de surface utilisé pour les pentes raides et des paramètres.",
+                                    description: "Définit le bloc de surface utilisé pour les pentes raides en définissant les pentes orientées dans chaque direction.",
                                     type: "object",
                                     properties: {
                                         material: {
@@ -571,6 +439,10 @@ const baseSchema = {
                                 }
                             }
                         },
+                        "minecraft:partially_frozen": {
+                            description: "Ce composant affectera la température dans un biome gelé, causant certaines zones à ne pas être gelées.",
+                            type: "object"
+                        },
                         "minecraft:replace_biomes": {
                             description: "Remplace une portion spécifiée d'un ou plusieurs biomes par ce Biome.",
                             type: "object",
@@ -594,7 +466,7 @@ const baseSchema = {
                                                 minItems: 1,
                                                 items: {
                                                     type: "string",
-                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.biome_ids
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.vanilla_biome_ids_without_namespace
                                                 }
                                             },
                                             amount: {
@@ -611,6 +483,386 @@ const baseSchema = {
                                             }
                                         }
                                     }
+                                }
+                            }
+                        },
+                        "minecraft:surface_builder": {
+                            description: "Contrôle les blocs utilisés pour la génération de terrain.",
+                            type: "object",
+                            required: ["builder"],
+                            properties: {
+                                builder: {
+                                    description: "Contrôle les blocs utilisés pour la génération de terrain.",
+                                    oneOf: [
+                                        {
+                                            type: "object",
+                                            required: ["foundation_material", "mid_material", "sea_floor_depth", "sea_floor_material", "sea_material", "top_material", "type"],
+                                            properties: {
+                                                foundation_material: {
+                                                    description: "Contrôle le type de bloc utilisé en profondeur dans ce biome.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "string",
+                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                        },
+                                                        commonSchemas.block_descriptor
+                                                    ]
+                                                },
+                                                mid_material: {
+                                                    description: "Contrôle le type de bloc utilisé dans une couche sous la surface de ce biome.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "string",
+                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                        },
+                                                        commonSchemas.block_descriptor
+                                                    ]
+                                                },
+                                                sea_floor_depth: {
+                                                    description: "Contrôle à quelle profondeur sous le niveau mondial des eaux le fond de l'océan devrait se produire.",
+                                                    type: "integer"
+                                                },
+                                                sea_floor_material: {
+                                                    description: "Contrôle le type de bloc utilisé comme sol pour les étendues d'eau dans ce biome.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "string",
+                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                        },
+                                                        commonSchemas.block_descriptor
+                                                    ]
+                                                },
+                                                sea_material: {
+                                                    description: "Contrôle le type de bloc utilisé pour les étendues d'eau dans ce biome.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "string",
+                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                        },
+                                                        commonSchemas.block_descriptor
+                                                    ]
+                                                },
+                                                top_material: {
+                                                    description: "Contrôle le type de bloc utilisé pour la surface de ce biome.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "string",
+                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                        },
+                                                        commonSchemas.block_descriptor
+                                                    ]
+                                                },
+                                                type: {
+                                                    description: "Définit le type de constructeur de surface à utiliser.",
+                                                    type: "string",
+                                                    enum: ["minecraft:overworld"]
+                                                }
+                                            }
+                                        },
+                                        {
+                                            type: "object",
+                                            required: ["foundation_material", "mid_material", "sea_floor_depth", "sea_floor_material", "sea_material", "top_material", "type"],
+                                            properties: {
+                                                foundation_material: {
+                                                    description: "Contrôle le type de bloc utilisé en profondeur dans ce biome.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "string",
+                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                        },
+                                                        commonSchemas.block_descriptor
+                                                    ]
+                                                },
+                                                mid_material: {
+                                                    description: "Contrôle le type de bloc utilisé dans une couche sous la surface de ce biome.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "string",
+                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                        },
+                                                        commonSchemas.block_descriptor
+                                                    ]
+                                                },
+                                                sea_floor_depth: {
+                                                    description: "Contrôle à quelle profondeur sous le niveau mondial des eaux le fond de l'océan devrait se produire.",
+                                                    type: "integer"
+                                                },
+                                                sea_floor_material: {
+                                                    description: "Contrôle le type de bloc utilisé comme sol pour les étendues d'eau dans ce biome.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "string",
+                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                        },
+                                                        commonSchemas.block_descriptor
+                                                    ]
+                                                },
+                                                sea_material: {
+                                                    description: "Contrôle le type de bloc utilisé pour les étendues d'eau dans ce biome.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "string",
+                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                        },
+                                                        commonSchemas.block_descriptor
+                                                    ]
+                                                },
+                                                top_material: {
+                                                    description: "Contrôle le type de bloc utilisé pour la surface de ce biome.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "string",
+                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                        },
+                                                        commonSchemas.block_descriptor
+                                                    ]
+                                                },
+                                                type: {
+                                                    description: "Définit le type de constructeur de surface à utiliser.",
+                                                    type: "string",
+                                                    enum: ["minecraft:frozen_ocean"]
+                                                }
+                                            }
+                                        },
+                                        {
+                                            type: "object",
+                                            required: ["bryce_pillars", "clay_material", "foundation_material", "hard_clay_material", "has_forest", "mid_material", "sea_floor_depth", "sea_floor_material", "sea_material", "top_material", "type"],
+                                            properties: {
+                                                bryce_pillars: {
+                                                    description: "Définit si le mesa se génère avec des piliers.",
+                                                    type: "boolean"
+                                                },
+                                                clay_material: {
+                                                    description: "Définit le type de bloc utilisé pour la base d'argile dans ce biome.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "string",
+                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                        },
+                                                        commonSchemas.block_descriptor
+                                                    ]
+                                                },
+                                                foundation_material: {
+                                                    description: "Contrôle le type de bloc utilisé en profondeur dans ce biome.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "string",
+                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                        },
+                                                        commonSchemas.block_descriptor
+                                                    ]
+                                                },
+                                                hard_clay_material: {
+                                                    description: "Définit le type de bloc utilisé pour la base d'argile durcie dans ce biome.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "string",
+                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                        },
+                                                        commonSchemas.block_descriptor
+                                                    ]
+                                                },
+                                                has_forest: {
+                                                    description: "Définit si de la terre stérile et de l'herbe sont générées dans ce biome dans les hautes altitudes.",
+                                                    type: "boolean"
+                                                },
+                                                mid_material: {
+                                                    description: "Contrôle le type de bloc utilisé dans une couche sous la surface de ce biome.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "string",
+                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                        },
+                                                        commonSchemas.block_descriptor
+                                                    ]
+                                                },
+                                                sea_floor_depth: {
+                                                    description: "Contrôle à quelle profondeur sous le niveau mondial des eaux le fond de l'océan devrait se produire.",
+                                                    type: "integer"
+                                                },
+                                                sea_floor_material: {
+                                                    description: "Contrôle le type de bloc utilisé comme sol pour les étendues d'eau dans ce biome.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "string",
+                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                        },
+                                                        commonSchemas.block_descriptor
+                                                    ]
+                                                },
+                                                sea_material: {
+                                                    description: "Contrôle le type de bloc utilisé pour les étendues d'eau dans ce biome.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "string",
+                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                        },
+                                                        commonSchemas.block_descriptor
+                                                    ]
+                                                },
+                                                top_material: {
+                                                    description: "Contrôle le type de bloc utilisé pour la surface de ce biome.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "string",
+                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                        },
+                                                        commonSchemas.block_descriptor
+                                                    ]
+                                                },
+                                                type: {
+                                                    description: "Définit le type de constructeur de surface à utiliser.",
+                                                    type: "string",
+                                                    enum: ["minecraft:mesa"]
+                                                }
+                                            }
+                                        },
+                                        {
+                                            type: "object",
+                                            required: ["foundation_material", "mid_material", "sea_floor_depth", "sea_floor_material", "sea_material", "top_material", "type"],
+                                            properties: {
+                                                foundation_material: {
+                                                    description: "Contrôle le type de bloc utilisé en profondeur dans ce biome.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "string",
+                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                        },
+                                                        commonSchemas.block_descriptor
+                                                    ]
+                                                },
+                                                mid_material: {
+                                                    description: "Contrôle le type de bloc utilisé dans une couche sous la surface de ce biome.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "string",
+                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                        },
+                                                        commonSchemas.block_descriptor
+                                                    ]
+                                                },
+                                                sea_floor_depth: {
+                                                    description: "Contrôle à quelle profondeur sous le niveau mondial des eaux le fond de l'océan devrait se produire.",
+                                                    type: "integer"
+                                                },
+                                                sea_floor_material: {
+                                                    description: "Contrôle le type de bloc utilisé comme sol pour les étendues d'eau dans ce biome.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "string",
+                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                        },
+                                                        commonSchemas.block_descriptor
+                                                    ]
+                                                },
+                                                sea_material: {
+                                                    description: "Contrôle le type de bloc utilisé pour les étendues d'eau dans ce biome.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "string",
+                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                        },
+                                                        commonSchemas.block_descriptor
+                                                    ]
+                                                },
+                                                top_material: {
+                                                    description: "Contrôle le type de bloc utilisé pour la surface de ce biome.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "string",
+                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                        },
+                                                        commonSchemas.block_descriptor
+                                                    ]
+                                                },
+                                                type: {
+                                                    description: "Définit le type de constructeur de surface à utiliser.",
+                                                    type: "string",
+                                                    enum: ["minecraft:swamp"]
+                                                }
+                                            }
+                                        },
+                                        {
+                                            type: "object",
+                                            required: ["ceiling_materials", "floor_materials", "foundation_material", "sea_material", "type"],
+                                            properties: {
+                                                beach_material: {
+                                                    description: "Contrôle le type de bloc utilisé pour décorer la surface proche du niveau de la mer dans ce biome.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "string",
+                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                        },
+                                                        commonSchemas.block_descriptor
+                                                    ]
+                                                },
+                                                ceiling_materials: {
+                                                    description: "Contrôle les type de bloc utilisé pour les plafonds de surface dans ce biome.",
+                                                    type: "array",
+                                                    minItems: 1,
+                                                    items: {
+                                                        oneOf: [
+                                                            {
+                                                                type: "string",
+                                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                            },
+                                                            commonSchemas.block_descriptor
+                                                        ]
+                                                    }
+                                                },
+                                                floor_materials: {
+                                                    description: "Contrôle les type de bloc utilisé pour le sol de la surface dans ce biome.",
+                                                    type: "array",
+                                                    minItems: 1,
+                                                    items: {
+                                                        oneOf: [
+                                                            {
+                                                                type: "string",
+                                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                            },
+                                                            commonSchemas.block_descriptor
+                                                        ]
+                                                    }
+                                                },
+                                                foundation_material: {
+                                                    description: "Contrôle le type de bloc utilisé en profondeur dans ce biome.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "string",
+                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                        },
+                                                        commonSchemas.block_descriptor
+                                                    ]
+                                                },
+                                                sea_material: {
+                                                    description: "Contrôle le type de bloc utilisé pour les étendues d'eau dans ce biome.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "string",
+                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                        },
+                                                        commonSchemas.block_descriptor
+                                                    ]
+                                                },
+                                                type: {
+                                                    description: "Définit le type de constructeur de surface à utiliser.",
+                                                    type: "string",
+                                                    enum: ["minecraft:capped"]
+                                                }
+                                            }
+                                        },
+                                        {
+                                            type: "object",
+                                            required: ["type"],
+                                            properties: {
+                                                type: {
+                                                    description: "Définit le type de constructeur de surface à utiliser.",
+                                                    type: "string",
+                                                    enum: ["minecraft:the_end"]
+                                                }
+                                            }
+                                        }
+                                    ]
                                 }
                             }
                         },
@@ -699,17 +951,7 @@ const baseSchema = {
                                                 minItems: 2,
                                                 maxItems: 2,
                                                 items: {
-                                                    oneOf: [
-                                                        {
-                                                            type: "number"
-                                                        },
-                                                        {
-                                                            type: "boolean"
-                                                        },
-                                                        {
-                                                            type: "string"
-                                                        }
-                                                    ]
+                                                    type: "molang"
                                                 }
                                             },
                                             noise_frequency_scale: {
@@ -721,135 +963,13 @@ const baseSchema = {
                                 }
                             }
                         },
-                        "minecraft:surface_parameters": {
-                            description: "Contrôle les blocs utilisés pour la génération de terrain par défaut de l'Overworld.",
-                            type: "object",
-                            required: ["sea_floor_depth", "mid_material", "sea_floor_material", "foundation_material", "top_material","sea_material"],
-                            properties: {
-                                sea_floor_depth: {
-                                    description: "Contrôle à quelle profondeur sous le niveau mondial des eaux le fond de l'océan devrait se produire.",
-                                    type: "integer"
-                                },
-                                mid_material: {
-                                    description: "Contrôle le type de bloc utilisé dans une couche sous la surface de ce biome.",
-                                    oneOf: [
-                                        {
-                                            type: "string",
-                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
-                                        },
-                                        commonSchemas.block_descriptor
-                                    ]
-                                },
-                                sea_floor_material: {
-                                    description: "Contrôle le type de bloc utilisé comme sol pour les étendues d'eau dans ce biome.",
-                                    oneOf: [
-                                        {
-                                            type: "string",
-                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
-                                        },
-                                        commonSchemas.block_descriptor
-                                    ]
-                                },
-                                sea_material: {
-                                    description: "Contrôle le type de bloc utilisé pour les étendues d'eau dans ce biome.",
-                                    oneOf: [
-                                        {
-                                            type: "string",
-                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
-                                        },
-                                        commonSchemas.block_descriptor
-                                    ]
-                                },
-                                top_material: {
-                                    description: "Contrôle le type de bloc utilisé pour la surface de ce biome.",
-                                    oneOf: [
-                                        {
-                                            type: "string",
-                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
-                                        },
-                                        commonSchemas.block_descriptor
-                                    ]
-                                },
-                                foundation_material: {
-                                    description: "Contrôle le type de bloc utilisé profondément sous terre dans ce biome.",
-                                    oneOf: [
-                                        {
-                                            type: "string",
-                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
-                                        },
-                                        commonSchemas.block_descriptor
-                                    ]
-                                }
-                            }
-                        },
-                        "minecraft:swamp_surface": {
-                            description: "Similaire à overworld_surface. Ajoute des détails de surface de marais.",
-                            type: "object",
-                            required: ["sea_floor_depth", "mid_material", "sea_floor_material", "foundation_material", "top_material", "sea_material"],
-                            properties: {
-                                mid_material: {
-                                    description: "Contrôle le type de bloc utilisé dans une couche sous la surface de ce biome.",
-                                    oneOf: [
-                                        {
-                                            type: "string",
-                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
-                                        },
-                                        commonSchemas.block_descriptor
-                                    ]
-                                },
-                                sea_floor_depth: {
-                                    description: "Contrôle à quelle profondeur sous le niveau mondial des eaux le fond de l'océan devrait se produire.",
-                                    type: "integer"
-                                },
-                                sea_floor_material: {
-                                    description: "Contrôle le type de bloc utilisé comme sol pour les étendues d'eau dans ce biome.",
-                                    oneOf: [
-                                        {
-                                            type: "string",
-                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
-                                        },
-                                        commonSchemas.block_descriptor
-                                    ]
-                                },
-                                sea_material: {
-                                    description: "Contrôle le type de bloc utilisé pour les étendues d'eau dans ce biome.",
-                                    oneOf: [
-                                        {
-                                            type: "string",
-                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
-                                        },
-                                        commonSchemas.block_descriptor
-                                    ]
-                                },
-                                top_material: {
-                                    description: "Contrôle le type de bloc utilisé pour la surface de ce biome.",
-                                    oneOf: [
-                                        {
-                                            type: "string",
-                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
-                                        },
-                                        commonSchemas.block_descriptor
-                                    ]
-                                },
-                                foundation_material: {
-                                    description: "Contrôle le type de bloc utilisé profondément sous terre dans ce biome.",
-                                    oneOf: [
-                                        {
-                                            type: "string",
-                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
-                                        },
-                                        commonSchemas.block_descriptor
-                                    ]
-                                }
-                            }
-                        },
                         "minecraft:tags": {
                             description: "Attache des tags de chaîne arbitraires à ce Biome.",
                             type: "object",
                             required: ["tags"],
                             properties: {
                                 tags: {
-                                    description: "Liste des tags de chaîne à attacher à ce Biome.",
+                                    description: "Liste des tags à attacher à ce Biome.",
                                     type: "array",
                                     items: {
                                         type: "string",
@@ -857,10 +977,6 @@ const baseSchema = {
                                     }
                                 }
                             }
-                        },
-                        "minecraft:the_end_surface": {
-                            description: "Utilise la génération de terrain par défaut de Minecraft End.",
-                            type: "object"
                         }
                     }
                 }

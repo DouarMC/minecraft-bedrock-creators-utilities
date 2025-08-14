@@ -3,7 +3,6 @@ import { dynamicExamplesSourceKeys } from "../../../../shared/schemaEnums";
 import { schemaPatterns } from "../../../../shared/schemaPatterns";
 
 const baseSchema = {
-    $schema: "https://json-schema.org/draft-07/schema#",
     description: "Ce fichier crée des presets d'assistance à la visée (Aim-Assist).",
     type: "object",
     required: ["format_version", "minecraft:aim_assist_preset"],
@@ -11,7 +10,7 @@ const baseSchema = {
         format_version: {
             description: "La version du format à utiliser.",
             type: "string",
-            enum: ["1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90"]
+            enum: ["1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100"]
         },
         "minecraft:aim_assist_preset": {
             description: "Contient la définition du preset d'Aim-Assist.",
@@ -22,7 +21,7 @@ const baseSchema = {
                     description: "L'identifiant du preset d'Aim-Assist.",
                     type: "string",
                     pattern: schemaPatterns.identifier_with_namespace,
-                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.aim_assist_preset_ids
+                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.data_driven_aim_assist_preset_ids
                 },
                 item_settings: {
                     description: "La catégorie d'Aim-Assist à utiliser pour des items spécifiques que le joueur tient dans sa main.",
@@ -36,7 +35,7 @@ const baseSchema = {
                     }
                 },
                 default_item_settings: {
-                    description: "La catégorie d'Aim-Assist à utiliser par défaut pour les items que le joueur tient dans sa main.",
+                    description: "La catégorie d'Aim-Assist à utiliser pour les items qui ne sont pas définis dans `item_settings` que le joueur tient dans sa main.",
                     type: "string",
                     "x-dynamic-examples-source": dynamicExamplesSourceKeys.aim_assist_category_ids
                 },

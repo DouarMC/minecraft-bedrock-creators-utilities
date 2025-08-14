@@ -1,7 +1,7 @@
 import { SchemaType } from "../../../../../../types/schema";
+import { dynamicExamplesSourceKeys } from "../../../../shared/schemaEnums";
 
 const baseSchema = {
-    "$schema": "http://json-schema.org/draft-07/schema#",
     "description": "[EXPERIMENTALE]: Data Driven Jigsaw Structures \nCe fichier sert à créer une liste de processeurs qui peuvent être utilisés pour modifier les structures Jigsaw lorsqu'elles sont placées dans le monde. Les processeurs sont des fonctions qui s'exécutent lors de la mise en place d'un modèle de structure dans le monde. Actuellement, le seul processeur pris en charge est le processeur de règles de bloc, qui décrit comment les blocs individuels des modèles de structure doivent être modifiés lorsqu'ils sont placés dans le monde. Par exemple, vous pouvez vouloir remplacer aléatoirement la moitié des blocs de Pierre par de la Pierre Moussue. Ou vous pouvez remplacer le Gravier par du Gravier Suspect et ajouter une table de butin. \nType: `Object`",
     "type": "object",
     "required": ["format_version", "minecraft:processor_list"],
@@ -10,7 +10,7 @@ const baseSchema = {
             "description": "La version du Format à utiliser. \nType: `String`",
             "type": "string",
             enum: [
-                "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90"
+                "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100"
             ]
         },
         "minecraft:processor_list": {
@@ -26,7 +26,8 @@ const baseSchema = {
                         "identifier": {
                             "description": "L'identifiant de la liste de processeurs. \nType: `String` \nNote: Cet identifiant peut être référencé par les Template Pools lors de l'appariement des processeurs avec les Modèles de Structure.",
                             "type": "string",
-                            "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                            "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$",
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.data_driven_processor_ids
                         }
                     }
                 },

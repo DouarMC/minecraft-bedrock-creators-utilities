@@ -1,4 +1,6 @@
 import { SchemaChange, SchemaType } from "../../../../../types/schema";
+import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
+import { schemaPatterns } from "../../../shared/schemaPatterns";
 
 const baseSchema = {
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -10,7 +12,7 @@ const baseSchema = {
             "description": "La version du Format à utiliser. \nType: `String`",
             "type": "string",
             enum: [
-                "1.8.0", "1.9.0", "1.10.0", "1.11.0", "1.12.0", "1.13.0", "1.14.0", "1.14.1", "1.14.20", "1.14.30", "1.15.0", "1.16.0", "1.16.20", "1.16.100", "1.16.200", "1.16.210", "1.16.220", "1.16.230", "1.17.0", "1.17.10", "1.17.20", "1.17.30", "1.17.40", "1.18.0", "1.18.10", "1.18.20", "1.18.30", "1.18.40", "1.19.0", "1.19.10", "1.19.20", "1.19.30", "1.19.40", "1.19.50", "1.19.60", "1.19.70", "1.19.80", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90"
+                "1.8.0", "1.9.0", "1.10.0", "1.11.0", "1.12.0", "1.13.0", "1.14.0", "1.14.1", "1.14.20", "1.14.30", "1.15.0", "1.16.0", "1.16.20", "1.16.100", "1.16.200", "1.16.210", "1.16.220", "1.16.230", "1.17.0", "1.17.10", "1.17.20", "1.17.30", "1.17.40", "1.18.0", "1.18.10", "1.18.20", "1.18.30", "1.18.40", "1.19.0", "1.19.10", "1.19.20", "1.19.30", "1.19.40", "1.19.50", "1.19.60", "1.19.70", "1.19.80", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100"
             ]
         },
         "minecraft:client_entity": {
@@ -26,7 +28,8 @@ const baseSchema = {
                         "identifier": {
                             "description": "L'identifiant de l'Entité. \nType: `String`",
                             "type": "string",
-                            "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                            pattern: schemaPatterns.identifier_with_namespace,
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.entity_ids
                         },
                         "min_engine_version": {
                             "description": "Définit la version minimale du moteur Bedrock pour ce Client d'Entité. \n Type: `String` \n Note: Si il y a plusieurs définitions pour le même Client de l'Entité, la version la plus élevée sera utilisée à condition que le moteur Bedrock soit compatible.",
@@ -52,11 +55,13 @@ const baseSchema = {
                             "properties": {
                                 "default": {
                                     "description": "La Texture par défaut à utiliser. \nType: `String`",
-                                    "type": "string"
+                                    "type": "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.texture_file_paths
                                 }
                             },
                             "additionalProperties": {
-                                "type": "string"
+                                "type": "string",
+                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.texture_file_paths
                             }
                         },
                         "geometry": {
@@ -66,12 +71,12 @@ const baseSchema = {
                                 "default": {
                                     "description": "Le Modèle par défaut à utiliser. \nType: `String`",
                                     "type": "string",
-                                    "pattern": "^geometry\\..*"
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.model_ids
                                 }
                             },
                             "additionalProperties": {
                                 "type": "string",
-                                "pattern": "^geometry\\..*"
+                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.model_ids
                             }
                         },
                         "animations": {
@@ -79,7 +84,8 @@ const baseSchema = {
                             "type": "object",
                             "additionalProperties": {
                                 "type": "string",
-                                "pattern": "^animation\\..*"
+                                "pattern": schemaPatterns.animation_identifier,
+                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.resource_animation_ids
                             }
                         },
                         "animation_controllers": {
@@ -90,7 +96,8 @@ const baseSchema = {
                                 "maxProperties": 1,
                                 "additionalProperties": {
                                     "type": "string",
-                                    "pattern": "^controller\\.animation\\..*"
+                                    "pattern": schemaPatterns.animation_controller_identifier,
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.resource_animation_controller_ids
                                 }
                             }
                         },
@@ -101,7 +108,8 @@ const baseSchema = {
                                 "oneOf": [
                                     {
                                         "type": "string",
-                                        "pattern": "^controller\\.render\\..*"
+                                        "pattern": "^controller\\.render\\..*",
+                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.render_controller_ids
                                     },
                                     {
                                         "type": "object",
@@ -110,7 +118,8 @@ const baseSchema = {
                                         },
                                         "propertyNames": {
                                             "type": "string",
-                                            "pattern": "^controller\\.render\\..*"
+                                            "pattern": "^controller\\.render\\..*",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.render_controller_ids
                                         }
                                     }
                                 ]
@@ -122,47 +131,19 @@ const baseSchema = {
                             "properties": {
                                 "scale": {
                                     "description": "Définit la taille du modèle de l'entité. \nType: `Molang String | Number`",
-                                    "oneOf": [
-                                        {
-                                            "type": "string"
-                                        },
-                                        {
-                                            "type": "number"
-                                        }
-                                    ]
+                                    type: "molang"
                                 },
                                 "scaleX": {
                                     "description": "Définit la taille X du modèle de l'entité. \nType: `Molang String | Number`",
-                                    "oneOf": [
-                                        {
-                                            "type": "string"
-                                        },
-                                        {
-                                            "type": "number"
-                                        }
-                                    ]
+                                    type: "molang"
                                 },
                                 "scaleY": {
                                     "description": "Définit la taille Y du modèle de l'entité. \nType: `Molang String | Number`",
-                                    "oneOf": [
-                                        {
-                                            "type": "string"
-                                        },
-                                        {
-                                            "type": "number"
-                                        }
-                                    ]
+                                    type: "molang"
                                 },
                                 "scaleZ": {
                                     "description": "Définit la taille Z du modèle de l'entité. \nType: `Molang String | Number`",
-                                    "oneOf": [
-                                        {
-                                            "type": "string"
-                                        },
-                                        {
-                                            "type": "number"
-                                        }
-                                    ]
+                                    type: "molang"
                                 },
                                 "initialize": {
                                     "description": "Ce script s'exécute lors de la première initialisation de l'entité, c'est-à-dire lorsqu'elle apparaît et à chaque fois qu'elle est chargée. \nType: `Molang String[]`",
@@ -175,32 +156,18 @@ const baseSchema = {
                                     "description": "Ce script s'exécute chaque image avant la lecture des animations. Ceci est utile pour calculer les variables qui seront utilisées dans les animations et qui doivent être calculées avant l'exécution de l'animation. \nType: `Molang String[]`",
                                     "type": "array",
                                     "items": {
-                                        "type": "string"
+                                        type: "molang"
                                     }
                                 },
                                 "should_update_bones_and_effects_offscreen": {
                                     "description": "Si `true`, les os et les effets seront toujours mis à jour si le client de l'Entité est hors écran. \n Type: `Boolean | Molang String`",
                                     "default": false,
-                                    "oneOf": [
-                                        {
-                                            "type": "boolean"
-                                        },
-                                        {
-                                            "type": "string"
-                                        }
-                                    ]
+                                    type: "molang"
                                 },
                                 "should_update_effects_offscreen": {
                                     "description": "Si `true`, les effets seront toujours mis à jour si le client de l'Entité est hors écran. \n Type: `Boolean | Molang String`",
                                     "default": false,
-                                    "oneOf": [
-                                        {
-                                            "type": "boolean"
-                                        },
-                                        {
-                                            "type": "string"
-                                        }
-                                    ]
+                                    type: "molang"
                                 }
                             }
                         },
@@ -294,7 +261,8 @@ const versionedChanges: SchemaChange[] = [
                     "type": "object",
                     "additionalProperties": {
                         "type": "string",
-                        "pattern": "^(controller\\.animation\\.|animation\\.).*"
+                        pattern: [schemaPatterns.animation_identifier, schemaPatterns.animation_controller_identifier],
+                        "x-dynamic-examples-source": [dynamicExamplesSourceKeys.resource_animation_ids, dynamicExamplesSourceKeys.resource_animation_controller_ids]
                     }
                 }
             }

@@ -1,4 +1,6 @@
 import { SchemaType } from "../../../../../types/schema";
+import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
+import { schemaPatterns } from "../../../shared/schemaPatterns";
 
 const baseSchema = {
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -24,7 +26,7 @@ const baseSchema = {
                         "identifier": {
                             "description": "L'identifiant de l'item. \nType: `String`",
                             "type": "string",
-                            "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                            pattern: schemaPatterns.identifier_with_namespace
                         },
                         "category": {
                             "description": "La catégorie du menu de l'inventaire dans lequel l'item sera affiché. \nType: `String`",

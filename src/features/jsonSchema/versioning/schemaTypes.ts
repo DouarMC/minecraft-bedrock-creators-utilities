@@ -15,7 +15,6 @@ import { featureSchemaTypeBP } from "../versionedChanges/behavior_pack/features/
 import { itemSchemaTypeBP } from "../versionedChanges/behavior_pack/items/_item";
 import { craftingItemCatalogSchemaTypeBP } from "../versionedChanges/behavior_pack/item_catalog/crafting_item_catalog";
 import { manifestSchemaTypeBP } from "../versionedChanges/behavior_pack/manifest";
-import { testSchemaType } from "../versionedChanges/behavior_pack/test";
 import { tickSchemaTypeBP } from "../versionedChanges/behavior_pack/functions/tick";
 import { lootTableSchemaTypeBP } from "../versionedChanges/behavior_pack/loot_tables/_loot_table";
 import { recipeSchemaTypeBP } from "../versionedChanges/behavior_pack/recipes/_recipe";
@@ -83,7 +82,6 @@ export const schemaTypes: SchemaType[] = [
     featureSchemaTypeBP,
     itemSchemaTypeBP,
     manifestSchemaTypeBP,
-    testSchemaType,
     tickSchemaTypeBP,
     craftingItemCatalogSchemaTypeBP,
     lootTableSchemaTypeBP,

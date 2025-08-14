@@ -1,7 +1,7 @@
 import { SchemaType } from "../../../../../../types/schema";
+import { dynamicExamplesSourceKeys } from "../../../../shared/schemaEnums";
 
 const baseSchema = {
-    "$schema": "http://json-schema.org/draft-07/schema#",
     "description": "[EXPERIMENTALE]: Data Driven Jigsaw Structures \nCe fichier sert à définir un Structure Set. Un Structure Set contient un ensemble de Structures Jigsaw et des règles pour déterminer comment ces structures doivent être placées dans le monde par rapport à d'autres instances de structures du même ensemble. Chaque structure dans un ensemble est associée à un poids qui influence la fréquence à laquelle elle est choisie. \nType: `Object`",
     "type": "object",
     "required": ["format_version", "minecraft:structure_set"],
@@ -10,7 +10,7 @@ const baseSchema = {
             "description": "La version du Format à utiliser. \nType: `String`",
             "type": "string",
             enum: [
-                "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90"
+                "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100"
             ]
         },
         "minecraft:structure_set": {
@@ -26,7 +26,8 @@ const baseSchema = {
                         "identifier": {
                             "description": "L'identifiant du Structure Set. \nType: `String`",
                             "type": "string",
-                            "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
+                            "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$",
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.data_driven_structure_set_ids
                         }
                     }
                 },

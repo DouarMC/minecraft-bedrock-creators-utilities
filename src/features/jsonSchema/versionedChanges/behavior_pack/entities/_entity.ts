@@ -17,7 +17,7 @@ const baseSchema = {
             description: "La version du format à utiliser.",
             type: "string",
             enum: [
-                "1.8.0", "1.9.0", "1.10.0", "1.11.0", "1.12.0", "1.13.0", "1.14.0", "1.14.1", "1.14.20", "1.14.30", "1.15.0", "1.16.0", "1.16.20", "1.16.100", "1.16.200", "1.16.210", "1.16.220", "1.16.230", "1.17.0", "1.17.10", "1.17.20", "1.17.30", "1.17.40", "1.18.0", "1.18.10", "1.18.20", "1.18.30", "1.18.40", "1.19.0", "1.19.10", "1.19.20", "1.19.30", "1.19.40", "1.19.50", "1.19.60", "1.19.70", "1.19.80", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90"
+                "1.8.0", "1.9.0", "1.10.0", "1.11.0", "1.12.0", "1.13.0", "1.14.0", "1.14.1", "1.14.20", "1.14.30", "1.15.0", "1.16.0", "1.16.20", "1.16.100", "1.16.200", "1.16.210", "1.16.220", "1.16.230", "1.17.0", "1.17.10", "1.17.20", "1.17.30", "1.17.40", "1.18.0", "1.18.10", "1.18.20", "1.18.30", "1.18.40", "1.19.0", "1.19.10", "1.19.20", "1.19.30", "1.19.40", "1.19.50", "1.19.60", "1.19.70", "1.19.80", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100"
             ]
         },
         use_beta_features: {
@@ -44,7 +44,7 @@ const baseSchema = {
                             description: "Certains comportements d'entités ne sont pas `data_drvien`, ce qui signifie qu'on ne peut pas les imiter ou les refaire. Dans ce cas, on se base sur un type d'entité pour que notre Entité hérite de ses comportements qui ne sont pas `data-driven`.",
                             type: "string",
                             pattern: schemaPatterns.identifier_with_namespace,
-                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.vanilla_data_driven_entity_ids
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.entity_ids
                         },
                         spawn_category: {
                             description: "**NON-UTILISÉ** - Définit le type de catégorie d'apparition de cette Entité. Cette entité apparaîtra avec les autres types de catégorie d'apparition.",
@@ -183,7 +183,8 @@ const baseSchema = {
                             type: "object",
                             additionalProperties: {
                                 type: "string",
-                                pattern: [schemaPatterns.animation_identifier, schemaPatterns.animation_controller_identifier]
+                                pattern: [schemaPatterns.animation_identifier, schemaPatterns.animation_controller_identifier],
+                                "x-dynamic-examples-source": [dynamicExamplesSourceKeys.behavior_animation_ids, dynamicExamplesSourceKeys.behavior_animation_controller_ids]
                             }
                         },
                         scripts: {
@@ -280,7 +281,7 @@ const baseSchema = {
                                 entity_type: {
                                     description: "Définit le type de l'entité qui chevauchera cette Entité.",
                                     type: "string",
-                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.entity_ids
+                                    "x-dynamic-examples-source": [dynamicExamplesSourceKeys.entity_ids, dynamicExamplesSourceKeys.vanilla_entity_ids_without_namespace]
                                 },
                                 spawn_event: {
                                     description: "Le spawn event qui sera déclenché sur l'Entité chevauchée quand son cavalier sera crée.",

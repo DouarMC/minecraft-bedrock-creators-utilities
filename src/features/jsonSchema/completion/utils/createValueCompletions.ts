@@ -172,10 +172,8 @@ async function handleDynamicExamples(schema: any, seen: Set<string>, items: vsco
                 }, document, position));
             }
         }
-
-        console.warn(`Dynamic examples source "${schema["x-dynamic-examples-source"]}" is not yet implemented.`);
     } else {
-        console.log("NOOOOOO OUINNN ");
+        
     }
 }
 
