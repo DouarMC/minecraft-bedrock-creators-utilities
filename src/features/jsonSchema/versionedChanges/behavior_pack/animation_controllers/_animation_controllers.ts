@@ -1,5 +1,4 @@
 import { SchemaType } from "../../../../../types/schema";
-import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
 import { schemaPatterns } from "../../../shared/schemaPatterns";
 
 const baseSchema = {

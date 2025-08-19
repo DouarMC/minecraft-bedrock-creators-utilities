@@ -55,175 +55,175 @@ const baseSchema = {
                     type: "object",
                     properties: {
                         "minecraft:block_light_absorption": {
-                            "description": "Définit la quantité de lumière absorbée par le Bloc.",
-                            "default": 16,
-                            "oneOf": [
+                            description: "Définit la quantité de lumière absorbée par le Bloc.",
+                            default: 16,
+                            oneOf: [
                                 {
-                                    "type": "number",
-                                    "minimum": 0,
-                                    "maximum": 16
+                                    type: "number",
+                                    minimum: 0,
+                                    maximum: 16
                                 },
                                 {
-                                    "type": "object",
-                                    "required": ["filter_level"],
-                                    "properties": {
-                                        "filter_level": {
-                                            "description": "Le niveau de filtre de lumière du Bloc. (0-16)",
-                                            "default": 16,
-                                            "type": "number",
-                                            "minimum": 0,
-                                            "maximum": 16
+                                    type: "object",
+                                    required: ["filter_level"],
+                                    properties: {
+                                        filter_level: {
+                                            description: "Le niveau de filtre de lumière du Bloc. (0-16)",
+                                            default: 16,
+                                            type: "number",
+                                            minimum: 0,
+                                            maximum: 16
                                         }
                                     }
                                 }
                             ]
                         },
                         "minecraft:block_light_emission": {
-                            "description": "Définit la quantité de lumière émise par le Bloc.",
-                            "default": 0,
-                            "oneOf": [
+                            description: "Définit la quantité de lumière émise par le Bloc.",
+                            default: 0,
+                            oneOf: [
                                 {
-                                    "type": "number",
-                                    "minimum": 0,
-                                    "maximum": 1
+                                    type: "number",
+                                    minimum: 0,
+                                    maximum: 1
                                 },
                                 {
-                                    "type": "object",
-                                    "required": ["emission"],
-                                    "properties": {
-                                        "emission": {
-                                            "description": "Le niveau d'émission de lumière du Bloc.",
-                                            "default": 0,
-                                            "type": "number",
-                                            "minimum": 0,
-                                            "maximum": 1
+                                    type: "object",
+                                    required: ["emission"],
+                                    properties: {
+                                        emission: {
+                                            description: "Le niveau d'émission de lumière du Bloc.",
+                                            default: 0,
+                                            type: "number",
+                                            minimum: 0,
+                                            maximum: 1
                                         }
                                     }
                                 }
                             ]
                         },
                         "minecraft:custom_components": {
-                            "description": "Définit les composants personnalisés qu'utilise ce Bloc. Les composants personalisés se définissent dans les fichiers de scripts.",
-                            "type": "array",
-                            "items": {
-                                "type": "string",
-                                "pattern": schemaPatterns.identifier_with_namespace
+                            description: "Définit les composants personnalisés qu'utilise ce Bloc. Les composants personalisés se définissent dans les fichiers de scripts.",
+                            type: "array",
+                            items: {
+                                type: "string",
+                                pattern: schemaPatterns.identifier_with_namespace
                             }
                         },
                         "minecraft:destroy_time": {
-                            "description": "Définit le temps nécessaire pour détruire le Bloc.",
-                            "default": 0,
-                            "oneOf": [
+                            description: "Définit le temps nécessaire pour détruire le Bloc.",
+                            default: 0,
+                            oneOf: [
                                 {
-                                    "type": "number",
-                                    "minimum": 0
+                                    type: "number",
+                                    minimum: 0
                                 },
                                 {
-                                    "type": "object",
-                                    "required": ["destroy_time"],
-                                    "properties": {
-                                        "destroy_time": {
-                                            "description": "Le temps en secondes pour détruire le Bloc.",
-                                            "default": 0,
-                                            "type": "number",
-                                            "minimum": 0
+                                    type: "object",
+                                    required: ["destroy_time"],
+                                    properties: {
+                                        destroy_time: {
+                                            description: "Le temps en secondes pour détruire le Bloc.",
+                                            default: 0,
+                                            type: "number",
+                                            minimum: 0
                                         }
                                     }
                                 }
                             ]
                         },
                         "minecraft:entity_fall_on": {
-                            "description": "Définit la distance de chute minimale d'une entité qui tombe sur ce Bloc pour déclencher un événement de composant personnalisé.",
-                            "type": "object",
-                            "required": ["min_fall_distance"],
-                            "properties": {
-                                "min_fall_distance": {
-                                    "description": "La distance de chute minimale d'une entité qui tombe sur ce Bloc pour déclencher un événement de composant personnalisé.",
-                                    "type": "number"
+                            description: "Définit la distance de chute minimale d'une entité qui tombe sur ce Bloc pour déclencher un événement de composant personnalisé.",
+                            type: "object",
+                            required: ["min_fall_distance"],
+                            properties: {
+                                min_fall_distance: {
+                                    description: "La distance de chute minimale d'une entité qui tombe sur ce Bloc pour déclencher un événement de composant personnalisé.",
+                                    type: "number"
                                 }
                             }
                         },
                         "minecraft:explosion_resistance": {
-                            "description": "Définit la résistance du Bloc aux explosions.",
-                            "default": 0,
-                            "oneOf": [
+                            description: "Définit la résistance du Bloc aux explosions.",
+                            default: 0,
+                            oneOf: [
                                 {
-                                    "type": "number",
-                                    "minimum": 0
+                                    type: "number",
+                                    minimum: 0
                                 },
                                 {
-                                    "type": "object",
-                                    "required": ["resistance"],
-                                    "properties": {
-                                        "resistance": {
-                                            "description": "La résistance du Bloc aux explosions.",
-                                            "default": 0,
-                                            "type": "number",
-                                            "minimum": 0
+                                    type: "object",
+                                    required: ["resistance"],
+                                    properties: {
+                                        resistance: {
+                                            description: "La résistance du Bloc aux explosions.",
+                                            default: 0,
+                                            type: "number",
+                                            minimum: 0
                                         }
                                     }
                                 }
                             ]
                         },
                         "minecraft:flammable": {
-                            "description": "Définit les propriétés inflammables du Bloc.",
-                            "type": "object",
-                            "required": ["flame_odds", "burn_odds"],
-                            "properties": {
-                                "flame_odds": {
-                                    "description": "La probabilité que le Bloc prenne feu lorsqu'il est exposé à une source de feu.",
-                                    "default": 0,
-                                    "type": "integer",
-                                    "minimum": 0
+                            description: "Définit les propriétés inflammables du Bloc.",
+                            type: "object",
+                            required: ["flame_odds", "burn_odds"],
+                            properties: {
+                                flame_odds: {
+                                    description: "La probabilité que le Bloc prenne feu lorsqu'il est exposé à une source de feu.",
+                                    default: 0,
+                                    type: "integer",
+                                    minimum: 0
                                 },
-                                "burn_odds": {
-                                    "description": "La probabilité que le Bloc soit consumé par les flammes quand il est en feu.",
-                                    "default": 0,
-                                    "type": "integer",
-                                    "minimum": 0
+                                burn_odds: {
+                                    description: "La probabilité que le Bloc soit consumé par les flammes quand il est en feu.",
+                                    default: 0,
+                                    type: "integer",
+                                    minimum: 0
                                 }
                             }
                         },
                         "minecraft:friction": {
-                            "description": "Définit la friction du Bloc.",
-                            "default": 0.1,
-                            "oneOf": [
+                            description: "Définit la friction du Bloc.",
+                            default: 0.1,
+                            oneOf: [
                                 {
-                                    "type": "number",
-                                    "minimum": 0.1,
-                                    "maximum": 1
+                                    type: "number",
+                                    minimum: 0.1,
+                                    maximum: 1
                                 },
                                 {
-                                    "type": "object",
-                                    "required": ["friction"],
-                                    "properties": {
-                                        "friction": {
-                                            "description": "La friction du Bloc.",
-                                            "default": 0.1,
-                                            "type": "number",
-                                            "minimum": 0.1,
-                                            "maximum": 1
+                                    type: "object",
+                                    required: ["friction"],
+                                    properties: {
+                                        friction: {
+                                            description: "La friction du Bloc.",
+                                            default: 0.1,
+                                            type: "number",
+                                            minimum: 0.1,
+                                            maximum: 1
                                         }
                                     }
                                 }
                             ]
                         },
                         "minecraft:loot": {
-                            "description": "Définit la Loot Table (table de butin) utilisée quand le Bloc est détruit.",
-                            "oneOf": [
+                            description: "Définit la Loot Table (table de butin) utilisée quand le Bloc est détruit.",
+                            oneOf: [
                                 {
-                                    "type": "string",
-                                    "pattern": schemaPatterns.loot_tables_file,
+                                    type: "string",
+                                    pattern: schemaPatterns.loot_tables_file,
                                     "x-dynamic-examples-source": dynamicExamplesSourceKeys.loot_table_file_paths
                                 },
                                 {
-                                    "type": "object",
-                                    "required": ["loot_table"],
-                                    "properties": {
-                                        "loot_table": {
-                                            "description": "La Loot Table utilisée pour le Bloc.",
-                                            "type": "string",
-                                            "pattern": schemaPatterns.loot_tables_file,
+                                    type: "object",
+                                    required: ["loot_table"],
+                                    properties: {
+                                        loot_table: {
+                                            description: "La Loot Table utilisée pour le Bloc.",
+                                            type: "string",
+                                            pattern: schemaPatterns.loot_tables_file,
                                             "x-dynamic-examples-source": dynamicExamplesSourceKeys.loot_table_file_paths
                                         }
                                     }
@@ -231,41 +231,41 @@ const baseSchema = {
                             ]
                         },
                         "minecraft:map_color": {
-                            "description": "Définit la couleur du Bloc sur une carte.",
-                            "oneOf": [
+                            description: "Définit la couleur du Bloc sur une carte.",
+                            oneOf: [
                                 {
-                                    "type": "string",
-                                    "pattern": schemaPatterns.color_hex
+                                    type: "string",
+                                    pattern: schemaPatterns.color_hex
                                 },
                                 {
-                                    "type": "array",
-                                    "minItems": 3,
-                                    "maxItems": 3,
-                                    "items": {
-                                        "type": "integer",
-                                        "minimum": 0,
-                                        "maximum": 255
+                                    type: "array",
+                                    minItems: 3,
+                                    maxItems: 3,
+                                    items: {
+                                        type: "integer",
+                                        minimum: 0,
+                                        maximum: 255
                                     }
                                 },
                                 {
-                                    "type": "object",
-                                    "required": ["map_color"],
-                                    "properties": {
-                                        "map_color": {
-                                            "description": "La couleur du Bloc sur une carte.",
-                                            "oneOf": [
+                                    type: "object",
+                                    required: ["map_color"],
+                                    properties: {
+                                        map_color: {
+                                            description: "La couleur du Bloc sur une carte.",
+                                            oneOf: [
                                                 {
-                                                    "type": "string",
-                                                    "pattern": schemaPatterns.color_hex
+                                                    type: "string",
+                                                    pattern: schemaPatterns.color_hex
                                                 },
                                                 {
-                                                    "type": "array",
-                                                    "minItems": 3,
-                                                    "maxItems": 3,
-                                                    "items": {
-                                                        "type": "integer",
-                                                        "minimum": 0,
-                                                        "maximum": 255
+                                                    type: "array",
+                                                    minItems: 3,
+                                                    maxItems: 3,
+                                                    items: {
+                                                        type: "integer",
+                                                        minimum: 0,
+                                                        maximum: 255
                                                     }
                                                 }
                                             ]
@@ -275,23 +275,23 @@ const baseSchema = {
                             ]
                         },
                         "minecraft:tick": {
-                            "description": "Définit les paramètres pour le déclenchement de l'événement `onTick` des composants personnalisés de ce Bloc.",
-                            "type": "object",
-                            "properties": {
-                                "looping": {
-                                    "description": "Définit si l'événement se joue en boucle.",
-                                    "default": true,
-                                    "type": "boolean"
+                            description: "Définit les paramètres pour le déclenchement de l'événement `onTick` des composants personnalisés de ce Bloc.",
+                            type: "object",
+                            properties: {
+                                looping: {
+                                    description: "Définit si l'événement se joue en boucle.",
+                                    default: true,
+                                    type: "boolean"
                                 },
-                                "interval_range": {
-                                    "description": "La plage de valeurs en ticks pour le déclenchement d'évenement, la valeur sera choisi au hasard.",
-                                    "default": [0, 0],
-                                    "type": "array",
-                                    "minItems": 2,
-                                    "maxItems": 2,
-                                    "items": {
-                                        "type": "integer",
-                                        "minimum": 0
+                                interval_range: {
+                                    description: "La plage de valeurs en ticks pour le déclenchement d'évenement, la valeur sera choisi au hasard.",
+                                    default: [0, 0],
+                                    type: "array",
+                                    minItems: 2,
+                                    maxItems: 2,
+                                    items: {
+                                        type: "integer",
+                                        minimum: 0
                                     }
                                 }
                             }
@@ -301,26 +301,26 @@ const baseSchema = {
             }
         }
     },
-    "definitions": {
-        "material_instance": {
-            "oneOf": [
+    definitions: {
+        material_instance: {
+            oneOf: [
                 {
-                    "type": "string"
+                    type: "string"
                 },
                 {
-                    "type": "object",
-                    "properties": {
-                        "ambient_occlusion": {
-                            "description": "Définit si des ombres doivent être créées autour et sous le Bloc.",
-                            "default": true,
-                            "type": "boolean"
+                    type: "object",
+                    properties: {
+                        ambient_occlusion: {
+                            description: "Définit si des ombres doivent être créées autour et sous le Bloc.",
+                            default: true,
+                            type: "boolean"
                         },
-                        "face_dimming": {
-                            "description": "Définit si ce matériau doit être atténué par la direction dans laquelle il est orienté.",
-                            "default": true,
-                            "type": "boolean"
+                        face_dimming: {
+                            description: "Définit si ce matériau doit être atténué par la direction dans laquelle il est orienté.",
+                            default: true,
+                            type: "boolean"
                         },
-                        "render_method": {
+                        render_method: {
                             description:
                             "Définit la méthode de rendu utilisée pour le Bloc.\n\n" +
                             "`opaque`: Utilisé pour une texture de bloc standard sans couche alpha. Ne permet pas la transparence ni la translucidité. Exemples: Terre, Pierre, Béton\n\n" +
@@ -335,12 +335,12 @@ const baseSchema = {
                             type: "string",
                             enum: ["opaque", "double_sided", "blend", "alpha_test", "alpha_test_single_sided", "alpha_test_to_opaque", "alpha_test_single_sided_to_opaque", "blend_to_opaque"]
                         },
-                        "texture": {
+                        texture: {
                             description: "La référence à la texture utilisée pour cette face du Bloc.",
                             type: "string",
                             "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_texture_references
                         },
-                        "tint_method": {
+                        tint_method: {
                             description: "Définit la méthode de teinte utilisée pour la couleur du Bloc.",
                             default: "none",
                             type: "string",
@@ -366,7 +366,7 @@ const versionedChanges: SchemaChange[] = [
                 action: "add",
                 target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:block_light_filter"],
                 value: {
-                    description: "Définit le niveau de filtre de lumière du Bloc. (0-15)",
+                    description: "Définit le niveau de filtre de lumière du Bloc.",
                     default: 15,
                     oneOf: [
                         {

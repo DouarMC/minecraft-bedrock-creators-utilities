@@ -117,7 +117,6 @@ export const schemaTypes: SchemaType[] = [
     soundDefinitionsSchemaTypeRP,
     languagesNamesSchemaTypeRP,
     languagesSchemaTypeRP,
-    textureSetSchemaTypeRP,
     flipbookTexturesSchemaTypeRP,
     itemTextureSchemaTypeRP,
     terrainTextureSchemaTypeRP,
@@ -131,5 +130,7 @@ export const schemaTypes: SchemaType[] = [
     loadingMessagesSchemaTypeRP,
     manifestSchemaTypeRP,
     soundsSchemaTypeRP,
-    splashesSchemaTypeRP
+    splashesSchemaTypeRP,
+
+    textureSetSchemaTypeRP,
 ];

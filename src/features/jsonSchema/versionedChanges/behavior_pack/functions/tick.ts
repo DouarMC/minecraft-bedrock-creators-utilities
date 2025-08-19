@@ -1,15 +1,17 @@
 import { SchemaType } from "../../../../../types/schema";
+import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
 
 const baseSchema = {
-    description: "Ce fichier sert à executer en boucle des fonctions de commandes. \n Type : Object",
+    description: "Ce fichier sert à executer en boucle des fonctions de commandes.",
     type: "object",
     required: ["values"],
     properties: {
         values: {
-            description: "Les chemins d'accès aux fonctions à executer en boucle. String[]",
+            description: "Les chemins d'accès aux fichiers de fonctions à exécuter en boucle.",
             type: "array",
             items: {
-                type: "string"
+                type: "string",
+                "x-dynamic-examples-source": dynamicExamplesSourceKeys.mcfunction_file_paths_without_extension
             }
         }
     }

@@ -1,7 +1,9 @@
 export const schemaPatterns = {
     animation_timeline_keyframe: "^([0-9]+(\.[0-9]+)?)$",
-    
-
+    atmospherics_keyframe: "^(0(\.\d+)?|1(\.0+)?)$",
+    color_hex_rgba: "^#[0-9a-fA-F]{8}$",
+    lighting_keyframe: "^(0(\.\d+)?|1(\.0+)?)$",
+    render_controller_identifier: "^controller\\.render\\.",
 
     identifier_with_namespace: "^[a-z0-9_\\-]+:[a-zA-Z0-9_.\\-]+$",
     loot_tables_file: "^loot_tables\\/.*\\.json$",

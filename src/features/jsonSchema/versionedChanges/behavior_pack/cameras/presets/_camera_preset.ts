@@ -162,6 +162,7 @@ const baseSchema = {
                     maximum: 180.0
                 },
                 align_target_and_camera_forward: {
+                    "x-deprecated": true,
                     description: "**OBSOLETE** - Utilisez `snap_to_target` à la place. Définit si la caméra doit s'aligner avec la direction de la cible.",
                     type: "boolean"
                 },

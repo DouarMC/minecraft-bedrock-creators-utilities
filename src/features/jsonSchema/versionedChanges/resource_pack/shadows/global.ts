@@ -1,27 +1,34 @@
 import { SchemaType } from "../../../../../types/schema";
 
 const baseSchema = {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "description": "Ce fichier sert à contrôler le style des Ombres. \nType: `Object`",
-    "type": "object",
-    "required": ["format_version", "minecraft:shadow_settings"],
-    "properties": {
-        "format_version": {
-            "description": "La version du format à utiliser. \nType: `String`",
-            "type": "string"
+    description: "Ce fichier sert à contrôler le style des Ombres du mode graphique `Vibrant Visuals`.",
+    type: "object",
+    required: ["format_version", "minecraft:shadow_settings"],
+    properties: {
+        format_version: {
+            description: "La version du format à utiliser.",
+            type: "string",
+            enum: [
+                "1.21.80"
+            ]
         },
         "minecraft:shadow_settings": {
-            "description": "Contient la définition des paramètres d'ombres. \nType: `Object`",
-            "type": "object",
-            "properties": {
-                "shadow_style": {
-                    "description": "Définit le style d'ombres utilisé en jeu. \nType: `String` \n- `soft`: Les ombres sont floues, réalistes, comme dans les shaders classiques. \n- `blocky`: Les ombres sont nettes, “carrées” et suivent la grille des pixels.",
-                    "type": "string",
-                    "enum": ["blocky_shadows", "soft_shadows"]
+            description: "Contient la définition des paramètres d'ombres.",
+            type: "object",
+            properties: {
+                shadow_style: {
+                    description:
+                    "Définit le style d'ombres utilisé en jeu." +
+                    "\n\n- `blocky_shadows`: les ombres sont nettes et carrées" +
+                    "\n\n- `soft_shadows`: les ombres sont floues et réalistes, comme dans les shaders classiques.",
+                    default: "soft_shadows",
+                    type: "string",
+                    enum: ["blocky_shadows", "soft_shadows"]
                 },
-                "texel_size": {
-                    "description": "Spécifie la “taille” des pixels des ombres (en général, la résolution des textures de blocs est : 16 ou 32). \nType: `Integer`",
-                    "type": "integer"
+                texel_size: {
+                    description: "Spécifie la résolution des ombres `blocky_shadows` en unités de texture.",
+                    default: 16,
+                    type: "integer"
                 }
             }
         }

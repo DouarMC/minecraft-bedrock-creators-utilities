@@ -9,6 +9,7 @@ export function isTypeValid(node: JsonNode, type: string): boolean {
         case "number": return node.type === "number";
         case "integer": return node.type === "number";
         case "boolean": return node.type === "boolean";
+        case "null": return node.type === "null";
         default: return true;
     }
 }

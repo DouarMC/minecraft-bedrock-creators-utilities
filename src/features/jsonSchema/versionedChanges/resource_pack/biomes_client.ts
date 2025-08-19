@@ -1,56 +1,98 @@
 import { SchemaType } from "../../../../types/schema";
+import { dynamicExamplesSourceKeys } from "../../shared/schemaEnums";
+import { schemaPatterns } from "../../shared/schemaPatterns";
 
 const baseSchema = {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "description": "Ce fichier contient les propriétés Client des Biomes (les fichiers client biomes ont la priorité). \nType: `Object`",
-    "type": "object",
-    "required": ["biomes"],
-    "properties": {
-        "biomes": {
-            "description": "Contient les Biomes auquel on peut attribuer des propriétés. \nType: `Object`",
-            "type": "object",
-            "additionalProperties": {
-                "type": "object",
-                "properties": {
-                    "fog_identifier": {
-                        "description": "L'identifiant du brouillard utilisé dans le biome. \nType: `String`",
-                        "type": "string",
-                        "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
-                    },
-                    "fog_ids_to_merge": {
-                        "description": "Liste d'identifiants de brouillard à fusionner avec le brouillard principal du biome. \nType: `String[]`",
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "pattern": "^[a-zA-Z0-9_]+:[a-zA-Z0-9_]+$"
-                        }
-                    },
-                    "inherit_from_prior_fog": {
-                        "description": "Détermine si le brouillard du biome doit hériter du brouillard du biome précédent dans la liste des biomes. \nType: `Boolean`",
-                        "type": "boolean"
-                    },
-                    "remove_all_prior_fog": {
-                        "description": "Détermine si le brouillard du biome doit supprimer tous les brouillards précédents dans la liste des biomes. \nType: `Boolean`",
-                        "type": "boolean"
-                    },
-                    "water_surface_color": {
-                        "description": "Définit la couleur de la surface de l'eau dans le biome. \nType: `String | Integer[3]`",
-                        "oneOf": [
-                            {
-                                "type": "string",
-                                "pattern": "^#[0-9a-fA-F]{6}$"
+    description: "Ce fichier contient les propriétés Client des Biomes (les fichiers client biomes ont la priorité).",
+    type: "object",
+    required: ["biomes"],
+    properties: {
+        biomes: {
+            description: "Contient les Biomes auquel on peut attribuer des propriétés.",
+            type: "object",
+            properties: {
+                default: {
+                    description: "Les valeurs par défaut pour les propriétés des biomes qui n'ont pas été définies.",
+                    type: "object",
+                    properties: {
+                        fog_identifier: {
+                            description: "L'identifiant des paramètres de brouillard pour le biome",
+                            type: "string",
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.fog_ids
+                        },
+                        fog_ids_to_merge: {
+                            description: "Liste d'identifiants de brouillard à fusionner avec le brouillard principal du biome.",
+                            type: "array",
+                            items: {
+                                type: "string",
+                                pattern: schemaPatterns.identifier_with_namespace
                             },
-                            {
-                                "type": "array",
-                                "items": {
-                                    "type": "integer",
-                                    "minimum": 0,
-                                    "maximum": 255
-                                },
-                                "minItems": 3,
-                                "maxItems": 3
-                            }
-                        ]
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.fog_ids
+                        },
+                        inherit_from_prior_fog: {
+                            description: "Détermine si le brouillard du biome doit hériter du brouillard du biome précédent dans la liste des biomes.",
+                            default: false,
+                            type: "boolean"
+                        },
+                        remove_all_prior_fog: {
+                            description: "Détermine si le brouillard du biome doit supprimer tous les brouillards précédents dans la liste des biomes.",
+                            default: false,
+                            type: "boolean"
+                        },
+                        water_surface_color: {
+                            description: "Définit la couleur de la surface de l'eau dans le biome.",
+                            type: "string",
+                            pattern: schemaPatterns.color_hex
+                        },
+                        water_surface_transparency: {
+                            description: "Définit la transparence de la surface de l'eau dans le biome.",
+                            type: "number",
+                            minimum: 0,
+                            maximum: 1
+                        }
+                    }
+                }
+            },
+            propertyNames: {
+                "x-dynamic-examples-source": dynamicExamplesSourceKeys.biome_ids
+            },
+            additionalProperties: {
+                type: "object",
+                properties: {
+                    fog_identifier: {
+                        description: "L'identifiant des paramètres de brouillard pour le biome",
+                        type: "string",
+                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.fog_ids
+                    },
+                    fog_ids_to_merge: {
+                        description: "Liste d'identifiants de brouillard à fusionner avec le brouillard principal du biome.",
+                        type: "array",
+                        items: {
+                            type: "string",
+                            pattern: schemaPatterns.identifier_with_namespace
+                        },
+                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.fog_ids
+                    },
+                    inherit_from_prior_fog: {
+                        description: "Détermine si le brouillard du biome doit hériter du brouillard du biome précédent dans la liste des biomes.",
+                        default: false,
+                        type: "boolean"
+                    },
+                    remove_all_prior_fog: {
+                        description: "Détermine si le brouillard du biome doit supprimer tous les brouillards précédents dans la liste des biomes.",
+                        default: false,
+                        type: "boolean"
+                    },
+                    water_surface_color: {
+                        description: "Définit la couleur de la surface de l'eau dans le biome.",
+                        type: "string",
+                        pattern: schemaPatterns.color_hex
+                    },
+                    water_surface_transparency: {
+                        description: "Définit la transparence de la surface de l'eau dans le biome.",
+                        type: "number",
+                        minimum: 0,
+                        maximum: 1
                     }
                 }
             }

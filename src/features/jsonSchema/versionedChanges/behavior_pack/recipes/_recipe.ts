@@ -1,23 +1,19 @@
 import { SchemaChange, SchemaType } from "../../../../../types/schema";
 
 const baseSchema = {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "description": "Ce fichier sert à créer une recette. \n Type : Object",
-    "type": "object",
-    "required": ["format_version"],
-    "properties": {
-        "format_version": {
-            "description": "La version du Format à utiliser. \nType: `String`",
-            "type": "string",
-            enum: [
-                "1.12.0", "1.13.0", "1.14.0", "1.14.1", "1.14.20", "1.14.30", "1.15.0", "1.16.0", "1.16.20", "1.16.100", "1.16.200", "1.16.210", "1.16.220", "1.16.230", "1.17.0", "1.17.10", "1.17.20", "1.17.30", "1.17.40", "1.18.0", "1.18.10", "1.18.20", "1.18.30", "1.18.40", "1.19.0", "1.19.10", "1.19.20", "1.19.30", "1.19.40", "1.19.50", "1.19.60", "1.19.70", "1.19.80", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100"
-            ]
-        }
-    },
-    "oneOf": [
+    oneOf: [
         {
-            "required": ["minecraft:recipe_furnace"],
-            "properties": {
+            description: "Ce fichier sert à créer une recette.",
+            type: "object",
+            required: ["format_version", "minecraft:recipe_furnace"],
+            properties: {
+                format_version: {
+                    description: "La version du Format à utiliser.",
+                    type: "string",
+                    enum: [
+                        "1.12.0", "1.13.0", "1.14.0", "1.14.1", "1.14.20", "1.14.30", "1.15.0", "1.16.0", "1.16.20", "1.16.100", "1.16.200", "1.16.210", "1.16.220", "1.16.230", "1.17.0", "1.17.10", "1.17.20", "1.17.30", "1.17.40", "1.18.0", "1.18.10", "1.18.20", "1.18.30", "1.18.40", "1.19.0", "1.19.10", "1.19.20", "1.19.30", "1.19.40", "1.19.50", "1.19.60", "1.19.70", "1.19.80", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100"
+                    ]
+                },
                 "minecraft:recipe_furnace": {
                     "description": "Définit une recette de Cuisson. \n Type : Object",
                     "type": "object",
@@ -107,8 +103,17 @@ const baseSchema = {
             }
         },
         {
-            "required": ["minecraft:recipe_brewing_container"],
-            "properties": {
+            description: "Ce fichier sert à créer une recette.",
+            type: "object",
+            required: ["format_version", "minecraft:recipe_brewing_container"],
+            properties: {
+                format_version: {
+                    description: "La version du Format à utiliser.",
+                    type: "string",
+                    enum: [
+                        "1.12.0", "1.13.0", "1.14.0", "1.14.1", "1.14.20", "1.14.30", "1.15.0", "1.16.0", "1.16.20", "1.16.100", "1.16.200", "1.16.210", "1.16.220", "1.16.230", "1.17.0", "1.17.10", "1.17.20", "1.17.30", "1.17.40", "1.18.0", "1.18.10", "1.18.20", "1.18.30", "1.18.40", "1.19.0", "1.19.10", "1.19.20", "1.19.30", "1.19.40", "1.19.50", "1.19.60", "1.19.70", "1.19.80", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100"
+                    ]
+                },
                 "minecraft:recipe_brewing_container": {
                     "description": "Définit une recette de brewing uniquement sur les potions. \n Type : Object",
                     "type": "object",
@@ -189,8 +194,17 @@ const baseSchema = {
             }
         },
         {
-            "required": ["minecraft:recipe_brewing_mix"],
-            "properties": {
+            description: "Ce fichier sert à créer une recette.",
+            type: "object",
+            required: ["format_version", "minecraft:recipe_brewing_mix"],
+            properties: {
+                format_version: {
+                    description: "La version du Format à utiliser.",
+                    type: "string",
+                    enum: [
+                        "1.12.0", "1.13.0", "1.14.0", "1.14.1", "1.14.20", "1.14.30", "1.15.0", "1.16.0", "1.16.20", "1.16.100", "1.16.200", "1.16.210", "1.16.220", "1.16.230", "1.17.0", "1.17.10", "1.17.20", "1.17.30", "1.17.40", "1.18.0", "1.18.10", "1.18.20", "1.18.30", "1.18.40", "1.19.0", "1.19.10", "1.19.20", "1.19.30", "1.19.40", "1.19.50", "1.19.60", "1.19.70", "1.19.80", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100"
+                    ]
+                },
                 "minecraft:recipe_brewing_mix": {
                     "description": "Définit une recette de brewing. \n Type : Object",
                     "type": "object",
@@ -307,8 +321,17 @@ const baseSchema = {
             }
         },
         {
-            "required": ["minecraft:recipe_shaped"],
-            "properties": {
+            description: "Ce fichier sert à créer une recette.",
+            type: "object",
+            required: ["format_version", "minecraft:recipe_shaped"],
+            properties: {
+                format_version: {
+                    description: "La version du Format à utiliser.",
+                    type: "string",
+                    enum: [
+                        "1.12.0", "1.13.0", "1.14.0", "1.14.1", "1.14.20", "1.14.30", "1.15.0", "1.16.0", "1.16.20", "1.16.100", "1.16.200", "1.16.210", "1.16.220", "1.16.230", "1.17.0", "1.17.10", "1.17.20", "1.17.30", "1.17.40", "1.18.0", "1.18.10", "1.18.20", "1.18.30", "1.18.40", "1.19.0", "1.19.10", "1.19.20", "1.19.30", "1.19.40", "1.19.50", "1.19.60", "1.19.70", "1.19.80", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100"
+                    ]
+                },
                 "minecraft:recipe_shaped": {
                     "description": "Définit une recette de craftage avec un pattern. \n Type : Object",
                     "type": "object",
@@ -437,8 +460,17 @@ const baseSchema = {
             }
         },
         {
-            "required": ["minecraft:recipe_shapeless"],
-            "properties": {
+            description: "Ce fichier sert à créer une recette.",
+            type: "object",
+            required: ["format_version", "minecraft:recipe_shapeless"],
+            properties: {
+                format_version: {
+                    description: "La version du Format à utiliser.",
+                    type: "string",
+                    enum: [
+                        "1.12.0", "1.13.0", "1.14.0", "1.14.1", "1.14.20", "1.14.30", "1.15.0", "1.16.0", "1.16.20", "1.16.100", "1.16.200", "1.16.210", "1.16.220", "1.16.230", "1.17.0", "1.17.10", "1.17.20", "1.17.30", "1.17.40", "1.18.0", "1.18.10", "1.18.20", "1.18.30", "1.18.40", "1.19.0", "1.19.10", "1.19.20", "1.19.30", "1.19.40", "1.19.50", "1.19.60", "1.19.70", "1.19.80", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100"
+                    ]
+                },
                 "minecraft:recipe_shapeless": {
                     "description": "Définit une recette de craftage sans forme. \n Type : Object",
                     "type": "object",
@@ -557,8 +589,17 @@ const baseSchema = {
             }
         },
         {
-            "required": ["minecraft:recipe_smithing_transform"],
-            "properties": {
+            description: "Ce fichier sert à créer une recette.",
+            type: "object",
+            required: ["format_version", "minecraft:recipe_smithing_transform"],
+            properties: {
+                format_version: {
+                    description: "La version du Format à utiliser.",
+                    type: "string",
+                    enum: [
+                        "1.12.0", "1.13.0", "1.14.0", "1.14.1", "1.14.20", "1.14.30", "1.15.0", "1.16.0", "1.16.20", "1.16.100", "1.16.200", "1.16.210", "1.16.220", "1.16.230", "1.17.0", "1.17.10", "1.17.20", "1.17.30", "1.17.40", "1.18.0", "1.18.10", "1.18.20", "1.18.30", "1.18.40", "1.19.0", "1.19.10", "1.19.20", "1.19.30", "1.19.40", "1.19.50", "1.19.60", "1.19.70", "1.19.80", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100"
+                    ]
+                },
                 "minecraft:recipe_smithing_transform": {
                     "description": "Définit une recette de transformation d'item en utilisant une table de forge. \n Type : Object",
                     "type": "object",
@@ -618,8 +659,17 @@ const baseSchema = {
             }
         },
         {
-            "required": ["minecraft:recipe_smithing_trim"],
-            "properties": {
+            description: "Ce fichier sert à créer une recette.",
+            type: "object",
+            required: ["format_version", "minecraft:recipe_smithing_trim"],
+            properties: {
+                format_version: {
+                    description: "La version du Format à utiliser.",
+                    type: "string",
+                    enum: [
+                        "1.12.0", "1.13.0", "1.14.0", "1.14.1", "1.14.20", "1.14.30", "1.15.0", "1.16.0", "1.16.20", "1.16.100", "1.16.200", "1.16.210", "1.16.220", "1.16.230", "1.17.0", "1.17.10", "1.17.20", "1.17.30", "1.17.40", "1.18.0", "1.18.10", "1.18.20", "1.18.30", "1.18.40", "1.19.0", "1.19.10", "1.19.20", "1.19.30", "1.19.40", "1.19.50", "1.19.60", "1.19.70", "1.19.80", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100"
+                    ]
+                },
                 "minecraft:recipe_smithing_trim": {
                     "description": "Définit une recette de personnalisation d'item en utilisant une table de forge. \n Type : Object",
                     "type": "object",

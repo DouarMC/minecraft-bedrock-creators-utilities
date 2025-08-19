@@ -1,8 +1,9 @@
-import { JSONPath } from 'jsonc-parser';
+import { JSONPath, Node as JsonNode } from 'jsonc-parser';
 import * as vscode from 'vscode';
 import { getExistingProperties } from './getExistingProperties';
 import { analyzeInsertionContext, createQuoteAwareRange } from '../../utils/insertionHelpers';
 import { getDynamicExampleSourceValues } from './getDynamicExampleSourceValues';
+import { resolveOneOfBranch } from '../../utils/resolveOneOfBranch';
 
 function sortPropertiesByPriority(
     properties: Record<string, any>,
@@ -130,74 +131,88 @@ export async function createPropertyCompletions(
     schema: any,
     document: vscode.TextDocument,
     position: vscode.Position,
-    targetPath: JSONPath
+    targetPath: JSONPath,
+    node?: JsonNode
 ): Promise<vscode.CompletionItem[]> {
-    // Vérification de base
-    if (schema.type !== 'object') return [];
-
-    const hasKeySources = 
-        (schema.properties && Object.keys(schema.properties).length > 0) ||
-        (schema.propertyNames !== null) ||
-        (schema.patternProperties && Object.keys(schema.patternProperties).length > 0);
-    
-    if (!hasKeySources) return [];
-
-    // 🎯 Récupération et tri des propriétés
-    const props = schema.properties ?? {};
-    const existingProperties = getExistingProperties(document, targetPath);
-    const requiredProps = schema.required || [];
-    const sortedProps = sortPropertiesByPriority(props, requiredProps, existingProperties);
-    
-    // 🎯 Création des items de completion
+    let schemas = [schema];
     const completionItems: vscode.CompletionItem[] = [];
-    
-    for (const [propertyName, propertySchema] of sortedProps) {
-        const isRequired = requiredProps.includes(propertyName);
-        completionItems.push(
-            createPropertyCompletionItem(propertyName, propertySchema, isRequired, document, position)
-        );
+
+    if (schema.oneOf !== undefined) {
+        const validSchemas = resolveOneOfBranch(schema.oneOf, node);
+        schemas = [...validSchemas];
     }
 
-    if (schema.propertyNames && schema.additionalProperties !== false) {
-        const existing = new Set([
-            ...existingProperties,
-            ...sortedProps.map(([name]) => name)
-        ]);
+    const existingProperties = getExistingProperties(document, targetPath);
+    for (const currentSchema of schemas) {
+        if (currentSchema.type !== "object") continue;
 
-        // enum
-        if (Array.isArray(schema.propertyNames.enum)) {
-            for (const enumName of schema.propertyNames.enum) {
-                if (!existing.has(enumName)) {
-                    completionItems.push(
-                        createPropertyCompletionItem(enumName, schema.additionalProperties, false, document, position)
-                    );
-                }
-            }
+        const hasKeySources = 
+            (schema.properties && Object.keys(schema.properties).length > 0) ||
+            (schema.propertyNames !== null) ||
+            (schema.patternProperties && Object.keys(schema.patternProperties).length > 0);
+        
+        if (!hasKeySources) continue; // Pas de propriétés à suggérer
+
+        const properties = currentSchema.properties || {};
+        const requiredProps = currentSchema.required || [];
+        const sortedProps = sortPropertiesByPriority(properties, requiredProps, existingProperties);
+
+        for (const [propertyName, propertySchema] of sortedProps) {
+            const isRequired = requiredProps.includes(propertyName);
+            const item = createPropertyCompletionItem(propertyName, propertySchema, isRequired, document, position);
+            completionItems.push(item);
         }
 
-        // examples
-        if (Array.isArray(schema.propertyNames.examples)) {
-            for (const exampleName of schema.propertyNames.examples) {
-                if (!existing.has(exampleName)) {
-                    completionItems.push(
-                        createPropertyCompletionItem(exampleName, schema.additionalProperties, false, document, position)
-                    );
+        if (currentSchema.propertyNames && currentSchema.additionalProperties !== false) {
+            const existing = new Set([
+                ...existingProperties,
+                ...sortedProps.map(([name]) => name)
+            ]);
+
+            // enum
+            if (Array.isArray(currentSchema.propertyNames.enum)) {
+                for (const enumName of currentSchema.propertyNames.enum) {
+                    if (!existing.has(enumName)) {
+                        completionItems.push(
+                            createPropertyCompletionItem(enumName, currentSchema.additionalProperties, false, document, position)
+                        );
+                    }
                 }
             }
-        }
 
-        // x-dynamic-examples-source
-        if (schema.propertyNames['x-dynamic-examples-source']) {
-            const values = await getDynamicExampleSourceValues(schema.propertyNames['x-dynamic-examples-source']);
-            for (const exampleName of values) {
-                if (!existing.has(exampleName)) {
-                    completionItems.push(
-                        createPropertyCompletionItem(exampleName, schema.additionalProperties, false, document, position)
-                    );
+            // examples
+            if (Array.isArray(currentSchema.propertyNames.examples)) {
+                for (const exampleName of currentSchema.propertyNames.examples) {
+                    if (!existing.has(exampleName)) {
+                        completionItems.push(
+                            createPropertyCompletionItem(exampleName, currentSchema.additionalProperties, false, document, position)
+                        );
+                    }
+                }
+            }
+
+            // x-dynamic-examples-source
+            if (currentSchema.propertyNames['x-dynamic-examples-source']) {
+                const values = await getDynamicExampleSourceValues(currentSchema.propertyNames['x-dynamic-examples-source']);
+                for (const exampleName of values) {
+                    if (!existing.has(exampleName)) {
+                        completionItems.push(
+                            createPropertyCompletionItem(exampleName, currentSchema.additionalProperties, false, document, position)
+                        );
+                    }
                 }
             }
         }
     }
-    
-    return completionItems;
+
+
+    const existingLabels: string[] = [];
+    const filteredItems = completionItems.filter(item => {
+        if (existingLabels.includes(item.label as string)) {
+            return false; // Déjà présent
+        }
+        existingLabels.push(item.label as string);
+        return true; // Nouveau
+    });
+    return filteredItems;
 }

@@ -1,10 +1,6 @@
 import * as vscode from 'vscode';
 import { analyzeInsertionContext, createQuoteAwareRange } from '../../utils/insertionHelpers';
-import { resolveOneOfBranch } from '../../utils/resolveOneOfBranch';
-import { getNodeValueAtPosition } from '../../utils/getNodeValueAtPosition';
-import { isTypeValid } from '../../diagnostics/helpers';
 import { getDynamicExampleSourceValues } from './getDynamicExampleSourceValues';
-import { values } from 'lodash';
 
 interface CreateValueItemParams {
     label: string;

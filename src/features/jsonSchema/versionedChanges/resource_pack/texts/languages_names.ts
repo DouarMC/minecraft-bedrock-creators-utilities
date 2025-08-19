@@ -1,19 +1,19 @@
 import { SchemaType } from "../../../../../types/schema";
+import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
 
 const baseSchema = {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "description": "La liste de toutes les langues à ajouter ou modifier avec ce Pack. \nType: `Array[]`",
-    "type": "array",
-    "items": [
+    description: "Fichier qui permet d'associer des noms de langues à leurs identfiants de langue.",
+    type: "array",
+    items: [
         {
-            "type": "array",
-            "items": [
+            type: "array",
+            items: [
                 {
-                    "type": "string",
-                    "pattern": "^[a-z]{2}_[A-Z]{2}$"
+                    type: "string",
+                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.language_ids
                 },
                 {
-                    "type": "string"
+                    type: "string"
                 }
             ]
         }
@@ -21,7 +21,7 @@ const baseSchema = {
 };
 
 export const languagesNamesSchemaTypeRP: SchemaType = {
-    fileMatch: ["**/addon/resource_pack/texts/languages_names.json"],
+    fileMatch: ["**/addon/resource_pack/texts/language_names.json"],
     baseSchema: baseSchema,
     versionedChanges: []
 };

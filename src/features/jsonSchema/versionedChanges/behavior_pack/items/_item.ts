@@ -415,10 +415,11 @@ const versionedChanges: SchemaChange[] = [
                 action: "add",
                 target: ["properties", "minecraft:item", "properties", "components", "properties", "minecraft:icon"],
                 value: {
-                    markdownDescription: "Définit la texture qui sera utilisée pour l'icône de l'Item. La texture ici est une référence qui doit être définie dans le fichier `item_texture.json`.",
+                    description: "Définit la texture qui sera utilisée pour l'icône de l'Item. La texture ici est une référence qui doit être définie dans le fichier `item_texture.json`.",
                     oneOf: [
                         {
-                            type: "string"
+                            type: "string",
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_texture_references
                         },
                         {
                             type: "object",
@@ -426,7 +427,8 @@ const versionedChanges: SchemaChange[] = [
                             properties: {
                                 texture: {
                                     description: "La référence de la texture de l'icône de l'Item.",
-                                    type: "string"
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_texture_references
                                 }
                             }
                         }

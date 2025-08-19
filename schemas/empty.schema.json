@@ -1,4 +1,3 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "description": "Schéma vide utilisé pour neutraliser les suggestions par défaut de VS Code"
+  "$schema": "http://json-schema.org/draft-07/schema#"
 }

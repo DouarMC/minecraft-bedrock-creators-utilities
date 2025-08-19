@@ -1,7 +1,6 @@
 import { SchemaType } from "../../../../../types/schema";
 
 const baseSchema = {
-    $schema: "http://json-schema.org/draft-07/schema#",
     description: "Ce fichier définit un dialogue pour les NPCs.",
     type: "object",
     required: ["format_version", "minecraft:npc_dialogue"],

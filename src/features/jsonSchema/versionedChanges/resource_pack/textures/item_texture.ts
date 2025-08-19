@@ -1,45 +1,54 @@
 import { SchemaType } from "../../../../../types/schema";
+import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
+import { schemaPatterns } from "../../../shared/schemaPatterns";
 
 const baseSchema = {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "description": "Ce fichier est utilisé pour définir une texture pour les items. Type: Object",
-    "type": "object",
-    "required": ["texture_name", "resource_pack_name", "texture_data"],
-    "properties": {
-        "default_leather_color": {
-            "description": "Définit la couleur de base pour les armures en cuir. Type: String",
-            "type": "string",
-            "pattern": "^#[0-9a-fA-F]{6}$"
+    description: "Ce fichier sert à créer des références de textures pour les items.",
+    type: "object",
+    required: ["texture_data"],
+    properties: {
+        default_leather_color: {
+            description: "Définit la couleur par défaut pour les armures en cuir.",
+            type: "string",
+            pattern: schemaPatterns.color_hex
         },
-        "default_horse_leather_color": {
-            "description": "Définit la couleur de base pour les armures de cheval en cuir. Type: String",
-            "type": "string",
-            "pattern": "^#[0-9a-fA-F]{6}$"
+        default_horse_leather_color: {
+            description: "Définit la couleur par défaut pour les armures en cuir de cheval.",
+            type: "string",
+            pattern: schemaPatterns.color_hex
         },
-        "resource_pack_name": {
-            "description": "Le nom du resource pack auquel ce fichier est associé. Type: String",
-            "type": "string"
+        resource_pack_name: {
+            description: "Le nom du resource pack auquel ce fichier est associé.",
+            type: "string"
         },
-        "texture_name": {
-            "description": "Le type d'appliquement de Textures. Type: String",
-            "const": "atlas.items"
+        texture_name: {
+            description: "Définit l'atlas qui est utilisé qui contient les textures en plus petites. L'utilité des atlas est de réduire le nombre de textures que le jeu charge.",
+            default: "atlas.items",
+            type: "string",
+            enum: ["atlas.items"]
         },
-        "texture_data": {
-            "description": "L'inscription de short-name de Textures. Type: Object",
-            "type": "object",
-            "additionalProperties": {
-                "type": "object",
-                "properties": {
-                    "textures": {
-                        "description": "La/les texture(s) à spécifier. Type: (String | String[])",
-                        "oneOf": [
+        texture_data: {
+            description: "Contient les références de textures pour les items.",
+            type: "object",
+            propertyNames: {
+                "x-dynamic-examples-source": dynamicExamplesSourceKeys.data_driven_item_texture_references
+            },
+            additionalProperties: {
+                type: "object",
+                required: ["textures"],
+                properties: {
+                    textures: {
+                        description: "La/les texture(s) à spécifier.",
+                        oneOf: [
                             {
-                                "type": "string"
+                                type: "string",
+                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.texture_file_paths
                             },
                             {
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
+                                type: "array",
+                                items: {
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.texture_file_paths
                                 }
                             }
                         ]

@@ -555,7 +555,10 @@ const baseSchema = {
                                                 type: {
                                                     description: "Définit le type de constructeur de surface à utiliser.",
                                                     type: "string",
-                                                    enum: ["minecraft:overworld"]
+                                                    const: "minecraft:overworld",
+                                                    enum: [
+                                                        "minecraft:overworld", "minecraft:frozen_ocean", "minecraft:mesa", "minecraft:swamp", "minecraft:capped", "minecraft:the_end"
+                                                    ]
                                                 }
                                             }
                                         },
@@ -620,7 +623,10 @@ const baseSchema = {
                                                 type: {
                                                     description: "Définit le type de constructeur de surface à utiliser.",
                                                     type: "string",
-                                                    enum: ["minecraft:frozen_ocean"]
+                                                    const: "minecraft:frozen_ocean",
+                                                    enum: [
+                                                        "minecraft:overworld", "minecraft:frozen_ocean", "minecraft:mesa", "minecraft:swamp", "minecraft:capped", "minecraft:the_end"
+                                                    ]
                                                 }
                                             }
                                         },
@@ -713,7 +719,10 @@ const baseSchema = {
                                                 type: {
                                                     description: "Définit le type de constructeur de surface à utiliser.",
                                                     type: "string",
-                                                    enum: ["minecraft:mesa"]
+                                                    const: "minecraft:mesa",
+                                                    enum: [
+                                                        "minecraft:overworld", "minecraft:frozen_ocean", "minecraft:mesa", "minecraft:swamp", "minecraft:capped", "minecraft:the_end"
+                                                    ]
                                                 }
                                             }
                                         },
@@ -778,7 +787,10 @@ const baseSchema = {
                                                 type: {
                                                     description: "Définit le type de constructeur de surface à utiliser.",
                                                     type: "string",
-                                                    enum: ["minecraft:swamp"]
+                                                    const: "minecraft:swamp",
+                                                    enum: [
+                                                        "minecraft:overworld", "minecraft:frozen_ocean", "minecraft:mesa", "minecraft:swamp", "minecraft:capped", "minecraft:the_end"
+                                                    ]
                                                 }
                                             }
                                         },
@@ -847,7 +859,10 @@ const baseSchema = {
                                                 type: {
                                                     description: "Définit le type de constructeur de surface à utiliser.",
                                                     type: "string",
-                                                    enum: ["minecraft:capped"]
+                                                    const: "minecraft:capped",
+                                                    enum: [
+                                                        "minecraft:overworld", "minecraft:frozen_ocean", "minecraft:mesa", "minecraft:swamp", "minecraft:capped", "minecraft:the_end"
+                                                    ]
                                                 }
                                             }
                                         },
@@ -858,7 +873,10 @@ const baseSchema = {
                                                 type: {
                                                     description: "Définit le type de constructeur de surface à utiliser.",
                                                     type: "string",
-                                                    enum: ["minecraft:the_end"]
+                                                    const: "minecraft:the_end",
+                                                    enum: [
+                                                        "minecraft:overworld", "minecraft:frozen_ocean", "minecraft:mesa", "minecraft:swamp", "minecraft:capped", "minecraft:the_end"
+                                                    ]
                                                 }
                                             }
                                         }
@@ -988,5 +1006,5 @@ const baseSchema = {
 export const biomeSchemaTypeBP: SchemaType = {
     fileMatch: ["**/addon/behavior_pack/biomes/**/*.json"],
     baseSchema: baseSchema,
-    versionedChanges: [] // Pas de changements pour ce schéma pour l'instant
+    versionedChanges: []
 };

@@ -12,6 +12,7 @@ export function navigateToSchemaAtPath(baseSchema: any, path: JSONPath, node: Js
                 currentSchema = brancheSchemas[0];
             } else {
                 // On garde le schéma courant pour la complétion
+                return currentSchema;
             }
         }
         for (const segment of path) {
@@ -69,6 +70,7 @@ export function navigateToSchemaAtPath(baseSchema: any, path: JSONPath, node: Js
                     currentSchema = brancheSchemas[0];
                 } else {
                     // On garde le schéma courant pour la complétion
+                    return currentSchema;
                 }
             }
             

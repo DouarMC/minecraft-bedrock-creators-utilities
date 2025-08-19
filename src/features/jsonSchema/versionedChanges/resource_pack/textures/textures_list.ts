@@ -1,12 +1,13 @@
 import { SchemaType } from "../../../../../types/schema";
+import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
 
 const baseSchema = {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "description": "Ce fichier sert à lister les textures utilisées dans ce Resource Pack. \n Type: `(Path String)[]`",
-    "type": "array",
-    "items": {
-        "type": "string",
-        "pattern": "^textures\\/.*"
+    description: "Ce fichier sert à lister les textures utilisées dans ce Resource Pack.",
+    type: "array",
+    items: {
+        type: "string",
+        pattern: "^textures\\/.*",
+        "x-dynamic-examples-source": dynamicExamplesSourceKeys.project_texture_file_paths
     }
 };
 

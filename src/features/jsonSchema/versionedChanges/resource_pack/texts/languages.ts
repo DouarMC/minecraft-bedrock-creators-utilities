@@ -1,12 +1,12 @@
 import { SchemaType } from "../../../../../types/schema";
+import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
 
 const baseSchema = {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "description": "La liste de toutes les langues utilisés dans ce Pack. \nType : String[]",
-    "type": "array",
-    "items": {
-        "type": "string",
-        "pattern": "^[a-z]{2}_[A-Z]{2}$"
+    description: "La liste de toutes les langues utilisés dans ce Pack. On peut y ajouter des langues.",
+    type: "array",
+    items: {
+        type: "string",
+        "x-dynamic-examples-source": dynamicExamplesSourceKeys.data_driven_language_ids
     }
 };
 

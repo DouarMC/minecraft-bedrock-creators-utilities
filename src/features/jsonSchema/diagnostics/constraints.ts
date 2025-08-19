@@ -1,31 +1,7 @@
 import {Node as JsonNode} from 'jsonc-parser';
-import { resolveOneOfBranch } from '../utils/resolveOneOfBranch';
 import { validateNode, NodeValidationError } from './validateNode';
 import { isTypeValid } from './helpers';
 import { ERROR_WEIGHTS } from './validateNode';
-
-export function validateOneOf(node: JsonNode, oneOfSchemas: any[]): NodeValidationError[] | undefined {
-    const errors: NodeValidationError[] = [];
-
-    const validSchemas = resolveOneOfBranch(oneOfSchemas, node);
-
-    if (validSchemas.length !== 1) {
-        errors.push({
-            node: node,
-            message: `Aucune ou plusieurs branches valides trouvées pour 'oneOf'.`,
-            code: "oneOf",
-            priority: ERROR_WEIGHTS.type
-        });
-    } else {
-        const validSchema = validSchemas[0];
-        const schemaErrors = validateNode(node, validSchema);
-        if (schemaErrors.length > 0) {
-            errors.push(...schemaErrors);
-        }
-    }
-
-    return errors;
-}
 
 export function validateType(node: JsonNode, schema: any): NodeValidationError[] {
     const errors: NodeValidationError[] = [];
@@ -49,15 +25,19 @@ export function validateObjectConstraints(node: JsonNode, schema: any): NodeVali
 
     if (schema.required !== undefined) {
         const present = new Set((node.children ?? []).map(child => child.children?.[0]?.value));
+        const requiredNotPresent = [];
         for (const requiredKey of schema.required) {
             if (!present.has(requiredKey)) {
-                errors.push({
-                    node: node,
-                    message: `Clé requise manquante: ${requiredKey}`,
-                    code: "required",
-                    priority: ERROR_WEIGHTS.required
-                });
+                requiredNotPresent.push(requiredKey);
             }
+        }
+        if (requiredNotPresent.length > 0) {
+            errors.push({
+                node: node,
+                message: `Clés requises manquantes: ${requiredNotPresent.join(", ")}`,
+                code: "required",
+                priority: ERROR_WEIGHTS.required
+            });
         }
     }
 

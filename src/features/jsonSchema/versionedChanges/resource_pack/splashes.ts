@@ -1,52 +1,79 @@
 import { SchemaType } from "../../../../types/schema";
 
 const baseSchema = {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "description": "Ce fichier contient les textes de Splashs qui s'affichent sur le logo Minecraft au menu principal. \nType: `Object`",
-    "type": "object",
-    "required": ["splashes"],
-    "properties": {
-        "canMerge": {
-            "description": "Si 'true', les entrées du fichier sont fusionnées avec celles existantes au lieu de les remplacer. \nType: `Boolean`",
-            "default": false,
-            "type": "boolean"
+    description: "Ce fichier contient les textes de Splashs qui s'affichent sur le logo Minecraft au menu principal.",
+    type: "object",
+    required: ["splashes"],
+    properties: {
+        canMerge: {
+            description: "Définit si les valeurs de splashes de ce fichier doivent être fusionnées avec celles existantes.",
+            default: false,
+            type: "boolean"
         },
-        "splashes": {
-            "description": "Contient les Textes de Splashs. \nType: `Array`",
-            "type": "array",
-            "items": {
-                "type": "string"
+        splashes: {
+            description: "Contient les textes de Splashs.",
+            type: "array",
+            items: {
+                type: "string"
             }
         },
-        "conditional": {
-            "description": "Contient les Textes de Splashs conditionnels. \nType: `Object[]`",
-            "type": "array",
-            "items": {
-                "type": "object",
-                "required": ["requires", "splashes"],
-                "properties": {
-                    "requires": {
-                        "description": "Condition pour afficher le Splash. \nType: `Object`",
-                        "type": "object",
-                        "properties": {
-                            "trialMode": {
-                                "description": "Affiche le Splash uniquement en mode démo. \nType: `Boolean`",
-                                "type": "boolean"
+        conditional: {
+            description: "Contient les textes de Splashs qui s'affichent en fonction de certaines conditions, comme le mode démo ou la plateforme.",
+            type: "array",
+            items: {
+                type: "object",
+                required: ["requires", "splashes"],
+                properties: {
+                    requires: {
+                        description: "Condition pour afficher le Splash.",
+                        type: "object",
+                        properties: {
+                            trialMode: {
+                                description: "Affiche le Splash uniquement en mode démo.",
+                                type: "boolean"
                             },
-                            "platforms": {
-                                "description": "Affiche le Splash uniquement sur les plateformes spécifiées. \nType: `String[]`",
-                                "type": "array",
-                                "items": {
-                                    "type": "string"
+                            platforms: {
+                                description: "Affiche le Splash uniquement sur les plateformes spécifiées.",
+                                type: "array",
+                                items: {
+                                    type: "string",
+                                    enum: [
+                                        "Windows 10",
+                                        "Xbox One",
+                                        "PlayStation 4",
+                                        "Nintendo Switch",
+                                        "iOS",
+                                        "Android"
+                                    ]
+                                }
+                            },
+                            treatments: {
+                                type: "array",
+                                items: {
+                                    type: "string",
+                                    enum: [
+                                        "Beta",
+                                        "Preview",
+                                        "Release"
+                                    ]
+                                }
+                            },
+                            stores: {
+                                type: "array",
+                                items: {
+                                    type: "string",
+                                    enum: [
+                                        "Microsoft Store"
+                                    ]
                                 }
                             }
                         }
                     },
-                    "splashes": {
-                        "description": "Contient les Textes de Splashs conditionnels. \nType: `String`",
-                        "type": "array",
-                        "items": {
-                            "type": "string"
+                    splashes: {
+                        description: "Contient les textes de Splashs conditionnels.",
+                        type: "array",
+                        items: {
+                            type: "string"
                         }
                     }
                 }

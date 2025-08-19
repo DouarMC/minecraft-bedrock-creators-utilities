@@ -42,7 +42,7 @@ export const completionProvider: vscode.CompletionItemProvider = {
         }
 
         if (suggestingProperties) {
-            return await createPropertyCompletions(currentSchema, document, position, targetPath);
+            return await createPropertyCompletions(currentSchema, document, position, targetPath, root);
         } else {
             return await createValueCompletions(currentSchema, document, position);
         }

@@ -40,6 +40,9 @@ export const hoverProvider: vscode.HoverProvider = {
         const propertyName = currentPath.length > 0 ? currentPath[currentPath.length - 1] : 'Document';
         hoverContent.appendMarkdown(`### ${propertyName}`);
 
+        if (currentSchema["x-deprecated"] === true) {
+            hoverContent.appendMarkdown(`\n\n**Obsolète**: Cette propriété n'a plus aucune utilité et ne doit plus être utilisée.`);
+        }
 
         if (currentSchema["x-experimental_options"] && currentSchema["x-experimental_options"].length > 0) {
             hoverContent.appendMarkdown(`\n\n**Options expérimentales**:`);

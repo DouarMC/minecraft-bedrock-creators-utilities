@@ -10,7 +10,9 @@ const baseSchema = {
         format_version: {
             description: "La version du format à utiliser.",
             type: "string",
-            enum: ["1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100"]
+            enum: [
+                "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100"
+            ]
         },
         "minecraft:aim_assist_preset": {
             description: "Contient la définition du preset d'Aim-Assist.",

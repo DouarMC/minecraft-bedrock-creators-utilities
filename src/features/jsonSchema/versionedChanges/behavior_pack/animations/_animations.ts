@@ -80,5 +80,5 @@ const baseSchema = {
 export const animationsSchemaTypeBP: SchemaType = {
     fileMatch: ["**/addon/behavior_pack/animations/**/*.json"],
     baseSchema: baseSchema,
-    versionedChanges: [] // Pas de changements pour ce schéma pour l'instant
+    versionedChanges: []
 };

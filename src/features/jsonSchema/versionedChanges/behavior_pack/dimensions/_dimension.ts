@@ -3,7 +3,6 @@ import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
 import { schemaPatterns } from "../../../shared/schemaPatterns";
 
 const baseSchema = {
-    $schema: "http://json-schema.org/draft-07/schema#",
     description: "Ce fichier permet de définir les propriétés d'une Dimension.",
     type: "object",
     required: ["format_version", "minecraft:dimension"],

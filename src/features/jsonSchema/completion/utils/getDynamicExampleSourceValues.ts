@@ -30,6 +30,9 @@ export async function getDynamicExampleSourceValues(sourceKey: string | string[]
             case dynamicExamplesSourceKeys.block_ids:
                 values.push(...await GetMinecraftContent.getBlockIds());
                 break;
+            case dynamicExamplesSourceKeys.block_sound_references:
+                values.push(...await GetMinecraftContent.getBlockSoundReferences());
+                break;
             case dynamicExamplesSourceKeys.block_texture_references:
                 values.push(...await GetMinecraftContent.getBlockTextureReferences());
                 break;
@@ -57,8 +60,14 @@ export async function getDynamicExampleSourceValues(sourceKey: string | string[]
             case dynamicExamplesSourceKeys.data_driven_attachable_ids:
                 values.push(...await GetMinecraftContent.getDataDrivenAttachableIds());
                 break;
+            case dynamicExamplesSourceKeys.data_driven_base_block_sound_references:
+                values.push(...await GetMinecraftContent.getDataDrivenBaseBlockSoundReferences());
+                break;
             case dynamicExamplesSourceKeys.data_driven_biome_ids:
                 values.push(...await GetMinecraftContent.getDataDrivenBiomeIds());
+                break;
+            case dynamicExamplesSourceKeys.data_driven_block_texture_references:
+                values.push(...await GetMinecraftContent.getDataDrivenBlockTextureReferences());
                 break;
             case dynamicExamplesSourceKeys.data_driven_camera_preset_ids:
                 values.push(...await GetMinecraftContent.getDataDrivenCameraPresetIds());
@@ -75,17 +84,32 @@ export async function getDynamicExampleSourceValues(sourceKey: string | string[]
             case dynamicExamplesSourceKeys.data_driven_fog_ids:
                 values.push(...await GetMinecraftContent.getDataDrivenFogIds());
                 break;
+            case dynamicExamplesSourceKeys.data_driven_interactive_block_sound_references:
+                values.push(...await GetMinecraftContent.getDataDrivenInteractiveBlockSoundReferences());
+                break;
             case dynamicExamplesSourceKeys.data_driven_item_ids:
                 values.push(...await GetMinecraftContent.getDataDrivenItemIds());
                 break;
+            case dynamicExamplesSourceKeys.data_driven_item_texture_references:
+                values.push(...await GetMinecraftContent.getDataDrivenItemTextureReferences());
+                break;
             case dynamicExamplesSourceKeys.data_driven_jigsaw_structure_ids:
                 values.push(...await GetMinecraftContent.getDataDrivenJigsawStructureIds());
+                break;
+            case dynamicExamplesSourceKeys.data_driven_language_ids:
+                values.push(...await GetMinecraftContent.getDataDrivenLanguageIds());
                 break;
             case dynamicExamplesSourceKeys.data_driven_lighting_settings_ids:
                 values.push(...await GetMinecraftContent.getDataDrivenLightingSettingsIds());
                 break;
             case dynamicExamplesSourceKeys.data_driven_model_ids:
                 values.push(...await GetMinecraftContent.getDataDrivenModelIds());
+                break;
+            case dynamicExamplesSourceKeys.data_driven_music_references:
+                values.push(...await GetMinecraftContent.getDataDrivenMusicReferences());
+                break;
+            case dynamicExamplesSourceKeys.old_format_item_ids:
+                values.push(...await GetMinecraftContent.getOldFormatItemIds());
                 break;
             case dynamicExamplesSourceKeys.data_driven_particle_effect_ids:
                 values.push(...await GetMinecraftContent.getDataDrivenParticleEffectIds());
@@ -104,6 +128,9 @@ export async function getDynamicExampleSourceValues(sourceKey: string | string[]
                 break;
             case dynamicExamplesSourceKeys.data_driven_spawn_rules_ids:
                 values.push(...await GetMinecraftContent.getDataDrivenSpawnRulesIds());
+                break;
+            case dynamicExamplesSourceKeys.data_driven_sound_references:
+                values.push(...await GetMinecraftContent.getDataDrivenSoundReferences());
                 break;
             case dynamicExamplesSourceKeys.data_driven_structure_set_ids:
                 values.push(...await GetMinecraftContent.getDataDrivenStructureSetIds());
@@ -144,17 +171,29 @@ export async function getDynamicExampleSourceValues(sourceKey: string | string[]
             case dynamicExamplesSourceKeys.item_texture_references:
                 values.push(...await GetMinecraftContent.getItemTextureReferences());
                 break;
+            case dynamicExamplesSourceKeys.language_ids:
+                values.push(...await GetMinecraftContent.getLanguageIds());
+                break;
             case dynamicExamplesSourceKeys.lighting_settings_ids:
                 values.push(...await GetMinecraftContent.getLightingSettingsIds());
                 break;
             case dynamicExamplesSourceKeys.loot_table_file_paths:
                 values.push(...await GetMinecraftContent.getLootTableFilePaths());
                 break;
+            case dynamicExamplesSourceKeys.mcfunction_file_paths_without_extension:
+                values.push(...await GetMinecraftContent.getMcfunctionFilePathsWithoutExtension());
+                break;
             case dynamicExamplesSourceKeys.model_ids:
                 values.push(...await GetMinecraftContent.getModelIds());
                 break;
+            case dynamicExamplesSourceKeys.music_references:
+                values.push(...await GetMinecraftContent.getMusicReferences());
+                break;
             case dynamicExamplesSourceKeys.particle_effect_ids:
                 values.push(...await GetMinecraftContent.getParticleEffectIds());
+                break;
+            case dynamicExamplesSourceKeys.project_texture_file_paths:
+                values.push(...await GetMinecraftContent.getProjectTextureFilePaths());
                 break;
             case dynamicExamplesSourceKeys.render_controller_ids:
                 values.push(...await GetMinecraftContent.getRenderControllerIds());
@@ -164,6 +203,12 @@ export async function getDynamicExampleSourceValues(sourceKey: string | string[]
                 break;
             case dynamicExamplesSourceKeys.resource_animation_ids:
                 values.push(...await GetMinecraftContent.getResourceAnimationIds());
+                break;
+            case dynamicExamplesSourceKeys.sound_references:
+                values.push(...await GetMinecraftContent.getSoundReferences());
+                break;
+            case dynamicExamplesSourceKeys.sound_file_paths_without_extension:
+                values.push(...await GetMinecraftContent.getSoundFilePathsWithoutExtension());
                 break;
             case dynamicExamplesSourceKeys.texture_file_paths:
                 values.push(...await GetMinecraftContent.getTextureFilePaths());
