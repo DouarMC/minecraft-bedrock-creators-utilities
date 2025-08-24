@@ -1,7 +1,8 @@
 import { SchemaChange, SchemaType } from "../../../../../types/schema";
 import { schemaPatterns } from "../../../shared/schemaPatterns";
+import { MinecraftJsonSchema } from "../../../types/minecraftJsonSchema";
 
-const baseSchema = {
+const baseSchema: MinecraftJsonSchema = {
     description: "Ce fichier sert à définir les règles de culling de blocs utilisables pour les blocs avec le composant `minecraft:geometry`.",
     type: "object",
     required: ["format_version", "minecraft:block_culling_rules"],

@@ -6,9 +6,7 @@
 	"search.exclude": {
 		"out": true // Le dossier out est ignoré dans les recherches. Les fichier js compilés ne sont pas inclus dans les résultats de recherche.
 	},
-
 	"typescript.tsc.autoDetect": "off", // Désactive la détection automatique des tâches tsc. On utilise notre propre tâche watch via npm run watch.
-
 	"files.associations": {
 		"*.json": "jsonc" // Traite les fichiers JSON comme JSON avec commentaires. Utile pour les fichiers de configuration comme package.json, tsconfig.json, etc.
 	}

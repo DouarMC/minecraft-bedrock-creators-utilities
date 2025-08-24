@@ -1,12 +1,12 @@
 import { SchemaType } from "../../../../../types/schema";
-import { experimentalOptions } from "../../../../../utils/data/experimentalOptions";
 import { commonSchemas } from "../../../shared/commonSchemas";
 import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
 import { schemaPatterns } from "../../../shared/schemaPatterns";
+import { MinecraftJsonSchema, experimentalOptions } from "../../../types/minecraftJsonSchema";
 
-const baseSchema = {
-    description: "Ce fichier définit un Biome.",
+const baseSchema: MinecraftJsonSchema = {
     "x-experimental_options": [experimentalOptions.custom_biomes],
+    description: "Ce fichier définit un Biome.",
     type: "object",
     required: ["format_version", "minecraft:biome"],
     properties: {

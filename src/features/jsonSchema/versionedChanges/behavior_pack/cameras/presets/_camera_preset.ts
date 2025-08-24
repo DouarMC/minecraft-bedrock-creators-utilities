@@ -1,8 +1,9 @@
 import { schemaPatterns } from "../../../../shared/schemaPatterns";
 import { SchemaType } from "../../../../../../types/schema";
 import { dynamicExamplesSourceKeys } from "../../../../shared/schemaEnums";
+import { MinecraftJsonSchema } from "../../../../types/minecraftJsonSchema";
 
-const baseSchema = {
+const baseSchema: MinecraftJsonSchema = {
     description: "Ce fichier sert à créer un preset de Caméra.",
     type: "object",
     required: ["format_version", "minecraft:camera_preset"],

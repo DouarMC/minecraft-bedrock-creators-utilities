@@ -1,8 +1,9 @@
 import { SchemaChange, SchemaType } from "../../../../../types/schema";
 import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
 import { schemaPatterns } from "../../../shared/schemaPatterns";
+import { MinecraftJsonSchema } from "../../../types/minecraftJsonSchema";
 
-const baseSchema = {
+const baseSchema: MinecraftJsonSchema = {
     description: "Ce fichier sert à configurer l'apparence visuelle du jeu en ajustant des paramètres tels que la saturation, le contraste, la luminosité, et les ombres pour créer des ambiances ou des thèmes spécifiques. \nType: `Object`",
     type: "object",
     required: ["format_version", "minecraft:color_grading_settings"],

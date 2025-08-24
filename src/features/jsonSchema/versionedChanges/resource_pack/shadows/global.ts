@@ -1,6 +1,7 @@
 import { SchemaType } from "../../../../../types/schema";
+import { MinecraftJsonSchema } from "../../../types/minecraftJsonSchema";
 
-const baseSchema = {
+const baseSchema: MinecraftJsonSchema = {
     description: "Ce fichier sert à contrôler le style des Ombres du mode graphique `Vibrant Visuals`.",
     type: "object",
     required: ["format_version", "minecraft:shadow_settings"],

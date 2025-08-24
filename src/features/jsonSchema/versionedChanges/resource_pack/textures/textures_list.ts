@@ -1,7 +1,8 @@
 import { SchemaType } from "../../../../../types/schema";
 import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
+import { MinecraftJsonSchema } from "../../../types/minecraftJsonSchema";
 
-const baseSchema = {
+const baseSchema: MinecraftJsonSchema = {
     description: "Ce fichier sert à lister les textures utilisées dans ce Resource Pack.",
     type: "array",
     items: {

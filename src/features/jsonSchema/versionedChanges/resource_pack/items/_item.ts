@@ -1,8 +1,9 @@
 import { SchemaType } from "../../../../../types/schema";
 import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
 import { schemaPatterns } from "../../../shared/schemaPatterns";
+import { MinecraftJsonSchema } from "../../../types/minecraftJsonSchema";
 
-const baseSchema = {
+const baseSchema: MinecraftJsonSchema = {
     description: "Ce fichier sert à définir les propriétés client d'un item.",
     type: "object",
     required: ["format_version", "minecraft:item"],

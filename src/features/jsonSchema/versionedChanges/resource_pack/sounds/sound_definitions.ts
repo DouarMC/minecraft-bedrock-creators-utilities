@@ -1,8 +1,9 @@
 import { property } from "lodash";
 import { SchemaType } from "../../../../../types/schema";
 import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
+import { MinecraftJsonSchema } from "../../../types/minecraftJsonSchema";
 
-const baseSchema = {
+const baseSchema: MinecraftJsonSchema = {
     description: "Ce fichier sert à référencer les sons pour les utiliser dans divers contextes.",
     type: "object",
     required: ["format_version", "sound_definitions"],

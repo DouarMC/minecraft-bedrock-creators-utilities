@@ -1,6 +1,7 @@
 import { SchemaType } from "../../../../types/schema";
+import { MinecraftJsonSchema } from "../../types/minecraftJsonSchema";
 
-const baseSchema = {
+const baseSchema: MinecraftJsonSchema = {
     description: "Ce fichier sert à repertorier tous les fichiers présents dans un Pack pour des meilleures performances.",
     type: "object",
     properties: {

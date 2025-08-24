@@ -1,8 +1,9 @@
 import { SchemaType } from "../../../../types/schema";
 import { dynamicExamplesSourceKeys } from "../../shared/schemaEnums";
 import { schemaPatterns } from "../../shared/schemaPatterns";
+import { MinecraftJsonSchema } from "../../types/minecraftJsonSchema";
 
-const baseSchema = {
+const baseSchema: MinecraftJsonSchema = {
     description: "Ce fichier contient les propriétés Client des Biomes (les fichiers client biomes ont la priorité).",
     type: "object",
     required: ["biomes"],

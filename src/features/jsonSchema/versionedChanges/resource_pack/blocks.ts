@@ -1,7 +1,8 @@
 import { SchemaType } from "../../../../types/schema";
 import { dynamicExamplesSourceKeys } from "../../shared/schemaEnums";
+import { MinecraftJsonSchema } from "../../types/minecraftJsonSchema";
 
-const baseSchema = {
+const baseSchema: MinecraftJsonSchema = {
     description: "Ce fichier sert à appliquer des textures référencés (uniquement pour les blocs sans les components `minecraft:geometry` et `minecraft:material_instances`), des sons référencés et autres à des blocs.",
     type: "object",
     required: ["format_version"],

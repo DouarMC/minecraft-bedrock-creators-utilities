@@ -1,8 +1,9 @@
 import { SchemaType } from "../../../../../types/schema";
 import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
 import { schemaPatterns } from "../../../shared/schemaPatterns";
+import { MinecraftJsonSchema } from "../../../types/minecraftJsonSchema";
 
-const baseSchema = {
+const baseSchema: MinecraftJsonSchema = {
     description: "Définit les Render Controllers pour les entités (ou attachables).",
     type: "object",
     required: ["format_version", "render_controllers"],

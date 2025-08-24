@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
-import { updateDiagnostics } from "./diagnostics/collection";
+import { getSchemaForDocument } from "../utils/getSchemaForDocument";
+import { doValidation } from "../diagnostics/doValidation";
 
 export function registerDiagnosticCollection(context: vscode.ExtensionContext, documentSelector: vscode.DocumentSelector) {
     const diagnostics = vscode.languages.createDiagnosticCollection("minecraft-bedrock-creators-utilities.jsonSchema");
@@ -21,4 +22,15 @@ export function registerDiagnosticCollection(context: vscode.ExtensionContext, d
             }
         })
     );
+}
+
+function updateDiagnostics(document: vscode.TextDocument, diagnostics: vscode.DiagnosticCollection) {
+    const schema = getSchemaForDocument(document);
+    if (!schema) {
+        diagnostics.set(document.uri, []);
+        return;
+    }
+
+    const diags = doValidation(document, schema);
+    diagnostics.set(document.uri, diags ?? []);
 }

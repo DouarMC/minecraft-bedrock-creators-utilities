@@ -1,6 +1,7 @@
 import { SchemaType } from "../../../../types/schema";
+import { MinecraftJsonSchema } from "../../types/minecraftJsonSchema";
 
-const baseSchema = {
+const baseSchema: MinecraftJsonSchema = {
     description: "Ce fichier contient les messages de chargement pour les différentes étapes du jeu.",
     type: "object",
     properties: {

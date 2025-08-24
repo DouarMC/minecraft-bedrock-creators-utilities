@@ -1,8 +1,9 @@
 import { SchemaType } from "../../../../../types/schema";
 import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
 import { schemaPatterns } from "../../../shared/schemaPatterns";
+import { MinecraftJsonSchema } from "../../../types/minecraftJsonSchema";
 
-const baseSchema = {
+const baseSchema: MinecraftJsonSchema = {
     description: "Ce fichier définit un Animation de type Ressource.",
     type: "object",
     required: ["format_version", "animations"],

@@ -1,7 +1,8 @@
 import { SchemaType } from "../../../../../types/schema";
 import { schemaPatterns } from "../../../shared/schemaPatterns";
+import { MinecraftJsonSchema } from "../../../types/minecraftJsonSchema";
 
-const baseSchema = {
+const baseSchema: MinecraftJsonSchema = {
     description: "Ce fichier crée des animations de type Behavior.",
     type: "object",
     required: ["format_version", "animations"],

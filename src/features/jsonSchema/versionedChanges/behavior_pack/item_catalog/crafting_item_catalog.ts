@@ -1,8 +1,9 @@
 import { SchemaType } from "../../../../../types/schema";
 import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
 import { schemaPatterns } from "../../../shared/schemaPatterns";
+import { MinecraftJsonSchema } from "../../../types/minecraftJsonSchema";
 
-const baseSchema = {
+const baseSchema: MinecraftJsonSchema = {
     description: "Ce fichier sert à gérer la disposition des items/blocs dans le menu créatif et dans le livre de recettes.",
     type: "object",
     required: ["format_version", "minecraft:crafting_items_catalog"],

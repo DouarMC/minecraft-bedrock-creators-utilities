@@ -1,11 +1,13 @@
 import { SchemaType } from "../../../../../types/schema";
+import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
+import { MinecraftJsonSchema } from "../../../types/minecraftJsonSchema";
 
-const baseSchema = {
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "description": "Ce fichier sert à créer des variables globales pour l'ensemble des fichiers d'UI. \nType: `Object`",
-    "type": "object",
-    "propertyNames": {
-        "pattern": "^\\$.*$"
+const baseSchema: MinecraftJsonSchema = {
+    description: "Ce fichier sert à créer des variables globales pour l'ensemble des fichiers d'UI.",
+    type: "object",
+    propertyNames: {
+        pattern: "^\\$.*$",
+        "x-dynamic-examples-source": dynamicExamplesSourceKeys.vanilla_ui_global_variables
     }
 };
 

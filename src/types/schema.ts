@@ -9,7 +9,7 @@ export interface SchemaModification {
 }
 
 export interface SchemaChange {
-    version: string; // ex.: "1.21.60"
+    version: string | number; // ex.: "1.21.60" ou 2, 3 pour les manifest.json
     changes: SchemaModification[];
 }
 

@@ -21,7 +21,7 @@ import { recipeSchemaTypeBP } from "../versionedChanges/behavior_pack/recipes/_r
 import { spawnRulesSchemaTypeBP } from "../versionedChanges/behavior_pack/spawn_rules/_spawn_rules";
 import { languagesSchemaTypeBP } from "../versionedChanges/behavior_pack/texts/languages";
 import { tradingSchemaTypeBP } from "../versionedChanges/behavior_pack/trading/_trading";
-import { jigsawStructureSchemaTypeBP } from "../versionedChanges/behavior_pack/worldgen/jigsaw_structures/_jigsaw_structure";
+import { jigsawStructureSchemaTypeBP } from "../versionedChanges/behavior_pack/worldgen/structures/_jigsaw_structure";
 import { processorSchemaTypeBP } from "../versionedChanges/behavior_pack/worldgen/processors/_processor";
 import { structureSetSchemaTypeBP } from "../versionedChanges/behavior_pack/worldgen/structure_sets/_structure_set";
 import { templatePoolSchemaTypeBP } from "../versionedChanges/behavior_pack/worldgen/template_pools/_template_pool";

@@ -1,8 +1,9 @@
 import { SchemaType } from "../../../../../types/schema";
 import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
 import { schemaPatterns } from "../../../shared/schemaPatterns";
+import { MinecraftJsonSchema } from "../../../types/minecraftJsonSchema";
 
-const baseSchema = {
+const baseSchema: MinecraftJsonSchema = {
     "description": "Ce fichier définit des controlleurs d'animations de type Ressource. \nType: `Object`",
     "type": "object",
     "required": ["format_version", "animation_controllers"],

@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { VANILLA_AIM_ASSIST_PRESET_IDS, VANILLA_BIOMES_IDS, VANILLA_BIOMES_TAGS, VANILLA_BLOCK_IDS, VANILLA_CAMERA_PRESETS_IDS, VANILLA_COOLDOWN_CATEGORY_IDS, VANILLA_DATA_DRIVEN_ITEM_IDS, VANILLA_DIMENSION_IDS, VANILLA_EFFECT_IDS, VANILLA_ENTITY_IDS, VANILLA_ITEM_GROUP_IDS, VANILLA_ITEM_IDS, VANILLA_ITEM_TAGS, VANILLA_ENTITY_FAMILY_IDS, VANILLA_AIM_ASSIST_CATEGORY_IDS } from "../data/vanillaMinecraftIdentifiers";
+import { VANILLA_AIM_ASSIST_PRESET_IDS, VANILLA_BIOMES_IDS, VANILLA_BIOMES_TAGS, VANILLA_BLOCK_IDS, VANILLA_CAMERA_PRESETS_IDS, VANILLA_COOLDOWN_CATEGORY_IDS, VANILLA_DATA_DRIVEN_ITEM_IDS, VANILLA_DIMENSION_IDS, VANILLA_EFFECT_IDS, VANILLA_ENTITY_IDS, VANILLA_ITEM_GROUP_IDS, VANILLA_ITEM_IDS, VANILLA_ITEM_TAGS, VANILLA_ENTITY_FAMILY_IDS, VANILLA_AIM_ASSIST_CATEGORY_IDS, VANILLA_ENCHANTMENT_IDS } from "../data/vanillaMinecraftIdentifiers";
 import * as path from "path";
 import { parse as parseJsonc } from "jsonc-parser";
 import { compareVersions } from "../../features/jsonSchema/utils/getSchemaForDocument";
@@ -13,6 +13,7 @@ export class GetMinecraftContent {
     static vanillaDimensionIds = ["minecraft:nether", "minecraft:overworld", "minecraft:the_end"];
     static vanillaEntityIds = VANILLA_ENTITY_IDS;
     static vanillaEffectIds = VANILLA_EFFECT_IDS;
+    static vanillaEnchantmentIds = VANILLA_ENCHANTMENT_IDS;
     static vanillaItemIds = VANILLA_ITEM_IDS;
     static vanillaItemTags = VANILLA_ITEM_TAGS;
 
@@ -597,6 +598,77 @@ export class GetMinecraftContent {
         return this.vanillaDimensionIds;
     }
 
+    static async getDataDrivenEntityIds(): Promise<string[]> {
+        const entityIds: string[] = [];
+        const uris = await GetMinecraftVanillaFiles.getEntityFilesBP();
+
+        for (const uri of uris) {
+            try {
+                const fileData = await vscode.workspace.fs.readFile(uri);
+                const content = new TextDecoder('utf-8').decode(fileData);
+                const json = parseJsonc(content);
+
+                const id = json?.["minecraft:entity"]?.description?.identifier;
+                if (typeof id === "string") {
+                    entityIds.push(id);
+                }
+            } catch (error) {
+                console.warn(`⚠️ Error reading file ${uri.fsPath}:`, error);
+            }
+        }
+
+        return Array.from(new Set(entityIds));
+    }
+
+    static async getDataDrivenFeatureIds(): Promise<string[]> {
+        const featureIds: string[] = [];
+        const uris = await GetMinecraftVanillaFiles.getFeatureFilesBP();
+
+        for (const uri of uris) {
+            try {
+                const fileData = await vscode.workspace.fs.readFile(uri);
+                const content = new TextDecoder('utf-8').decode(fileData);
+                const json = parseJsonc(content);
+
+                const featureTypes = [
+                    "minecraft:aggregate_feature",
+                    "minecraft:cave_carver_feature",
+                    "minecraft:fossil_feature",
+                    "minecraft:geode_feature",
+                    "minecraft:growing_plant_feature",
+                    "minecraft:multiface_feature",
+                    "minecraft:nether_cave_carver_feature",
+                    "minecraft:ore_feature",
+                    "minecraft:partially_exposed_blob_feature",
+                    "minecraft:scatter_feature",
+                    "minecraft:sequence_feature",
+                    "minecraft:single_block_feature",
+                    "minecraft:snap_to_surface_feature",
+                    "minecraft:structure_template_feature",
+                    "minecraft:surface_relative_threshold_feature",
+                    "minecraft:tree_feature",
+                    "minecraft:underwater_cave_carver_feature",
+                    "minecraft:vegetation_patch_feature",
+                    "minecraft:weighted_random_feature"
+                ];
+
+                for (const featureType of featureTypes) {
+                    const feature = json?.[featureType];
+                    if (feature && typeof feature === "object") {
+                        const id = feature.description?.identifier;
+                        if (typeof id === "string") {
+                            featureIds.push(id);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.warn(`⚠️ Error reading file ${uri.fsPath}:`, error);
+            }
+        }
+
+        return Array.from(new Set(featureIds));
+    }
+
     static async getDataDrivenFeatureRulesIds(): Promise<string[]> {
         const featureRulesIds: string[] = [];
         const uris = await GetMinecraftVanillaFiles.getFeatureRulesFilesBP();
@@ -606,8 +678,6 @@ export class GetMinecraftContent {
                 const fileData = await vscode.workspace.fs.readFile(uri);
                 const content = new TextDecoder('utf-8').decode(fileData);
                 const json = parseJsonc(content);
-
-                console.log(`Processing file: ${uri.fsPath}`);
 
                 const id = json?.["minecraft:feature_rules"]?.description?.identifier;
                 if (typeof id === "string") {
@@ -641,6 +711,58 @@ export class GetMinecraftContent {
         }
 
         return Array.from(new Set(fogIds));
+    }
+
+    static async getDataDrivenIndividualEventSoundReferences(): Promise<string[]> {
+        const individualEventSoundReferences: string[] = [];
+        const uris = [...await GetMinecraftVanillaFiles.getSoundsFilesRP(), ...await GetMinecraftProjectFiles.getSoundsFilesRP()];
+
+        for (const uri of uris) {
+            try {
+                const fileData = await vscode.workspace.fs.readFile(uri);
+                const content = new TextDecoder('utf-8').decode(fileData);
+                const json = parseJsonc(content);
+
+                const individualEventSoundsEvents = json?.individual_event_sounds?.events;
+                if (typeof individualEventSoundsEvents !== "object") continue;
+                const soundReferenceKeys = Object.keys(individualEventSoundsEvents);
+                for (const key of soundReferenceKeys) {
+                    if (typeof individualEventSoundsEvents[key] === "object") {
+                        individualEventSoundReferences.push(key);
+                    }
+                }
+            } catch (error) {
+                console.warn(`⚠️ Error reading file ${uri.fsPath}:`, error);
+            }
+        }
+
+        return Array.from(new Set(individualEventSoundReferences));
+    }
+
+    static async getDataDrivenIndividualNamedSoundReferences(): Promise<string[]> {
+        const individualNamedSoundReferences: string[] = [];
+        const uris = [...await GetMinecraftVanillaFiles.getSoundsFilesRP(), ...await GetMinecraftProjectFiles.getSoundsFilesRP()];
+
+        for (const uri of uris) {
+            try {
+                const fileData = await vscode.workspace.fs.readFile(uri);
+                const content = new TextDecoder('utf-8').decode(fileData);
+                const json = parseJsonc(content);
+
+                const individualNamedSounds = json?.individual_named_sounds?.sounds;
+                if (typeof individualNamedSounds !== "object") continue;
+                const soundReferenceKeys = Object.keys(individualNamedSounds);
+                for (const key of soundReferenceKeys) {
+                    if (typeof individualNamedSounds[key] === "object") {
+                        individualNamedSoundReferences.push(key);
+                    }
+                }
+            } catch (error) {
+                console.warn(`⚠️ Error reading file ${uri.fsPath}:`, error);
+            }
+        }
+
+        return Array.from(new Set(individualNamedSoundReferences));
     }
 
     static async getDataDrivenInteractiveBlockSoundReferences(): Promise<string[]> {
@@ -922,6 +1044,74 @@ export class GetMinecraftContent {
         return Array.from(new Set(renderControllerIds));
     }
 
+    static async getDataDrivenRecipeIds(): Promise<string[]> {
+        const recipeIds = [];
+        const uris = await GetMinecraftVanillaFiles.getRecipeFilesBP();
+
+        for (const uri of uris) {
+            try {
+                const fileData = await vscode.workspace.fs.readFile(uri);
+                const content = new TextDecoder('utf-8').decode(fileData);
+                const json = parseJsonc(content);
+
+                const recipeFurnace = json?.["minecraft:recipe_furnace"];
+                const recipeBrewingContainer = json?.["minecraft:recipe_brewing_container"];
+                const recipeBrewingMix = json?.["minecraft:recipe_brewing_mix"];
+                const recipeShaped = json?.["minecraft:recipe_shaped"];
+                const recipeShapeless = json?.["minecraft:recipe_shapeless"];
+                const recipeSmithingTransform = json?.["minecraft:recipe_smithing_transform"];
+                const recipeSmithingTrim = json?.["minecraft:recipe_smithing_trim"];
+
+                if (recipeFurnace && typeof recipeFurnace === "object") {
+                    const id = recipeFurnace.description?.identifier;
+                    if (typeof id === "string") {
+                        recipeIds.push(id);
+                    }
+                }
+                if (recipeBrewingContainer && typeof recipeBrewingContainer === "object") {
+                    const id = recipeBrewingContainer.description?.identifier;
+                    if (typeof id === "string") {
+                        recipeIds.push(id);
+                    }
+                }
+                if (recipeBrewingMix && typeof recipeBrewingMix === "object") {
+                    const id = recipeBrewingMix.description?.identifier;
+                    if (typeof id === "string") {
+                        recipeIds.push(id);
+                    }
+                }
+                if (recipeShaped && typeof recipeShaped === "object") {
+                    const id = recipeShaped.description?.identifier;
+                    if (typeof id === "string") {
+                        recipeIds.push(id);
+                    }
+                }
+                if (recipeShapeless && typeof recipeShapeless === "object") {
+                    const id = recipeShapeless.description?.identifier;
+                    if (typeof id === "string") {
+                        recipeIds.push(id);
+                    }
+                }
+                if (recipeSmithingTransform && typeof recipeSmithingTransform === "object") {
+                    const id = recipeSmithingTransform.description?.identifier;
+                    if (typeof id === "string") {
+                        recipeIds.push(id);
+                    }
+                }
+                if (recipeSmithingTrim && typeof recipeSmithingTrim === "object") {
+                    const id = recipeSmithingTrim.description?.identifier;
+                    if (typeof id === "string") {
+                        recipeIds.push(id);
+                    }
+                }
+            } catch (error) {
+                console.warn(`⚠️ Error reading file ${uri.fsPath}:`, error);
+            }
+        }
+
+        return Array.from(new Set(recipeIds));
+    }
+
     static async getDataDrivenResourceAnimationControllerIds(): Promise<string[]> {
         const resourceAnimationControllerIds: string[] = [];
         const uris = await GetMinecraftVanillaFiles.getAnimationControllerFilesRP();
@@ -1090,6 +1280,31 @@ export class GetMinecraftContent {
 
     static async getEffectIds(): Promise<string[]> {
         return this.vanillaEffectIds;
+    }
+
+    static async getEntityFamilyIds(): Promise<string[]> {
+        const entityFamilyIds: string[] = [];
+        const uris = [...await GetMinecraftVanillaFiles.getEntityFilesBP(), ...await GetMinecraftProjectFiles.getEntityFilesBP()];
+        for (const uri of uris) {
+            try {
+                const fileData = await vscode.workspace.fs.readFile(uri);
+                const content = new TextDecoder('utf-8').decode(fileData);
+                const json = parseJsonc(content);
+
+                const families = json?.["minecraft:entity"]?.components?.["minecraft:type_family"]?.family;
+                if (Array.isArray(families)) {
+                    for (const family of families) {
+                        if (typeof family === "string") {
+                            entityFamilyIds.push(family);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.warn(`⚠️ Error reading file ${uri.fsPath}:`, error);
+            }
+        }
+
+        return Array.from(new Set(entityFamilyIds));
     }
 
     static async getEntityIds(): Promise<string[]> {
@@ -1541,6 +1756,27 @@ export class GetMinecraftContent {
         return Array.from(new Set(particleEffectIds));
     }
 
+    static async getProcessorIds(): Promise<string[]> {
+        const processorIds: string[] = [];
+        const uris = [...await GetMinecraftVanillaFiles.getProcessorFilesBP(), ...await GetMinecraftProjectFiles.getProcessorFilesBP()];
+        for (const uri of uris) {
+            try {
+                const fileData = await vscode.workspace.fs.readFile(uri);
+                const content = new TextDecoder('utf-8').decode(fileData);
+                const json = parseJsonc(content);
+
+                const id = json?.["minecraft:processor_list"]?.description?.identifier;
+                if (typeof id === "string") {
+                    processorIds.push(id);
+                }
+            } catch (error) {
+                console.warn(`⚠️ Error reading file ${uri.fsPath}:`, error);
+            }
+        }
+
+        return Array.from(new Set(processorIds));
+    }
+
     static async getProjectTextureFilePaths(): Promise<string[]> {
         function getTextureRelativePath(uri: vscode.Uri): string | null {
             const match = /[\/\\](textures[\/\\].+\.(tga|png|jpg|jpeg))$/i.exec(uri.fsPath);
@@ -1559,6 +1795,37 @@ export class GetMinecraftContent {
         }
 
         return textureFilePaths;
+    }
+    
+    static async getProjectUiFilePaths(): Promise<string[]> {
+        function getUiRelativePath(uri: vscode.Uri): string | null {
+            const match = /[\/\\](ui[\/\\].+\.(json))$/i.exec(uri.fsPath);
+            if (!match) {return null;}
+            // Uniformise les slashs pour être cross-platform
+            return match[1].replace(/\\/g, '/');
+        }
+
+        const vanillaUris = await GetMinecraftVanillaFiles.getUiElementsFilesRP();
+        const vanillaUiFilePaths: string[] = [];
+        for (const uri of vanillaUris) {
+            const relativePath = getUiRelativePath(uri);
+            if (relativePath) {
+                vanillaUiFilePaths.push(relativePath);
+            }
+        }
+
+        const uris = await GetMinecraftProjectFiles.getUiElementsFilesRP();
+        const uiFilePaths: string[] = [];
+        for (const uri of uris) {
+            const relativePath = getUiRelativePath(uri);
+            if (relativePath) {
+                if (vanillaUiFilePaths.includes(relativePath) === false) {
+                    uiFilePaths.push(relativePath);
+                }
+            }
+        }
+
+        return uiFilePaths;
     }
 
     static async getRenderControllerIds(): Promise<string[]> {
@@ -1686,6 +1953,27 @@ export class GetMinecraftContent {
         return Array.from(new Set(soundReferences));
     }
 
+    static async getTemplatePoolIds(): Promise<string[]> {
+        const templatePoolIds: string[] = [];
+        const uris = [...await GetMinecraftVanillaFiles.getTemplatePoolFilesBP(), ...await GetMinecraftProjectFiles.getTemplatePoolFilesBP()];
+        for (const uri of uris) {
+            try {
+                const fileData = await vscode.workspace.fs.readFile(uri);
+                const content = new TextDecoder('utf-8').decode(fileData);
+                const json = parseJsonc(content);
+
+                const id = json?.["minecraft:template_pool"]?.description?.identifier;
+                if (typeof id === "string") {
+                    templatePoolIds.push(id);
+                }
+            } catch (error) {
+                console.warn(`⚠️ Error reading file ${uri.fsPath}:`, error);
+            }
+        }
+
+        return Array.from(new Set(templatePoolIds));
+    }
+
     static async getTextureFilePaths(): Promise<string[]> {
         function getTextureRelativePath(uri: vscode.Uri): string | null {
             const match = /[\/\\](textures[\/\\].+\.(tga|png|jpg|jpeg))$/i.exec(uri.fsPath);
@@ -1704,6 +1992,26 @@ export class GetMinecraftContent {
         }
 
         return textureFilePaths;
+    }
+
+    static async getTradingFilePaths(): Promise<string[]> {
+        function getTradingRelativePath(uri: vscode.Uri): string | null {
+            const match = /[\/\\](trading[\/\\].+\.json)$/i.exec(uri.fsPath);
+            if (!match) {return null;}
+            // Uniformise les slashs pour être cross-platform
+            return match[1].replace(/\\/g, '/');
+        }
+
+        const uris = [...await GetMinecraftProjectFiles.getTradingFilesBP(), ...await GetMinecraftVanillaFiles.getTradingFilesBP()];
+        const tradingFilePaths: string[] = [];
+        for (const uri of uris) {
+            const relativePath = getTradingRelativePath(uri);
+            if (relativePath) {
+                tradingFilePaths.push(relativePath);
+            }
+        }
+
+        return tradingFilePaths;
     }
 
     static async getVanillaBiomeIds(): Promise<string[]> {
@@ -1868,6 +2176,32 @@ export class GetMinecraftContent {
         return this.vanillaEntityIds.map(id =>
             id.startsWith("minecraft:") ? id.slice("minecraft:".length) : id
         );
+    }
+
+    static async getVanillaUiGlobalVariables(): Promise<string[]> {
+        const globalVariables: string[] = [];
+        const uris = await GetMinecraftVanillaFiles.getUiGlobalVariablesFilesRP();
+
+        for (const uri of uris) {
+            try {
+                const fileData = await vscode.workspace.fs.readFile(uri);
+                const content = new TextDecoder('utf-8').decode(fileData);
+                const json = parseJsonc(content);
+
+                if (typeof json === "object") {
+                    const variables = Object.keys(json);
+                    for (const variable of variables) {
+                        if (variable.startsWith("$") === true) {
+                            globalVariables.push(variable);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.warn(`⚠️ Error reading file ${uri.fsPath}:`, error);
+            }
+        }
+
+        return Array.from(new Set(globalVariables));
     }
 
     static async getVanillaItemGroupIdsWithoutNamespace(): Promise<string[]> {
@@ -2138,6 +2472,19 @@ export class GetMinecraftVanillaFiles {
         return craftingItemCatalogFiles;
     }
 
+    static async getEntityFilesBP(): Promise<vscode.Uri[]> {
+        const behaviorPacks = await this.getVanillaBehaviorPacks();
+        const entityFiles: vscode.Uri[] = [];
+        for (const packPath of behaviorPacks) {
+            const entitiesDir = vscode.Uri.file(path.join(packPath, "entities"));
+            const exists = await pathExists(entitiesDir);
+            if (!exists) continue;
+
+            await collectJsonFiles(entitiesDir, entityFiles);
+        }
+        return entityFiles;
+    }
+
     static async getFeatureFilesBP(): Promise<vscode.Uri[]> {
         const definitionsPath = await this.getDefinitionsPath();
         const behaviorPacks = [...await this.getVanillaBehaviorPacks(), ...definitionsPath];
@@ -2282,6 +2629,19 @@ export class GetMinecraftVanillaFiles {
             await collectJsonFiles(templatePoolsDir, templatePoolFiles);
         }
         return templatePoolFiles;
+    }
+    
+    static async getTradingFilesBP(): Promise<vscode.Uri[]> {
+        const behaviorPacks = await this.getVanillaBehaviorPacks();
+        const tradingFiles: vscode.Uri[] = [];
+        for (const packPath of behaviorPacks) {
+            const tradingDir = vscode.Uri.file(path.join(packPath, "trading"));
+            const exists = await pathExists(tradingDir);
+            if (!exists) continue;
+
+            await collectJsonFiles(tradingDir, tradingFiles);
+        }
+        return tradingFiles;
     }
 
     static async getAnimationControllerFilesRP(): Promise<vscode.Uri[]> {
@@ -2502,6 +2862,36 @@ export class GetMinecraftVanillaFiles {
             await collectFiles(texturesDir, textureFiles, [".tga", ".png", ".jpg", ".jpeg"]);
         }
         return textureFiles;
+    }
+
+    static async getUiElementsFilesRP(): Promise<vscode.Uri[]> {
+        const resourcePacks = await this.getVanillaResourcePacks();
+        let uiElementsFiles: vscode.Uri[] = [];
+        for (const packPath of resourcePacks) {
+            const uiElementsDir = vscode.Uri.file(path.join(packPath, "ui"));
+            const exists = await pathExists(uiElementsDir);
+            if (!exists) continue;
+
+            await collectJsonFiles(uiElementsDir, uiElementsFiles);
+        }
+
+        uiElementsFiles = uiElementsFiles.filter(fileName => {
+            return !fileName.path.endsWith("_ui_defs.json") && !fileName.path.endsWith("_global_variables.json");
+        });
+        return uiElementsFiles;
+    }
+
+    static async getUiGlobalVariablesFilesRP(): Promise<vscode.Uri[]> {
+        const resourcePacks = await this.getVanillaResourcePacks();
+        const uiGlobalVariablesFiles: vscode.Uri[] = [];
+        for (const packPath of resourcePacks) {
+            const uiGlobalVariablesFile = vscode.Uri.file(path.join(packPath, "ui", "_global_variables.json"));
+            const exists = await pathExists(uiGlobalVariablesFile);
+            if (exists) {
+                uiGlobalVariablesFiles.push(uiGlobalVariablesFile);
+            }
+        }
+        return uiGlobalVariablesFiles;
     }
 
     static async getWaterSettingsFilesRP(): Promise<vscode.Uri[]> {
@@ -3138,6 +3528,36 @@ export class GetMinecraftProjectFiles {
             await collectFiles(texturesDir, textureFiles, [".tga", ".png", ".jpg", ".jpeg"]);
         }
         return textureFiles;
+    }
+
+    static async getUiElementsFilesRP(): Promise<vscode.Uri[]> {
+        const resourcePackUris = await this.getResourcePackUris();
+        let uiElementsFiles: vscode.Uri[] = [];
+        for (const resourcePackUri of resourcePackUris) {
+            const uiElementsDir = vscode.Uri.joinPath(resourcePackUri, "ui");
+            const exists = await pathExists(uiElementsDir);
+            if (!exists) continue;
+
+            await collectJsonFiles(uiElementsDir, uiElementsFiles);
+        }
+
+        uiElementsFiles = uiElementsFiles.filter(fileName => {
+            return !fileName.path.endsWith("_ui_defs.json") && !fileName.path.endsWith("_global_variables.json");
+        });
+        return uiElementsFiles;
+    }
+
+    static async getUiGlobalVariablesFilesRP(): Promise<vscode.Uri[]> {
+        const resourcePackUris = await this.getResourcePackUris();
+        const uiGlobalVariablesFiles: vscode.Uri[] = [];
+        for (const resourcePackUri of resourcePackUris) {
+            const uiGlobalVariablesFile = vscode.Uri.joinPath(resourcePackUri, "ui", "_global_variables.json");
+            const exists = await pathExists(uiGlobalVariablesFile);
+            if (exists) {
+                uiGlobalVariablesFiles.push(uiGlobalVariablesFile);
+            }
+        }
+        return uiGlobalVariablesFiles;
     }
 
     static async getWaterSettingsFilesRP(): Promise<vscode.Uri[]> {

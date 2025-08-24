@@ -1,6 +1,7 @@
 import { SchemaType } from "../../../../../types/schema";
+import { MinecraftJsonSchema } from "../../../types/minecraftJsonSchema";
 
-const baseSchema = {
+const baseSchema: MinecraftJsonSchema = {
     description: "Ce fichier sert à définir les crédits du jeu.",
     type: "array",
     items: {

@@ -2,8 +2,9 @@ import { on } from "events";
 import { SchemaChange, SchemaType } from "../../../../../types/schema";
 import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
 import { schemaPatterns } from "../../../shared/schemaPatterns";
+import { MinecraftJsonSchema } from "../../../types/minecraftJsonSchema";
 
-const baseSchema = {
+const baseSchema: MinecraftJsonSchema = {
     description: "Décrit les paramètres de lumière directionnelle, ambiante et émissive utilisés pour personnaliser l'apparence du ciel, du soleil, de la lune et de l'éclairage général dans Minecraft. Ces réglages influencent la couleur, l'intensité et l'ambiance lumineuse tout au long du cycle jour/nuit.",
     type: "object",
     required: ["format_version", "minecraft:lighting_settings"],

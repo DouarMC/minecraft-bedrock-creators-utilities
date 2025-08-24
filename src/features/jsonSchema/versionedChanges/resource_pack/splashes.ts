@@ -1,6 +1,7 @@
 import { SchemaType } from "../../../../types/schema";
+import { MinecraftJsonSchema } from "../../types/minecraftJsonSchema";
 
-const baseSchema = {
+const baseSchema: MinecraftJsonSchema = {
     description: "Ce fichier contient les textes de Splashs qui s'affichent sur le logo Minecraft au menu principal.",
     type: "object",
     required: ["splashes"],

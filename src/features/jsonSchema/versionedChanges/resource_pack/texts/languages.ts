@@ -1,7 +1,8 @@
 import { SchemaType } from "../../../../../types/schema";
 import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
+import { MinecraftJsonSchema } from "../../../types/minecraftJsonSchema";
 
-const baseSchema = {
+const baseSchema: MinecraftJsonSchema = {
     description: "La liste de toutes les langues utilisés dans ce Pack. On peut y ajouter des langues.",
     type: "array",
     items: {

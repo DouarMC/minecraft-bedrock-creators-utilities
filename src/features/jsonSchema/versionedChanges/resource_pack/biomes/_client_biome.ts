@@ -1,9 +1,10 @@
 import { SchemaChange, SchemaType } from "../../../../../types/schema";
 import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
 import { schemaPatterns } from "../../../shared/schemaPatterns";
+import { MinecraftJsonSchema } from "../../../types/minecraftJsonSchema";
 
-const baseSchema = {
-    desscription: "Définit les propriétés du client du biome.",
+const baseSchema: MinecraftJsonSchema = {
+    description: "Définit les propriétés du client du biome.",
     type: "object",
     required: ["format_version", "minecraft:client_biome"],
     properties: {

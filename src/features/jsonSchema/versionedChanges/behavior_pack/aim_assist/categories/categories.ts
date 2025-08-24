@@ -1,8 +1,9 @@
 import { SchemaType } from "../../../../../../types/schema";
 import { dynamicExamplesSourceKeys } from "../../../../shared/schemaEnums";
 import { schemaPatterns } from "../../../../shared/schemaPatterns";
+import { MinecraftJsonSchema } from "../../../../types/minecraftJsonSchema";
 
-const baseSchema = {
+const baseSchema: MinecraftJsonSchema = {
     description: "Ce fichier crée des catégories pour les comportements d'assistance à la visée (Aim-Assist).",
     type: "object",
     required: ["format_version", "minecraft:aim_assist_categories"],

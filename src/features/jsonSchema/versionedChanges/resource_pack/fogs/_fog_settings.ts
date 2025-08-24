@@ -1,8 +1,9 @@
 import { SchemaType, SchemaChange } from "../../../../../types/schema";
 import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
 import { schemaPatterns } from "../../../shared/schemaPatterns";
+import { MinecraftJsonSchema } from "../../../types/minecraftJsonSchema";
 
-const baseSchema = {
+const baseSchema: MinecraftJsonSchema = {
     description: "Ce fichier sert à configurer des effets de brouillard volumétrique et de rayons lumineux (light shafts).",
     type: "object",
     required: ["format_version", "minecraft:fog_settings"],

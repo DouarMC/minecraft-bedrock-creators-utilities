@@ -1,7 +1,8 @@
 import { SchemaType } from "../../../../../types/schema";
 import { schemaPatterns } from "../../../shared/schemaPatterns";
+import { MinecraftJsonSchema } from "../../../types/minecraftJsonSchema";
 
-const baseSchema = {
+const baseSchema: MinecraftJsonSchema = {
     description: "Ce fichier crée des contrôleurs d'animation de type `behavior`.",
     type: "object",
     required: ["format_version", "animation_controllers"],

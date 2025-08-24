@@ -1,8 +1,9 @@
 import { SchemaType } from "../../../../../../types/schema";
 import { dynamicExamplesSourceKeys } from "../../../../shared/schemaEnums";
 import { schemaPatterns } from "../../../../shared/schemaPatterns";
+import { MinecraftJsonSchema } from "../../../../types/minecraftJsonSchema";
 
-const baseSchema = {
+const baseSchema: MinecraftJsonSchema = {
     description: "Ce fichier crée des presets d'assistance à la visée (Aim-Assist).",
     type: "object",
     required: ["format_version", "minecraft:aim_assist_preset"],
@@ -70,5 +71,5 @@ const baseSchema = {
 export const aimAssistPresetSchemaTypeBP: SchemaType = {
     fileMatch: ["**/addon/behavior_pack/aim_assist/presets/**/*.json"],
     baseSchema: baseSchema,
-    versionedChanges: [] // Pas de changements pour ce schéma pour l'instant
+    versionedChanges: []
 };

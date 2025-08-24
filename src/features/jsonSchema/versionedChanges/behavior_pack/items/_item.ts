@@ -2,9 +2,9 @@ import { schemaPatterns } from "../../../shared/schemaPatterns";
 import { dynamicExamplesSourceKeys, schemaEnums } from "../../../shared/schemaEnums";
 import { commonSchemas } from "../../../shared/commonSchemas";
 import { SchemaChange, SchemaType } from "../../../../../types/schema";
+import { MinecraftJsonSchema } from "../../../types/minecraftJsonSchema";
 
-const baseSchema = {
-    $schema: "https://json-schema.org/draft-07/schema#",
+const baseSchema: MinecraftJsonSchema = {
     description: "Ce fichier crée ou modifie un Item.",
     type: "object",
     required: ["format_version", "minecraft:item"],

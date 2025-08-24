@@ -1,8 +1,9 @@
 import { SchemaType } from "../../../../../types/schema";
 import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
 import { schemaPatterns } from "../../../shared/schemaPatterns";
+import { MinecraftJsonSchema } from "../../../types/minecraftJsonSchema";
 
-const baseSchema = {
+const baseSchema: MinecraftJsonSchema = {
     description: "Ce fichier sert à définir les paramètres d'Atmosphères qui contrôlent tout ce qui touche à l'apparence du ciel et de la brume avec le mode graphique `Vibrant Visuals`.",
     type: "object",
     required: ["format_version", "minecraft:atmosphere_settings"],

@@ -1,6 +1,7 @@
 import { SchemaType } from "../../../../../types/schema";
+import { MinecraftJsonSchema } from "../../../types/minecraftJsonSchema";
 
-const baseSchema = {
+const baseSchema: MinecraftJsonSchema = {
     description: "Ce fichier définit un dialogue pour les NPCs.",
     type: "object",
     required: ["format_version", "minecraft:npc_dialogue"],

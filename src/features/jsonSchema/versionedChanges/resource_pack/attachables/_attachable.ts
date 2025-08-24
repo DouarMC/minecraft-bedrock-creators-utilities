@@ -1,8 +1,9 @@
 import { SchemaChange, SchemaType } from "../../../../../types/schema";
 import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
 import { schemaPatterns } from "../../../shared/schemaPatterns";
+import { MinecraftJsonSchema } from "../../../types/minecraftJsonSchema";
 
-const baseSchema = {
+const baseSchema: MinecraftJsonSchema = {
     description: "Ce fichier sert à définir l'attachable d'un Item (semblable aux entités).",
     type: "object",
     required: ["format_version", "minecraft:attachable"],

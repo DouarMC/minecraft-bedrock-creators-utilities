@@ -1,7 +1,8 @@
 import { SchemaType } from "../../../../types/schema";
 import { dynamicExamplesSourceKeys } from "../../shared/schemaEnums";
+import { MinecraftJsonSchema } from "../../types/minecraftJsonSchema";
 
-const baseSchema = {
+const baseSchema: MinecraftJsonSchema = {
     description: "Ce fichier sert à crée des références de sons de contextes en utilisant des reférences de sons définies dans le fichier `sound_definitions.json`.",
     type: "object",
     properties: {
@@ -23,7 +24,7 @@ const baseSchema = {
                         type: "number"
                     },
                     events: {
-                        descriprion: "Les sons à jouer pour chaque contexte.",
+                        description: "Les sons à jouer pour chaque contexte.",
                         type: "object",
                         properties: {
                             ambient: {
@@ -1057,6 +1058,6108 @@ const baseSchema = {
                 }
             }
         },
+        entity_sounds: {
+            description: "Applique des sons aux entités.",
+            type: "object",
+            properties: {
+                defaults: {
+                    description: "Les sons par défaut pour toutes les entités.",
+                    type: "object",
+                    properties: {
+                        pitch: {
+                            description: "Le pitch du son par défaut pour tous les contextes.",
+                            oneOf: [
+                                {
+                                    type: "number"
+                                },
+                                {
+                                    type: "array",
+                                    minItems: 2,
+                                    maxItems: 2,
+                                    items: {
+                                        type: "number"
+                                    }
+                                }
+                            ]
+                        },
+                        volume: {
+                            description: "Le volume du son par défaut pour tous les contextes.",
+                            type: "number"
+                        },
+                        events: {
+                            description: "Les sons à jouer pour chaque contexte.",
+                            type: "object",
+                            properties: {
+                                activate: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "add.chest": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                admire: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                agitated: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                ambient: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "ambient.aggressive": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "ambient.baby": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "ambient.in.air": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "ambient.in.raid": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "ambient.in.water": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "ambient.pollinate": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "ambient.screamer": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "ambient.tame": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "ambient.worried": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                angry: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                armor: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "armor.equip_generic": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "armor.unequip_generic": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                attach: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                attack: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "attack.nodamage": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "attack.strong": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                boost: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "break.block": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                breathe: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                cant_breed: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "cast.spell": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                celebrate: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                charge: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                creaking_heart_spawn: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                deactivate: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                death: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "death.baby": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "death.in.water": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "death.mid.volume": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "death.min.volume": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "death.screamer": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "death.to.zombie": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                detach: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                disappeared: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                drink: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "drink.honey": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "drink.milk": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                eat: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "elderguardian.curse": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                explode: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "fall.big": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "fall.small": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                fang: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                fizz: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                flap: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                flop: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                fly: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                freeze: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                fuse: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                growl: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                haggle: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "haggle.no": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "haggle.yes": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                heartbeat: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                hurt: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "hurt.baby": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "hurt.in.water": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "hurt.reduced": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "hurt.screamer": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.blaze": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.bogged": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.breeze": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.cave_spider": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.creaking": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.creeper": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.drowned": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.elder_guardian": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.ender_dragon": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.enderman": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.endermite": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.evocation_illager": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.ghast": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.guardian": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.happy_ghast": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.husk": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.magma_cube": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.phantom": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.pillager": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.polar_bear": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.ravager": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.shulker": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.silverfish": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.skeleton": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.slime": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.spider": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.stray": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.vex": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.vindication_illager": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.warden": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.witch": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.wither": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.wither_skeleton": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.wolf": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.zoglin": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.zombie": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.zombie_pigman": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "imitate.zombie_villager": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "irongolem.crack": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "irongolem.repair": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                jump: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                jump_to_block: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                land: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                listening: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                listening_angry: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                mad: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "mob.warning": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                nearby_close: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                nearby_closer: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                nearby_closest: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                panic: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                pant: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                plop: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "prepare.attack": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "prepare.summon": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "prepare.wololo": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                presneeze: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                purr: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                purreow: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                reappeared: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                reflect: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                retreat: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                roar: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                saddle: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                screech: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                shake: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                shoot: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "shulker.close": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "shulker.open": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                sleep: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                sneeze: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                spawn: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                splash: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "squish.big": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "squish.small": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                stare: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                step: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "step.baby": {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                step_lava: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                stun: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                step_sand: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                swin: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                swoop: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                takeoff: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                tempt: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                throw: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                thunder: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                unfreeze: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                unsaddle: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                warn: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                whine: {
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                sound: {
+                                                    description: "La référence de son à jouer.",
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                                },
+                                                pitch: {
+                                                    description: "Le pitch du son.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "array",
+                                                            minItems: 2,
+                                                            maxItems: 2,
+                                                            items: {
+                                                                type: "number"
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                volume: {
+                                                    description: "Le volume du son.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                            }
+                        }
+                    }
+                },
+                entities: {
+                    description: "Contient les références de sons d'entités pour chaque type d'entité.",
+                    type: "object",
+                    propertyNames: {
+                        "x-dynamic-examples-source": [dynamicExamplesSourceKeys.entity_ids, dynamicExamplesSourceKeys.vanilla_entity_ids_without_namespace]
+                    },
+                    additionalProperties: {
+                        type: "object",
+                        properties: {
+                            pitch: {
+                                description: "Le pitch du son par défaut pour tous les contextes.",
+                                oneOf: [
+                                    {
+                                        type: "number"
+                                    },
+                                    {
+                                        type: "array",
+                                        minItems: 2,
+                                        maxItems: 2,
+                                        items: {
+                                            type: "number"
+                                        }
+                                    }
+                                ]
+                            },
+                            volume: {
+                                description: "Le volume du son par défaut pour tous les contextes.",
+                                type: "number"
+                            },
+                            events: {
+                                $ref: "#/properties/entity_sounds/properties/defaults/properties/events"
+                            },
+                            variants: {
+                                description: "Les variantes de sons pour cette entité.",
+                                type: "object",
+                                required: ["key", "map"],
+                                properties: {
+                                    key: {
+                                        description: "Expression Molang pour déterminer la variante à utiliser.",
+                                        type: "molang"
+                                    },
+                                    map: {
+                                        description: "Map des variantes possibles.",
+                                        type: "object",
+                                        additionalProperties: {
+                                            description: "",
+                                            $ref: "#/properties/entity_sounds/properties/defaults"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        individual_event_sounds: {
+            type: "object",
+            properties: {
+                events: {
+                    type: "object",
+                    propertyNames: {
+                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.data_driven_individual_event_sound_references
+                    },
+                    additionalProperties: {
+                        type: "object",
+                        properties: {
+                            pitch: {
+                                description: "Le pitch du son.",
+                                oneOf: [
+                                    {
+                                        type: "number"
+                                    },
+                                    {
+                                        type: "array",
+                                        minItems: 2,
+                                        maxItems: 2,
+                                        items: {
+                                            type: "number"
+                                        }
+                                    }
+                                ]
+                            },
+                            volume: {
+                                description: "Le volume du son.",
+                                type: "number"
+                            },
+                            sound: {
+                                description: "La référence de son à jouer.",
+                                type: "string",
+                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        individual_named_sounds: {
+            type: "object",
+            properties: {
+                sounds: {
+                    type: "object",
+                    propertyNames: {
+                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.data_driven_individual_named_sound_references
+                    },
+                    additionalProperties: {
+                        type: "object",
+                        properties: {
+                            pitch: {
+                                description: "Le pitch du son.",
+                                oneOf: [
+                                    {
+                                        type: "number"
+                                    },
+                                    {
+                                        type: "array",
+                                        minItems: 2,
+                                        maxItems: 2,
+                                        items: {
+                                            type: "number"
+                                        }
+                                    }
+                                ]
+                            },
+                            volume: {
+                                description: "Le volume du son.",
+                                type: "number"
+                            },
+                            sound: {
+                                description: "La référence de son à jouer.",
+                                type: "string",
+                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                            }
+                        }
+                    }
+                }
+            }
+        },
         interactive_sounds: {
             description: "Contient les références de sons de contextes interactifs.",
             type: "object",
@@ -1079,7 +7182,7 @@ const baseSchema = {
                                 type: "number"
                             },
                             events: {
-                                descriprion: "Les sons à jouer pour chaque contexte.",
+                                description: "Les sons à jouer pour chaque contexte.",
                                 type: "object",
                                 properties: {
                                     fall: {
@@ -1218,6 +7321,59 @@ const baseSchema = {
                                         ]
                                     }
                                 }
+                            }
+                        }
+                    }
+                },
+                entity_sounds: {
+                    description: "Les sons de contextes interactifs pour les entités.",
+                    type: "object",
+                    properties: {
+                        defaults: {
+                            description: "Les sons par défaut pour tous les types d'entités.",
+                            type: "object",
+                            properties: {
+                                pitch: {
+                                    description: "Le pitch du son par défaut pour tous les contextes.",
+                                    oneOf: [
+                                        {
+                                            type: "number"
+                                        },
+                                        {
+                                            type: "array",
+                                            minItems: 2,
+                                            maxItems: 2,
+                                            items: {
+                                                type: "number"
+                                            }
+                                        }
+                                    ]
+                                },
+                                volume: {
+                                    description: "Le volume du son par défaut pour tous les contextes.",
+                                    type: "number"
+                                },
+                                events: {
+                                    description: "Les sons à jouer pour chaque contexte.",
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.sound_references
+                                        },
+                                        {
+                                            type: "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        entities: {
+                            type: "object",
+                            propertyNames: {
+                                "x-dynamic-examples-source": [dynamicExamplesSourceKeys.entity_ids, dynamicExamplesSourceKeys.vanilla_entity_ids_without_namespace]
+                            },
+                            additionalProperties: {
+                                type: "object"
                             }
                         }
                     }

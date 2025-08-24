@@ -1,8 +1,8 @@
 import { SchemaChange, SchemaType } from "../../../../../types/schema";
 import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
+import { MinecraftJsonSchema } from "../../../types/minecraftJsonSchema";
 
-const baseSchema = {
-    "$schema": "http://json-schema.org/draft-07/schema#",
+const baseSchema: MinecraftJsonSchema = {
     "description": "Définit des modèles de géométrie. \nType: `Object`",
     "type": "object",
     "required": ["format_version"],

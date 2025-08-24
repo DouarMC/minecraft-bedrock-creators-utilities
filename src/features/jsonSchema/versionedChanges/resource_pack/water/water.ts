@@ -1,8 +1,9 @@
 import { SchemaChange, SchemaType } from "../../../../../types/schema";
 import { dynamicExamplesSourceKeys } from "../../../shared/schemaEnums";
 import { schemaPatterns } from "../../../shared/schemaPatterns";
+import { MinecraftJsonSchema } from "../../../types/minecraftJsonSchema";
 
-const baseSchema = {
+const baseSchema: MinecraftJsonSchema = {
     description: "Ce fichier sert à définir des paramètres visuels de l'eau pour le mode graphique `Vibrant Visuals`.",
     type: "object",
     required: ["format_version", "minecraft:water_settings"],
