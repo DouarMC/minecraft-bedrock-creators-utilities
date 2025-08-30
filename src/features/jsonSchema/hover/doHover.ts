@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { MinecraftJsonSchema } from '../types/minecraftJsonSchema';
+import { MinecraftJsonSchema } from '../../../types/minecraftJsonSchema';
 import { getMatchingSchemas } from '../completion/doComplete';
 import { parseTree } from 'jsonc-parser';
 import { getNodeFromOffset } from '../utils/ast';

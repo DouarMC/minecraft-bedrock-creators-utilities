@@ -1,4 +1,3 @@
-import { JSONPath } from "jsonc-parser";
 import { PropertyPath } from "lodash";
 
 export interface SchemaModification {
@@ -18,12 +17,4 @@ export interface SchemaType {
     baseSchema: any;
     versionedChanges: SchemaChange[];
     previewVersionedChanges?: SchemaChange[];
-}
-
-export interface SchemaContext {
-    path: JSONPath;
-    schema: any | undefined;
-    unresolvedSchema?: any | undefined; // Schéma non résolu (garde les oneOf)
-    fullSchema: SchemaType | undefined;
-    valueAtPath: any;
 }

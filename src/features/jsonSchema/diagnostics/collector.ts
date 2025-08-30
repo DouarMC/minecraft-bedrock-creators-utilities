@@ -1,5 +1,5 @@
 import * as JsonParser from 'jsonc-parser';
-import { MinecraftJsonSchema } from '../types/minecraftJsonSchema';
+import { MinecraftJsonSchema } from '../../../types/minecraftJsonSchema';
 import { contains } from '../utils/validationHelpers';
 
 export interface IApplicableSchema {

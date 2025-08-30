@@ -15,3 +15,8 @@ export async function directoryExists(uri: vscode.Uri): Promise<boolean> {
         return false;
     }
 }
+
+export async function isFolderEmpty(folderUri: vscode.Uri): Promise<boolean> {
+    const entries = await vscode.workspace.fs.readDirectory(folderUri);
+    return entries.length === 0;
+}

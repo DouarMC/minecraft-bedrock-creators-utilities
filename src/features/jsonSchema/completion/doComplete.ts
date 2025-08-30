@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as JsonParser from "jsonc-parser";
-import { MinecraftJsonSchema } from '../types/minecraftJsonSchema';
+import { MinecraftJsonSchema } from '../../../types/minecraftJsonSchema';
 import { validate } from '../diagnostics/doValidation';
 import { SchemaCollector } from '../diagnostics/collector';
 import { ValidationResult } from '../diagnostics/validate';
@@ -393,7 +393,9 @@ export async function addSchemaValueCompletions(schema: MinecraftJsonSchema, sep
         await addDefaultValueCompletions(schema, separatorAfter, collector);
         collectTypes(schema, types);
         if (Array.isArray(schema.oneOf)) {
-            schema.oneOf.forEach((async s => await addSchemaValueCompletions(s, separatorAfter, collector, types)));
+            for (const subSchema of schema.oneOf) {
+                await addSchemaValueCompletions(subSchema, separatorAfter, collector, types);
+            }
         }
     }
 }

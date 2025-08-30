@@ -1,4 +1,4 @@
-import { dynamicExamplesSourceKeys } from "../../shared/schemaEnums";
+import { dynamicExamplesSourceKeys } from "../../utils/shared/schemaEnums";
 import { GetMinecraftContent } from "../../../../utils/workspace/getContent";
 
 export async function getDynamicExampleSourceValues(sourceKey: string | string[]): Promise<any[]> {
@@ -243,20 +243,11 @@ export async function getDynamicExampleSourceValues(sourceKey: string | string[]
             case dynamicExamplesSourceKeys.trading_file_paths:
                 values.push(...await GetMinecraftContent.getTradingFilePaths());
                 break;
-            case dynamicExamplesSourceKeys.vanilla_biome_ids:
-                values.push(...await GetMinecraftContent.getVanillaBiomeIds());
-                break;
             case dynamicExamplesSourceKeys.vanilla_biome_ids_without_namespace:
                 values.push(...await GetMinecraftContent.getVanillaBiomeIdsWithoutNamespace());
                 break;
             case dynamicExamplesSourceKeys.vanilla_block_ids_without_namespace:
                 values.push(...await GetMinecraftContent.getVanillaBlockIdsWithoutNamespace());
-                break;
-            case dynamicExamplesSourceKeys.vanilla_camera_preset_ids:
-                values.push(...await GetMinecraftContent.getVanillaCameraPresetIds());
-                break;
-            case dynamicExamplesSourceKeys.vanilla_dimension_ids:
-                values.push(...await GetMinecraftContent.getVanillaDimensionIds());
                 break;
             case dynamicExamplesSourceKeys.vanilla_enchantment_ids:
                 values.push(...GetMinecraftContent.vanillaEnchantmentIds);

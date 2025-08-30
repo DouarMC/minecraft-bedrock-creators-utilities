@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
 import * as JsonParser from 'jsonc-parser';
-import { MinecraftJsonSchema, MinecraftJsonSchemaType } from '../types/minecraftJsonSchema';
+import { MinecraftJsonSchema, MinecraftJsonSchemaType } from '../../../types/minecraftJsonSchema';
 import { ValidationResult } from './validate';
-import { SchemaCollector, IApplicableSchema, ISchemaCollector, NoOpSchemaCollector } from './collector';
+import { ISchemaCollector, NoOpSchemaCollector } from './collector';
 
-import { isNumber, contains, extendedRegExp, isBoolean, isString, startsWith, stringLength } from '../utils/validationHelpers';
+import { isNumber, extendedRegExp, isBoolean, isString, startsWith, stringLength } from '../utils/validationHelpers';
 import { resolveRef } from '../utils/resolveRef';
 
 export function doValidation(document: vscode.TextDocument, schema: MinecraftJsonSchema, severity: vscode.DiagnosticSeverity = vscode.DiagnosticSeverity.Warning): vscode.Diagnostic[] | undefined {

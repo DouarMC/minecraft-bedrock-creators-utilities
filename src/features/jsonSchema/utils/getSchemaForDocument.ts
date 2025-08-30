@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { detectMinecraftFileType } from './detectMinecraftFileType';
-import { cloneDeep, set, unset, get} from 'lodash';
+import { cloneDeep, set, unset} from 'lodash';
 import * as JsonParser from 'jsonc-parser';
 
 export function getSchemaForDocument(document: vscode.TextDocument): any | null {

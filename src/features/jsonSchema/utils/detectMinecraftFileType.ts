@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { schemaTypes } from "../versioning/schemaTypes";
+import { schemaTypes } from "../minecraftSchemas/schemaTypes";
 import { SchemaType } from "../../../types/schema";
 
 /**

@@ -3,17 +3,15 @@ import { exec } from "child_process";
 import { promisify } from "util";
 import { randomUUID } from "crypto";
 import { writeJsonFilePretty } from "../../../utils/json/jsonUtils";
-import { ProjectMetadata } from "../../../types/projectMetadata";
-import { LAST_VERSION_STABLE, LAST_VERSION_PREVIEW } from "../../../utils/data/minecraftVersions";
+import { MinecraftAddonPack, MinecraftProduct, ProjectMetadata } from "../../../types/projectConfig";
 import { SCRIPT_API_MODULES, SCRIPT_API_MODULES_NAMES, SCRIPT_API_MODULES_NAMES_PREVIEW, SCRIPT_API_MODULES_PREVIEW, SCRIPT_API_MODULES_VERSIONS_PACKAGE, SCRIPT_API_MODULES_VERSIONS_PACKAGE_PREVIEW } from "../../../utils/data/scriptApiModules";
 
 /**
  * Crée un objet de base pour le manifeste d'un pack de comportement ou de ressources.
  * @param type Le type de pack, soit "behavior_pack" soit "resource_pack".
- * @param projectMinecraftProduct La version de Minecraft à utiliser pour le projet, soit "stable" soit "preview".
  * @returns 
  */
-function createManifestObject(type: "behavior_pack" | "resource_pack", projectMinecraftProduct: "stable" | "preview"): any {
+function createManifestObject(type: MinecraftAddonPack): any {
     // Vérifie le type de pack et crée un manifeste de base en conséquence
     const isBehaviorPack = type === "behavior_pack";
     // Crée un objet de manifeste de base avec les propriétés communes
@@ -23,8 +21,7 @@ function createManifestObject(type: "behavior_pack" | "resource_pack", projectMi
             name: "pack.name",
             description: "pack.description",
             uuid: randomUUID(),
-            version: [0, 0, 1],
-            min_engine_version: projectMinecraftProduct === "stable" ? LAST_VERSION_STABLE.split(".").map(Number) : LAST_VERSION_PREVIEW.split(".").map(Number),
+            version: [0, 0, 1]
         },
         modules: [
             {
@@ -39,22 +36,21 @@ function createManifestObject(type: "behavior_pack" | "resource_pack", projectMi
 }
 
 async function createPackFoldersAndManifests(
-    addonFolder: vscode.Uri,
-    packsAddon: ("behavior_pack" | "resource_pack")[],
-    minecraftProduct: "stable" | "preview"
+    projectFolder: vscode.Uri,
+    packsAddon: MinecraftAddonPack[]
 ): Promise<{ behaviorManifest?: any, resourceManifest?: any }> {
     let behaviorManifest: any = undefined;
     let resourceManifest: any = undefined;
 
     for (const pack of packsAddon) {
-        const packPath = vscode.Uri.joinPath(addonFolder, pack);
+        const packPath = vscode.Uri.joinPath(projectFolder, "addon", pack);
         await vscode.workspace.fs.createDirectory(packPath);
 
-        const manifest = createManifestObject(pack, minecraftProduct);
+        const manifest = createManifestObject(pack);
 
-        if (pack === "behavior_pack") {
+        if (pack === MinecraftAddonPack.BehaviorPack) {
             behaviorManifest = manifest;
-        } else if (pack === "resource_pack") {
+        } else if (pack === MinecraftAddonPack.ResourcePack) {
             resourceManifest = manifest;
         }
     }
@@ -86,7 +82,7 @@ function configurePackDependencies(behaviorManifest?: any, resourceManifest?: an
 async function addScriptApiIfNeeded(
     projectFolder: vscode.Uri,
     behaviorManifest: any,
-    minecraftProduct: "stable" | "preview"
+    minecraftProduct: MinecraftProduct
 ): Promise<Record<string, string> | undefined> {
     const hasScriptApi = await vscode.window.showQuickPick(["Oui", "Non"], {
         title: "Inclure l'API Script",
@@ -174,7 +170,7 @@ async function addScriptApiIfNeeded(
 
 export async function createLangFilesAndIcons(
     folder: vscode.Uri,
-    packType: "behavior_pack" | "resource_pack",
+    packType: MinecraftAddonPack,
     displayName: string,
     version: string,
     author: string,
@@ -195,8 +191,8 @@ export async function createLangFilesAndIcons(
 
     // 🗣 en_US.lang
     const langContent =
-        `pack.name=${displayName} ${packType === "behavior_pack" ? "BP" : "RP"} [v${version}] - by ${author}\n` +
-        `pack.description=${packType === "behavior_pack" ? "Behavior" : "Resource"} Pack for ${displayName} - Created by ${author}`;
+        `pack.name=${displayName} ${packType === MinecraftAddonPack.BehaviorPack ? "BP" : "RP"} [v${version}] - by ${author}\n` +
+        `pack.description=${packType === MinecraftAddonPack.BehaviorPack ? "Behavior" : "Resource"} Pack for ${displayName} - Created by ${author}`;
 
     const enUSPath = vscode.Uri.joinPath(textsFolder, "en_US.lang");
     await vscode.workspace.fs.writeFile(
@@ -211,25 +207,59 @@ export async function createLangFilesAndIcons(
     await vscode.workspace.fs.copy(iconSource, iconTarget);
 }
 
-export async function createAddonStructure(projectFolder: vscode.Uri, metadata: ProjectMetadata, context: vscode.ExtensionContext) {
-    const addonFolder = vscode.Uri.joinPath(projectFolder, "addon");
-    await vscode.workspace.fs.createDirectory(addonFolder);
+async function promptAddonPackTypes(): Promise<MinecraftAddonPack[]> {
+    const packAddons: MinecraftAddonPack[] = [];
 
-    const packsAddon = await vscode.window.showQuickPick(
-        ["behavior_pack", "resource_pack"],
+    const PACK_TYPE_ITEMS: vscode.QuickPickItem[] = [
+        {
+            label: MinecraftAddonPack.BehaviorPack,
+            description: "Pack de comportement.",
+            detail: "Contient les comportements, entités, et scripts.",
+            alwaysShow: true
+        },
+        {
+            label: MinecraftAddonPack.ResourcePack,
+            description: "Pack de ressources.",
+            detail: "Contient les textures, sons, et modèles.",
+            alwaysShow: true
+        }
+    ];
+
+    const packAddonItems = await vscode.window.showQuickPick(
+        PACK_TYPE_ITEMS,
         {
             title: "Types de packs de l'addon",
             placeHolder: "Sélectionnez le/les types de packs pour l'addon",
-            canPickMany: true
+            canPickMany: true,
+            ignoreFocusOut: true
         }
     );
 
-    if (!packsAddon || packsAddon.length === 0) {
+    if (packAddonItems !== undefined) {
+        for (const item of packAddonItems) {
+            packAddons.push(item.label as MinecraftAddonPack);
+        }
+    }
+
+    return packAddons;
+}
+
+async function createAddonFolder(projectFolder: vscode.Uri): Promise<vscode.Uri> {
+    const addonFolder = vscode.Uri.joinPath(projectFolder, "addon");
+    await vscode.workspace.fs.createDirectory(addonFolder);
+    return addonFolder;
+}
+
+export async function createAddonStructure(projectFolder: vscode.Uri, metadata: ProjectMetadata, context: vscode.ExtensionContext) {
+    const addonFolder = await createAddonFolder(projectFolder);
+
+    const packsAddon = await promptAddonPackTypes();
+    if (packsAddon.length === 0) {
         vscode.window.showWarningMessage("Aucun type de pack sélectionné. L'initialisation de l'addon a été annulée.");
         return;
     }
 
-    const packageJsonContent: any = {
+    const packageJsonContent = {
         name: metadata.id,
         version: "0.0.1",
         description: `Addon for ${metadata.displayName}`,
@@ -238,36 +268,35 @@ export async function createAddonStructure(projectFolder: vscode.Uri, metadata: 
         type: "module"
     };
 
-    const { behaviorManifest, resourceManifest } = await createPackFoldersAndManifests(
-        addonFolder,
-        packsAddon as ("behavior_pack" | "resource_pack")[],
-        metadata.minecraftProduct
-    );
+    const { behaviorManifest, resourceManifest } = await createPackFoldersAndManifests(projectFolder, packsAddon);
 
     configurePackDependencies(behaviorManifest, resourceManifest);
 
-
-    if (behaviorManifest) {
+    if (behaviorManifest !== undefined) {
         const npmDependencies = await addScriptApiIfNeeded(projectFolder, behaviorManifest, metadata.minecraftProduct);
         if (npmDependencies) {
             packageJsonContent.dependencies = npmDependencies;
         }
-        const bpPath = vscode.Uri.joinPath(addonFolder, "behavior_pack", "manifest.json");
-        await writeJsonFilePretty(bpPath, behaviorManifest);
+        await writeJsonFilePretty(
+            vscode.Uri.joinPath(addonFolder, MinecraftAddonPack.BehaviorPack, "manifest.json"),
+            behaviorManifest
+        );
     }
 
-    if (resourceManifest) {
-        const rpPath = vscode.Uri.joinPath(addonFolder, "resource_pack", "manifest.json");
-        await writeJsonFilePretty(rpPath, resourceManifest);
+    if (resourceManifest !== undefined) {
+        await writeJsonFilePretty(
+            vscode.Uri.joinPath(addonFolder, MinecraftAddonPack.ResourcePack, "manifest.json"),
+            resourceManifest
+        );
     }
 
     for (const pack of packsAddon) {
-        const manifest = pack === "behavior_pack" ? behaviorManifest : resourceManifest;
+        const manifest = pack === MinecraftAddonPack.BehaviorPack ? behaviorManifest : resourceManifest;
         if (!manifest) continue;
 
         await createLangFilesAndIcons(
             projectFolder,
-            pack as "behavior_pack" | "resource_pack",
+            pack,
             metadata.displayName,
             manifest.header.version.join("."),
             metadata.author,

@@ -1,8 +1,9 @@
 import * as vscode from 'vscode';
-import * as path from 'path';
 import * as fs from 'fs';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+
+import { globals } from '../../globals';
 
 /**
  * Ouvre l'explorateur de fichiers Windows à un chemin spécifique
@@ -22,7 +23,8 @@ async function openExplorer(folderPath: string): Promise<void> {
 /**
  * Vérifie si un dossier existe avant de l'ouvrir
  */
-async function openExplorerWithCheck(folderPath: string, description: string): Promise<void> {
+async function openExplorerWithCheck(folder: vscode.Uri, description: string): Promise<void> {
+    const folderPath = folder.fsPath;
     try {
         // Vérifier d'abord si le dossier existe avec Node.js fs
         await fs.promises.access(folderPath, fs.constants.F_OK);
@@ -44,81 +46,41 @@ async function openExplorerWithCheck(folderPath: string, description: string): P
  * Ouvre le dossier des packs Minecraft Stable (com.mojang)
  */
 export async function openMinecraftStablePacksFolder(): Promise<void> {
-    const localAppData = process.env.LOCALAPPDATA;
-    if (!localAppData) {
-        vscode.window.showErrorMessage("❌ Impossible de déterminer le dossier LocalAppData.");
+    const comMojangFolder = globals.minecraftStableGame?.comMojangFolder;
+    if (comMojangFolder === undefined) {
+        vscode.window.showWarningMessage("⚠️ Le dossier com.mojang de Minecraft Stable n'est pas accessible.");
+        return;
+    } else {
+        await openExplorerWithCheck(comMojangFolder, "des packs Minecraft Stable");
         return;
     }
-    
-    const folderPath = path.join(
-        localAppData,
-        "Packages",
-        "Microsoft.MinecraftUWP_8wekyb3d8bbwe",
-        "LocalState",
-        "games",
-        "com.mojang"
-    );
-    
-    await openExplorerWithCheck(folderPath, "des packs Minecraft Stable");
 }
 
 /**
  * Ouvre le dossier des packs Minecraft Preview (com.mojang)
  */
 export async function openMinecraftPreviewPacksFolder(): Promise<void> {
-    const localAppData = process.env.LOCALAPPDATA;
-    if (!localAppData) {
-        vscode.window.showErrorMessage("❌ Impossible de déterminer le dossier LocalAppData.");
+    const comMojangFolder = globals.minecraftPreviewGame?.comMojangFolder;
+    if (comMojangFolder === undefined) {
+        vscode.window.showWarningMessage("⚠️ Le dossier com.mojang de Minecraft Preview n'est pas accessible.");
+        return;
+    } else {
+        await openExplorerWithCheck(comMojangFolder, "des packs Minecraft Preview");
         return;
     }
-    
-    const folderPath = path.join(
-        localAppData,
-        "Packages",
-        "Microsoft.MinecraftWindowsBeta_8wekyb3d8bbwe",
-        "LocalState",
-        "games",
-        "com.mojang"
-    );
-    
-    await openExplorerWithCheck(folderPath, "des packs Minecraft Preview");
 }
 
 /**
  * Trouve et ouvre le dossier des ressources vanilla Minecraft Stable
  */
 export async function openMinecraftStableVanillaFolder(): Promise<void> {
-    const programFiles = process.env.PROGRAMFILES;
-    if (!programFiles) {
-        vscode.window.showErrorMessage("❌ Impossible de déterminer le dossier Program Files.");
+    const dataFolder = globals.minecraftStableGame?.dataFolder;
+    if (dataFolder === undefined) {
+        vscode.window.showWarningMessage("⚠️ Le dossier data de Minecraft Stable n'est pas accessible.");
         return;
-    }
-    
-    try {
-        const windowsAppsPath = path.join(programFiles, "WindowsApps");
-        const baseUri = vscode.Uri.file(windowsAppsPath);
-        
-        // Cherche le dossier Minecraft UWP (la version peut varier)
-        const entries = await vscode.workspace.fs.readDirectory(baseUri);
-        const minecraftFolder = entries.find(([name, type]) => 
-            type === vscode.FileType.Directory && 
-            name.startsWith("Microsoft.MinecraftUWP_") && 
-            name.includes("_x64__8wekyb3d8bbwe")
-        );
-        
-        if (!minecraftFolder) {
-            vscode.window.showWarningMessage("⚠️ Dossier Minecraft Stable introuvable dans Program Files\\WindowsApps");
-            return;
-        }
-        
-        const folderPath = path.join(windowsAppsPath, minecraftFolder[0], "data");
-        await openExplorerWithCheck(folderPath, "des ressources vanilla Minecraft Stable");
-        
-    } catch (error) {
-        vscode.window.showErrorMessage(
-            "❌ Accès refusé au dossier WindowsApps. " +
-            "Vous devez exécuter VS Code en tant qu'administrateur pour accéder aux ressources vanilla."
-        );
+    } else {
+        await openExplorerWithCheck(dataFolder, "des ressources vanilla Minecraft Stable");
+        return;
     }
 }
 
@@ -126,36 +88,12 @@ export async function openMinecraftStableVanillaFolder(): Promise<void> {
  * Trouve et ouvre le dossier des ressources vanilla Minecraft Preview
  */
 export async function openMinecraftPreviewVanillaFolder(): Promise<void> {
-    const programFiles = process.env.PROGRAMFILES;
-    if (!programFiles) {
-        vscode.window.showErrorMessage("❌ Impossible de déterminer le dossier Program Files.");
+    const dataFolder = globals.minecraftPreviewGame?.dataFolder;
+    if (dataFolder === undefined) {
+        vscode.window.showWarningMessage("⚠️ Le dossier data de Minecraft Preview n'est pas accessible.");
         return;
-    }
-    
-    try {
-        const windowsAppsPath = path.join(programFiles, "WindowsApps");
-        const baseUri = vscode.Uri.file(windowsAppsPath);
-        
-        // Cherche le dossier Minecraft Preview (la version peut varier)
-        const entries = await vscode.workspace.fs.readDirectory(baseUri);
-        const minecraftFolder = entries.find(([name, type]) => 
-            type === vscode.FileType.Directory && 
-            name.startsWith("Microsoft.MinecraftWindowsBeta_") && 
-            name.includes("_x64__8wekyb3d8bbwe")
-        );
-        
-        if (!minecraftFolder) {
-            vscode.window.showWarningMessage("⚠️ Dossier Minecraft Preview introuvable dans Program Files\\WindowsApps");
-            return;
-        }
-        
-        const folderPath = path.join(windowsAppsPath, minecraftFolder[0], "data");
-        await openExplorerWithCheck(folderPath, "des ressources vanilla Minecraft Preview");
-        
-    } catch (error) {
-        vscode.window.showErrorMessage(
-            "❌ Accès refusé au dossier WindowsApps. " +
-            "Vous devez exécuter VS Code en tant qu'administrateur pour accéder aux ressources vanilla."
-        );
+    } else {
+        await openExplorerWithCheck(dataFolder, "des ressources vanilla Minecraft Preview");
+        return;
     }
 }

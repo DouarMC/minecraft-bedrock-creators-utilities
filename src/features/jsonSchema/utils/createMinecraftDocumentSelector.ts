@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { schemaTypes } from '../versioning/schemaTypes';
+import { schemaTypes } from '../minecraftSchemas/schemaTypes';
 
 /**
  * Permet de renvoyer un sélecteur de documents pour les fichiers Minecraft en JSON/JSONC.

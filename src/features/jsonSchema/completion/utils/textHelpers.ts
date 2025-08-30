@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { MinecraftJsonSchema, MinecraftJsonSchemaType } from '../../types/minecraftJsonSchema';
+import { MinecraftJsonSchema, MinecraftJsonSchemaType } from '../../../../types/minecraftJsonSchema';
 
 export function getInsertTextForPlainText(text: string): string {
     return text.replace(/[\\\$\}]/g, '\\$&');   // escape $, \ and }
