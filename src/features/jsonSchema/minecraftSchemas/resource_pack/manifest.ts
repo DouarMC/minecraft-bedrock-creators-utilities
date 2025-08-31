@@ -15,7 +15,7 @@ const baseSchema: MinecraftJsonSchema = {
         header: {
             description: "Contient des informtations sur le Pack qui sont pour la plupart accessible en public.",
             type: "object",
-            required: ["name", "uuid", "version"],
+            required: ["name", "uuid", "version", "min_engine_version"],
             properties: {
                 description: {
                     description: "Description du pack affiché en dessous du nom du pack.",

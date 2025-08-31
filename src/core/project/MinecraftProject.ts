@@ -3,7 +3,6 @@ import { MinecraftProjectConfig, MinecraftProjectType } from "../../types/projec
 import { getMinecraftProjectConfig } from "./getMinecraftProjectConfig";
 import { MinecraftFileTypeDefinition, minecraftFileTypes } from "../data/minecraftFileTypes";
 import { collectFiles } from "../filesystem/collectFiles";
-import { AddonProject } from "./AddonProject";
 
 export class MinecraftProject {
     folder: vscode.Uri;
@@ -20,10 +19,7 @@ export class MinecraftProject {
         const projectConfig = await getMinecraftProjectConfig(folder);
         if (!projectConfig) return undefined;
 
-        switch (projectConfig.metadata.type) {
-            case MinecraftProjectType.Addon:
-                return new AddonProject(folder, projectConfig);
-        }
+        return new MinecraftProject(folder, projectConfig);
     }
 
     get configFileUri() {
@@ -46,9 +42,38 @@ export class MinecraftProject {
         return this.config.metadata.type;
     }
 
+    get addonFolder() {
+        if (this.type !== MinecraftProjectType.Addon) {
+            return undefined;
+        }
+
+        return vscode.Uri.joinPath(this.folder, "addon");
+    }
+
+    get behaviorPackFolder() {
+        if (this.type !== MinecraftProjectType.Addon) {
+            return undefined;
+        }
+        return vscode.Uri.joinPath(this.addonFolder!, "behavior_pack");
+    }
+
+    get resourcePackFolder() {
+        if (this.type !== MinecraftProjectType.Addon) {
+            return undefined;
+        }
+        return vscode.Uri.joinPath(this.addonFolder!, "resource_pack");
+    }
+
+    get scriptsFolder() {
+        if (this.type !== MinecraftProjectType.Addon) {
+            return undefined;
+        }
+        return vscode.Uri.joinPath(this.addonFolder!, "scripts");
+    }
+
     async getDataDrivenFilesFromProject(minecraftFileType: keyof typeof minecraftFileTypes): Promise<vscode.Uri[]> {
         const results: vscode.Uri[] = [];
-        if (this instanceof AddonProject) {
+        if (this.type === MinecraftProjectType.Addon) {
             const typeFileLocation = minecraftFileTypes[minecraftFileType] as MinecraftFileTypeDefinition;
             const processPackType = async (packUri: vscode.Uri, typeFileLocation: MinecraftFileTypeDefinition) => {
                 let currentUri = packUri;
@@ -75,9 +100,9 @@ export class MinecraftProject {
             };
 
             if (typeFileLocation.packType === "behavior_pack") {
-                await processPackType(this.behaviorPackFolder, typeFileLocation);
+                await processPackType(this.behaviorPackFolder!, typeFileLocation);
             } else if (typeFileLocation.packType === "resource_pack") {
-                await processPackType(this.resourcePackFolder, typeFileLocation);
+                await processPackType(this.resourcePackFolder!, typeFileLocation);
             }
         }
 

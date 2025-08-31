@@ -21,7 +21,8 @@ function createManifestObject(type: MinecraftAddonPack): any {
             name: "pack.name",
             description: "pack.description",
             uuid: randomUUID(),
-            version: [0, 0, 1]
+            version: [0, 0, 1],
+            min_engine_version: [1, 21, 100]
         },
         modules: [
             {
@@ -155,9 +156,14 @@ async function addScriptApiIfNeeded(
             outDir: "addon/behavior_pack/scripts",
             rootDir: "addon/scripts",
             strict: true,
-            allowJs: false
+            allowJs: false,
+            type: [],
+
+            lib: ["ES2020"],
+            types: []
         },
-        include: ["addon/scripts/**/*.ts"]
+        include: ["addon/scripts/**/*.ts"],
+        exclude: ["node_modules"]
     };
 
     await vscode.workspace.fs.writeFile(

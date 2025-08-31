@@ -15,7 +15,7 @@ const baseSchema: MinecraftJsonSchema = {
         header: {
             description: "Contient les informations de base du pack de comportement.",
             type: "object",
-            required: ["name", "uuid", "version"],
+            required: ["name", "uuid", "version", "min_engine_version"],
             properties: {
                 description: {
                     description: "La description du pack de comportement affichée dans le jeu.",

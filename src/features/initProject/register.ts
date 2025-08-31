@@ -122,7 +122,18 @@ async function createVSCodeSettingsFile(folder: vscode.Uri): Promise<void> {
         "files.associations": {
             "*.json": "jsonc"
         },
-        "editor.tabSize": 4
+        "editor.tabSize": 4,
+        
+        "typescript.preferences.includePackageJsonAutoImports": "off",
+        "typescript.preferences.autoImportFileExcludePatterns": [
+            "**/node_modules/**"
+        ],
+        "javascript.preferences.autoImportFileExcludePatterns": ["**/node_modules/**"],
+
+        "[typescript]": {
+            "editor.snippetSuggestions": "none",
+            "editor.wordBasedSuggestions": "off"
+        }
     };
 
     await vscode.workspace.fs.writeFile(

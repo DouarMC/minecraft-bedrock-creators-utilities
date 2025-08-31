@@ -3,7 +3,7 @@ import * as JsonParser from "jsonc-parser";
 import { MinecraftJsonSchema } from '../../../types/minecraftJsonSchema';
 import { validate } from '../diagnostics/doValidation';
 import { SchemaCollector } from '../diagnostics/collector';
-import { ValidationResult } from '../diagnostics/validate';
+import { ValidationResult } from '../diagnostics/ValidationResult';
 import { getNodeFromOffset, isInComment, getCurrentWord } from '../utils/ast';
 import { getInsertTextForValue, getFilterTextForValue, fromMarkup, endsWith, getInsertTextForGuessedValue, getSuggestionKind } from './utils/textHelpers';
 import { CompletionsCollector } from './collector';
@@ -339,10 +339,8 @@ export async function getValueCompletions(schema: MinecraftJsonSchema, node: Jso
         const separatorAfter = evaluateSeparatorAfter(document, offsetForSeparator);
 
         const matchingSchemas = getMatchingSchemas(schema, document, rootNode, node.offset, valueNode);
-        console.log("Matching schemas found:", matchingSchemas.length);
         for (const s of matchingSchemas) {
             if (s.node === node && !s.inverted && s.schema) {
-                console.log("11111");
                 if (node.type === 'array' && s.schema.items) {
                     let c = collector;
                     if (Array.isArray(s.schema.items)) {
@@ -371,12 +369,10 @@ export async function getValueCompletions(schema: MinecraftJsonSchema, node: Jso
             }
         }
         if (types["boolean"]) {
-            console.log("22222");
             addBooleanValueCompletion(true, separatorAfter, collector);
             addBooleanValueCompletion(false, separatorAfter, collector);
         }
         if (types["null"]) {
-            console.log("3333");
             collector.add({
                 kind: getSuggestionKind("null"),
                 label: "null",

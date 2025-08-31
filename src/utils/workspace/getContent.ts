@@ -3,7 +3,7 @@ import { VANILLA_BLOCK_IDS, VANILLA_COOLDOWN_CATEGORY_IDS, VANILLA_DIMENSION_IDS
 import { parse as parseJsonc } from "jsonc-parser";
 import { compareVersions } from "../../features/jsonSchema/utils/getSchemaForDocument";
 
-import { minecraftStableGame, currentMinecraftProject } from "../../extension";
+import { globals } from "../../globals";
 
 export class GetMinecraftContent {
     static vanillaBlockIds = VANILLA_BLOCK_IDS;
@@ -18,8 +18,8 @@ export class GetMinecraftContent {
     static fullBlockModelId = "minecraft:geometry.full_block";
 
     static async getAimAssistCategoryIds(): Promise<string[]> {
-        const vanillaUris = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/aim_assist/categories/categories.json") || [];
-        const projectUris = await currentMinecraftProject?.getMinecraftFiles("behavior_pack/aim_assist/categories/categories.json") || [];
+        const vanillaUris = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/aim_assist/categories/categories.json") || [];
+        const projectUris = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("behavior_pack/aim_assist/categories/categories.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const aimAssistCategoryIds: string[] = [];
@@ -47,8 +47,8 @@ export class GetMinecraftContent {
     }
 
     static async getAimAssistPresetIds(): Promise<string[]> {
-        const vanillaUris = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/aim_assist/presets/<all>.json") || [];
-        const projectUris = await currentMinecraftProject?.getMinecraftFiles("behavior_pack/aim_assist/presets/<all>.json") || [];
+        const vanillaUris = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/aim_assist/presets/<all>.json") || [];
+        const projectUris = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("behavior_pack/aim_assist/presets/<all>.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const aimAssistPresetIds: string[] = [];
@@ -71,8 +71,8 @@ export class GetMinecraftContent {
     }
 
     static async getAtmosphereSettingsIds(): Promise<string[]> {
-        const vanillaUris = await minecraftStableGame?.getDataDrivenFiles("resource_pack/atmospherics/<all>.json") || [];
-        const projectUris = await currentMinecraftProject?.getMinecraftFiles("resource_pack/atmospherics/<all>.json") || [];
+        const vanillaUris = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/atmospherics/<all>.json") || [];
+        const projectUris = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("resource_pack/atmospherics/<all>.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const atmosphereSettingsIds: string[] = [];
@@ -95,8 +95,8 @@ export class GetMinecraftContent {
     }
 
     static async getBehaviorAnimationIds(): Promise<string[]> {
-        const vanillaUris = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/animations/<all>.json") || [];
-        const projectUris = await currentMinecraftProject?.getMinecraftFiles("behavior_pack/animations/<all>.json") || [];
+        const vanillaUris = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/animations/<all>.json") || [];
+        const projectUris = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("behavior_pack/animations/<all>.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const behaviorAnimationIds: string[] = [];
@@ -123,8 +123,8 @@ export class GetMinecraftContent {
     }
 
     static async getBiomeIds(): Promise<string[]> {
-        const vanillaUris = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/biomes/<all>.json") || [];
-        const projectUris = await currentMinecraftProject?.getMinecraftFiles("behavior_pack/biomes/<all>.json") || [];
+        const vanillaUris = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/biomes/<all>.json") || [];
+        const projectUris = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("behavior_pack/biomes/<all>.json") || [];
         const uris = [...vanillaUris, ...projectUris];
         
         const biomeIds: string[] = [];
@@ -147,8 +147,8 @@ export class GetMinecraftContent {
     }
 
     static async getBiomeTags(): Promise<string[]> {
-        const vanillaUris = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/biomes/<all>.json") || [];
-        const projectUris = await currentMinecraftProject?.getMinecraftFiles("behavior_pack/biomes/<all>.json") || [];
+        const vanillaUris = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/biomes/<all>.json") || [];
+        const projectUris = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("behavior_pack/biomes/<all>.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const biomeTags: string[] = [];
@@ -176,7 +176,7 @@ export class GetMinecraftContent {
 
     static async getBlockCullingRulesIds(): Promise<string[]> {
         const vanillaUris: vscode.Uri[] = [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("resource_pack/block_culling/<all>.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("resource_pack/block_culling/<all>.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const customBlockCullingRulesIds: string[] = [];
@@ -200,7 +200,7 @@ export class GetMinecraftContent {
 
     static async getBlockIds(): Promise<string[]> {
         const vanillaUris: vscode.Uri[] = [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("behavior_pack/blocks/<all>.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("behavior_pack/blocks/<all>.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const customBlockIds: string[] = [];
@@ -223,8 +223,8 @@ export class GetMinecraftContent {
     }
 
     static async getBlockSoundReferences(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/sounds.json") || [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("resource_pack/sounds.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/sounds.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("resource_pack/sounds.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const baseBlockSoundReferences: string[] = [];
@@ -263,8 +263,8 @@ export class GetMinecraftContent {
     }
 
     static async getBlockTextureReferences(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/textures/terrain_texture.json") || [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("resource_pack/textures/terrain_texture.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/textures/terrain_texture.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("resource_pack/textures/terrain_texture.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const blockTextureReferences: string[] = [];
@@ -292,8 +292,8 @@ export class GetMinecraftContent {
     }
 
     static async getColorGradingSettingsIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/color_grading/<all>.json") || [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("resource_pack/color_grading/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/color_grading/<all>.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("resource_pack/color_grading/<all>.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const colorGradingSettingsIds: string[] = [];
@@ -316,8 +316,8 @@ export class GetMinecraftContent {
     }
 
     static async getCooldownCategoryIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/items/<all>.json") || [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("behavior_pack/items/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/items/<all>.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("behavior_pack/items/<all>.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const cooldownCategoryIds: string[] = [...this.vanillaCooldownCategoryIds];
@@ -340,8 +340,8 @@ export class GetMinecraftContent {
     }
 
     static async getCraftingRecipeTags(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/recipes/<all>.json") || [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("behavior_pack/recipes/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/recipes/<all>.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("behavior_pack/recipes/<all>.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const craftingRecipeTags: string[] = [];
@@ -377,7 +377,7 @@ export class GetMinecraftContent {
 
     static async getCullingLayerIds(): Promise<string[]> {
         const vanillaUris: vscode.Uri[] = [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("behavior_pack/blocks/<all>.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("behavior_pack/blocks/<all>.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const customCullingLayerIds: string[] = [];
@@ -400,7 +400,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenAimAssistCategoryIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/aim_assist/categories/categories.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/aim_assist/categories/categories.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -429,7 +429,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenAimAssistPresetIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/aim_assist/presets/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/aim_assist/presets/<all>.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -458,7 +458,7 @@ export class GetMinecraftContent {
     }
     
     static async getDataDrivenAtmosphereSettingsIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/atmospherics/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/atmospherics/<all>.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -482,7 +482,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenAttachableIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/attachables/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/attachables/<all>.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -506,7 +506,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenBaseBlockSoundReferences(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/sounds.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/sounds.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -535,7 +535,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenBiomeIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/biomes/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/biomes/<all>.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -559,7 +559,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenBlockTextureReferences(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/textures/terrain_texture.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/textures/terrain_texture.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -588,7 +588,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenCameraPresetIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/cameras/presets/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/cameras/presets/<all>.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -612,7 +612,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenColorGradingSettingsIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/color_grading/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/color_grading/<all>.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -640,7 +640,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenEntityIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/entities/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/entities/<all>.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -664,7 +664,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenFeatureIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/features/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/features/<all>.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -715,7 +715,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenFeatureRulesIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/feature_rules/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/feature_rules/<all>.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -739,7 +739,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenFogIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/fogs/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/fogs/<all>.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -763,7 +763,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenIndividualEventSoundReferences(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/sounds.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/sounds.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -791,7 +791,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenIndividualNamedSoundReferences(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/sounds.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/sounds.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -819,7 +819,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenInteractiveBlockSoundReferences(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/sounds.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/sounds.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -849,7 +849,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenItemIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/items/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/items/<all>.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -873,7 +873,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenItemTextureReferences(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/textures/item_texture.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/textures/item_texture.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -902,7 +902,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenJigsawStructureIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/worldgen/structures/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/worldgen/structures/<all>.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -926,7 +926,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenLanguageIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/texts/languages.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/texts/languages.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -952,7 +952,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenLightingSettingsIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/lighting/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/lighting/<all>.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -976,7 +976,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenModelIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/models/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/models/<all>.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -1016,7 +1016,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenMusicReferences(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/sounds/music_definitions.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/sounds/music_definitions.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -1044,7 +1044,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenParticleEffectIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/particles/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/particles/<all>.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -1068,7 +1068,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenProcessorIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/worldgen/processors/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/worldgen/processors/<all>.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -1092,7 +1092,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenRenderControllerIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/render_controllers/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/render_controllers/<all>.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -1120,7 +1120,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenRecipeIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/recipes/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/recipes/<all>.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -1190,7 +1190,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenResourceAnimationControllerIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/animation_controllers/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/animation_controllers/<all>.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -1218,7 +1218,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenResourceAnimationIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/animations/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/animations/<all>.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -1246,7 +1246,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenSoundReferences(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/sounds/sound_definitions.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/sounds/sound_definitions.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -1274,7 +1274,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenSpawnRulesIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/spawn_rules/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/spawn_rules/<all>.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -1298,7 +1298,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenStructureSetIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/worldgen/structure_sets/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/worldgen/structure_sets/<all>.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -1322,7 +1322,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenTemplatePoolIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/worldgen/template_pools/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/worldgen/template_pools/<all>.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -1346,7 +1346,7 @@ export class GetMinecraftContent {
     }
 
     static async getDataDrivenWaterSettingsIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/water/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/water/<all>.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -1374,8 +1374,8 @@ export class GetMinecraftContent {
     }
 
     static async getEntityFamilyIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/entities/<all>.json") || [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("behavior_pack/entities/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/entities/<all>.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("behavior_pack/entities/<all>.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const entityFamilyIds: string[] = [];
@@ -1403,7 +1403,7 @@ export class GetMinecraftContent {
 
     static async getEntityIds(): Promise<string[]> {
         const vanillaUris: vscode.Uri[] = [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("behavior_pack/entities/<all>.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("behavior_pack/entities/<all>.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const customEntityIds: string[] = [];
@@ -1426,8 +1426,8 @@ export class GetMinecraftContent {
     }
 
     static async getFeatureIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/features/<all>.json") || [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("behavior_pack/features/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/features/<all>.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("behavior_pack/features/<all>.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const featureIds: string[] = [];
@@ -1477,8 +1477,8 @@ export class GetMinecraftContent {
     }
 
     static async getFogIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/fogs/<all>.json") || [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("resource_pack/fogs/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/fogs/<all>.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("resource_pack/fogs/<all>.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const fogIds: string[] = [];
@@ -1501,8 +1501,8 @@ export class GetMinecraftContent {
     }
     
     static async getInheritableCameraPresetIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/cameras/presets/<all>.json") || [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("behavior_pack/cameras/presets/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/cameras/presets/<all>.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("behavior_pack/cameras/presets/<all>.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const inheritableCameraPresetIds: string[] = [];
@@ -1527,8 +1527,8 @@ export class GetMinecraftContent {
     static async getItemGroupIds(): Promise<string[]> {
         const itemGroupIds: string[] = [];
 
-        const vanillaCraftingItemCatalogUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/item_catalog/crafting_item_catalog.json") || [];
-        const projectCraftingItemCatalogUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("behavior_pack/item_catalog/crafting_item_catalog.json") || [];
+        const vanillaCraftingItemCatalogUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/item_catalog/crafting_item_catalog.json") || [];
+        const projectCraftingItemCatalogUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("behavior_pack/item_catalog/crafting_item_catalog.json") || [];
         const craftingItemCatalogUris = [...vanillaCraftingItemCatalogUris, ...projectCraftingItemCatalogUris];
 
         for (const uri of craftingItemCatalogUris) {
@@ -1557,7 +1557,7 @@ export class GetMinecraftContent {
         }
 
         const vanillaBlockUris: vscode.Uri[] = [];
-        const projectBlockUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("behavior_pack/blocks/<all>.json") || [];
+        const projectBlockUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("behavior_pack/blocks/<all>.json") || [];
         const blockUris = [...vanillaBlockUris, ...projectBlockUris];
         for (const uri of blockUris) {
             try {
@@ -1574,8 +1574,8 @@ export class GetMinecraftContent {
             }
         }
 
-        const vanillaItemUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/items/<all>.json") || [];
-        const projectItemUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("behavior_pack/items/<all>.json") || [];
+        const vanillaItemUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/items/<all>.json") || [];
+        const projectItemUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("behavior_pack/items/<all>.json") || [];
         const itemUris = [...vanillaItemUris, ...projectItemUris];
         for (const uri of itemUris) {
             try {
@@ -1597,7 +1597,7 @@ export class GetMinecraftContent {
 
     static async getItemIds(): Promise<string[]> {
         const vanillaUris: vscode.Uri[] = [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("behavior_pack/items/<all>.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("behavior_pack/items/<all>.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const customItemIds: string[] = [];
@@ -1619,8 +1619,8 @@ export class GetMinecraftContent {
     }
 
     static async getItemTags(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/items/<all>.json") || [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("behavior_pack/items/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/items/<all>.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("behavior_pack/items/<all>.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const itemTags: string[] = [];
@@ -1647,8 +1647,8 @@ export class GetMinecraftContent {
     }
 
     static async getItemTextureReferences(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/textures/item_texture.json") || [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("resource_pack/textures/item_texture.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/textures/item_texture.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("resource_pack/textures/item_texture.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const itemTextureReferences: string[] = [];
@@ -1676,8 +1676,8 @@ export class GetMinecraftContent {
     }
 
     static async getLanguageIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/texts/languages.json") || [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("resource_pack/texts/languages.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/texts/languages.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("resource_pack/texts/languages.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const languageIds: string[] = [];
@@ -1702,8 +1702,8 @@ export class GetMinecraftContent {
     }
 
     static async getLightingSettingsIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/lighting/<all>.json") || [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("resource_pack/lighting/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/lighting/<all>.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("resource_pack/lighting/<all>.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const lightingSettingsIds: string[] = [];
@@ -1733,8 +1733,8 @@ export class GetMinecraftContent {
             return match[1].replace(/\\/g, '/');
         }
 
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/loot_tables/<all>.json") || [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("behavior_pack/loot_tables/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/loot_tables/<all>.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("behavior_pack/loot_tables/<all>.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const lootTableFilePaths: string[] = [];
@@ -1757,7 +1757,7 @@ export class GetMinecraftContent {
         }
 
         const vanillaUris: vscode.Uri[] = [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("behavior_pack/functions/<all>.mcfunction") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("behavior_pack/functions/<all>.mcfunction") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const mcfunctionFilePaths: string[] = [];
@@ -1774,8 +1774,8 @@ export class GetMinecraftContent {
     static async getModelIds(): Promise<string[]> {
         const modelIds: string[] = ["minecraft:geometry.cross"];
 
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/models/<all>.json") || [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("resource_pack/models/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/models/<all>.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("resource_pack/models/<all>.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         for (const uri of uris) {
@@ -1813,8 +1813,8 @@ export class GetMinecraftContent {
     }
 
     static async getMusicReferences(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/sounds/music_definitions.json") || [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("resource_pack/sounds/music_definitions.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/sounds/music_definitions.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("resource_pack/sounds/music_definitions.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const musicReferences: string[] = [];
@@ -1841,8 +1841,8 @@ export class GetMinecraftContent {
     }
 
     static async getOldFormatItemIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/items/<all>.json") || [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("behavior_pack/items/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/items/<all>.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("behavior_pack/items/<all>.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const oldFormatItemIds: string[] = [];
@@ -1875,8 +1875,8 @@ export class GetMinecraftContent {
     }
 
     static async getParticleEffectIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/particles/<all>.json") || [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("resource_pack/particles/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/particles/<all>.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("resource_pack/particles/<all>.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const particleEffectIds: string[] = [];
@@ -1899,8 +1899,8 @@ export class GetMinecraftContent {
     }
 
     static async getProcessorIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/worldgen/processors/<all>.json") || [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("behavior_pack/worldgen/processors/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/worldgen/processors/<all>.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("behavior_pack/worldgen/processors/<all>.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const processorIds: string[] = [];
@@ -1931,7 +1931,7 @@ export class GetMinecraftContent {
         }
 
         const vanillaUris: vscode.Uri[] = [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("resource_pack/textures/*.{tga,png,jpg,jpeg}") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("resource_pack/textures/*.{tga,png,jpg,jpeg}") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const textureFilePaths: string[] = [];
@@ -1953,8 +1953,8 @@ export class GetMinecraftContent {
             return match[1].replace(/\\/g, '/');
         }
 
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/ui/<all>.json") || [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("resource_pack/ui/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/ui/<all>.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("resource_pack/ui/<all>.json") || [];
 
         const vanillaUiFilePaths: string[] = [];
         for (const uri of vanillaUris) {
@@ -1978,8 +1978,8 @@ export class GetMinecraftContent {
     }
 
     static async getRenderControllerIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/render_controllers/<all>.json") || [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("resource_pack/render_controllers/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/render_controllers/<all>.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("resource_pack/render_controllers/<all>.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const renderControllerIds: string[] = [];
@@ -2006,8 +2006,8 @@ export class GetMinecraftContent {
     }
 
     static async getResourceAnimationControllerIds() : Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/animation_controllers/<all>.json") || [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("resource_pack/animation_controllers/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/animation_controllers/<all>.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("resource_pack/animation_controllers/<all>.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const animationControllerIds: string[] = [];
@@ -2034,8 +2034,8 @@ export class GetMinecraftContent {
     }
 
     static async getResourceAnimationIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/animations/<all>.json") || [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("resource_pack/animations/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/animations/<all>.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("resource_pack/animations/<all>.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const animationIds: string[] = [];
@@ -2070,8 +2070,8 @@ export class GetMinecraftContent {
             return match[1].replace(/\\/g, '/');
         }
 
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/sounds/*.{wav,mp3,ogg,fsb}") || [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("resource_pack/sounds/*.{wav,mp3,ogg,fsb}") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/sounds/*.{wav,mp3,ogg,fsb}") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("resource_pack/sounds/*.{wav,mp3,ogg,fsb}") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const soundFilePaths: string[] = [];
@@ -2086,8 +2086,8 @@ export class GetMinecraftContent {
     }
 
     static async getSoundReferences(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/sounds/sound_definitions.json") || [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("resource_pack/sounds/sound_definitions.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/sounds/sound_definitions.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("resource_pack/sounds/sound_definitions.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const soundReferences: string[] = [];
@@ -2114,8 +2114,8 @@ export class GetMinecraftContent {
     }
 
     static async getTemplatePoolIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/worldgen/template_pools/<all>.json") || [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("behavior_pack/worldgen/template_pools/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/worldgen/template_pools/<all>.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("behavior_pack/worldgen/template_pools/<all>.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const templatePoolIds: string[] = [];
@@ -2145,8 +2145,8 @@ export class GetMinecraftContent {
             return match[1].replace(/\\/g, '/');
         }
 
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/textures/*.{tga,png,jpg,jpeg}") || [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("resource_pack/textures/*.{tga,png,jpg,jpeg}") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/textures/*.{tga,png,jpg,jpeg}") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("resource_pack/textures/*.{tga,png,jpg,jpeg}") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const textureFilePaths: string[] = [];
@@ -2168,8 +2168,8 @@ export class GetMinecraftContent {
             return match[1].replace(/\\/g, '/');
         }
 
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("behavior_pack/trading/<all>.json") || [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("behavior_pack/trading/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("behavior_pack/trading/<all>.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("behavior_pack/trading/<all>.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const tradingFilePaths: string[] = [];
@@ -2203,7 +2203,7 @@ export class GetMinecraftContent {
     }
 
     static async getVanillaUiGlobalVariables(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/ui/_global_variables.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/ui/_global_variables.json") || [];
         const projectUris: vscode.Uri[] = [];
         const uris = [...vanillaUris, ...projectUris];
 
@@ -2236,8 +2236,8 @@ export class GetMinecraftContent {
     }
 
     static async getWaterSettingsIds(): Promise<string[]> {
-        const vanillaUris: vscode.Uri[] = await minecraftStableGame?.getDataDrivenFiles("resource_pack/water/<all>.json") || [];
-        const projectUris: vscode.Uri[] = await currentMinecraftProject?.getMinecraftFiles("resource_pack/water/<all>.json") || [];
+        const vanillaUris: vscode.Uri[] = await globals.minecraftStableGame?.getDataDrivenFiles("resource_pack/water/<all>.json") || [];
+        const projectUris: vscode.Uri[] = await globals.currentMinecraftProject?.getDataDrivenFilesFromProject("resource_pack/water/<all>.json") || [];
         const uris = [...vanillaUris, ...projectUris];
 
         const waterSettingsIds: string[] = [];

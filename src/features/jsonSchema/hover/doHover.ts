@@ -39,21 +39,40 @@ export function doHover(document: vscode.TextDocument, position: vscode.Position
     };
 
     const matchingSchemas = getMatchingSchemas(schema, document, rootNode);
+
     let markdownDescription: string | undefined = undefined;
+    let experimentalLine: string | undefined;
+    let localizedLine: string | undefined;
+
     matchingSchemas.every((s) => {
         if (s.node === node && !s.inverted && s.schema) {
+            const schema = s.schema;
+
             markdownDescription = markdownDescription || toMarkdown(s.schema.description);
+
+            if (schema["x-experimental_options"]) {
+                const labels = schema['x-experimental_options']
+                    .map(option => `${option}`)
+                    .join(", ");
+                experimentalLine = `**Options expérimentales** : ${labels}`;
+            }
+
+            if (schema["x-localized"]) {
+                localizedLine = "**Texte Traduisable**";
+            }
         }
         return true;
     });
-    let result = '';
-    if (markdownDescription) {
-        if (result.length > 0) {
-            result += "\n\n";
-        }
-        result += markdownDescription;
-    }
-    return createHover([new vscode.MarkdownString(result, true)]);
+
+    const markdownLines: string[] = [];
+
+    if (experimentalLine) markdownLines.push(experimentalLine);
+    if (localizedLine) markdownLines.push(localizedLine);
+    if (markdownDescription) markdownLines.push('', markdownDescription); // vide = saut de ligne markdown
+
+    if (markdownLines.length === 0) return null;
+
+    return createHover([new vscode.MarkdownString(markdownLines.join('\n'), true)]);
 }
 
 function toMarkdown(plain: string): string;

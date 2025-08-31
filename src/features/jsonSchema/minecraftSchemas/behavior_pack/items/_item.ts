@@ -302,9 +302,8 @@ const versionedChanges: SchemaChange[] = [
                     required: ["value"],
                     properties: {
                         value: {
-                            markdownDescription:
-                            "**ℹ️ Texte traduisable**\n\n" +
-                            "Le texte affiché pour l'Item. Si cette valeur n'est pas définie, le nom de l'Item sera utilisé.",
+                            "x-localized": true,
+                            description: "Le texte affiché pour l'Item. Si cette valeur n'est pas définie, le nom de l'Item sera utilisé.",
                             type: "string"
                         }
                     }

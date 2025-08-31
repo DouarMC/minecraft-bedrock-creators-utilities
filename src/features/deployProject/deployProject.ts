@@ -2,14 +2,17 @@ import * as vscode from 'vscode';
 import { directoryExists } from '../../utils/workspace/directories';
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import { MinecraftProduct} from '../../types/projectConfig';
+import { MinecraftProduct, MinecraftProjectType} from '../../types/projectConfig';
 import { promptToLaunchMinecraft } from './utils/launchMinecraft';
 import { globals } from '../../globals';
 import { MinecraftProject } from '../../core/project/MinecraftProject';
-import { AddonProject } from '../../core/project/AddonProject';
 
 async function compileTypeScriptIfNeeded(): Promise<boolean> {
-    const minecraftProject = globals.currentMinecraftProject as AddonProject;
+    const minecraftProject = globals.currentMinecraftProject as MinecraftProject;
+
+    if (minecraftProject.scriptsFolder === undefined) {
+        return true;
+    }
 
     const hasScripts = await directoryExists(minecraftProject.scriptsFolder);
     if (hasScripts === false) {
@@ -74,18 +77,19 @@ export async function deployProject(): Promise<void> {
             return;
         }
 
-        if (minecraftProject instanceof AddonProject) {
+        if (minecraftProject.type === MinecraftProjectType.Addon) {
             const behaviorPack = minecraftProject.behaviorPackFolder;
             const resourcePack = minecraftProject.resourcePackFolder;
 
-            if (await directoryExists(behaviorPack)) {
+            if (behaviorPack !== undefined && await directoryExists(behaviorPack)) {
                 const compiled = await compileTypeScriptIfNeeded();
                 if (compiled === false) return;
 
                 await copyPackIfExists(behaviorPack, vscode.Uri.joinPath(basePath, "development_behavior_packs", minecraftProject.id));
+
             }
 
-            if (await directoryExists(resourcePack)) {
+            if (resourcePack !== undefined && await directoryExists(resourcePack)) {
                 await copyPackIfExists(resourcePack, vscode.Uri.joinPath(basePath, "development_resource_packs", minecraftProject.id));
             }
 
