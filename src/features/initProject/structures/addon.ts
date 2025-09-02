@@ -157,10 +157,9 @@ async function addScriptApiIfNeeded(
             rootDir: "addon/scripts",
             strict: true,
             allowJs: false,
-            type: [],
-
-            lib: ["ES2020"],
-            types: []
+            lib: ["ES2023"],
+            types: ["minecraft-env"],
+            typeRoots: ["./types"]
         },
         include: ["addon/scripts/**/*.ts"],
         exclude: ["node_modules"]
@@ -169,6 +168,31 @@ async function addScriptApiIfNeeded(
     await vscode.workspace.fs.writeFile(
         vscode.Uri.joinPath(projectFolder, "tsconfig.json"),
         Buffer.from(JSON.stringify(tsconfigContent, null, 4), "utf8")
+    );
+
+    // Crée le dossier types
+    const typesPath = vscode.Uri.joinPath(projectFolder, "types");
+    await vscode.workspace.fs.createDirectory(typesPath);
+    // Crée le dossier minecraft-env
+    const minecraftEnvPath = vscode.Uri.joinPath(typesPath, "minecraft-env");
+    await vscode.workspace.fs.createDirectory(minecraftEnvPath);
+    // Crée le fichier index.d.ts
+    const indexDtsContent =
+    "/** Console Mojang (Minecraft QuickJS) */" +
+    "\ninterface Console {" +
+    "\n\tlog: (...args: any[]) => void;" +
+    "\n\twarn: (...args: any[]) => void;" +
+    "\n\terror: (...args: any[]) => void;" +
+    "\n\tinfo: (...args: any[]) => void;" +
+    "\n}" +
+    "\n" +
+    "\ndeclare const console: Console;" +
+    "\n" +
+    "\n/** Alias QuickJS/Minecraft de console.log */" +
+    "\ndeclare function print(...args: any[]): void;";
+    await vscode.workspace.fs.writeFile(
+        vscode.Uri.joinPath(minecraftEnvPath, "index.d.ts"),
+        Buffer.from(indexDtsContent, "utf8")
     );
 
     return npmDependencies;
