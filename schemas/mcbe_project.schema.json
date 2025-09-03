@@ -1,0 +1,52 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": ["metadata"],
+    "properties": {
+        "metadata": {
+            "description": "Contient les métadonnées du projet.",
+            "type": "object",
+            "required": ["type", "id", "displayName", "author", "minecraftProduct"],
+            "properties": {
+                "type": {
+                    "description": "Le type de projet.",
+                    "type": "string",
+                    "enum": ["addon", "skin_pack", "world_template"]
+                },
+                "id": {
+                    "description": "L'identifiant unique du projet.",
+                    "type": "string"
+                },
+                "displayName": {
+                    "description": "Le nom affiché du projet.",
+                    "type": "string"
+                },
+                "author": {
+                    "description": "L'auteur du projet.",
+                    "type": "string"
+                },
+                "minecraftProduct": {
+                    "description": "Le produit Minecraft associé au projet.",
+                    "type": "string",
+                    "enum": ["stable", "preview"]
+                }
+            }
+        },
+        "options": {
+            "description": "Contient les options spécifiques au projet.",
+            "type": "object",
+            "properties": {
+                "deploy": {
+                    "description": "Les options de déploiement du projet.",
+                    "type": "object",
+                    "properties": {
+                        "prompt_to_launch_minecraft": {
+                            "description": "Indique si l'utilisateur doit être invité à lancer Minecraft après le déploiement.",
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

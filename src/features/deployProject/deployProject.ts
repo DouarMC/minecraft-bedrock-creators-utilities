@@ -4,7 +4,7 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import { MinecraftProduct, MinecraftProjectType} from '../../types/projectConfig';
 import { promptToLaunchMinecraft } from './utils/launchMinecraft';
-import { globals } from '../../globals';
+import { globals } from '../../core/globals';
 import { MinecraftProject } from '../../core/project/MinecraftProject';
 
 async function compileTypeScriptIfNeeded(): Promise<boolean> {
@@ -69,33 +69,46 @@ function getDeployBasePath(minecraftProduct: MinecraftProduct): vscode.Uri | und
 export async function deployProject(): Promise<void> {
     try {
         const minecraftProject = globals.currentMinecraftProject as MinecraftProject;
-        vscode.window.showInformationMessage("✨ Déploiement du projet en cours...");
 
-        const basePath = getDeployBasePath(minecraftProject.minecraftProduct);
-        if (basePath === undefined) {
-            vscode.window.showErrorMessage("Impossible de déterminer le dossier LocalAppData.");
-            return;
-        }
+        await vscode.window.withProgress(
+            {
+                location: vscode.ProgressLocation.Notification,
+                title: `Déploiement du projet "${minecraftProject.id}`,
+                cancellable: false
+            },
+            async (progress) => {
+                progress.report({message: "Préparation du déploiement..."});
 
-        if (minecraftProject.type === MinecraftProjectType.Addon) {
-            const behaviorPack = minecraftProject.behaviorPackFolder;
-            const resourcePack = minecraftProject.resourcePackFolder;
+                const basePath = getDeployBasePath(minecraftProject.minecraftProduct);
+                if (basePath === undefined) {
+                    vscode.window.showErrorMessage("Impossible de déterminer le dossier LocalAppData.");
+                    return;
+                }
 
-            if (behaviorPack !== undefined && await directoryExists(behaviorPack)) {
-                const compiled = await compileTypeScriptIfNeeded();
-                if (compiled === false) return;
+                if (minecraftProject.type === MinecraftProjectType.Addon) {
+                    const behaviorPack = minecraftProject.behaviorPackFolder;
+                    const resourcePack = minecraftProject.resourcePackFolder;
 
-                await copyPackIfExists(behaviorPack, vscode.Uri.joinPath(basePath, "development_behavior_packs", minecraftProject.id));
+                    if (behaviorPack !== undefined && await directoryExists(behaviorPack)) {
+                        progress.report({message: "Compilation des scripts TypeScript..."});
+                        const compiled = await compileTypeScriptIfNeeded();
+                        if (compiled === false) return;
 
+                        progress.report({message: "Déploiement du Behavior Pack..."});
+                        await copyPackIfExists(behaviorPack, vscode.Uri.joinPath(basePath, "development_behavior_packs", minecraftProject.id));
+                    }
+
+                    if (resourcePack !== undefined && await directoryExists(resourcePack)) {
+                        progress.report({message: "Déploiement du Resource Pack..."});
+                        await copyPackIfExists(resourcePack, vscode.Uri.joinPath(basePath, "development_resource_packs", minecraftProject.id));
+                    }
+
+                    progress.report({message: "Finalisation du déploiement..."});
+                }
             }
+        );
 
-            if (resourcePack !== undefined && await directoryExists(resourcePack)) {
-                await copyPackIfExists(resourcePack, vscode.Uri.joinPath(basePath, "development_resource_packs", minecraftProject.id));
-            }
-
-            vscode.window.showInformationMessage(`✅ Projet "${minecraftProject.id}" déployé avec succès !`);
-            await promptToLaunchMinecraft();
-        }
+        await promptToLaunchMinecraft();
     } catch (error) {
         console.error("Erreur lors du déploiement du projet :", error);
         vscode.window.showErrorMessage("❌ Erreur lors du déploiement du projet. Vérifiez la console pour plus de détails.");

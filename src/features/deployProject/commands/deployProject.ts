@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { globals } from '../../../globals';
+import { globals } from '../../../core/globals';
 import { deployProject } from '../deployProject';
 
 export function registerDeployProjectCommand(context: vscode.ExtensionContext) {

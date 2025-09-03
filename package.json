@@ -69,6 +69,10 @@
                     "**/addon/**/*.json"
                 ],
                 "url": "./schemas/empty.schema.json"
+            },
+            {
+                "fileMatch": "**/.mcbe_project.json",
+                "url": "./schemas/mcbe_project.schema.json"
             }
         ],
         "languages": [

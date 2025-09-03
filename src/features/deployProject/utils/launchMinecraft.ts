@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { MinecraftProduct, MinecraftProjectConfig } from '../../../types/projectConfig';
-import { globals } from '../../../globals';
+import { globals } from '../../../core/globals';
 
 /**
  * Fonction pour lancer Minecraft selon le produit (stable ou preview)
