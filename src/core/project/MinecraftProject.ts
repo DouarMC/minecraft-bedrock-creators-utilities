@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { MinecraftProjectConfig, MinecraftProjectType } from "../../types/projectConfig";
 import { getMinecraftProjectConfig } from "./getMinecraftProjectConfig";
-import { MinecraftFileTypeDefinition, minecraftFileTypes } from "../minecraft/fileTypes/minecraftFileRegistry";
+import { MinecraftFileTypeDefinition, MinecraftFileTypeKey, minecraftFileRegistry } from "../minecraft/fileTypes/minecraftFileRegistry";
 import { collectFiles } from "../filesystem/collectFiles";
 
 export class MinecraftProject {
@@ -71,10 +71,10 @@ export class MinecraftProject {
         return vscode.Uri.joinPath(this.addonFolder!, "scripts");
     }
 
-    async getDataDrivenFilesFromProject(minecraftFileType: keyof typeof minecraftFileTypes): Promise<vscode.Uri[]> {
+    async getDataDrivenFilesFromProject(minecraftFileType: MinecraftFileTypeKey): Promise<vscode.Uri[]> {
         const results: vscode.Uri[] = [];
         if (this.type === MinecraftProjectType.Addon) {
-            const typeFileLocation = minecraftFileTypes[minecraftFileType] as MinecraftFileTypeDefinition;
+            const typeFileLocation = minecraftFileRegistry[minecraftFileType] as MinecraftFileTypeDefinition;
             const processPackType = async (packUri: vscode.Uri, typeFileLocation: MinecraftFileTypeDefinition) => {
                 let currentUri = packUri;
                 for (const segment of typeFileLocation.pathFolder.split("/")) {

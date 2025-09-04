@@ -1,9 +1,9 @@
 import * as vscode from "vscode";
 import { MinecraftGame } from "./MinecraftGame";
-import { MinecraftFileTypeDefinition, MinecraftFileTypeKey, minecraftFileTypes } from "./fileTypes/minecraftFileRegistry";
+import { MinecraftFileTypeDefinition, MinecraftFileTypeKey, minecraftFileRegistry } from "./fileTypes/minecraftFileRegistry";
 
 export class MinecraftDataManager {
-    private cache: Partial<Record<keyof typeof minecraftFileTypes, vscode.Uri[]>> = {};
+    private cache: Partial<Record<MinecraftFileTypeKey, vscode.Uri[]>> = {};
 
     constructor(private game: MinecraftGame) {}
 
@@ -18,7 +18,7 @@ export class MinecraftDataManager {
         }
 
         const results: vscode.Uri[] = [];
-        const typeDef = minecraftFileTypes[minecraftFileType] as MinecraftFileTypeDefinition;
+        const typeDef = minecraftFileRegistry[minecraftFileType] as MinecraftFileTypeDefinition;
 
         const processPackType = async (folders: vscode.Uri[]) => {
             for (const packUri of folders) {
