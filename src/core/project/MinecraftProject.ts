@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { MinecraftProjectConfig, MinecraftProjectType } from "../../types/projectConfig";
 import { getMinecraftProjectConfig } from "./getMinecraftProjectConfig";
-import { MinecraftFileTypeDefinition, minecraftFileTypes } from "../data/minecraftFileTypes";
+import { MinecraftFileTypeDefinition, minecraftFileTypes } from "../minecraft/fileTypes/minecraftFileRegistry";
 import { collectFiles } from "../filesystem/collectFiles";
 
 export class MinecraftProject {

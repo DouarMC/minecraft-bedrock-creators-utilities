@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { MinecraftGame } from "./MinecraftGame";
-import { MinecraftFileTypeDefinition, minecraftFileTypes } from "../data/minecraftFileTypes";
+import { MinecraftFileTypeDefinition, MinecraftFileTypeKey, minecraftFileTypes } from "./fileTypes/minecraftFileRegistry";
 
 export class MinecraftDataManager {
     private cache: Partial<Record<keyof typeof minecraftFileTypes, vscode.Uri[]>> = {};
@@ -11,7 +11,7 @@ export class MinecraftDataManager {
         this.cache = {};
     }
 
-    async getFiles(minecraftFileType: keyof typeof minecraftFileTypes): Promise<vscode.Uri[]> {
+    async getFiles(minecraftFileType: MinecraftFileTypeKey): Promise<vscode.Uri[]> {
         // Vérifier cache
         if (this.cache[minecraftFileType]) {
             return this.cache[minecraftFileType]!;

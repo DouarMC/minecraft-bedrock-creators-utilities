@@ -8,6 +8,8 @@ export interface MinecraftFileTypeDefinition {
     searchInDefinitionsFolder?: boolean; // Par défaut false
 }
 
+export type MinecraftFileTypeKey = keyof typeof minecraftFileTypes;
+
 export const minecraftFileTypes = {
     "behavior_pack/aim_assist/categories/categories.json": {
         packType: "behavior_pack",
