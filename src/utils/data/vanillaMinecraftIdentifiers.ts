@@ -2952,3 +2952,10 @@ export const VANILLA_ITEM_TAGS = [
     "minecraft:is_shears",
     "minecraft:is_armor"
 ];
+
+export const VANILLA_CULLING_LAYER_IDS = [
+    "minecraft:culling_layer.undefined",
+    "minecraft:culling_layer.leaves"
+];
+
+export const FULL_BLOCK_MODEL_ID = "minecraft:geometry.full_block";

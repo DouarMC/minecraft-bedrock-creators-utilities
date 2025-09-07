@@ -4,6 +4,7 @@ import { MinecraftProject } from "./MinecraftProject";
 import { MinecraftGame } from "../minecraft/MinecraftGame";
 import { MinecraftProduct } from "../../types/projectConfig";
 import { globals } from "../globals";
+import { MinecraftDataManager } from "../minecraft/MinecraftDataManager";
 
 let projectWatcher: vscode.FileSystemWatcher | undefined;
 
@@ -21,6 +22,8 @@ export async function initProjectManager(context: vscode.ExtensionContext): Prom
         vscode.window.showWarningMessage(
             "⚠️ Minecraft Stable n'a pas été trouvé sur cette machine. Certaines fonctionnalités peuvent être limitées."
         );
+    } else {
+        globals.minecraftStableDataManager = new MinecraftDataManager(globals.minecraftStableGame);
     }
 
     // Charger le projet courant
@@ -58,6 +61,14 @@ export function getCurrentProject(): MinecraftProject | undefined {
  */
 export function getStableGame(): MinecraftGame | undefined {
     return globals.minecraftStableGame;
+}
+
+export function getPreviewGame(): MinecraftGame | undefined {
+    return globals.minecraftPreviewGame;
+}
+
+export function getStableDataManager(): MinecraftDataManager | undefined {
+    return globals.minecraftStableDataManager;
 }
 
 /**

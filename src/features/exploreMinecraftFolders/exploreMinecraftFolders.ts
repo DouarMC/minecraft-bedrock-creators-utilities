@@ -2,18 +2,28 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import { getStableGame, getPreviewGame } from '../../core/project/projectManager';
 
-import { globals } from '../../globals';
+function getExplorerCommand(folderPath: string): string | undefined {
+    switch (process.platform) {
+        case "win32": return `explorer "${folderPath}"`;
+        case "darwin": return `open "${folderPath}"`;
+        case "linux": return `xdg-open "${folderPath}"`;
+        default: return undefined;
+    }
+}
 
 /**
  * Ouvre l'explorateur de fichiers Windows à un chemin spécifique
  */
 async function openExplorer(folderPath: string): Promise<void> {
+    const command = getExplorerCommand(folderPath);
+    if (!command) {
+        vscode.window.showErrorMessage(`⚠️ Plateforme non prise en charge (${process.platform}).`);
+        return;
+    }
+
     const execPromise = promisify(exec);
-    
-    // Commande pour ouvrir l'explorateur Windows
-    const command = `explorer "${folderPath}"`;
-    
     // Lancer la commande sans attendre les erreurs (explorer peut retourner des codes d'erreur même en cas de succès)
     await execPromise(command).catch(() => {
         // Ignorer les erreurs d'explorer, car il peut retourner des codes d'erreur même quand ça marche
@@ -42,58 +52,12 @@ async function openExplorerWithCheck(folder: vscode.Uri, description: string): P
     }
 }
 
-/**
- * Ouvre le dossier des packs Minecraft Stable (com.mojang)
- */
-export async function openMinecraftStablePacksFolder(): Promise<void> {
-    const comMojangFolder = globals.minecraftStableGame?.comMojangFolder;
-    if (comMojangFolder === undefined) {
-        vscode.window.showWarningMessage("⚠️ Le dossier com.mojang de Minecraft Stable n'est pas accessible.");
-        return;
-    } else {
-        await openExplorerWithCheck(comMojangFolder, "des packs Minecraft Stable");
+export async function openMinecraftFolder(game: "stable" | "preview", folderType: "comMojangFolder" | "dataFolder", description: string): Promise<void> {
+    const gameInstance = game === "stable" ? getStableGame() : getPreviewGame();
+    const folder = gameInstance?.[folderType];
+    if (!folder) {
+        vscode.window.showWarningMessage(`⚠️ Le dossier ${description} de Minecraft ${game} n'est pas accessible.`);
         return;
     }
-}
-
-/**
- * Ouvre le dossier des packs Minecraft Preview (com.mojang)
- */
-export async function openMinecraftPreviewPacksFolder(): Promise<void> {
-    const comMojangFolder = globals.minecraftPreviewGame?.comMojangFolder;
-    if (comMojangFolder === undefined) {
-        vscode.window.showWarningMessage("⚠️ Le dossier com.mojang de Minecraft Preview n'est pas accessible.");
-        return;
-    } else {
-        await openExplorerWithCheck(comMojangFolder, "des packs Minecraft Preview");
-        return;
-    }
-}
-
-/**
- * Trouve et ouvre le dossier des ressources vanilla Minecraft Stable
- */
-export async function openMinecraftStableVanillaFolder(): Promise<void> {
-    const dataFolder = globals.minecraftStableGame?.dataFolder;
-    if (dataFolder === undefined) {
-        vscode.window.showWarningMessage("⚠️ Le dossier data de Minecraft Stable n'est pas accessible.");
-        return;
-    } else {
-        await openExplorerWithCheck(dataFolder, "des ressources vanilla Minecraft Stable");
-        return;
-    }
-}
-
-/**
- * Trouve et ouvre le dossier des ressources vanilla Minecraft Preview
- */
-export async function openMinecraftPreviewVanillaFolder(): Promise<void> {
-    const dataFolder = globals.minecraftPreviewGame?.dataFolder;
-    if (dataFolder === undefined) {
-        vscode.window.showWarningMessage("⚠️ Le dossier data de Minecraft Preview n'est pas accessible.");
-        return;
-    } else {
-        await openExplorerWithCheck(dataFolder, "des ressources vanilla Minecraft Preview");
-        return;
-    }
+    await openExplorerWithCheck(folder, description);
 }

@@ -1,22 +1,23 @@
 import * as vscode from "vscode";
 import { MinecraftProjectConfig, MinecraftProjectType } from "../../types/projectConfig";
-import { getMinecraftProjectConfig } from "./getMinecraftProjectConfig";
-import { MinecraftFileTypeDefinition, MinecraftFileTypeKey, minecraftFileRegistry } from "../minecraft/fileTypes/minecraftFileRegistry";
-import { collectFiles } from "../filesystem/collectFiles";
+import { loadMinecraftProjectConfig } from "./config/loadMinecraftProjectConfig";
+import { MinecraftProjectFileResolver } from "./MinecraftProjectFileResolver";
 
 export class MinecraftProject {
     folder: vscode.Uri;
     config: MinecraftProjectConfig;
+    fileResolver: MinecraftProjectFileResolver;
 
     constructor(projectFolder: vscode.Uri, config: MinecraftProjectConfig) {
         this.folder = projectFolder;
         this.config = config;
+        this.fileResolver = new MinecraftProjectFileResolver(this);
     }
 
     static async load(): Promise<MinecraftProject | undefined> {
         const folder = vscode.workspace.workspaceFolders?.[0]?.uri;
         if (!folder) return undefined;
-        const projectConfig = await getMinecraftProjectConfig(folder);
+        const projectConfig = await loadMinecraftProjectConfig(folder);
         if (!projectConfig) return undefined;
 
         return new MinecraftProject(folder, projectConfig);
@@ -50,62 +51,22 @@ export class MinecraftProject {
         return vscode.Uri.joinPath(this.folder, "addon");
     }
 
-    get behaviorPackFolder() {
+    private getAddonSubFolder(name: string): vscode.Uri | undefined {
         if (this.type !== MinecraftProjectType.Addon) {
             return undefined;
         }
-        return vscode.Uri.joinPath(this.addonFolder!, "behavior_pack");
+        return vscode.Uri.joinPath(this.addonFolder!, name);
+    }
+
+    get behaviorPackFolder() {
+        return this.getAddonSubFolder("behavior_pack");
     }
 
     get resourcePackFolder() {
-        if (this.type !== MinecraftProjectType.Addon) {
-            return undefined;
-        }
-        return vscode.Uri.joinPath(this.addonFolder!, "resource_pack");
+        return this.getAddonSubFolder("resource_pack");
     }
 
     get scriptsFolder() {
-        if (this.type !== MinecraftProjectType.Addon) {
-            return undefined;
-        }
-        return vscode.Uri.joinPath(this.addonFolder!, "scripts");
-    }
-
-    async getDataDrivenFilesFromProject(minecraftFileType: MinecraftFileTypeKey): Promise<vscode.Uri[]> {
-        const results: vscode.Uri[] = [];
-        if (this.type === MinecraftProjectType.Addon) {
-            const typeFileLocation = minecraftFileRegistry[minecraftFileType] as MinecraftFileTypeDefinition;
-            const processPackType = async (packUri: vscode.Uri, typeFileLocation: MinecraftFileTypeDefinition) => {
-                let currentUri = packUri;
-                for (const segment of typeFileLocation.pathFolder.split("/")) {
-                    if (segment.length > 0) {
-                        currentUri = vscode.Uri.joinPath(currentUri, segment);
-                    }
-                }
-                try {
-                    const folderStat = await vscode.workspace.fs.stat(currentUri);
-                    if (folderStat.type !== vscode.FileType.Directory) return; // Ce n'est pas un dossier, on ignore
-
-                    const files = await collectFiles(
-                        currentUri,
-                        typeFileLocation.subFolder,
-                        typeFileLocation.fileNames,
-                        typeFileLocation.fileExtension,
-                        typeFileLocation.excludeFileNames
-                    );
-                    results.push(...files);
-                } catch (error) {
-                    return;
-                }
-            };
-
-            if (typeFileLocation.packType === "behavior_pack") {
-                await processPackType(this.behaviorPackFolder!, typeFileLocation);
-            } else if (typeFileLocation.packType === "resource_pack") {
-                await processPackType(this.resourcePackFolder!, typeFileLocation);
-            }
-        }
-
-        return results;
+        return this.getAddonSubFolder("scripts");
     }
 }

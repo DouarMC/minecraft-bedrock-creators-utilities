@@ -23,6 +23,9 @@ export class MinecraftDataManager {
         const processPackType = async (folders: vscode.Uri[]) => {
             for (const packUri of folders) {
                 let currentUri = packUri;
+
+                console.log(`caca ${typeDef.pathFolder}`);
+
                 for (const segment of typeDef.pathFolder.split("/")) {
                     if (segment.length > 0) {
                         currentUri = vscode.Uri.joinPath(currentUri, segment);

@@ -1,11 +1,5 @@
 export type MinecraftJsonSchemaType = "string" | "number" | "integer" | "boolean" | "object" | "array" | "null" | "molang";
 
-export const experimentalOptions = {
-    custom_biomes: "Custom Biomes",
-    data_driven_jigsaw_structures: "Data Driven Jigsaw Structures",
-    drop_3_2025: "Drop 3 2025",
-};
-
 export interface MinecraftJsonSchema {
 	type?: MinecraftJsonSchemaType;
 	default?: any;
