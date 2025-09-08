@@ -25,3 +25,28 @@ export async function getDataDrivenLightingSettingsIds(_document: vscode.TextDoc
 
     return Array.from(new Set(lightingSettingsIds));
 }
+
+export async function getLightingSettingsIds(_document: vscode.TextDocument, _schema: MinecraftJsonSchema): Promise<string[]> {
+    const lightingSettingsIds: string[] = [];
+
+    const vanillaUris = await getStableDataManager()?.getFiles("resource_pack/lighting/<all>.json") ?? [];
+    const prokectUris = await getCurrentProject()?.fileResolver.getDataDrivenFilesFromProject("resource_pack/lighting/<all>.json") ?? [];
+    const allUris = [...vanillaUris, ...prokectUris];
+    
+    for (const uri of allUris) {
+        try {
+            const fileData = await vscode.workspace.fs.readFile(uri);
+            const content = new TextDecoder("utf-8").decode(fileData);
+            const json = JsonParser.parse(content);
+
+            const id = json?.["minecraft:lighting_settings"]?.description?.identifier;
+            if (typeof id === "string") {
+                lightingSettingsIds.push(id);
+            }
+        } catch (error) {
+            console.warn(`⚠️ Failed to read or parse lighting setting from ${uri.toString()}:`, error);
+        }
+    }
+
+    return Array.from(new Set(lightingSettingsIds));
+}

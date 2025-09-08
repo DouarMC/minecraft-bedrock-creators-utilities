@@ -25,3 +25,28 @@ export async function getDataDrivenParticleEffectIds(_document: vscode.TextDocum
 
     return Array.from(new Set(particleEffectIds));
 }
+
+export async function getParticleEffectIds(document: vscode.TextDocument, schema: MinecraftJsonSchema): Promise<string[]> {
+    const particleEffectIds: string[] = [];
+
+    const vanillaUris = await getStableDataManager()?.getFiles("resource_pack/particles/<all>.json") ?? [];
+    const projectUris = await getCurrentProject()?.fileResolver?.getDataDrivenFilesFromProject("resource_pack/particles/<all>.json") ?? [];
+    const allUris = [...vanillaUris, ...projectUris];
+
+    for (const uri of allUris) {
+        try {
+            const fileData = await vscode.workspace.fs.readFile(uri);
+            const content = new TextDecoder("utf-8").decode(fileData);
+            const json = JsonParser.parse(content);
+
+            const id = json?.["particle_effect"]?.description?.identifier;
+            if (typeof id === "string") {
+                particleEffectIds.push(id);
+            }
+        } catch (error) {
+            console.warn(`⚠️ Failed to read or parse particle effect from ${uri.toString()}:`, error);
+        }
+    }
+
+    return Array.from(new Set(particleEffectIds));
+}

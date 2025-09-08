@@ -21,19 +21,21 @@ import { getDataDrivenEntityIds, getEntityFamilyIds, getEntityIds } from "./hand
 import { getDataDrivenFeatureIds, getFeatureIds } from "./handlers/features";
 import { getDataDrivenFeatureRulesIds } from "./handlers/feature_rules";
 import { getDataDrivenFogIds, getFogIds } from "./handlers/fogs";
-import { getDataDrivenIds, getItemGroupIds, getItemIds } from "./handlers/items";
+import { getDataDrivenIds, getItemGroupIds, getItemIds, getOldFormatItemIds } from "./handlers/items";
 import { getDataDrivenJigsawStructureIds, getDataDrivenProcessorIds, getDataDrivenStructureSetIds, getDataDrivenTemplatePoolIds } from "./handlers/jigsaw";
-import { getDataDrivenLanguageIds } from "./handlers/texts";
-import { getDataDrivenLightingSettingsIds } from "./handlers/lightingSettings";
-import { getDataDrivenModelIds, getFullBlockModelId } from "./handlers/models";
-import { getDataDrivenMusicReferences } from "./handlers/musics";
-import { getDataDrivenParticleEffectIds } from "./handlers/particles";
+import { getDataDrivenLanguageIds, getLanguageIds } from "./handlers/texts";
+import { getDataDrivenLightingSettingsIds, getLightingSettingsIds } from "./handlers/lightingSettings";
+import { getDataDrivenModelIds, getFullBlockModelId, getModelIds } from "./handlers/models";
+import { getDataDrivenMusicReferences, getMusicReferences } from "./handlers/musics";
+import { getDataDrivenParticleEffectIds, getParticleEffectIds } from "./handlers/particles";
 import { getDataDrivenRenderControllerIds } from "./handlers/render_controllers";
 import { getResourceAnimationControllerIds } from "./handlers/resourceAnimationControllers";
 import { getDataDrivenResourceAnimationIds } from "./handlers/resourceAnimations";
 import { getDataDrivenSpawnRulesIds } from "./handlers/spawnRules";
 import { getDataDrivenWaterSettingsIds } from "./handlers/waterSettings";
 import { getEffectIds } from "./handlers/effects";
+import { getLootTableFilePaths } from "./handlers/lootTables";
+import { getMcfunctionFilePathsWithoutExtension } from "./handlers/mcfunction";
 
 type DynamicSourceHandler = (document: vscode.TextDocument, schema: MinecraftJsonSchema) => Promise<string[]>;
 
@@ -99,6 +101,14 @@ const handlers: Record<string, DynamicSourceHandler> = {
     [dynamicExamplesSourceKeys.item_group_ids]: getItemGroupIds,
     [dynamicExamplesSourceKeys.item_ids]: getItemIds,
     [dynamicExamplesSourceKeys.item_texture_references]: getItemTextureReferences,
+    [dynamicExamplesSourceKeys.language_ids]: getLanguageIds,
+    [dynamicExamplesSourceKeys.lighting_settings_ids]: getLightingSettingsIds,
+    [dynamicExamplesSourceKeys.loot_table_file_paths]: getLootTableFilePaths,
+    [dynamicExamplesSourceKeys.mcfunction_file_paths_without_extension]: getMcfunctionFilePathsWithoutExtension,
+    [dynamicExamplesSourceKeys.model_ids]: getModelIds,
+    [dynamicExamplesSourceKeys.music_references]: getMusicReferences,
+    [dynamicExamplesSourceKeys.old_format_item_ids]: getOldFormatItemIds,
+    [dynamicExamplesSourceKeys.particle_effect_ids]: getParticleEffectIds
     
 };
 
