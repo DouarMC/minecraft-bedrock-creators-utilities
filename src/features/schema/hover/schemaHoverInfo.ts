@@ -1,5 +1,4 @@
 import { MinecraftJsonSchema } from "../../../types/minecraftJsonSchema";
-import { toMarkdown } from "../utils/markdownHelpers";
 
 export interface HoverInfo {
     description?: string;
@@ -11,7 +10,7 @@ export function extractHoverInfo(schema: MinecraftJsonSchema): HoverInfo | null 
     const info: HoverInfo = {};
 
     if (schema.description) {
-        info.description = toMarkdown(schema.description);
+        info.description = schema.description;
     }
 
     if (schema["x-experimental_options"]) {

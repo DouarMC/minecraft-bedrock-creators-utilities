@@ -153,9 +153,64 @@ export async function getDataDrivenInteractiveBlockSoundReferences(_document: vs
 export async function getDataDrivenSoundReferences(_document: vscode.TextDocument, _schema: MinecraftJsonSchema): Promise<string[]> {
     const soundReferences: string[] = [];
 
-    const vanillaUris = await getStableDataManager()?.getFiles("resource_pack/sounds.json") ?? [];
+    const vanillaUris = await getStableDataManager()?.getFiles("resource_pack/sounds/sound_definitions.json") ?? [];
 
     for (const uri of vanillaUris) {
+        try {
+            const fileData = await vscode.workspace.fs.readFile(uri);
+            const content = new TextDecoder("utf-8").decode(fileData);
+            const json = JsonParser.parse(content);
+
+            const soundDefinitionsProperty = json?.sound_definitions;
+            if (typeof soundDefinitionsProperty === "object") {
+                const soundDefinitionKeys = Object.keys(soundDefinitionsProperty);
+                for (const key of soundDefinitionKeys) {
+                    if (typeof soundDefinitionsProperty[key] === "object") {
+                        soundReferences.push(key);
+                    }
+                }
+            }
+        } catch (error) {
+            console.warn(`⚠️ Failed to read or parse sounds from ${uri.toString()}:`, error);
+        }
+    }
+
+    return Array.from(new Set(soundReferences));
+}
+
+export async function getSoundFilePathsWithoutExtension(_document: vscode.TextDocument, _schema: MinecraftJsonSchema): Promise<string[]> {
+     function getSoundRelativePath(uri: vscode.Uri): string | null {
+        // Ajout de fsb et extension supprimée dans le résultat
+        const match = /[\/\\](sounds[\/\\].+?)(?:\.(ogg|wav|mp3|fsb))?$/i.exec(uri.fsPath);
+        if (!match) { return null; }
+        // Uniformise les slashs pour être cross-platform
+        return match[1].replace(/\\/g, '/');
+    }
+    
+    const soundFilePaths: string[] = [];
+
+    const vanillaUris = await getStableDataManager()?.getFiles("resource_pack/sounds/*.{wav,mp3,ogg,fsb}") ?? [];
+    const projectUris = await getCurrentProject()?.fileResolver.getDataDrivenFilesFromProject("resource_pack/sounds/*.{wav,mp3,ogg,fsb}") ?? [];
+    const allUris = [...vanillaUris, ...projectUris];
+
+    for (const uri of allUris) {
+        const relativePath = getSoundRelativePath(uri);
+        if (relativePath) {
+            soundFilePaths.push(relativePath);
+        }
+    }
+
+    return Array.from(new Set(soundFilePaths));
+}
+
+export async function getSoundReferences(_document: vscode.TextDocument, _schema: MinecraftJsonSchema): Promise<string[]> {
+    const soundReferences: string[] = [];
+
+    const vanillaUris = await getStableDataManager()?.getFiles("resource_pack/sounds/sound_definitions.json") ?? [];
+    const projectUris = await getCurrentProject()?.fileResolver.getDataDrivenFilesFromProject("resource_pack/sounds/sound_definitions.json") ?? [];
+    const allUris = [...vanillaUris, ...projectUris];
+
+    for (const uri of allUris) {
         try {
             const fileData = await vscode.workspace.fs.readFile(uri);
             const content = new TextDecoder("utf-8").decode(fileData);

@@ -1,4 +1,4 @@
-import { MinecraftJsonSchemaMap } from "../../../../types/minecraftJsonSchema";
+import { MinecraftJsonSchema } from "../../model";
 import { dynamicExamplesSourceKeys, schemaEnums } from "./schemaEnums";
 
 // Fonction helper pour créer les schémas avec références
@@ -31,9 +31,7 @@ function createCommonSchemas() {
                 }
             },
             tags: {
-                markdownDescription:
-                "**ℹ️ Expression Molang supportée.**\n\n" +
-                "Les tags du bloc.",
+                description: "Les tags du bloc.",
                 type: "molang"
             }
         }
@@ -82,7 +80,7 @@ function createCommonSchemas() {
 }
 
 // Fonction pour générer les definitions communes à injecter dans les schémas principaux
-export function getCommonDefinitions(): MinecraftJsonSchemaMap {
+export function getCommonDefinitions(): Record<string, MinecraftJsonSchema> {
     return {
         minecraft_filter: {
             oneOf: [
@@ -487,8 +485,7 @@ export function getCommonDefinitions(): MinecraftJsonSchemaMap {
                         },
                         value: {
                             description: "La valeur à comparer (type varie selon le test)",
-                            type: "string",
-                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_tags
+                            type: "string"
                         },
                         domain: {
                             description: "Le domaine de l'équipement (hand, head, torso, leg, feet, armor, body)",

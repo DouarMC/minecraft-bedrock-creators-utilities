@@ -79,3 +79,12 @@ export async function getDataDrivenBiomeIds(_document: vscode.TextDocument, _sch
 
     return Array.from(new Set(dataDrivenBiomeIds));
 }
+
+export async function getVanillaBiomeIdsWithoutNamespace(_document: vscode.TextDocument, _schema: MinecraftJsonSchema): Promise<string[]> {
+    const dataDrivenBiomeIds = await getDataDrivenBiomeIds(_document, _schema);
+    const biomeIdsWithoutNamespace = dataDrivenBiomeIds
+        .filter(id => id.startsWith("minecraft:"))
+        .map(id => id.replace("minecraft:", ""));
+        
+    return Array.from(new Set(biomeIdsWithoutNamespace));
+}

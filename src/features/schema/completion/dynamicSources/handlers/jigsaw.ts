@@ -93,3 +93,53 @@ export async function getDataDrivenTemplatePoolIds(_document: vscode.TextDocumen
 
     return Array.from(new Set(templatePoolIds));
 }
+
+export async function getProcessorIds(_document: vscode.TextDocument, _schema: MinecraftJsonSchema): Promise<string[]> {
+    const processorIds: string[] = [];
+
+    const vanillaUris = await getStableDataManager()?.getFiles("behavior_pack/worldgen/processors/<all>.json") ?? [];
+    const projectUris = await getCurrentProject()?.fileResolver.getDataDrivenFilesFromProject("behavior_pack/worldgen/processors/<all>.json") ?? [];
+    const allUris = [...vanillaUris, ...projectUris];
+
+    for (const uri of allUris) {
+        try {
+            const fileData = await vscode.workspace.fs.readFile(uri);
+            const content = new TextDecoder("utf-8").decode(fileData);
+            const json = JsonParser.parse(content);
+
+            const id = json?.["minecraft:processor_list"]?.description?.identifier;
+            if (typeof id === "string") {
+                processorIds.push(id);
+            }
+        } catch (error) {
+            console.warn(`⚠️ Failed to read or parse processor from ${uri.toString()}:`, error);
+        }
+    }
+
+    return Array.from(new Set(processorIds));
+}
+
+export async function getTemplatePoolIds(_document: vscode.TextDocument, _schema: MinecraftJsonSchema): Promise<string[]> {
+    const templatePoolIds: string[] = [];
+
+    const vanillaUris = await getStableDataManager()?.getFiles("behavior_pack/worldgen/template_pools/<all>.json") ?? [];
+    const projectUris = await getCurrentProject()?.fileResolver.getDataDrivenFilesFromProject("behavior_pack/worldgen/template_pools/<all>.json") ?? [];
+    const allUris = [...vanillaUris, ...projectUris];
+
+    for (const uri of allUris) {
+        try {
+            const fileData = await vscode.workspace.fs.readFile(uri);
+            const content = new TextDecoder("utf-8").decode(fileData);
+            const json = JsonParser.parse(content);
+
+            const id = json?.["minecraft:template_pool"]?.description?.identifier;
+            if (typeof id === "string") {
+                templatePoolIds.push(id);
+            }
+        } catch (error) {
+            console.warn(`⚠️ Failed to read or parse template_pool from ${uri.toString()}:`, error);
+        }
+    }
+
+    return Array.from(new Set(templatePoolIds));
+}

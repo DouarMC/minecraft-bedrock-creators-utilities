@@ -6,36 +6,39 @@ import { getAimAssistPresetIds, getDataDrivenAimAssistPresetIds } from "./handle
 import { getAtmosphereSettingsIds, getDataDrivenAtmosphereSettingsIds } from "./handlers/atmosphereSettings";
 import { getBehaviorAnimationControllerIds } from "./handlers/behaviorAnimationController";
 import { getBehaviorAnimationIds } from "./handlers/behaviorAnimations";
-import { getBiomeIds, getBiomeTags, getDataDrivenBiomeIds } from "./handlers/biomes";
+import { getBiomeIds, getBiomeTags, getDataDrivenBiomeIds, getVanillaBiomeIdsWithoutNamespace } from "./handlers/biomes";
 import { getBlockCullingRulesIds, getCullingLayerIds } from "./handlers/blockCullingRules";
-import { getBlockIds } from "./handlers/blocks";
-import { getBlockSoundReferences, getDataDrivenBaseBlockSoundReferences, getDataDrivenIndividualEventSoundReferences, getDataDrivenIndividualNamedSoundReferences, getDataDrivenInteractiveBlockSoundReferences, getDataDrivenSoundReferences } from "./handlers/sounds";
-import { getBlockTextureReferences, getDataDrivenBlockTextureReferences, getDataDrivenItemTextureReferences, getItemTextureReferences } from "./handlers/textures";
+import { getBlockIds, getVanillaBlockIdsWithoutNamespace } from "./handlers/blocks";
+import { getBlockSoundReferences, getDataDrivenBaseBlockSoundReferences, getDataDrivenIndividualEventSoundReferences, getDataDrivenIndividualNamedSoundReferences, getDataDrivenInteractiveBlockSoundReferences, getDataDrivenSoundReferences, getSoundFilePathsWithoutExtension, getSoundReferences } from "./handlers/sounds";
+import { getBlockTextureReferences, getDataDrivenBlockTextureReferences, getDataDrivenItemTextureReferences, getItemTextureReferences, getProjectTextureFilePaths, getTextureFilePaths } from "./handlers/textures";
 import { getCameraPresetIds, getDataDrivenCameraPresetIds, getInheritableCameraPresetIds } from "./handlers/cameras";
 import { getColorGradingSettingsIds, getDataDrivenColorGradingSettingsIds } from "./handlers/colorGradingSettings";
 import { getCooldownCategoryIds } from "./handlers/cooldown";
 import { getCraftingRecipeTags, getDataDrivenRecipeIds } from "./handlers/recipes";
 import { getDataDrivenAttachableIds } from "./handlers/attachables";
 import { getDataDrivenDimensionIds } from "./handlers/dimensions";
-import { getDataDrivenEntityIds, getEntityFamilyIds, getEntityIds } from "./handlers/entity";
+import { getDataDrivenEntityIds, getEntityFamilyIds, getEntityIds, getVanillaEntityIdsWithoutNamespace } from "./handlers/entity";
 import { getDataDrivenFeatureIds, getFeatureIds } from "./handlers/features";
 import { getDataDrivenFeatureRulesIds } from "./handlers/feature_rules";
 import { getDataDrivenFogIds, getFogIds } from "./handlers/fogs";
-import { getDataDrivenIds, getItemGroupIds, getItemIds, getOldFormatItemIds } from "./handlers/items";
-import { getDataDrivenJigsawStructureIds, getDataDrivenProcessorIds, getDataDrivenStructureSetIds, getDataDrivenTemplatePoolIds } from "./handlers/jigsaw";
+import { getDataDrivenIds, getItemGroupIds, getItemIds, getOldFormatItemIds, getVanillaItemGroupIdsWithoutNamespace } from "./handlers/items";
+import { getDataDrivenJigsawStructureIds, getDataDrivenProcessorIds, getDataDrivenStructureSetIds, getDataDrivenTemplatePoolIds, getProcessorIds, getTemplatePoolIds } from "./handlers/jigsaw";
 import { getDataDrivenLanguageIds, getLanguageIds } from "./handlers/texts";
 import { getDataDrivenLightingSettingsIds, getLightingSettingsIds } from "./handlers/lightingSettings";
 import { getDataDrivenModelIds, getFullBlockModelId, getModelIds } from "./handlers/models";
 import { getDataDrivenMusicReferences, getMusicReferences } from "./handlers/musics";
 import { getDataDrivenParticleEffectIds, getParticleEffectIds } from "./handlers/particles";
-import { getDataDrivenRenderControllerIds } from "./handlers/render_controllers";
-import { getResourceAnimationControllerIds } from "./handlers/resourceAnimationControllers";
-import { getDataDrivenResourceAnimationIds } from "./handlers/resourceAnimations";
+import { getDataDrivenRenderControllerIds, getRenderControllerIds } from "./handlers/render_controllers";
+import { getDataDrivenResourceAnimationControllerIds, getResourceAnimationControllerIds } from "./handlers/resourceAnimationControllers";
+import { getDataDrivenResourceAnimationIds, getResourceAnimationIds } from "./handlers/resourceAnimations";
 import { getDataDrivenSpawnRulesIds } from "./handlers/spawnRules";
-import { getDataDrivenWaterSettingsIds } from "./handlers/waterSettings";
+import { getDataDrivenWaterSettingsIds, getWaterSettingsIds } from "./handlers/waterSettings";
 import { getEffectIds } from "./handlers/effects";
 import { getLootTableFilePaths } from "./handlers/lootTables";
 import { getMcfunctionFilePathsWithoutExtension } from "./handlers/mcfunction";
+import { getProjectUiFilePaths, getVanillaUiGlobalVariables } from "./handlers/ui";
+import { getTradingFilePaths } from "./handlers/trading";
+import { getVanillaEnchantmentIds } from "./handlers/enchantments";
 
 type DynamicSourceHandler = (document: vscode.TextDocument, schema: MinecraftJsonSchema) => Promise<string[]>;
 
@@ -84,7 +87,7 @@ const handlers: Record<string, DynamicSourceHandler> = {
     [dynamicExamplesSourceKeys.data_driven_processor_ids]: getDataDrivenProcessorIds,
     [dynamicExamplesSourceKeys.data_driven_recipe_ids]: getDataDrivenRecipeIds,
     [dynamicExamplesSourceKeys.data_driven_render_controller_ids]: getDataDrivenRenderControllerIds,
-    [dynamicExamplesSourceKeys.data_driven_resource_animation_controller_ids]: getResourceAnimationControllerIds,
+    [dynamicExamplesSourceKeys.data_driven_resource_animation_controller_ids]: getDataDrivenResourceAnimationControllerIds,
     [dynamicExamplesSourceKeys.data_driven_resource_animation_ids]: getDataDrivenResourceAnimationIds,
     [dynamicExamplesSourceKeys.data_driven_sound_references]: getDataDrivenSoundReferences,
     [dynamicExamplesSourceKeys.data_driven_spawn_rules_ids]: getDataDrivenSpawnRulesIds,
@@ -108,12 +111,28 @@ const handlers: Record<string, DynamicSourceHandler> = {
     [dynamicExamplesSourceKeys.model_ids]: getModelIds,
     [dynamicExamplesSourceKeys.music_references]: getMusicReferences,
     [dynamicExamplesSourceKeys.old_format_item_ids]: getOldFormatItemIds,
-    [dynamicExamplesSourceKeys.particle_effect_ids]: getParticleEffectIds
-    
+    [dynamicExamplesSourceKeys.particle_effect_ids]: getParticleEffectIds,
+    [dynamicExamplesSourceKeys.processor_ids]: getProcessorIds,
+    [dynamicExamplesSourceKeys.project_texture_file_paths]: getProjectTextureFilePaths,
+    [dynamicExamplesSourceKeys.project_ui_file_paths]: getProjectUiFilePaths,
+    [dynamicExamplesSourceKeys.render_controller_ids]: getRenderControllerIds,
+    [dynamicExamplesSourceKeys.resource_animation_controller_ids]: getResourceAnimationControllerIds,
+    [dynamicExamplesSourceKeys.resource_animation_ids]: getResourceAnimationIds,
+    [dynamicExamplesSourceKeys.sound_file_paths_without_extension]: getSoundFilePathsWithoutExtension,
+    [dynamicExamplesSourceKeys.sound_references]: getSoundReferences,
+    [dynamicExamplesSourceKeys.template_pool_ids]: getTemplatePoolIds,
+    [dynamicExamplesSourceKeys.texture_file_paths]: getTextureFilePaths,
+    [dynamicExamplesSourceKeys.trading_file_paths]: getTradingFilePaths,
+    [dynamicExamplesSourceKeys.vanilla_biome_ids_without_namespace]: getVanillaBiomeIdsWithoutNamespace,
+    [dynamicExamplesSourceKeys.vanilla_block_ids_without_namespace]: getVanillaBlockIdsWithoutNamespace,
+    [dynamicExamplesSourceKeys.vanilla_enchantment_ids]: getVanillaEnchantmentIds,
+    [dynamicExamplesSourceKeys.vanilla_entity_ids_without_namespace]: getVanillaEntityIdsWithoutNamespace,
+    [dynamicExamplesSourceKeys.vanilla_item_group_ids_without_namespace]: getVanillaItemGroupIdsWithoutNamespace,
+    [dynamicExamplesSourceKeys.vanilla_ui_global_variables]: getVanillaUiGlobalVariables,
+    [dynamicExamplesSourceKeys.water_settings_ids]: getWaterSettingsIds
 };
 
 export async function getDynamicExampleSourceValues(sourceKey: string | string[], document: vscode.TextDocument, schema: MinecraftJsonSchema): Promise<string[]> {
-    console.log("Dynamic source key(s) called");
     const sourceKeys = Array.isArray(sourceKey) ? sourceKey : [sourceKey];
     const values: string[] = [];
 
@@ -125,8 +144,6 @@ export async function getDynamicExampleSourceValues(sourceKey: string | string[]
             console.warn(`⚠️ Unknown dynamicExamplesSource key: ${key}`);
         }
     }
-
-    console.log(`🔍 Dynamic source keys: ${sourceKeys.join(", ")} => Values: ${values.length} unique entries found.`);
 
     return Array.from(new Set(values));
 }

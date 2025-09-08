@@ -80,3 +80,12 @@ export async function getEntityIds(_document: vscode.TextDocument, _schema: Mine
 
     return Array.from(new Set([...vanillaEntityIds, ...entityIds]));
 }
+
+export async function getVanillaEntityIdsWithoutNamespace(_document: vscode.TextDocument, _schema: MinecraftJsonSchema): Promise<string[]> {
+    const vanillaEntityIds = VANILLA_ENTITY_IDS;
+    const entityIdsWithoutNamespace = vanillaEntityIds
+        .filter(id => id.startsWith("minecraft:"))
+        .map(id => id.replace("minecraft:", ""));
+    
+    return Array.from(new Set(entityIdsWithoutNamespace));
+}

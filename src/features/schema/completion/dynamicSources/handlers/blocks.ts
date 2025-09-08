@@ -29,3 +29,12 @@ export async function getBlockIds(_document: vscode.TextDocument, _schema: Minec
 
     return Array.from(new Set([...blockIds, ...vanillaBlocks]));
 }
+
+export async function getVanillaBlockIdsWithoutNamespace(_document: vscode.TextDocument, _schema: MinecraftJsonSchema): Promise<string[]> {
+    const vanillaBlockIds = VANILLA_BLOCK_IDS;
+    const blockIdsWithoutNamespace = vanillaBlockIds
+        .filter(id => id.startsWith("minecraft:"))
+        .map(id => id.replace("minecraft:", ""));
+    
+    return Array.from(new Set(blockIdsWithoutNamespace));
+}

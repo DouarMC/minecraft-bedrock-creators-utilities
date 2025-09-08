@@ -82,6 +82,8 @@ export async function getModelIds(document: vscode.TextDocument, schema: Minecra
                     }
                 }
             }
+        } catch (error) {
+            console.warn(`⚠️ Failed to read or parse model from ${uri.toString()}:`, error);
         }
     }
 

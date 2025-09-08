@@ -1,4 +1,4 @@
-import { MinecraftJsonSchema } from "../../../types/minecraftJsonSchema";
+import { MinecraftJsonSchema } from "../model";
 
 export function resolveRef(schemaRoot: any, ref: string): MinecraftJsonSchema | undefined {
     if (!ref.startsWith('#/')) return undefined;

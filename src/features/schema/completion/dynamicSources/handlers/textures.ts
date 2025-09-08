@@ -114,3 +114,48 @@ export async function getItemTextureReferences(_document: vscode.TextDocument, _
 
     return Array.from(new Set(textureReferences));
 }
+
+export async function getProjectTextureFilePaths(_document: vscode.TextDocument, _schema: MinecraftJsonSchema): Promise<string[]> {
+    function getTextureRelativePath(uri: vscode.Uri): string | null {
+        const match = /[\/\\](textures[\/\\].+\.(tga|png|jpg|jpeg))$/i.exec(uri.fsPath);
+        if (!match) {return null;}
+        // Uniformise les slashs pour être cross-platform
+        return match[1].replace(/\\/g, '/');
+    }
+
+    const textureFilePaths: string[] = [];
+
+    const projectUris = await getCurrentProject()?.fileResolver.getDataDrivenFilesFromProject("resource_pack/textures/*.{tga,png,jpg,jpeg}") ?? [];
+    for (const uri of projectUris) {
+        const relativePath = getTextureRelativePath(uri);
+        if (relativePath) {
+            textureFilePaths.push(relativePath);
+        }
+    }
+
+    return Array.from(new Set(textureFilePaths));
+}
+
+export async function getTextureFilePaths(_document: vscode.TextDocument, _schema: MinecraftJsonSchema): Promise<string[]> {
+    function getTextureRelativePath(uri: vscode.Uri): string | null {
+        const match = /[\/\\](textures[\/\\].+\.(tga|png|jpg|jpeg))$/i.exec(uri.fsPath);
+        if (!match) {return null;}
+        // Uniformise les slashs pour être cross-platform
+        return match[1].replace(/\\/g, '/');
+    }
+
+    const textureFilePaths: string[] = [];
+
+    const vanillaUris = await getStableDataManager()?.getFiles("resource_pack/textures/*.{tga,png,jpg,jpeg}") ?? [];
+    const projectUris = await getCurrentProject()?.fileResolver.getDataDrivenFilesFromProject("resource_pack/textures/*.{tga,png,jpg,jpeg}") ?? [];
+    const allUris = [...vanillaUris, ...projectUris];
+
+    for (const uri of allUris) {
+        const relativePath = getTextureRelativePath(uri);
+        if (relativePath) {
+            textureFilePaths.push(relativePath);
+        }
+    }
+
+    return Array.from(new Set(textureFilePaths));
+}

@@ -153,3 +153,12 @@ export async function getOldFormatItemIds(_document: vscode.TextDocument, _schem
 
     return Array.from(new Set(itemIds));
 }
+
+export async function getVanillaItemGroupIdsWithoutNamespace(_document: vscode.TextDocument, _schema: MinecraftJsonSchema): Promise<string[]> {
+    const itemGroupIds = await getItemGroupIds(_document, _schema);
+    const itemGroupIdsWithoutNamespace = itemGroupIds
+        .filter(id => id.startsWith("minecraft:"))
+        .map(id => id.replace("minecraft:", ""));
+    
+    return Array.from(new Set(itemGroupIdsWithoutNamespace));
+}
