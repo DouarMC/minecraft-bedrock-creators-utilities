@@ -8,7 +8,7 @@ import { isNumber, extendedRegExp, isBoolean, isString, stringLength } from '../
 import { resolveRef } from '../utils/resolveRef';
 import { ValidationContext } from '../model/ValidationContext';
 
-function toDiagnostics(result: ValidationResult, document: vscode.TextDocument, severity: vscode.DiagnosticSeverity): vscode.Diagnostic[] {
+function toDiagnostics(result: ValidationResult, severity: vscode.DiagnosticSeverity): vscode.Diagnostic[] {
 	return result.problems.map(problem =>
 		new vscode.Diagnostic(problem.location, problem.message, problem.severity || severity)
 	);
@@ -29,7 +29,7 @@ export function doValidation(document: vscode.TextDocument, schema: MinecraftJso
     const validationResult = new ValidationResult();
     validate(root, schema, validationResult, validationContext);
     
-	return toDiagnostics(validationResult, document, severity);
+	return toDiagnostics(validationResult, severity);
 }
 
 export function validate(node: JsonParser.Node, schema: MinecraftJsonSchema, validationResult: ValidationResult, validationContext: ValidationContext): void {
@@ -225,6 +225,7 @@ export function validate(node: JsonParser.Node, schema: MinecraftJsonSchema, val
 				multiplier: (parts[2]?.length || 0) - (parseInt(parts[3]) || 0)
 			};
 		};
+		
 		if (isNumber(schema.multipleOf)) {
 			let remainder: number = -1;
 			if (Number.isInteger(schema.multipleOf)) {
