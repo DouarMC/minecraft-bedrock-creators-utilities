@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "target": "ES2020",
+        "module": "ESNext",
+        "moduleResolution": "Node",
+        "outDir": "addon/behavior_pack/scripts",
+        "rootDir": "addon/scripts",
+        "strict": true,
+        "allowJs": false,
+        "lib": ["ES2023"],
+        "types": ["minecraft-env"],
+        "typeRoots": ["./types"]
+    },
+    "include": ["addon/scripts/**/*.ts"],
+    "exclude": ["node_modules"]
+}

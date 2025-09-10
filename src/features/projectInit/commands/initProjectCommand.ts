@@ -5,6 +5,7 @@ import { isFolderEmpty } from "../../../core/filesystem/directories";
 import { promptProjectMetadata } from "../prompts/promptProjectMetadata";
 
 async function initProject(context: vscode.ExtensionContext): Promise<void> {
+    // Sélection du dossier où créer le projet
     const folderUri = await vscode.window.showOpenDialog({
         canSelectFolders: true,
         canSelectFiles: false,
@@ -13,23 +14,29 @@ async function initProject(context: vscode.ExtensionContext): Promise<void> {
         title: "Sélectionner un dossier pour initialiser le projet Minecraft Bedrock"
     });
 
+    // Vérification de la sélection
     if (folderUri === undefined || folderUri.length === 0) {
         vscode.window.showWarningMessage("Aucun dossier sélectionné. L'initialisation a été annulée.");
         return;
     }
 
+    // Vérification que le dossier est vide
     const projectFolder = folderUri[0];
     if ((await isFolderEmpty(projectFolder)) === false) {
         vscode.window.showWarningMessage("Le dossier sélectionné n'est pas vide. Choisissez un dossier vide.");
         return;
     }
 
+    // Récupération des métadonnées du projet de l'utilisateur
     const projectMetadata = await promptProjectMetadata();
     if (projectMetadata === undefined) return;
 
+    // Création du fichier settings.json dans .vscode
     await createVSCodeSettingsFile(projectFolder);
+    // Création du fichier minecraft-project.json à la racine du projet
     await createMinecraftProjectFile(projectFolder, projectMetadata);
 
+    // Si le projet est de type "Addon", création de la structure d'addon
     if (projectMetadata.type === MinecraftProjectType.Addon) {
         await createAddonStructure(projectFolder, projectMetadata, context);
 

@@ -74,35 +74,7 @@
                 "fileMatch": "**/.mcbe_project.json",
                 "url": "./schemas/mcbe_project.schema.json"
             }
-        ],
-        "languages": [
-            {
-                "id": "molang",
-                "aliases": ["Molang", "molang"],
-                "extensions": [".molang"],
-                "icon": {
-                    "dark": "./resources/molang_icon.png",
-                    "light": "./resources/molang_icon.png"
-                }
-            }
-        ],
-        "grammars": [
-            {
-                "language": "molang",
-                "scopeName": "source.molang",
-                "path": "./syntaxes/molang.tmLanguage.json"
-            }
-        ],
-        "configuration": {
-            "title": "Minecraft Bedrock Creators Utilities",
-            "properties": {
-                "minecraftBedrockUtilities.deployProject.promptToLaunchMinecraft": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "Proposer de lancer Minecraft après un déploiement réussi"
-                }
-            }
-        }
+        ]
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",

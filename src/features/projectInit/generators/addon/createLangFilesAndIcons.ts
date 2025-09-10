@@ -33,6 +33,5 @@ export async function createLangFilesAndIcons(
     // 🖼️ pack_icon.png
     const iconSource = vscode.Uri.joinPath(context.extensionUri, "resources", "default_pack_icon.png");
     const iconTarget = vscode.Uri.joinPath(packFolder, "pack_icon.png");
-
     await vscode.workspace.fs.copy(iconSource, iconTarget);
 }

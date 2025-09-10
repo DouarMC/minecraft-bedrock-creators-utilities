@@ -8,6 +8,7 @@ export async function installDependencies(projectFolder: vscode.Uri): Promise<vo
         await execPromise("npm -v"); // vérifie npm
         const { stderr } = await execPromise("npm install", { cwd: projectFolder.fsPath });
         if (stderr) console.error(stderr);
+        
         vscode.window.showInformationMessage("📦 Modules npm installés !");
     } catch (error: any) {
         const isNpmNotFound = error?.message?.includes("npm") || error?.code === "ENOENT";
