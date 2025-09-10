@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as JsonParser from "jsonc-parser";
-import { MinecraftJsonSchema } from '../../../types/minecraftJsonSchema';
+import { MinecraftJsonSchema } from '../model';
 import { getNodeFromOffset, isInComment, getCurrentWord } from '../utils/ast';
 import { CompletionsCollector } from './collector';
 import { getOverwriteRange, evaluateSeparatorAfter} from '../utils/completionHelpers';

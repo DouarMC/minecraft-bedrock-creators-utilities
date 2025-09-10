@@ -2,7 +2,7 @@ import { schemaPatterns } from "../../../utils/shared/schemaPatterns";
 import { schemaEnums, dynamicExamplesSourceKeys } from "../../../utils/shared/schemaEnums";
 import { commonSchemas } from "../../../utils/shared/commonSchemas";
 import { VersionedSchema, SchemaChange } from "../../../model/versioning";
-import { MinecraftJsonSchema } from "../../../../../types/minecraftJsonSchema";
+import { MinecraftJsonSchema } from "../../../model";
 
 const baseSchema: MinecraftJsonSchema = {
     description: "Ce fichier crée un Bloc personnalisé.",

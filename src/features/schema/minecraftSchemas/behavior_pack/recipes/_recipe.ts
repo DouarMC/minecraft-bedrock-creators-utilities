@@ -1,5 +1,5 @@
 import { schemaPatterns } from "../../../utils/shared/schemaPatterns";
-import { MinecraftJsonSchema } from "../../../../../types/minecraftJsonSchema";
+import { MinecraftJsonSchema } from "../../../model";
 import { dynamicExamplesSourceKeys } from "../../../utils/shared/schemaEnums";
 import { VersionedSchema, SchemaChange } from "../../../model/versioning";
 

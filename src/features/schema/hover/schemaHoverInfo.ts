@@ -1,4 +1,4 @@
-import { MinecraftJsonSchema } from "../../../types/minecraftJsonSchema";
+import { MinecraftJsonSchema } from "../model";
 
 export interface HoverInfo {
     description?: string;

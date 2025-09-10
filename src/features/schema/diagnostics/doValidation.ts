@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as JsonParser from 'jsonc-parser';
-import { MinecraftJsonSchema, MinecraftJsonSchemaType } from '../../../types/minecraftJsonSchema';
+import { MinecraftJsonSchema, MinecraftJsonSchemaType } from '../model';
 import { ErrorCode, ValidationResult } from './ValidationResult';
 import { SchemaCollectorLike, NoOpSchemaCollector } from '../utils/schemaCollector';
 

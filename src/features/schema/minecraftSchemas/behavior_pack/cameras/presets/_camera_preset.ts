@@ -1,6 +1,6 @@
 import { schemaPatterns } from "../../../../utils/shared/schemaPatterns";
 import { dynamicExamplesSourceKeys } from "../../../../utils/shared/schemaEnums";
-import { MinecraftJsonSchema } from "../../../../../../types/minecraftJsonSchema";
+import { MinecraftJsonSchema } from "../../../../model";
 import { VersionedSchema } from "../../../../model/versioning";
 
 const baseSchema: MinecraftJsonSchema = {
