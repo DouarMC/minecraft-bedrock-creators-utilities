@@ -1,37 +1,10 @@
 import * as vscode from 'vscode';
 import { directoryExists } from '../../../core/filesystem/directories';
-import { exec } from 'child_process';
-import { promisify } from 'util';
 import { MinecraftProjectType } from '../../../types/projectConfig';
 import { promptToLaunchMinecraft } from './promptToLaunchMinecraft';
 import { MinecraftProject } from '../../../core/project/MinecraftProject';
 import { getPreviewGame, getStableGame } from '../../../core/project/projectManager';
-
-async function compileTypeScriptIfNeeded(minecraftProject: MinecraftProject): Promise<boolean> {
-    if (minecraftProject.scriptsFolder === undefined) {
-        return true;
-    }
-
-    const hasScripts = await directoryExists(minecraftProject.scriptsFolder);
-    if (hasScripts === false) {
-        return true;
-    }
-
-    try {
-        const execPromise = promisify(exec);
-        const { stdout, stderr } = await execPromise(`tsc`, {cwd: minecraftProject.folder.fsPath});
-        if (stderr) {
-            console.error(stderr);
-            vscode.window.showErrorMessage("Erreur lors de la compilation TypeScript : " + stderr);
-            return false;
-        }
-        return true;
-    } catch (error) {
-        console.error("Erreur lors de l'exécution de tsc :", error);
-        vscode.window.showErrorMessage("Erreur lors de l'exécution de tsc. Veuillez vérifier la console pour plus de détails.");
-        return false;
-    }
-}
+import { compileTypeScript } from '../../../core/project/compile/compileTypeScript';
 
 async function copyPackIfExists(packPath: vscode.Uri, targetPath: vscode.Uri): Promise<void> {
     if (await directoryExists(packPath)) {
@@ -76,8 +49,11 @@ export async function deployProject(minecraftProject: MinecraftProject): Promise
 
                     if (behaviorPack !== undefined && await directoryExists(behaviorPack)) {
                         progress.report({message: "Compilation des scripts TypeScript..."});
-                        const compiled = await compileTypeScriptIfNeeded(minecraftProject);
-                        if (compiled === false) return;
+                        const compilationNoError = await compileTypeScript(minecraftProject);
+                        if (compilationNoError === false) {
+                            vscode.window.showErrorMessage("❌ Le déploiement a été annulé en raison d'erreurs de compilation.");
+                            return;
+                        }
 
                         progress.report({message: "Déploiement du Behavior Pack..."});
                         await copyPackIfExists(behaviorPack, vscode.Uri.joinPath(basePath, "development_behavior_packs", minecraftProject.id));

@@ -11,15 +11,10 @@
     ],
     "activationEvents": [
         "onStartupFinished"
-    ],  
+    ],
     "main": "./out/extension.js",
     "contributes": {
         "commands": [
-            {
-                "command": "minecraft-bedrock-creators-utilities.helloWorld",
-                "title": "Hello World",
-                "category": "Minecraft Bedrock Utilities"
-            },
             {
                 "command": "minecraft-bedrock-creators-utilities.initProject",
                 "title": "Initialiser un projet Minecraft Bedrock",
@@ -59,6 +54,11 @@
                 "command": "minecraft-bedrock-creators-utilities.openMinecraftPreviewVanillaFolder",
                 "title": "📂 Ouvrir les ressources vanilla Minecraft Preview",
                 "category": "Minecraft Bedrock Utilities"
+            },
+            {
+                "command": "minecraft-bedrock-creators-utilities.exportProject",
+                "title": "Exporter le projet Minecraft Bedrock courant",
+                "category": "Minecraft Bedrock Utilities"
             }
         ],
         "jsonValidation": [
@@ -85,6 +85,7 @@
         "test": "vscode-test"
     },
     "devDependencies": {
+        "@types/archiver": "^6.0.3",
         "@types/lodash": "^4.17.20",
         "@types/node": "20.x",
         "@types/vscode": "^1.100.0",
@@ -94,7 +95,9 @@
         "typescript": "^5.8.3"
     },
     "dependencies": {
+        "archiver": "^7.0.1",
         "jsonc-parser": "^3.3.1",
-        "lodash": "^4.17.21"
+        "lodash": "^4.17.21",
+        "zip-lib": "^1.1.2"
     }
 }
