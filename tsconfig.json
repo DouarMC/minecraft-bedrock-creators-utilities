@@ -16,9 +16,9 @@
 
 		"esModuleInterop": true, // Facilite l’import de modules CommonJS avec import
 		"skipLibCheck": true, // Ignore les erreurs de type dans node_modules (plus rapide)
-		"resolveJsonModule": true, // Autorise l’import de fichiers JSON
+		"resolveJsonModule": true // Autorise l’import de fichiers JSON
 	},
 	"exclude": [
-		"templates"
+		"templates", "webdata", "scripts"
 	]
 }

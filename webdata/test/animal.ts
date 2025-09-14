@@ -1,0 +1,6 @@
+[
+  "chien",
+  "chat",
+  "oiseau",
+  "lapin"
+];
