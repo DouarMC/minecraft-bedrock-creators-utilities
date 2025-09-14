@@ -1,5 +1,5 @@
 export async function fetchAnimals(): Promise<string[]> {
-    const url = "https://raw.githubusercontent.com/DouarMC/minecraft-bedrock-creators-utilities/refs/heads/master/webdata/test/animal.ts";
+    const url = "https://raw.githubusercontent.com/DouarMC/minecraft-bedrock-creators-utilities/refs/heads/master/webdata/test/animal.json";
 
     try {
         const res = await fetch(url);
@@ -18,6 +18,8 @@ export async function fetchAnimals(): Promise<string[]> {
 
 // Auto-exécution pour un script npm
 (async () => {
+    console.time("fetchAnimals");
     const animals = await fetchAnimals();
     console.log("Animaux:", animals.join(", "));
+    console.timeEnd("fetchAnimals");
 })();

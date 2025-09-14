@@ -19,6 +19,6 @@
 		"resolveJsonModule": true // Autorise l’import de fichiers JSON
 	},
 	"exclude": [
-		"templates", "webdata", "scripts"
+		"templates", "webdata", "scripts", "data"
 	]
 }
