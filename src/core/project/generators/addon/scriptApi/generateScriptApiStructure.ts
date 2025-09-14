@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
-import { randomUUID } from "crypto";
-import { copyTemplateFile } from "../../../../core/filesystem/copyTemplateFile";
+import { copyTemplateFile } from "../../../../filesystem/copyTemplateFile";
 
 async function createMainTsFile(scriptsPath: vscode.Uri): Promise<void> {
     await copyTemplateFile("script-api/main.ts", vscode.Uri.joinPath(scriptsPath, "main.ts"));
@@ -20,16 +19,7 @@ async function createMinecraftEnvTypesFile(typesPath: vscode.Uri): Promise<void>
  * Ajoute le bloc `script` au manifest et génère les fichiers
  * nécessaires à l'API Script (main.ts, tsconfig.json, types/).
  */
-export async function generateScriptApiStructure(projectFolder: vscode.Uri, behaviorManifest: any): Promise<void> {
-    // Ajoute le bloc `script` au manifeste dans les modules
-    behaviorManifest.modules.push({
-        type: "script",
-        uuid: randomUUID(),
-        version: [0, 0, 1],
-        language: "javascript",
-        entry: "scripts/main.js"
-    });
-
+export async function generateScriptApiStructure(projectFolder: vscode.Uri): Promise<void> {
     // Crée le dossier scripts
     const scriptsPath = vscode.Uri.joinPath(projectFolder, "addon", "scripts");
     await vscode.workspace.fs.createDirectory(scriptsPath);

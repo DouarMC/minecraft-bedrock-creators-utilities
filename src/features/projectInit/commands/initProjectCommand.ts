@@ -1,10 +1,12 @@
 import * as vscode from "vscode";
 import { MinecraftProjectType } from "../../../types/projectConfig";
-import { createMinecraftProjectFile, createVSCodeSettingsFile, createAddonStructure } from "../generators";
+import { createMinecraftProjectFile } from "../../../core/project/generators/createMinecraftProjectFile";
+import { createVSCodeSettingsFile } from "../../../core/project/generators/createVSCodeSettingsFile";
+import { createAddonStructure } from "../structures/createAddonStructure";
 import { isFolderEmpty } from "../../../core/filesystem/directories";
-import { promptProjectMetadata } from "../prompts/promptProjectMetadata";
+import { promptProjectMetadata } from "../../../core/project/prompts/promptProjectMetadata";
 
-async function initProject(context: vscode.ExtensionContext): Promise<void> {
+async function initProject(): Promise<void> {
     // Sélection du dossier où créer le projet
     const folderUri = await vscode.window.showOpenDialog({
         canSelectFolders: true,
@@ -38,7 +40,7 @@ async function initProject(context: vscode.ExtensionContext): Promise<void> {
 
     // Si le projet est de type "Addon", création de la structure d'addon
     if (projectMetadata.type === MinecraftProjectType.Addon) {
-        await createAddonStructure(projectFolder, projectMetadata, context);
+        await createAddonStructure(projectFolder, projectMetadata);
 
         // Ouvrir directement le projet fraîchement créé
         await vscode.commands.executeCommand("vscode.openFolder", projectFolder, false);
@@ -50,7 +52,7 @@ async function initProject(context: vscode.ExtensionContext): Promise<void> {
 export function registerInitProjectCommand(context: vscode.ExtensionContext) {
     const disposable = vscode.commands.registerCommand(
         "minecraft-bedrock-creators-utilities.initProject",
-        () => initProject(context)
+        () => initProject()
     );
 
     context.subscriptions.push(disposable);

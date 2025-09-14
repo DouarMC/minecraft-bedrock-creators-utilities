@@ -106,7 +106,7 @@ const versionedChanges: SchemaChange[] = [
 ];
 
 export const textureSetSchemaTypeRP: VersionedSchema = {
-    fileMatch: ["**/addon/resource_pack/textures/**/*.json"],
+    fileMatch: ["**/addon/resource_pack/textures/**/*.texture_set.json"],
     baseSchema: baseSchema,
     versionedChanges: versionedChanges
 };

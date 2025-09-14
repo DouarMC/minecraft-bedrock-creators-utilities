@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { copyTemplateFile } from '../../../core/filesystem/copyTemplateFile';
+import { copyTemplateFile } from '../../filesystem/copyTemplateFile';
 
 export async function createVSCodeSettingsFile(folder: vscode.Uri): Promise<void> {
     // Création du dossier .vscode s'il n'existe pas

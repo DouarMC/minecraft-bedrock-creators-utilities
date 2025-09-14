@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { MinecraftProduct, MinecraftProjectConfig } from '../../../types/projectConfig';
-import { launchMinecraft } from '../../../core/system/launchMinecraft';
-import { MinecraftProject } from '../../../core/project/MinecraftProject';
+import { launchMinecraft } from '../../system/launchMinecraft';
+import { MinecraftProject } from '../MinecraftProject';
 
 /**
  * Propose à l'utilisateur de lancer Minecraft après un déploiement réussi

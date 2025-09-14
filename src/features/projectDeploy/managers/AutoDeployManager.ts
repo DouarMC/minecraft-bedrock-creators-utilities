@@ -18,10 +18,11 @@ export class AutoDeployManager {
     }
 
     public async toggle(minecraftProject: MinecraftProject): Promise<void> {
+        // Si le déploiement auto est actif, on l'arrête, sinon on le démarre
         if (this.active) {
             this.stop();
             vscode.window.showInformationMessage("🔴 Déploiement auto désactivé.");
-        } else {
+        } else { // Démarre le déploiement auto
             await this.start(minecraftProject);
             vscode.window.showInformationMessage("🟢 Déploiement auto activé.");
             await deployProject(minecraftProject); // déploiement initial
@@ -29,6 +30,7 @@ export class AutoDeployManager {
     }
 
     private async start(minecraftProject: MinecraftProject): Promise<void> {
+        // Démarre le watcher d'auto-déploiement
         await startAutoDeployWatcher(this.context, minecraftProject);
         this.active = true;
         this.statusBar.update(true);

@@ -4,6 +4,8 @@ import { MinecraftProject } from "../../../core/project/MinecraftProject";
 
 let watcher: vscode.FileSystemWatcher | undefined;
 
+const ignoredFiles = ["contents.json", "textures_list.json"];
+
 /**
  * Démarre le watcher qui écoute les changements dans le dossier addon/
  */
@@ -16,6 +18,9 @@ export async function startAutoDeployWatcher(context: vscode.ExtensionContext, m
     const onChange = async (uri: vscode.Uri) => {
         // éviter de redéployer à cause des .js compilés
         if (uri.fsPath.endsWith(".js")) return;
+        // éviter de redéployer à cause des fichiers ignorés
+        if (ignoredFiles.some(name => uri.fsPath.endsWith(name))) return;
+
         await deployProject(minecraftProject);
     };
 

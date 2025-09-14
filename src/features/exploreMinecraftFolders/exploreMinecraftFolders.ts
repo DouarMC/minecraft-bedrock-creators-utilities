@@ -17,12 +17,15 @@ function getExplorerCommand(folderPath: string): string | undefined {
  * Ouvre l'explorateur de fichiers Windows à un chemin spécifique
  */
 async function openExplorer(folderPath: string): Promise<void> {
+    // Récupère la commande adaptée à la plateforme courante (Windows, macOS, Linux)
     const command = getExplorerCommand(folderPath);
-    if (!command) {
+    // Si la plateforme n'est pas prise en charge, affiche un message d'erreur
+    if (command === undefined) {
         vscode.window.showErrorMessage(`⚠️ Plateforme non prise en charge (${process.platform}).`);
         return;
     }
 
+    // Promisifie exec pour pouvoir utiliser async/await
     const execPromise = promisify(exec);
     // Lancer la commande sans attendre les erreurs (explorer peut retourner des codes d'erreur même en cas de succès)
     await execPromise(command).catch(() => {
@@ -34,7 +37,9 @@ async function openExplorer(folderPath: string): Promise<void> {
  * Vérifie si un dossier existe avant de l'ouvrir
  */
 async function openExplorerWithCheck(folder: vscode.Uri, description: string): Promise<void> {
+    // Récupère le chemin du dossier
     const folderPath = folder.fsPath;
+
     try {
         // Vérifier d'abord si le dossier existe avec Node.js fs
         await fs.promises.access(folderPath, fs.constants.F_OK);
@@ -53,11 +58,16 @@ async function openExplorerWithCheck(folder: vscode.Uri, description: string): P
 }
 
 export async function openMinecraftFolder(game: "stable" | "preview", folderType: "comMojangFolder" | "dataFolder", description: string): Promise<void> {
+    // Récupère l'instance du jeu Minecraft (stable ou preview)
     const gameInstance = game === "stable" ? getStableGame() : getPreviewGame();
+    // Récupère le dossier demandé
     const folder = gameInstance?.[folderType];
+    // Si le dossier n'est pas défini, affiche un message d'erreur
     if (!folder) {
         vscode.window.showWarningMessage(`⚠️ Le dossier ${description} de Minecraft ${game} n'est pas accessible.`);
         return;
     }
+
+    // Ouvre l'explorateur de fichiers à l'emplacement du dossier
     await openExplorerWithCheck(folder, description);
 }

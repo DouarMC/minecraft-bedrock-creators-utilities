@@ -69,4 +69,17 @@ export class MinecraftProject {
     get scriptsFolder() {
         return this.getAddonSubFolder("scripts");
     }
+
+    async getPackageJsonFile(): Promise<vscode.Uri | undefined> {
+        const packageJsonUri = vscode.Uri.joinPath(this.folder, "package.json");
+        
+        try {
+            const fileStat = await vscode.workspace.fs.stat(packageJsonUri);
+            if (fileStat.type === vscode.FileType.File) {
+                return packageJsonUri;
+            }
+        } catch {
+            return undefined;
+        }
+    }
 }

@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { MinecraftAddonPack } from "../../../../types/projectConfig";
+import { MinecraftAddonPack } from "../../../types/projectConfig";
 
 const PACK_TYPE_ITEMS: vscode.QuickPickItem[] = [
     {

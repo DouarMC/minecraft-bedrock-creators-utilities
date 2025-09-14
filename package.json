@@ -59,6 +59,11 @@
                 "command": "minecraft-bedrock-creators-utilities.exportProject",
                 "title": "Exporter le projet Minecraft Bedrock courant",
                 "category": "Minecraft Bedrock Utilities"
+            },
+            {
+                "command": "minecraft-bedrock-creators-utilities.addScriptApi",
+                "title": "Ajouter l'API de script au projet Minecraft Bedrock courant",
+                "category": "Minecraft Bedrock Utilities"
             }
         ],
         "jsonValidation": [

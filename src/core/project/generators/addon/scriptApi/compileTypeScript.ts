@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
-import { MinecraftProject } from "../MinecraftProject";
+import { MinecraftProject } from "../../../MinecraftProject";
 import { promisify } from "util";
 import { exec } from "child_process";
-import { directoryExists } from "../../filesystem/directories";
+import { directoryExists } from "../../../../filesystem/directories";
 
 async function compilationNeeded(minecraftProject: MinecraftProject): Promise<boolean> {
     if (minecraftProject.scriptsFolder === undefined) {
