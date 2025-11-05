@@ -1,10 +1,6 @@
 import * as vscode from "vscode";
 import { copyTemplateFile } from "../../../../filesystem/copyTemplateFile";
 
-async function createMainTsFile(scriptsPath: vscode.Uri): Promise<void> {
-    await copyTemplateFile("script-api/main.ts", vscode.Uri.joinPath(scriptsPath, "main.ts"));
-}
-
 async function createTsConfigFile(projectFolder: vscode.Uri): Promise<void> {
     await copyTemplateFile("script-api/tsconfig.template.json", vscode.Uri.joinPath(projectFolder, "tsconfig.json"));
 }

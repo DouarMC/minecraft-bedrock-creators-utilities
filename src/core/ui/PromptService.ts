@@ -54,6 +54,20 @@ export class PromptService {
             alwaysShow: true
         }
     ];
+    public static readonly BEHAVIOR_PACK_MODULE_TYPES: vscode.QuickPickItem[] = [
+        {
+            label: "data",
+            description: "Module principal d'un behavior pack.",
+            detail: "Contient les fichiers data-driven (entités, blocs, loot tables, recettes, etc.) qui définissent le comportement du jeu.",
+            alwaysShow: true
+        },
+        {
+            label: "script",
+            description: "Module de scripts pour un behavior pack.",
+            detail: "Permet d'exécuter du code via l'API Script de Minecraft pour créer des comportements dynamiques, réagir aux événements et modifier le monde en temps réel.",
+            alwaysShow: true
+        }
+    ];
 
     /**
      * Affiche une boîte de dialogue pour sélectionner les types de packs d'un addon.
@@ -246,5 +260,24 @@ export class PromptService {
                 // Ne rien faire
                 break;
         }
+    }
+
+    /**
+     * Affiche une boîte de dialogue pour sélectionner les types de modules du pack de comportement.
+     * @returns 
+     */
+    public static async askBehaviorPackModuleTypes(): Promise<("data" | "script")[]> {
+        const selectedModuleItems = await vscode.window.showQuickPick(
+            PromptService.BEHAVIOR_PACK_MODULE_TYPES,
+            {
+                title: "Modules du pack de comportement",
+                placeHolder: "Sélectionnez les modules à inclure dans le pack de comportement",
+                canPickMany: true,
+                ignoreFocusOut: true
+            }
+        );
+
+        const selectedModules = selectedModuleItems?.map(item => item.label as "data" | "script") ?? [];
+        return selectedModules;
     }
 }

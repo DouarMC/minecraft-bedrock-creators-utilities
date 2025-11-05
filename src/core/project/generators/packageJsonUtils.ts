@@ -2,19 +2,6 @@ import * as vscode from 'vscode';
 import { ProjectMetadata } from '../../../types/projectConfig';
 import { AddonPackageJson } from '../../../types/addonPackageJson';
 
-export function createBasePackageJson(metadata: ProjectMetadata): AddonPackageJson {
-    const packageJson: AddonPackageJson = {
-        name: metadata.id,
-        version: "0.0.1",
-        description: `Addon for ${metadata.displayName}`,
-        license: "MIT",
-        dependencies: {},
-        type: "module"
-    };
-
-    return packageJson;
-}
-
 export async function updatePackageJson(
     projectFolder: vscode.Uri,
     updater: (pkg: AddonPackageJson) => void | Promise<void>,
