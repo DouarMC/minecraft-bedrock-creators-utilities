@@ -10,7 +10,7 @@ export interface MinecraftFileTypeDefinition {
 
 export type MinecraftFileTypeKey = keyof typeof minecraftFileRegistry;
 
-export const minecraftFileRegistry = {
+export const minecraftFileRegistry: Record<string, MinecraftFileTypeDefinition>  = {
     "behavior_pack/aim_assist/categories/categories.json": {
         packType: "behavior_pack",
         pathFolder: "aim_assist/categories",
@@ -606,4 +606,4 @@ export const minecraftFileRegistry = {
         fileExtension: [".json"],
         excludeFileNames: []
     }
-} satisfies Record<string, MinecraftFileTypeDefinition>;
+};

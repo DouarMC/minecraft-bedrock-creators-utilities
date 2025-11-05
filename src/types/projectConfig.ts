@@ -21,12 +21,3 @@ export interface ProjectMetadata {
     author: string;
     minecraftProduct: MinecraftProduct;
 };
-
-export interface MinecraftProjectConfig {
-    metadata: ProjectMetadata;
-    options: {
-        deploy: {
-            prompt_to_launch_minecraft: boolean;
-        };
-    }
-}

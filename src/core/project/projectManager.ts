@@ -1,79 +1,52 @@
-// src/core/project/projectManager.ts
 import * as vscode from "vscode";
 import { MinecraftProject } from "./MinecraftProject";
-import { MinecraftGame } from "../minecraft/MinecraftGame";
-import { MinecraftProduct } from "../../types/projectConfig";
-import { globals } from "../globals";
-import { MinecraftDataManager } from "../minecraft/MinecraftDataManager";
 
-let projectWatcher: vscode.FileSystemWatcher | undefined;
+export class ProjectManager {
+    /**
+     * Le projet Minecraft actuellement chargé, ou undefined s'il n'y en a pas.
+     */
+    private static currentProject: MinecraftProject | undefined;
 
-/**
- * Initialise le gestionnaire de projet Minecraft :
- * - Charge Minecraft stable
- * - Charge le projet courant
- * - Installe les watchers
- */
-export async function initProjectManager(context: vscode.ExtensionContext): Promise<void> {
-    // Charger Minecraft stable
-    globals.minecraftStableGame = await MinecraftGame.load(MinecraftProduct.Stable);
+    /**
+     * Recharge le projet Minecraft à partir du dossier de workspace ouvert.
+     * @returns 
+     */
+    public static async reload(): Promise<void> {
+        const folder = vscode.workspace.workspaceFolders?.[0]?.uri;
+        if (! folder) {
+            console.warn("[MBCU] Aucun dossier de workspace ouvert — aucun projet à charger.");
+            this.currentProject = undefined;
+            return;
+        }
 
-    if (!globals.minecraftStableGame?.dataFolder) {
-        vscode.window.showWarningMessage(
-            "⚠️ Minecraft Stable n'a pas été trouvé sur cette machine. Certaines fonctionnalités peuvent être limitées."
-        );
-    } else {
-        globals.minecraftStableDataManager = new MinecraftDataManager(globals.minecraftStableGame);
+        try {
+            this.currentProject = await MinecraftProject.load(folder);
+            console.log(`[MBCU] Projet Minecraft chargé : ${this.currentProject.id}`);
+        } catch (error) {
+            console.error("[MBCU] Échec du chargement du projet Minecraft :", error);
+            this.currentProject = undefined;
+        }
     }
 
-    // Charger le projet courant
-    await reloadProject();
+    /**
+     * Renvoie le projet actuellement chargé, ou undefined s'il n'y en a pas.
+     */
+    public static get project(): MinecraftProject | undefined {
+        return this.currentProject;
+    }
 
-    // Watcher pour changement des dossiers du workspace
-    context.subscriptions.push(
-        vscode.workspace.onDidChangeWorkspaceFolders(reloadProject)
-    );
+    /**
+     * Indique si un projet est actuellement chargé.
+     * @returns 
+     */
+    public static hasProject(): boolean {
+        return this.currentProject !== undefined;
+    }
 
-    // Watcher pour le fichier .mcbe_project.json
-    projectWatcher = vscode.workspace.createFileSystemWatcher("**/.mcbe_project.json");
-    projectWatcher.onDidCreate(reloadProject);
-    projectWatcher.onDidChange(reloadProject);
-    projectWatcher.onDidDelete(reloadProject);
-    context.subscriptions.push(projectWatcher);
-}
-
-/**
- * Recharge le projet Minecraft courant
- */
-export async function reloadProject(): Promise<void> {
-    globals.currentMinecraftProject = await MinecraftProject.load();
-}
-
-/**
- * Retourne le projet Minecraft courant
- */
-export function getCurrentProject(): MinecraftProject | undefined {
-    return globals.currentMinecraftProject;
-}
-
-/**
- * Retourne l'installation de Minecraft stable
- */
-export function getStableGame(): MinecraftGame | undefined {
-    return globals.minecraftStableGame;
-}
-
-export function getPreviewGame(): MinecraftGame | undefined {
-    return globals.minecraftPreviewGame;
-}
-
-export function getStableDataManager(): MinecraftDataManager | undefined {
-    return globals.minecraftStableDataManager;
-}
-
-/**
- * Libère les ressources (watchers, etc.)
- */
-export function dispose(): void {
-    projectWatcher?.dispose();
+    /**
+     * Efface le projet actuellement chargé.
+     */
+    public static clear(): void {
+        this.currentProject = undefined;
+    }
 }

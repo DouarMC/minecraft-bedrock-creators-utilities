@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { deployProject } from '../utils/deployProject';
-import { getCurrentProject } from '../../../core/project/projectManager';
+import { getCurrentProject } from '../../../core/project/ProjectManager';
 
 export function registerDeployProjectCommand(context: vscode.ExtensionContext) {
     const deployProjectCommand = vscode.commands.registerCommand(

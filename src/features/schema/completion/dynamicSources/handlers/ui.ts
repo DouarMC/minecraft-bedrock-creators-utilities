@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as JsonParser from "jsonc-parser";
 import { MinecraftJsonSchema } from "../../../model";
-import { getCurrentProject, getStableDataManager } from "../../../../../core/project/projectManager";
+import { getCurrentProject, getStableDataManager } from "../../../../../core/project/ProjectManager";
 
 export async function getProjectUiFilePaths(_document: vscode.TextDocument, _schema: MinecraftJsonSchema): Promise<string[]> {
     function getUiRelativePath(uri: vscode.Uri): string | null {

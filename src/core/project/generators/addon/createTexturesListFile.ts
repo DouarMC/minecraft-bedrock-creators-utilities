@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { getCurrentProject } from '../../projectManager';
+import { getCurrentProject } from '../../ProjectManager';
 
 function getTextureRelativePath(uri: vscode.Uri): string | null {
     const match = /[\/\\](textures[\/\\].+\.(tga|png|jpg|jpeg))$/i.exec(uri.fsPath);

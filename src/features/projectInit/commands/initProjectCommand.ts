@@ -1,10 +1,10 @@
 import * as vscode from "vscode";
 import { MinecraftProjectType } from "../../../types/projectConfig";
-import { createMinecraftProjectFile } from "../../../core/project/generators/createMinecraftProjectFile";
-import { createVSCodeSettingsFile } from "../../../core/project/generators/createVSCodeSettingsFile";
 import { createAddonStructure } from "../structures/createAddonStructure";
 import { isFolderEmpty } from "../../../core/filesystem/directories";
-import { promptProjectMetadata } from "../../../core/project/prompts/promptProjectMetadata";
+import { VscodeUtils } from "../../../core/utils/VscodeUtils";
+import { PromptService } from "../../../core/ui/PromptService";
+import { ProjectService } from "../../../core/project/ProjectService";
 
 async function initProject(): Promise<void> {
     // Sélection du dossier où créer le projet
@@ -30,13 +30,13 @@ async function initProject(): Promise<void> {
     }
 
     // Récupération des métadonnées du projet de l'utilisateur
-    const projectMetadata = await promptProjectMetadata();
+    const projectMetadata = await PromptService.askProjectMetadata();
     if (projectMetadata === undefined) return;
 
     // Création du fichier settings.json dans .vscode
-    await createVSCodeSettingsFile(projectFolder);
+    await ProjectService.createVSCodeSettings(projectFolder);
     // Création du fichier minecraft-project.json à la racine du projet
-    await createMinecraftProjectFile(projectFolder, projectMetadata);
+    await ProjectService.createMinecraftProjectFile(projectFolder, projectMetadata);
 
     // Si le projet est de type "Addon", création de la structure d'addon
     if (projectMetadata.type === MinecraftProjectType.Addon) {
@@ -49,11 +49,11 @@ async function initProject(): Promise<void> {
     vscode.window.showInformationMessage("✅ L'environnement du projet Minecraft Bedrock a été initialisé avec succès !");
 }
 
-export function registerInitProjectCommand(context: vscode.ExtensionContext) {
+export function registerInitProjectCommand() {
     const disposable = vscode.commands.registerCommand(
         "minecraft-bedrock-creators-utilities.initProject",
         () => initProject()
     );
 
-    context.subscriptions.push(disposable);
+    VscodeUtils.getContext().subscriptions.push(disposable);
 }

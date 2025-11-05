@@ -48,7 +48,7 @@ const baseSchema: MinecraftJsonSchema = {
                                                         {
                                                             type: "string",
                                                             pattern: schemaPatterns.identifier_with_namespace,
-                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
+                                                            "x-dynamic-examples-source": [dynamicExamplesSourceKeys.item_ids, dynamicExamplesSourceKeys.block_ids]
                                                         },
                                                         {
                                                             type: "object",
@@ -58,7 +58,7 @@ const baseSchema: MinecraftJsonSchema = {
                                                                     description: "L'item/bloc qui sera utilisé pour l'icône du groupe. Un namespace pour l'item est requis. Vous pouvez éventuellement fournir une valeur auxiliaire pour les items qui l'utilisent à la fin. Exemple: namespace:my_item:1.",
                                                                     type: "string",
                                                                     pattern: schemaPatterns.identifier_with_namespace,
-                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
+                                                                    "x-dynamic-examples-source": [dynamicExamplesSourceKeys.item_ids, dynamicExamplesSourceKeys.block_ids]
                                                                 }
                                                             }
                                                         }
@@ -80,7 +80,7 @@ const baseSchema: MinecraftJsonSchema = {
                                                     {
                                                         type: "string",
                                                         pattern: schemaPatterns.identifier_with_namespace,
-                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
+                                                        "x-dynamic-examples-source": [dynamicExamplesSourceKeys.item_ids, dynamicExamplesSourceKeys.block_ids]
                                                     },
                                                     {
                                                         type: "object",
@@ -90,7 +90,7 @@ const baseSchema: MinecraftJsonSchema = {
                                                                 description: "Le nom de l'item ou du bloc. Un namespace pour l'item est requis. Vous pouvez éventuellement fournir une valeur auxiliaire pour les items qui l'utilisent à la fin. Exemple: namespace:my_item:1.",
                                                                 type: "string",
                                                                 pattern: schemaPatterns.identifier_with_namespace,
-                                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
+                                                                "x-dynamic-examples-source": [dynamicExamplesSourceKeys.item_ids, dynamicExamplesSourceKeys.block_ids]
                                                             }
                                                         }
                                                     }

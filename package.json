@@ -91,9 +91,7 @@
         "watch": "tsc -watch -p ./",
         "pretest": "npm run compile && npm run lint",
         "lint": "eslint src",
-        "test": "vscode-test",
-        "build-schemas": "ts-node scripts/build-schemas.ts",
-        "build-vanilla": "ts-node scripts/build-vanilla.ts"
+        "test": "vscode-test"
     },
     "devDependencies": {
         "@types/archiver": "^6.0.3",

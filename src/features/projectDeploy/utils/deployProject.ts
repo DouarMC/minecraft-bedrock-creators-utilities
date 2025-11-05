@@ -3,7 +3,7 @@ import { directoryExists } from '../../../core/filesystem/directories';
 import { MinecraftProjectType } from '../../../types/projectConfig';
 import { promptToLaunchMinecraft } from '../../../core/project/prompts/promptToLaunchMinecraft';
 import { MinecraftProject } from '../../../core/project/MinecraftProject';
-import { getPreviewGame, getStableGame } from '../../../core/project/projectManager';
+import { getPreviewGame, getStableGame } from '../../../core/project/ProjectManager';
 import { compileTypeScript } from '../../../core/project/generators/addon/scriptApi/compileTypeScript';
 import { createContentsJsonFile } from '../../../core/project/generators/addon/createContentsJsonFile';
 import { copyPack } from '../../../core/project/generators/copyPack';

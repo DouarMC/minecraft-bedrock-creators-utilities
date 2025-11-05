@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as JsonParser from "jsonc-parser";
 import { MinecraftJsonSchema } from "../../../model";
-import { getCurrentProject, getStableDataManager } from "../../../../../core/project/projectManager";
+import { getCurrentProject, getStableDataManager } from "../../../../../core/project/ProjectManager";
 import { compareVersions } from "../../../model/versioning/compareVersions";
 import { FULL_BLOCK_MODEL_ID } from "../../../../../utils/data/vanillaMinecraftIdentifiers";
 
@@ -46,7 +46,7 @@ export async function getDataDrivenModelIds(_document: vscode.TextDocument, _sch
 
 export async function getFullBlockModelId(_document: vscode.TextDocument, _schema: MinecraftJsonSchema): Promise<string[]> {
     const fullBlockModelId = FULL_BLOCK_MODEL_ID;
-    return Array.from(new Set(fullBlockModelId));
+    return [fullBlockModelId];
 }
 
 export async function getModelIds(document: vscode.TextDocument, schema: MinecraftJsonSchema): Promise<string[]> {

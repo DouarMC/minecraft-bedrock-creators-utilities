@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { getCurrentProject } from '../../../core/project/projectManager';
+import { getCurrentProject } from '../../../core/project/ProjectManager';
 import { MinecraftProjectType } from '../../../types/projectConfig';
 import { addonPackager } from '../packagers/addonPackager';
 

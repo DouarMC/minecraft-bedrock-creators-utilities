@@ -14363,7 +14363,8 @@ const baseSchema: MinecraftJsonSchema = {
                                 }
                             },
                             filters: {
-                                description: "Principalement utilisé pour les réponses 'sequences'. Sert de conditions pour déterminer si l'événement doit être déclenché."
+                                description: "Principalement utilisé pour les réponses 'sequences'. Sert de conditions pour déterminer si l'événement doit être déclenché.",
+                                ...commonSchemas.minecraft_filter
                             },
                             first_valid: {
                                 description: "Exécute le premier événement valide dans la liste.",
