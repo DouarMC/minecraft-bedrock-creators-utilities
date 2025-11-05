@@ -7,6 +7,8 @@ import { AddonPackageJson } from '../../types/addonPackageJson';
 import { PromptService } from '../ui/PromptService';
 import { describe } from 'node:test';
 import { randomUUID } from 'crypto';
+import { promisify } from 'util';
+import { exec } from 'child_process';
 
 export class ProjectService {
     /**
@@ -66,7 +68,7 @@ export class ProjectService {
             license: "MIT",
             dependencies: {},
             type: "module"
-        }
+        };
     }
 
     /**
@@ -103,46 +105,89 @@ export class ProjectService {
     }
 
     /**
+     * Active l'API Script dans le manifeste du pack de comportement.
+     * @param behaviorManifest Le manifeste du pack de comportement
+     * @returns 
+     */
+    private static enableScriptApiInManifest(behaviorManifest: any): void {
+        const hasScriptModule = behaviorManifest.modules.some((module: any) => module.type === "script");
+        if (hasScriptModule) {
+            return;
+        }
+
+        behaviorManifest.modules = behaviorManifest.modules || [];
+        behaviorManifest.modules.push({
+            type: "script",
+            uuid: randomUUID(),
+            version: [0, 0, 1],
+            language: "javascript",
+            entry: "scripts/main.js"
+        });
+    }
+
+    /**
      * Crée la base du manifeste du pack de comportement.
      * @param moduleTypes Les types de modules à inclure dans le manifeste
      * @returns 
      */
     private static createBaseBehaiovrPackManifest(moduleTypes: ("script" | "data")[]): any {
-        const formatVersion = 2;
-        const header = {
-            name: "pack.name",
-            description: "pack.description",
-            uuid: randomUUID(),
-            version: [0, 0, 1],
-            min_engine_version: [1, 21, 120]
+        const behaviorManifest: any = {
+            format_version: 2,
+            header: {
+                name: "pack.name",
+                description: "pack.description",
+                uuid: randomUUID(),
+                version: [0, 0, 1],
+                min_engine_version: [1, 21, 120]
+            },
+            modules: []
         };
-        const modules = moduleTypes.map(type => {
+
+        for (const type of moduleTypes) {
             if (type === "data") {
-                return {
+                behaviorManifest.modules.push({
                     type: "data",
                     uuid: randomUUID(),
                     version: [0, 0, 1]
-                };
-            } else {
-                return {
-                    type: "script",
-                    uuid: randomUUID(),
-                    version: [0, 0, 1],
-                    language: "javascript",
-                    entry: "scripts/main.js"
-                };
+                });
+            } else if (type === "script") {
+                this.enableScriptApiInManifest(behaviorManifest);
             }
-        });
-        return {
-            format_version: formatVersion,
-            header: header,
-            modules: modules
         }
+
+        return behaviorManifest;
+    }
+
+    /**
+     * Crée la base du manifeste du pack de ressources.
+     * @returns 
+     */
+    private static createBaseResourcePackManifest(): any {
+        const resourceManifest: any = {
+            format_version: 2,
+            header: {
+                name: "pack.name",
+                description: "pack.description",
+                uuid: randomUUID(),
+                version: [0, 0, 1],
+                min_engine_version: [1, 21, 120]
+            },
+            modules: [
+                {
+                    type: "resources",
+                    uuid: randomUUID(),
+                    version: [0, 0, 1]
+                }
+            ]
+        };
+
+        return resourceManifest;
     }
 
     /**
      * Crée le fichier main.ts pour l'API Script.
      * @param scriptsPath Le chemin du dossier scripts
+     * @throws {Error} Si la copie du fichier modèle échoue
      */
     private static async createMainTsFile(scriptsPath: vscode.Uri): Promise<void> {
         await this.copyTemplateFile("script-api/main.ts", vscode.Uri.joinPath(scriptsPath, "main.ts"));
@@ -151,11 +196,28 @@ export class ProjectService {
     /**
      * Crée le fichier tsconfig.json pour l'API Script.
      * @param projectFolder L'URI du dossier du projet
+     * @throws {Error} Si la copie du fichier modèle échoue
      */
     private static async createTsConfigFile(projectFolder: vscode.Uri): Promise<void> {
         await this.copyTemplateFile("script-api/tsconfig.template.json", vscode.Uri.joinPath(projectFolder, "tsconfig.json"));
     }
 
+    /**
+     * Crée le fichier types/minecraft-env/index.d.ts pour l'API Script.
+     * @param projectFolder L'URI du dossier du projet
+     * @throws {Error} Si la copie du fichier modèle échoue
+     */
+    private static async createMinecraftEnvTypesFile(projectFolder: vscode.Uri): Promise<void> {
+        const minecraftEnvPath = vscode.Uri.joinPath(projectFolder, "types", "minecraft-env");
+        await vscode.workspace.fs.createDirectory(minecraftEnvPath);
+        await this.copyTemplateFile("script-api/types/minecraft-env/index.d.ts", vscode.Uri.joinPath(minecraftEnvPath, "index.d.ts"));
+    }
+
+    /**
+     * Génère la structure de l'API Script dans le projet.
+     * @param projectFolder L'URI du dossier du projet
+     * @throws {Error} Si la création des fichiers ou dossiers échoue
+     */
     public static async createScriptApiStructure(projectFolder: vscode.Uri): Promise<void> {
         // Crée le dossier scripts
         const scriptsPath = vscode.Uri.joinPath(projectFolder, "addon", "scripts");
@@ -166,7 +228,126 @@ export class ProjectService {
         // Crée le fichier tsconfig.json
         await this.createTsConfigFile(projectFolder);
 
-        
+        // Crée le fichier types/minecraft-env/index.d.ts
+        await this.createMinecraftEnvTypesFile(projectFolder);
+    }
+
+    /**
+     * Ajoute les modules Script API sélectionnés au manifeste du pack de comportement et au package.json.
+     * @param behaviorManifest Le manifeste du pack de comportement
+     * @param packageJson Le contenu du package.json
+     * @param modules Les modules à ajouter avec leurs versions
+     */
+    public static addScriptApiModules(behaviorManifest: any, packageJson: any, modules: Record<string, string>): void {
+        behaviorManifest.dependencies = behaviorManifest.dependencies || [];
+        for (const [moduleName, moduleVersion] of Object.entries(modules)) {
+            const hasDependency = behaviorManifest.dependencies.some((dep: any) => dep.module_name === moduleName);
+            if (! hasDependency) {
+                behaviorManifest.dependencies.push({
+                    module_name: moduleName,
+                    version: moduleVersion
+                });
+            }
+            if (packageJson.dependencies === undefined) {
+                packageJson.dependencies = {};
+            }
+            if (packageJson.dependencies[moduleName] === undefined) {
+                packageJson.dependencies[moduleName] = moduleVersion;
+            } else if (packageJson.dependencies[moduleName] !== moduleVersion) {
+                // Met à jour la version si différente
+                packageJson.dependencies[moduleName] = moduleVersion;
+            }
+        }
+    }
+
+    /**
+     * Crée le fichier pack_icon.png dans le dossier du pack.
+     * @param packFolder L'URI du dossier du pack
+     */
+    public static async createPackIconFile(packFolder: vscode.Uri): Promise<void> {
+        const extensionContext = VscodeUtils.getContext();
+        const iconSource = vscode.Uri.joinPath(extensionContext.extensionUri, "resources", "default_pack_icon.png");
+        const iconTarget = vscode.Uri.joinPath(packFolder, "pack_icon.png");
+        await vscode.workspace.fs.copy(iconSource, iconTarget);
+    }
+
+    /**
+     * Crée le fichier en_US.lang pour le pack donné.
+     * @param packFolder L'URI du dossier du pack
+     * @param projectMetadata Les métadonnées du projet
+     * @param packType Le type de pack (BehaviorPack ou ResourcePack)
+     * 
+     * @throws {Error} Si la création des fichiers échoue
+     */
+    public static async createEnUsLangFile(packFolder: vscode.Uri, projectMetadata: ProjectMetadata, packType: MinecraftAddonPack): Promise<void> {
+        // Crée le dossier "texts"
+        const textsFolder = vscode.Uri.joinPath(packFolder, "texts");
+        await vscode.workspace.fs.createDirectory(textsFolder);
+
+        // 🗂 languages.json
+        const languagesPath = vscode.Uri.joinPath(textsFolder, "languages.json");
+        await VscodeUtils.writeFile(languagesPath, JSON.stringify(["en_US"], null, 4));
+
+        // 🗣 en_US.lang
+        const displayName = projectMetadata.displayName;
+        const author = projectMetadata.author;
+        const packLabel = packType === MinecraftAddonPack.BehaviorPack ? "BP" : "RP";
+        const langContent =
+            `pack.name=${displayName} ${packLabel} [v0.0.1] - by ${author}` +
+            `\npack.description=Pack for ${displayName} - Created by ${author}`;
+        const enUSPath = vscode.Uri.joinPath(textsFolder, "en_US.lang");
+        await VscodeUtils.writeFile(enUSPath, langContent);
+    }
+
+    /**
+     * Configure les dépendances entre le pack de comportement et le pack de ressources.
+     * @param behaviorManifest Le manifeste du pack de comportement
+     * @param resourceManifest Le manifeste du pack de ressources
+     */
+    private static configurePackDependencies(behaviorManifest: any, resourceManifest: any): void {
+        if (behaviorManifest && resourceManifest) {
+            behaviorManifest.dependencies = behaviorManifest.dependencies ?? [];
+            resourceManifest.dependencies = resourceManifest.dependencies ?? [];
+
+            behaviorManifest.dependencies.push({
+                uuid: resourceManifest.header.uuid,
+                version: resourceManifest.header.version
+            });
+
+            resourceManifest.dependencies.push({
+                uuid: behaviorManifest.header.uuid,
+                version: behaviorManifest.header.version
+            });
+
+            resourceManifest.header.pack_scope = "world";
+        } else if (resourceManifest) {
+            resourceManifest.header.pack_scope = "any";
+        }
+    }
+
+    /**
+     * Installe les dépendances npm dans le dossier du projet.
+     * @param projectFolder L'URI du dossier du projet
+     */
+    private static async installNpmDependencies(projectFolder: vscode.Uri): Promise<void> {
+        const execPromise = promisify(exec);
+        try {
+            await execPromise("npm -v"); // vérifie npm
+            const { stderr } = await execPromise("npm install", { cwd: projectFolder.fsPath });
+            if (stderr) console.error(stderr);
+
+            vscode.window.showInformationMessage("📦 Modules npm installés !");
+        } catch (error: any) {
+            const isNpmNotFound = error?.message?.includes("npm") || error?.code === "ENOENT";
+            if (isNpmNotFound) {
+                vscode.window.showErrorMessage(
+                    "❌ Node.js (et npm) est requis pour initialiser les dépendances. Installez-le depuis https://nodejs.org/"
+                );
+            } else {
+                console.error("npm install failed:", error);
+                vscode.window.showErrorMessage("❌ npm install a échoué.");
+            }
+        }
     }
 
     public static async createAddonStructure(projectFolder: vscode.Uri, metadata: ProjectMetadata): Promise<void> {
@@ -201,8 +382,45 @@ export class ProjectService {
             behaviorManifest = await this.createBaseBehaiovrPackManifest(behaviorPackModuleTypes);
 
             if (behaviorPackModuleTypes.includes("script")) {
+                await this.createScriptApiStructure(projectFolder);
 
+                const selectedModules = await PromptService.askScriptApiModules();
+                if (selectedModules !== undefined) {
+                    this.addScriptApiModules(behaviorManifest, packageJsonContent, selectedModules);
+                }
             }
+
+            await this.createPackIconFile(behaviorPackFolder);
+            await this.createEnUsLangFile(behaviorPackFolder, metadata, MinecraftAddonPack.BehaviorPack);
         }
+
+        if (isResourcePack === true) {
+            const resourcePackFolder = await this.createResourcePackFolder(projectFolder);
+            resourceManifest = this.createBaseResourcePackManifest();
+
+            await this.createPackIconFile(resourcePackFolder);
+            await this.createEnUsLangFile(resourcePackFolder, metadata, MinecraftAddonPack.ResourcePack);
+        }
+
+        this.configurePackDependencies(behaviorManifest, resourceManifest);
+
+        if (behaviorManifest !== undefined) {
+            const behaviorManifestPath = vscode.Uri.joinPath(addonFolder, MinecraftAddonPack.BehaviorPack, "manifest.json");
+            await VscodeUtils.writeFile(behaviorManifestPath, JSON.stringify(behaviorManifest, null, 4));
+        }
+
+        if (resourceManifest !== undefined) {
+            const resourceManifestPath = vscode.Uri.joinPath(addonFolder, MinecraftAddonPack.ResourcePack, "manifest.json");
+            await VscodeUtils.writeFile(resourceManifestPath, JSON.stringify(resourceManifest, null, 4));
+        }
+
+        // Écriture du fichier package.json à la racine du projet
+        await VscodeUtils.writeFile(
+            vscode.Uri.joinPath(projectFolder, "package.json"),
+            JSON.stringify(packageJsonContent, null, 4)
+        );
+
+        // Installation des dépendances npm
+        await this.installNpmDependencies(projectFolder);
     }
 }

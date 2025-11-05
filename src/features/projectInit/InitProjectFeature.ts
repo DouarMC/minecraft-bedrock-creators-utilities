@@ -8,7 +8,7 @@ export class InitProjectFeature {
     private static readonly INIT_PROJECT_COMMAND_ID = "minecraft-bedrock-creators-utilities.initProject";
 
     public static registerFeatures(): void {
-
+        this.registerInitProjectCommand();
     }
 
     private static registerInitProjectCommand(): void {
@@ -43,7 +43,7 @@ export class InitProjectFeature {
                 await ProjectService.createMinecraftProjectFile(projectFolder, projectMetadata);
 
                 if (projectMetadata.type === MinecraftProjectType.Addon) {
-                    await createAddonStructure(projectFolder, projectMetadata);
+                    await ProjectService.createAddonStructure(projectFolder, projectMetadata);
 
                     await vscode.commands.executeCommand("vscode.openFolder", projectFolder, false);
                 }
