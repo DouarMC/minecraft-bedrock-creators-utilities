@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { MinecraftAddonPack, MinecraftProduct, MinecraftProjectType, ProjectMetadata } from "../../types/projectConfig";
 import { SCRIPT_API_MODULES, SCRIPT_API_MODULES_NAMES, SCRIPT_API_MODULES_NAMES_PREVIEW, SCRIPT_API_MODULES_PREVIEW } from "../../utils/data/scriptApiModules";
-import { ProjectManager } from "../project/ProjectManager";
+import { MinecraftProjectManager } from "../project/MinecraftProjectManager";
 import { launchMinecraft } from "../system/launchMinecraft";
 import { MinecraftProjectConfig } from "../project/MinecraftProjectConfig";
 
@@ -163,7 +163,7 @@ export class PromptService {
      * @returns 
      */
     public static async askScriptApiModules(): Promise<Record<string, string> | undefined> {
-        const project = ProjectManager.project;
+        const project = MinecraftProjectManager.project;
         if (project === undefined) {
             throw new Error("Aucun projet Minecraft chargé.");
         }
@@ -208,7 +208,7 @@ export class PromptService {
      * @returns 
      */
     public static async askToLaunchMinecraft(): Promise<void> {
-        const project = ProjectManager.project;
+        const project = MinecraftProjectManager.project;
         if (project === undefined) {
             throw new Error("Aucun projet Minecraft chargé.");
         }

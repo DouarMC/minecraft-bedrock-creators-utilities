@@ -1,11 +1,35 @@
 import * as vscode from "vscode";
 import { MinecraftProject } from "./MinecraftProject";
 
-export class ProjectManager {
+export class MinecraftProjectManager {
     /**
      * Le projet Minecraft actuellement chargé, ou undefined s'il n'y en a pas.
      */
     private static currentProject: MinecraftProject | undefined;
+
+    /**
+     * Le FileSystemWatcher pour surveiller les changements du fichier de configuration du projet Minecraft.
+     */
+    private static configWatcher: vscode.FileSystemWatcher | undefined;
+
+
+    /**
+     * Initialise le MinecraftProjectManager en configurant les écouteurs nécessaires.
+     */
+    public static async initialize(): Promise<void> {
+        await this.reload();
+
+        // Reload quand les dossiers de workspace changent
+        vscode.workspace.onDidChangeWorkspaceFolders(async () => {
+            await this.reload();
+        });
+
+        // Surveille les changements du fichier de configuration du projet Minecraft
+        this.configWatcher = vscode.workspace.createFileSystemWatcher(`**/${MinecraftProject.PROJECT_CONFIG_FILE_NAME}`);
+        this.configWatcher.onDidChange(async () => await this.reload());
+        this.configWatcher.onDidCreate(async () => await this.reload());
+        this.configWatcher.onDidDelete(() => this.clear());
+    }
 
     /**
      * Recharge le projet Minecraft à partir du dossier de workspace ouvert.

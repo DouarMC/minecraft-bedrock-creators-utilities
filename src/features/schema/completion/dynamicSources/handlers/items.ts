@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as JsonParser from "jsonc-parser";
 import { MinecraftJsonSchema } from "../../../model";
-import { getCurrentProject, getStableDataManager } from "../../../../../core/project/ProjectManager";
+import { getCurrentProject, getStableDataManager } from "../../../../../core/project/MinecraftProjectManager";
 import { VANILLA_ITEM_IDS } from "../../../../../utils/data/vanillaMinecraftIdentifiers";
 import { compareVersions } from "../../../model/versioning/compareVersions";
 

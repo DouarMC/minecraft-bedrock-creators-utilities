@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import { getStableGame, getPreviewGame } from '../../core/project/ProjectManager';
+import { getStableGame, getPreviewGame } from '../../core/project/MinecraftProjectManager';
 
 function getExplorerCommand(folderPath: string): string | undefined {
     switch (process.platform) {

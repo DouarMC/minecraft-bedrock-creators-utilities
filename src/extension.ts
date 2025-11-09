@@ -1,18 +1,30 @@
-// src/extension.ts
 import * as vscode from "vscode";
 
-import { registerInitProjectFeatures } from "./features/projectInit/registerInitProjectFeatures";
 import { registerProjectDeployFeatures } from "./features/projectDeploy/registerProjectDeployFeatures";
 import { registerSchemaFeatures } from "./features/schema/registerSchemaFeatures";
 import { registerExploreMinecraftFoldersFeatures } from "./features/exploreMinecraftFolders/registerExploreMinecraftFoldersFeatures";
 import { registerProjectExportFeatures } from "./features/projectExport/registerProjectExportFeatures";
 import { registerProjectManageFeatures } from "./features/projectManage/registerProjectManageFeatures";
 import { VscodeUtils } from "./core/utils/VscodeUtils";
+import { Feature } from "./core/features/Feature";
+import { InitProjectFeature } from "./features/projectInit/InitProjectFeature";
+import { MinecraftProjectManager } from "./core/project/MinecraftProjectManager";
+import { MinecraftGameManager } from "./core/minecraft/MinecraftGameManager";
 
 export async function activate(context: vscode.ExtensionContext) {
     VscodeUtils.initializeContext(context);
 
-    registerInitProjectFeatures();
+    await MinecraftProjectManager.initialize();
+    await MinecraftGameManager.initialize();
+
+    const features: Feature[] = [
+        new InitProjectFeature(context)
+    ];
+
+    for (const feature of features) {
+        feature.register();
+    }
+
     registerProjectDeployFeatures(context);
     registerSchemaFeatures(context);
     registerExploreMinecraftFoldersFeatures(context);

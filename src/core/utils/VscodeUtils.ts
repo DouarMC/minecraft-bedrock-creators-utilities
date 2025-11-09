@@ -185,4 +185,14 @@ export class VscodeUtils {
 
         await vscode.workspace.fs.writeFile(uri, contentEncoded);
     }
+
+    /**
+     * Vérifie que la plateforme actuelle est Windows.
+     * @throws {Error} Lève une erreur si la plateforme n'est pas Windows.
+     */
+    public static ensureWindowsPlatform(): void {
+        if (process.platform !== "win32") {
+            throw new Error("Cette fonctionnalité n'est accessible que sur Windows.");
+        }
+    }
 }

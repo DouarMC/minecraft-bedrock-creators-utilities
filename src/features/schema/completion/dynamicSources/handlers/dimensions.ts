@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as JsonParser from "jsonc-parser";
 import { MinecraftJsonSchema } from "../../../model";
-import { getCurrentProject, getStableDataManager } from "../../../../../core/project/ProjectManager";
+import { getCurrentProject, getStableDataManager } from "../../../../../core/project/MinecraftProjectManager";
 import { VANILLA_DIMENSION_IDS } from "../../../../../utils/data/vanillaMinecraftIdentifiers";
 
 export async function getDataDrivenDimensionIds(_document: vscode.TextDocument, _schema: MinecraftJsonSchema): Promise<string[]> {

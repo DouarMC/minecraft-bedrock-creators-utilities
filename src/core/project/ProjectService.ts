@@ -2,13 +2,13 @@ import * as vscode from 'vscode';
 import { VscodeUtils } from '../utils/VscodeUtils';
 import { MinecraftProjectConfig } from './MinecraftProjectConfig';
 import { MinecraftAddonPack, ProjectMetadata } from '../../types/projectConfig';
-import { MinecraftProject } from './MinecraftProject';
+import { AddonMinecraftProject, MinecraftProject } from './MinecraftProject';
 import { AddonPackageJson } from '../../types/addonPackageJson';
 import { PromptService } from '../ui/PromptService';
-import { describe } from 'node:test';
 import { randomUUID } from 'crypto';
 import { promisify } from 'util';
 import { exec } from 'child_process';
+import { MinecraftGameManager } from '../minecraft/MinecraftGameManager';
 
 export class ProjectService {
     /**
@@ -422,5 +422,176 @@ export class ProjectService {
 
         // Installation des dépendances npm
         await this.installNpmDependencies(projectFolder);
+    }
+
+    /**
+     * Renvoie le chemin de base pour le déploiement du projet Minecraft selon le produit Minecraft.
+     * @param minecraftProject Le projet Minecraft à déployer
+     * @returns 
+     */
+    public static async getDeployBasePath(minecraftProject: MinecraftProject): Promise<vscode.Uri> {
+        const game = minecraftProject.minecraftProduct === "stable" ? MinecraftGameManager.getStableGame() : MinecraftGameManager.getPreviewGame();
+
+        return await game.getComMojangFolder();
+    }
+
+    /**
+     * Indique si une compilation TypeScript est nécessaire pour le projet donné.
+     * @param minecraftProject Le projet Minecraft Bedrock de type Addon
+     * @returns 
+     */
+    public static async isTypeScriptCompilationNeeded(minecraftProject: AddonMinecraftProject): Promise<boolean> {
+        try {
+            await minecraftProject.getScriptsFolder();
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    /**
+     * Compile les fichiers TypeScript du projet donné.
+     * @param minecraftProject Le projet Minecraft Bedrock de type Addon
+     * @throws {Error} Si une erreur survient lors de la compilation
+     */
+    public static async compileTypeScript(minecraftProject: AddonMinecraftProject): Promise<void> {
+        const execPromise = promisify(exec);
+        const { stdout, stderr } = await execPromise(`tsc`, {cwd: minecraftProject.folder.fsPath});
+
+        if (stderr) {
+            throw new Error(stderr);
+        }
+    }
+
+    /**
+     * Crée le fichier contents.json dans le pack donné s'il n'existe pas.
+     * @param packPath Le chemin du pack
+     * @throws {Error} Si la création du fichier échoue ou si la vérification du fichier échoue
+     */
+    public static async createContentsJsonFile(packPath: vscode.Uri): Promise<void> {
+        const contentsJsonUri = vscode.Uri.joinPath(packPath, "contents.json");
+
+        if (! await VscodeUtils.isFile(contentsJsonUri)) {
+            const contentsJson = {};
+            await VscodeUtils.writeFile(
+                contentsJsonUri,
+                JSON.stringify(contentsJson, null, 4)
+            );
+        }
+    }
+
+    /**
+     * Crée le fichier textures_list.json dans le Resource Pack du projet donné.
+     * @param minecraftProject Le projet Minecraft Bedrock de type Addon
+     * @throws {Error} Si la création du fichier échoue
+     */
+    public static async createTexturesListFile(minecraftProject: AddonMinecraftProject): Promise<void> {
+        function getTextureRelativePath(uri: vscode.Uri): string | null {
+            const match = /[\/\\](textures[\/\\].+\.(tga|png|jpg|jpeg))$/i.exec(uri.fsPath);
+            if (!match) {return null;}
+            // Uniformise les slashs pour être cross-platform
+            return match[1].replace(/\\/g, '/');
+        }
+
+
+        const textureFilePaths: string[] = [];
+        const resourcePackPath = await minecraftProject.getResourcePackFolder();
+        const texturesUris = await minecraftProject.getDataDrivenFiles("resource_pack/textures/*.{tga,png,jpg,jpeg}");
+        for (const uri of texturesUris) {
+            const relativePath = getTextureRelativePath(uri);
+            if (relativePath) {
+                textureFilePaths.push(relativePath);
+            }
+        }
+
+        const texturesListUri = vscode.Uri.joinPath(resourcePackPath, "textures", "textures_list.json");
+        await VscodeUtils.writeFile(
+            texturesListUri,
+            JSON.stringify(textureFilePaths, null, 4)
+        );
+    }
+
+    /**
+     * Déploie le projet Minecraft Bedrock.
+     * @param minecraftProject Le projet Minecraft à déployer
+     * @throws {Error} S'il manque resource et behavior pack pour un addon
+     */
+    public static async deployProject(minecraftProject: MinecraftProject): Promise<void> {
+        await vscode.window.withProgress(
+            {
+                location: vscode.ProgressLocation.Notification,
+                title: `Déploiement du projet "${minecraftProject.id}"`,
+                cancellable: false
+            },
+            async (progress) => {
+                progress.report({message: "Préparation du déploiement..."});
+
+                const basePath = await this.getDeployBasePath(minecraftProject);
+
+                if (minecraftProject instanceof AddonMinecraftProject) {
+                    let behaviorPack: vscode.Uri | undefined = undefined;
+                    let resourcePack: vscode.Uri | undefined = undefined;
+                    try {
+                        behaviorPack = await minecraftProject.getBehaviorPackFolder();
+                    } catch (error) {
+                        console.log("Il n'y a pas de Behavior Pack à déployer.", error);
+                    }
+                    try {
+                        resourcePack = await minecraftProject.getResourcePackFolder();
+                    } catch (error) {
+                        console.log("Il n'y a pas de Resource Pack à déployer.", error);
+                    }
+
+                    if (behaviorPack === undefined && resourcePack === undefined) {
+                        throw new Error("Le projet ne contient ni pack de comportement ni pack de ressources à déployer.");
+                    }
+
+                    if (behaviorPack !== undefined) {
+                        progress.report({message: "Déploiement du Behavior Pack..."});
+
+                        if (await this.isTypeScriptCompilationNeeded(minecraftProject)) {
+                            progress.report({message: "Compilation des scripts TypeScript..."});
+
+                            await this.compileTypeScript(minecraftProject);
+
+                            progress.report({message: "Création du fichier contents.json du Behavior Pack..."});
+
+                            await this.createContentsJsonFile(behaviorPack);
+
+                            progress.report({message: "Déploiement du Behavior Pack..."});
+
+                            await vscode.workspace.fs.copy(
+                                behaviorPack,
+                                vscode.Uri.joinPath(basePath, "development_behavior_packs", minecraftProject.id),
+                                { overwrite: true }
+                            );
+                        }
+                    }
+
+                    if (resourcePack !== undefined) {
+                        progress.report({message: "Déploiement du Resource Pack..."});
+                        progress.report({message: "Création du fichier textures_list.json du Resource Pack..."});
+
+                        await this.createTexturesListFile(minecraftProject);
+
+                        progress.report({message: "Création du fichier contents.json du Resource Pack..."});
+
+                        await this.createContentsJsonFile(resourcePack);
+
+                        progress.report({message: "Déploiement du Resource Pack..."});
+
+                        await vscode.workspace.fs.copy(
+                            resourcePack,
+                            vscode.Uri.joinPath(basePath, "development_resource_packs", minecraftProject.id),
+                            { overwrite: true }
+                        );
+                    }
+                }
+
+                progress.report({message: "Finalisation du déploiement..."});
+                vscode.window.showInformationMessage(`✅ Le projet "${minecraftProject.id}" a été déployé avec succès !`);
+                return;
+            }
+        );
     }
 }

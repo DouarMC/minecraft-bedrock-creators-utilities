@@ -3,16 +3,11 @@ import { directoryExists } from '../../../core/filesystem/directories';
 import { MinecraftProjectType } from '../../../types/projectConfig';
 import { promptToLaunchMinecraft } from '../../../core/project/prompts/promptToLaunchMinecraft';
 import { MinecraftProject } from '../../../core/project/MinecraftProject';
-import { getPreviewGame, getStableGame } from '../../../core/project/ProjectManager';
+import { getPreviewGame, getStableGame } from '../../../core/project/MinecraftProjectManager';
 import { compileTypeScript } from '../../../core/project/generators/addon/scriptApi/compileTypeScript';
 import { createContentsJsonFile } from '../../../core/project/generators/addon/createContentsJsonFile';
 import { copyPack } from '../../../core/project/generators/copyPack';
 import { createTexturesListFile } from '../../../core/project/generators/addon/createTexturesListFile';
-
-function getDeployBasePath(minecraftProduct: "stable" | "preview"): vscode.Uri | undefined {
-    const game = minecraftProduct === "stable" ? getStableGame() : getPreviewGame();
-    return game?.comMojangFolder;
-}
 
 /**
  * Fonction principale de déploiement du projet Minecraft Bedrock.

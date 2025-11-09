@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import * as JsonParser from "jsonc-parser";
-import { getCurrentProject } from "../../../core/project/ProjectManager";
+import { getCurrentProject } from "../../../core/project/MinecraftProjectManager";
 import { MinecraftProjectType } from "../../../types/projectConfig";
 import { generateScriptApiStructure } from "../../../core/project/generators/addon/scriptApi/generateScriptApiStructure";
 import { promptScriptApiModules } from "../../../core/project/prompts/promptScriptApiModules";

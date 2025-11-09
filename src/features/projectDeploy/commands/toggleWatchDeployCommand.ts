@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { getCurrentProject } from "../../../core/project/ProjectManager";
+import { getCurrentProject } from "../../../core/project/MinecraftProjectManager";
 import { AutoDeployManager } from "../managers/AutoDeployManager";
 
 export function registerToggleWatchDeployCommand(context: vscode.ExtensionContext) {
