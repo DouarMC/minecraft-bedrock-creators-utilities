@@ -6,6 +6,9 @@ export class MinecraftGameManager {
     private static stableGame: MinecraftStableGame | undefined;
     private static previewGame: MinecraftPreviewGame | undefined;
 
+    /**
+     * Initialise les installations de Minecraft Bedrock.
+     */
     public static async initialize(): Promise<void> {
         const stableGame = new MinecraftStableGame();
         const previewGame = new MinecraftPreviewGame();

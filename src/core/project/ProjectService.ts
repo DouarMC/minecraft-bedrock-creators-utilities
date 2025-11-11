@@ -512,86 +512,91 @@ export class ProjectService {
     }
 
     /**
+     * Prépare le projet Minecraft Bedrock pour la sortie (compilation TypeScript, création de fichiers nécessaires).
+     * @param minecraftProject Le projet Minecraft à préparer
+     * @throws {Error} S'il manque resource et behavior pack pour un addon
+     */
+    public static async prepareProjectForOutput(minecraftProject: MinecraftProject): Promise<void> {
+        if (minecraftProject instanceof AddonMinecraftProject) {
+            let behaviorPack: vscode.Uri | undefined = undefined;
+            let resourcePack: vscode.Uri | undefined = undefined;
+            try {
+                behaviorPack = await minecraftProject.getBehaviorPackFolder();
+            } catch (error) {
+                console.log("Il n'y a pas de Behavior Pack à préparer.", error);
+            }
+            try {
+                resourcePack = await minecraftProject.getResourcePackFolder();
+            } catch (error) {
+                console.log("Il n'y a pas de Resource Pack à préparer.", error);
+            }
+
+            if (behaviorPack === undefined && resourcePack === undefined) {
+                throw new Error("Le projet ne contient ni pack de comportement ni pack de ressources à préparer.");
+            }
+
+            if (behaviorPack) {
+                if (await this.isTypeScriptCompilationNeeded(minecraftProject)) {
+                    await this.compileTypeScript(minecraftProject);
+                }
+
+                await this.createContentsJsonFile(behaviorPack);
+            }
+
+            if (resourcePack) {
+                await this.createTexturesListFile(minecraftProject);
+                await this.createContentsJsonFile(resourcePack);
+            }
+        }
+    }
+
+    /**
      * Déploie le projet Minecraft Bedrock.
      * @param minecraftProject Le projet Minecraft à déployer
      * @throws {Error} S'il manque resource et behavior pack pour un addon
      */
     public static async deployProject(minecraftProject: MinecraftProject): Promise<void> {
-        await vscode.window.withProgress(
-            {
-                location: vscode.ProgressLocation.Notification,
-                title: `Déploiement du projet "${minecraftProject.id}"`,
-                cancellable: false
-            },
-            async (progress) => {
-                progress.report({message: "Préparation du déploiement..."});
+        // Préparation du projet avant déploiement (compilation, création de fichiers, etc.)
+        await this.prepareProjectForOutput(minecraftProject);
 
-                const basePath = await this.getDeployBasePath(minecraftProject);
+        // Chemin de déploiement
+        const deployBasePath = await this.getDeployBasePath(minecraftProject);
 
-                if (minecraftProject instanceof AddonMinecraftProject) {
-                    let behaviorPack: vscode.Uri | undefined = undefined;
-                    let resourcePack: vscode.Uri | undefined = undefined;
-                    try {
-                        behaviorPack = await minecraftProject.getBehaviorPackFolder();
-                    } catch (error) {
-                        console.log("Il n'y a pas de Behavior Pack à déployer.", error);
-                    }
-                    try {
-                        resourcePack = await minecraftProject.getResourcePackFolder();
-                    } catch (error) {
-                        console.log("Il n'y a pas de Resource Pack à déployer.", error);
-                    }
-
-                    if (behaviorPack === undefined && resourcePack === undefined) {
-                        throw new Error("Le projet ne contient ni pack de comportement ni pack de ressources à déployer.");
-                    }
-
-                    if (behaviorPack !== undefined) {
-                        progress.report({message: "Déploiement du Behavior Pack..."});
-
-                        if (await this.isTypeScriptCompilationNeeded(minecraftProject)) {
-                            progress.report({message: "Compilation des scripts TypeScript..."});
-
-                            await this.compileTypeScript(minecraftProject);
-
-                            progress.report({message: "Création du fichier contents.json du Behavior Pack..."});
-
-                            await this.createContentsJsonFile(behaviorPack);
-
-                            progress.report({message: "Déploiement du Behavior Pack..."});
-
-                            await vscode.workspace.fs.copy(
-                                behaviorPack,
-                                vscode.Uri.joinPath(basePath, "development_behavior_packs", minecraftProject.id),
-                                { overwrite: true }
-                            );
-                        }
-                    }
-
-                    if (resourcePack !== undefined) {
-                        progress.report({message: "Déploiement du Resource Pack..."});
-                        progress.report({message: "Création du fichier textures_list.json du Resource Pack..."});
-
-                        await this.createTexturesListFile(minecraftProject);
-
-                        progress.report({message: "Création du fichier contents.json du Resource Pack..."});
-
-                        await this.createContentsJsonFile(resourcePack);
-
-                        progress.report({message: "Déploiement du Resource Pack..."});
-
-                        await vscode.workspace.fs.copy(
-                            resourcePack,
-                            vscode.Uri.joinPath(basePath, "development_resource_packs", minecraftProject.id),
-                            { overwrite: true }
-                        );
-                    }
-                }
-
-                progress.report({message: "Finalisation du déploiement..."});
-                vscode.window.showInformationMessage(`✅ Le projet "${minecraftProject.id}" a été déployé avec succès !`);
-                return;
+        if (minecraftProject instanceof AddonMinecraftProject) {
+            let behaviorPack: vscode.Uri | undefined = undefined;
+            let resourcePack: vscode.Uri | undefined = undefined;
+            try {
+                behaviorPack = await minecraftProject.getBehaviorPackFolder();
+            } catch (error) {
+                console.log("Il n'y a pas de Behavior Pack à déployer.", error);
             }
-        );
+            try {
+                resourcePack = await minecraftProject.getResourcePackFolder();
+            } catch (error) {
+                console.log("Il n'y a pas de Resource Pack à déployer.", error);
+            }
+
+            if (behaviorPack === undefined && resourcePack === undefined) {
+                throw new Error("Le projet ne contient ni pack de comportement ni pack de ressources à déployer.");
+            }
+
+            // Deploiment du behavior pack
+            if (behaviorPack) {
+                await vscode.workspace.fs.copy(
+                    behaviorPack,
+                    vscode.Uri.joinPath(deployBasePath, "development_behavior_packs", minecraftProject.id),
+                    { overwrite: true }
+                );
+            }
+
+            // Deploiment du resource pack
+            if (resourcePack) {
+                await vscode.workspace.fs.copy(
+                    resourcePack,
+                    vscode.Uri.joinPath(deployBasePath, "development_resource_packs", minecraftProject.id),
+                    { overwrite: true }
+                );
+            }
+        }
     }
 }
