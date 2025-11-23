@@ -36,23 +36,8 @@
                 "category": "Minecraft Bedrock Utilities"
             },
             {
-                "command": "minecraft-bedrock-creators-utilities.openMinecraftStablePacksFolder",
-                "title": "📂 Ouvrir le dossier des packs Minecraft Stable",
-                "category": "Minecraft Bedrock Utilities"
-            },
-            {
-                "command": "minecraft-bedrock-creators-utilities.openMinecraftPreviewPacksFolder",
-                "title": "📂 Ouvrir le dossier des packs Minecraft Preview",
-                "category": "Minecraft Bedrock Utilities"
-            },
-            {
-                "command": "minecraft-bedrock-creators-utilities.openMinecraftStableVanillaFolder",
-                "title": "📂 Ouvrir les ressources vanilla Minecraft Stable",
-                "category": "Minecraft Bedrock Utilities"
-            },
-            {
-                "command": "minecraft-bedrock-creators-utilities.openMinecraftPreviewVanillaFolder",
-                "title": "📂 Ouvrir les ressources vanilla Minecraft Preview",
+                "command": "minecraft-bedrock-creators-utilities.exploreMinecraftFolders",
+                "title": "Ouvrir les dossiers Minecraft Bedrock",
                 "category": "Minecraft Bedrock Utilities"
             },
             {

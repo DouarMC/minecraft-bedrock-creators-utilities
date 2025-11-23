@@ -2,8 +2,11 @@ import * as vscode from "vscode";
 import { MinecraftAddonPack, MinecraftProduct, MinecraftProjectType, ProjectMetadata } from "../../types/projectConfig";
 import { SCRIPT_API_MODULES, SCRIPT_API_MODULES_NAMES, SCRIPT_API_MODULES_NAMES_PREVIEW, SCRIPT_API_MODULES_PREVIEW } from "../../utils/data/scriptApiModules";
 import { MinecraftProjectManager } from "../project/MinecraftProjectManager";
-import { launchMinecraft } from "../system/launchMinecraft";
-import { MinecraftProjectConfig } from "../project/MinecraftProjectConfig";
+
+export interface FolderPickItem extends vscode.QuickPickItem {
+    game: "stable" | "preview";
+    folderType: "comMojangFolder" | "dataFolder";
+}
 
 export class PromptService {
     public static readonly PACK_TYPE_ITEMS: vscode.QuickPickItem[] = [
@@ -65,6 +68,36 @@ export class PromptService {
             label: "script",
             description: "Module de scripts pour un behavior pack.",
             detail: "Permet d'exécuter du code via l'API Script de Minecraft pour créer des comportements dynamiques, réagir aux événements et modifier le monde en temps réel.",
+            alwaysShow: true
+        }
+    ];
+    public static readonly MINECRAFT_FOLDERS_TO_OPEN: FolderPickItem[] = [
+        {
+            game: "stable",
+            folderType: "comMojangFolder",
+            label: "Dossier com.mojang de Minecraft Stable",
+            description: "Ouvre le dossier com.mojang contenant les packs et mondes de Minecraft Stable.",
+            alwaysShow: true
+        },
+        {
+            game: "stable",
+            folderType: "dataFolder",
+            label: "Dossier de ressources vanilla de Minecraft Stable",
+            description: "Ouvre le dossier des ressources vanilla de Minecraft Stable.",
+            alwaysShow: true
+        },
+        {
+            game: "preview",
+            folderType: "comMojangFolder",
+            label: "Dossier com.mojang de Minecraft Preview",
+            description: "Ouvre le dossier com.mojang contenant les packs et mondes de Minecraft Preview.",
+            alwaysShow: true
+        },
+        {
+            game: "preview",
+            folderType: "dataFolder",
+            label: "Dossier de ressources vanilla de Minecraft Preview",
+            description: "Ouvre le dossier des ressources vanilla de Minecraft Preview.",
             alwaysShow: true
         }
     ];
@@ -203,66 +236,6 @@ export class PromptService {
     }
 
     /**
-     * Propose à l'utilisateur de lancer Minecraft après un déploiement.
-     * @throws {Error} Si aucun projet Minecraft n'est chargé.
-     * @returns 
-     */
-    public static async askToLaunchMinecraft(): Promise<void> {
-        const project = MinecraftProjectManager.project;
-        if (project === undefined) {
-            throw new Error("Aucun projet Minecraft chargé.");
-        }
-        
-        if (project.options.deploy.prompt_to_launch_minecraft === false) {
-            return; // Le projet a désactivé la proposition
-        }
-
-        const productName = project.minecraftProduct === MinecraftProduct.Stable ? "Minecraft" : "Minecraft Preview";
-        const action = await vscode.window.showInformationMessage(
-            `✅ Déploiement terminé ! Voulez-vous lancer ${productName} ?`,
-            {
-                title: `🚀 Lancer ${productName}`,
-                action: 'launch'
-            },
-            {
-                title: "⚙️ Ne plus demander",
-                action: 'disable'
-            },
-            {
-                title: "❌ Non",
-                action: 'dismiss'
-            }
-        );
-
-        switch (action?.action) {
-            case "launch":
-                await launchMinecraft(project.minecraftProduct);
-                break;
-
-            case "disable":
-                const configFileUri = await project.getConfigFileUri();
-                const fileContent = await vscode.workspace.fs.readFile(configFileUri);
-                const config = MinecraftProjectConfig.fromJSON(Buffer.from(fileContent).toString("utf8"));
-
-                config.options = config.options || {};
-                config.options.deploy = config.options.deploy || {};
-                config.options.deploy.prompt_to_launch_minecraft = false;
-
-                await vscode.workspace.fs.writeFile(
-                    configFileUri,
-                    Buffer.from(JSON.stringify(config, null, 4), "utf8")
-                );
-
-                vscode.window.showInformationMessage("💡 Vous pouvez réactiver cette option en rééditant `.mcbe_project.json`.");
-                break;
-            case "dismiss":
-            default:
-                // Ne rien faire
-                break;
-        }
-    }
-
-    /**
      * Affiche une boîte de dialogue pour sélectionner les types de modules du pack de comportement.
      * @returns 
      */
@@ -279,5 +252,23 @@ export class PromptService {
 
         const selectedModules = selectedModuleItems?.map(item => item.label as "data" | "script") ?? [];
         return selectedModules;
+    }
+
+    /**
+     * Affiche une boîte de dialogue pour sélectionner un dossier Minecraft à ouvrir.
+     * @returns 
+     */
+    public static async askMinecraftFolderToOpen(): Promise<FolderPickItem | undefined> {
+        const selectedFolderItem = await vscode.window.showQuickPick(
+            PromptService.MINECRAFT_FOLDERS_TO_OPEN,
+            {
+                title: "Ouvrir un dossier Minecraft",
+                placeHolder: "Sélectionnez le dossier Minecraft à ouvrir",
+                canPickMany: false,
+                ignoreFocusOut: true
+            }
+        );
+
+        return selectedFolderItem;
     }
 }

@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { VscodeUtils } from "../utils/VscodeUtils";
-import { minecraftFileRegistry, MinecraftFileTypeKey } from "./fileTypes/minecraftFileRegistry";
+import { minecraftFileRegistry, MinecraftFileTypeKey } from "./_fileTypes/minecraftFileRegistry";
+import { FileSystemUtils } from "../utils/FileSystemUtils";
 
 export abstract class MinecraftGame {
     /**
@@ -33,7 +34,7 @@ export abstract class MinecraftGame {
      * @returns 
      */
     public async getDataFolder(): Promise<vscode.Uri> {
-        VscodeUtils.ensureWindowsPlatform();
+        FileSystemUtils.ensureWindowsPlatform();
 
         const minecraftInstallFolder = vscode.Uri.file(`C:\\XboxGames\\${this.installFolderName}`);
 
@@ -55,7 +56,7 @@ export abstract class MinecraftGame {
      * @returns 
      */
     public async getComMojangFolder(): Promise<vscode.Uri> {
-        VscodeUtils.ensureWindowsPlatform();
+        FileSystemUtils.ensureWindowsPlatform();
 
         const appData = process.env.APPDATA;
         if (! appData) {

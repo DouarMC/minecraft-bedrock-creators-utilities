@@ -1,4 +1,4 @@
-import { MinecraftFileTypeKey } from "../../../core/minecraft/fileTypes/minecraftFileRegistry";
+import { MinecraftFileTypeKey } from "../../../core/minecraft/_fileTypes/minecraftFileRegistry";
 import { VersionedSchema } from "../model/versioning";
 
 import { aimAssistCategoriesSchemaTypeBP } from "../minecraftSchemas/behavior_pack/aim_assist/categories/categories";

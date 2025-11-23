@@ -9,6 +9,7 @@ import { randomUUID } from 'crypto';
 import { promisify } from 'util';
 import { exec } from 'child_process';
 import { MinecraftGameManager } from '../minecraft/MinecraftGameManager';
+import { FileSystemUtils } from '../utils/FileSystemUtils';
 
 export class ProjectService {
     /**
@@ -329,7 +330,7 @@ export class ProjectService {
      * Installe les dépendances npm dans le dossier du projet.
      * @param projectFolder L'URI du dossier du projet
      */
-    private static async installNpmDependencies(projectFolder: vscode.Uri): Promise<void> {
+    public static async installNpmDependencies(projectFolder: vscode.Uri): Promise<void> {
         const execPromise = promisify(exec);
         try {
             await execPromise("npm -v"); // vérifie npm
@@ -595,6 +596,78 @@ export class ProjectService {
                     resourcePack,
                     vscode.Uri.joinPath(deployBasePath, "development_resource_packs", minecraftProject.id),
                     { overwrite: true }
+                );
+            }
+        }
+    }
+
+    /**
+     * Exporte le projet Minecraft Bedrock.
+     * @param minecraftProject Le projet Minecraft à exporter
+     * @throws {Error} S'il manque resource et behavior pack pour un addon
+     */
+    public static async exportProject(minecraftProject: MinecraftProject): Promise<void> {
+        try {
+            await this.prepareProjectForOutput(minecraftProject);
+        } catch (error: any) {
+            throw new Error(`Échec de la préparation du projet pour l'exportation : ${error.message}`);
+        }
+
+        if (minecraftProject instanceof AddonMinecraftProject) {
+            let behaviorPack: vscode.Uri | undefined = undefined;
+            let resourcePack: vscode.Uri | undefined = undefined;
+            try {
+                behaviorPack = await minecraftProject.getBehaviorPackFolder();
+            } catch (error) {
+                console.log("Il n'y a pas de Behavior Pack à exporter.", error);
+            }
+            try {
+                resourcePack = await minecraftProject.getResourcePackFolder();
+            } catch (error) {
+                console.log("Il n'y a pas de Resource Pack à exporter.", error);
+            }
+
+            if (behaviorPack === undefined && resourcePack === undefined) {
+                throw new Error("Le projet ne contient ni pack de comportement ni pack de ressources à exporter.");
+            }
+
+            const exportFolder = vscode.Uri.joinPath(minecraftProject.folder, "export");
+            if (! await VscodeUtils.pathExists(exportFolder)) {
+                await vscode.workspace.fs.createDirectory(exportFolder);
+            }
+
+            if (behaviorPack) {
+                const behaviorPackName = `${minecraftProject.id}_bp.mcpack`;
+                const behaviorPackExportPath = vscode.Uri.joinPath(exportFolder, behaviorPackName);
+                await FileSystemUtils.createArchive(
+                    [{source: behaviorPack, metadataPath: ""}],
+                    behaviorPackExportPath
+                );
+            }
+
+            if (resourcePack) {
+                const resourcePackName = `${minecraftProject.id}_rp.mcpack`;
+                const resourcePackExportPath = vscode.Uri.joinPath(exportFolder, resourcePackName);
+                await FileSystemUtils.createArchive(
+                    [{source: resourcePack, metadataPath: ""}],
+                    resourcePackExportPath
+                );
+            }
+
+            const entries = [];
+            if (behaviorPack) {
+                entries.push({source: behaviorPack, metadataPath: `${minecraftProject.id}_bp`});
+            }
+            if (resourcePack) {
+                entries.push({source: resourcePack, metadataPath: `${minecraftProject.id}_rp`});
+            }
+
+            if (entries.length > 0) {
+                const mcaddonName = `${minecraftProject.id}.mcaddon`;
+                const mcaddonExportPath = vscode.Uri.joinPath(exportFolder, mcaddonName);
+                await FileSystemUtils.createArchive(
+                    entries,
+                    mcaddonExportPath
                 );
             }
         }

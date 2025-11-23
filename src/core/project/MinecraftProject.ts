@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { MinecraftProjectType } from "../../types/projectConfig";
 import { VscodeUtils } from "../utils/VscodeUtils";
 import { MinecraftProjectConfig } from "./MinecraftProjectConfig";
-import { minecraftFileRegistry, MinecraftFileTypeKey } from "../minecraft/fileTypes/minecraftFileRegistry";
+import { minecraftFileRegistry, MinecraftFileTypeKey } from "../minecraft/_fileTypes/minecraftFileRegistry";
 
 
 export class MinecraftProject {
