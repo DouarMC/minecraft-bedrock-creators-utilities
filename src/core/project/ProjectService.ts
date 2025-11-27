@@ -8,7 +8,7 @@ import { PromptService } from '../ui/PromptService';
 import { randomUUID } from 'crypto';
 import { promisify } from 'util';
 import { exec } from 'child_process';
-import { MinecraftGameManager } from '../minecraft/MinecraftGameManager';
+import { MinecraftGameManager } from '../minecraft/games/MinecraftGameManager';
 import { FileSystemUtils } from '../utils/FileSystemUtils';
 
 export class ProjectService {

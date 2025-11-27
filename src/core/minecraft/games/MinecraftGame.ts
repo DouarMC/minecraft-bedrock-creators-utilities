@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
-import { VscodeUtils } from "../utils/VscodeUtils";
-import { minecraftFileRegistry, MinecraftFileTypeKey } from "./_fileTypes/minecraftFileRegistry";
-import { FileSystemUtils } from "../utils/FileSystemUtils";
+import { VscodeUtils } from "../../utils/VscodeUtils";
+import { minecraftFileRegistry, MinecraftFileTypeKey } from "../_fileTypes/minecraftFileRegistry";
+import { FileSystemUtils } from "../../utils/FileSystemUtils";
 
 export abstract class MinecraftGame {
     /**

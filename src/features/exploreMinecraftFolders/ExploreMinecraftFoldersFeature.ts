@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
 import { Feature } from "../../core/features/Feature";
 import { PromptService } from "../../core/ui/PromptService";
-import { MinecraftGameManager } from "../../core/minecraft/MinecraftGameManager";
-import { MinecraftGame } from "../../core/minecraft/MinecraftGame";
+import { MinecraftGameManager } from "../../core/minecraft/games/MinecraftGameManager";
+import { MinecraftGame } from "../../core/minecraft/games/MinecraftGame";
 import { FileSystemUtils } from "../../core/utils/FileSystemUtils";
 
 export class ExploreMinecraftFoldersFeature extends Feature {

@@ -5,7 +5,7 @@ import { VscodeUtils } from "./core/utils/VscodeUtils";
 import { Feature } from "./core/features/Feature";
 import { InitProjectFeature } from "./features/projectInit/InitProjectFeature";
 import { MinecraftProjectManager } from "./core/project/MinecraftProjectManager";
-import { MinecraftGameManager } from "./core/minecraft/MinecraftGameManager";
+import { MinecraftGameManager } from "./core/minecraft/games/MinecraftGameManager";
 import { DeployProjectFeature } from "./features/projectDeploy/DeployProjectFeature";
 import { ToggleAutoDeployFeature } from "./features/projectDeploy/ToggleAutoDeployFeature";
 import { ExploreMinecraftFoldersFeature } from "./features/exploreMinecraftFolders/ExploreMinecraftFoldersFeature";
