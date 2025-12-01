@@ -2,7 +2,6 @@ import * as vscode from 'vscode';
 import { MinecraftFileType } from './MinecraftFileType';
 import { VscodeUtils } from '../../utils/VscodeUtils';
 import { minecraftFileRegistry } from './minecraftFileRegistry';
-import { MinecraftFileId } from './MinecraftFileId';
 import { minimatch } from 'minimatch';
 import { MinecraftPack } from '../MinecraftPack';
 import * as JsonParser from "jsonc-parser";

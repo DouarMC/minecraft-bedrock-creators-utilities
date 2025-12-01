@@ -39,7 +39,7 @@ export class MinecraftPack {
                 case "world_template":
                     return "world_template";
             }
-        } else if (manifest.modules.length == 2) {
+        } else if (manifest.modules.length === 2) {
             const types = manifest.modules.map(module => module.type);
 
             if (types.includes("data") && types.includes("script")) {

@@ -3,14 +3,14 @@
 	"compilerOptions": {
 		"module": "Node16", // Spécifie le type de modules JavaScript générés. Utilise le système de modules ES (ESM), compatible avec Node.js 16+
 		"target": "ES2022", // Spécifie la version de JavaScript à générer. Génère du JavaScript compatible avec ES2022 (très moderne)
-		"outDir": "out", //  Dossier de sortie des fichiers .js générés.
+		"outDir": "./out", //  Dossier de sortie des fichiers .js générés.
 		// Déclare les APIs disponibles dans le code TypeScript.
 		"lib": [
 			"ES2022", // Accès aux méthodes modernes (ex: Array.prototype.at, Promise.any)
 			"DOM" // APIs du navigateur comme window, document, etc.
 		],
 		"sourceMap": true, // Active la génération de fichiers .map pour le débogage. Cela permet à VS Code de relier le JavaScript compilé à ton code TypeScript d'origine, afin de poser des breakpoints et inspecter les variables directement dans les fichiers .ts.
-		"rootDir": "src", // Indique le dossier racine du code source.
+		"rootDir": ".", // Indique le dossier racine du code source.
 		"strict": true, // Active toutes les vérifications strictes de TypeScript.
 		"types": ["vscode", "node"], // Charge les types des APIs VS Code et Node.js
 
@@ -18,7 +18,14 @@
 		"skipLibCheck": true, // Ignore les erreurs de type dans node_modules (plus rapide)
 		"resolveJsonModule": true // Autorise l’import de fichiers JSON
 	},
+	"include": [
+		"src/**/*",
+		"common/**/*",
+		"minecraftSchemas/**/*",
+		"scripts/**/*"
+	],
 	"exclude": [
-		"templates", "webdata", "scripts", "data"
+		"templates",
+		"node_modules"
 	]
 }
