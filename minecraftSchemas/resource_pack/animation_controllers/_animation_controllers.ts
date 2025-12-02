@@ -138,6 +138,7 @@ const baseSchema: MinecraftJsonSchema = {
 
 export const versionedSchema: VersionedSchema = {
     baseSchema: baseSchema,
+    
     versionedChanges: []
 };
 
