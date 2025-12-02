@@ -11,7 +11,7 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         packType: "behavior_pack",
         patterns: ["**/aim_assist/categories/categories.json"],
         excludePatterns: undefined,
-        schemaDataUrl: undefined
+        schemaDataUrl: "behavior_pack/aim_assist/categories/categories.json"
     }),
     "behavior_pack/aim_assist/presets/<all>.json": new MinecraftFileType({
         id: "behavior_pack/aim_assist/presets/<all>.json",

@@ -140,3 +140,5 @@ export const versionedSchema: VersionedSchema = {
     baseSchema: baseSchema,
     versionedChanges: []
 };
+
+export default versionedSchema;
