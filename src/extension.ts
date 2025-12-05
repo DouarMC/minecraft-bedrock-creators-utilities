@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
 
-import { registerSchemaFeatures } from "./features/schema/registerSchemaFeatures";
 import { VscodeUtils } from "./core/utils/VscodeUtils";
 import { Feature } from "./core/features/Feature";
 import { InitProjectFeature } from "./features/projectInit/InitProjectFeature";
@@ -11,6 +10,7 @@ import { ToggleAutoDeployFeature } from "./features/projectDeploy/ToggleAutoDepl
 import { ExploreMinecraftFoldersFeature } from "./features/exploreMinecraftFolders/ExploreMinecraftFoldersFeature";
 import { ExportProjectFeature } from "./features/projectExport/ExportProjectFeature";
 import { AddScriptApiFeature } from "./features/projectManage/AddScriptApiFeature";
+import { MinecraftSchemaFeature } from "./features/schema/MinecraftSchemaFeature";
 
 export async function activate(context: vscode.ExtensionContext) {
     VscodeUtils.initializeContext(context);
@@ -25,13 +25,12 @@ export async function activate(context: vscode.ExtensionContext) {
         new ExploreMinecraftFoldersFeature(context),
         new ExportProjectFeature(context),
         new AddScriptApiFeature(context),
+        new MinecraftSchemaFeature(context)
     ];
 
     for (const feature of features) {
         feature.register();
     }
-    
-    registerSchemaFeatures(context);
 }
 
 export function deactivate() {

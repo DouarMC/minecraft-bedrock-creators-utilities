@@ -2,8 +2,6 @@ import * as vscode from "vscode";
 import { MinecraftProjectType } from "../../types/projectConfig";
 import { VscodeUtils } from "../utils/VscodeUtils";
 import { MinecraftProjectConfig } from "./MinecraftProjectConfig";
-import { minecraftFileRegistry, MinecraftFileTypeKey } from "../minecraft/_fileTypes/minecraftFileRegistry";
-
 
 export class MinecraftProject {
     public static readonly PROJECT_CONFIG_FILE_NAME = ".mcbe_project.json";
@@ -163,36 +161,6 @@ export class AddonMinecraftProject extends MinecraftProject {
         }
 
         return scriptsFolderUri;
-    }
-
-    /**
-     * Récupère les fichiers data-driven du projet pour le type de fichier donné
-     * @throws {Error} Si le type de fichier est inconnu
-     * @param dataDrivenFileTypeKey 
-     */
-    public async getDataDrivenFiles(dataDrivenFileTypeKey: MinecraftFileTypeKey): Promise<vscode.Uri[]> {
-        const dataDrivenFiles: vscode.Uri[] = [];
-
-        const dataDrivenFileType = minecraftFileRegistry[dataDrivenFileTypeKey];
-        if (! dataDrivenFileType) {
-            throw new Error(`Type de fichier inconnu : ${dataDrivenFileTypeKey}`);
-        }
-
-        const folder = dataDrivenFileType.packType === "behavior_pack"
-            ? await this.getBehaviorPackFolder()
-            : await this.getResourcePackFolder();
-        
-        const collectedFiles = await VscodeUtils.collectFiles({
-            folderUri: folder,
-            recursive: dataDrivenFileType.subFolder,
-            fileNames: dataDrivenFileType.fileNames,
-            fileExtensions: dataDrivenFileType.fileExtension,
-            excludeFileNames: dataDrivenFileType.excludeFileNames
-        });
-        
-        dataDrivenFiles.push(...collectedFiles);
-
-        return dataDrivenFiles;
     }
 }
 

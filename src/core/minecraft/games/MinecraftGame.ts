@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
 import { VscodeUtils } from "../../utils/VscodeUtils";
-import { minecraftFileRegistry, MinecraftFileTypeKey } from "../_fileTypes/minecraftFileRegistry";
 import { FileSystemUtils } from "../../utils/FileSystemUtils";
 
 export abstract class MinecraftGame {
@@ -132,50 +131,5 @@ export abstract class MinecraftGame {
         }
 
         return resourcePackUris;
-    }
-
-    /**
-     * Récupère les fichiers data-driven du jeu pour le type de fichier donné
-     * @throws {Error} Si le type de fichier est inconnu
-     * @param dataDrivenFileTypeKey La clé du type de fichier data-driven
-     * @returns 
-     */
-    public async getDataDrivenFiles(dataDrivenFileTypeKey: MinecraftFileTypeKey): Promise<vscode.Uri[]> {
-        const dataDrivenFiles: vscode.Uri[] = [];
-
-        const dataDrivenFileType = minecraftFileRegistry[dataDrivenFileTypeKey];
-        if (! dataDrivenFileType) {
-            throw new Error(`Type de fichier data-driven inconnu : ${dataDrivenFileTypeKey}`);
-        }
-
-        const searchParentFolders: vscode.Uri[] = [];
-        if (dataDrivenFileType.searchInDefinitionsFolder === true) {
-            searchParentFolders.push(await this.getDefinitionsFolder());
-        }
-
-        if (dataDrivenFileType.packType === "behavior_pack") {
-            searchParentFolders.push(...await this.getVanillaBehaviorPackFolders());
-        } else if (dataDrivenFileType.packType === "resource_pack") {
-            searchParentFolders.push(...await this.getVanillaResourcePackFolders());
-        }
-
-        for (const parentFolder of searchParentFolders) {
-            const fullUri = VscodeUtils.resolveRelativePath(parentFolder, dataDrivenFileType.pathFolder);
-            if (! await VscodeUtils.isDirectory(fullUri)) {
-                continue;
-            }
-
-            const collectedFiles = await VscodeUtils.collectFiles({
-                folderUri: fullUri,
-                recursive: dataDrivenFileType.subFolder,
-                fileNames: dataDrivenFileType.fileNames,
-                fileExtensions: dataDrivenFileType.fileExtension,
-                excludeFileNames: dataDrivenFileType.excludeFileNames
-            });
-
-            dataDrivenFiles.push(...collectedFiles);
-        }
-
-        return dataDrivenFiles;
     }
 }

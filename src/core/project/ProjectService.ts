@@ -10,6 +10,7 @@ import { promisify } from 'util';
 import { exec } from 'child_process';
 import { MinecraftGameManager } from '../minecraft/games/MinecraftGameManager';
 import { FileSystemUtils } from '../utils/FileSystemUtils';
+import { MinecraftFileResolverService } from '../minecraft/fileTypes/MinecraftFileResolverService';
 
 export class ProjectService {
     /**
@@ -497,7 +498,7 @@ export class ProjectService {
 
         const textureFilePaths: string[] = [];
         const resourcePackPath = await minecraftProject.getResourcePackFolder();
-        const texturesUris = await minecraftProject.getDataDrivenFiles("resource_pack/textures/*.{tga,png,jpg,jpeg}");
+        const texturesUris = await MinecraftFileResolverService.getDataDrivenFiles("resource_pack/textures/*.{tga,png,jpg,jpeg}", minecraftProject);
         for (const uri of texturesUris) {
             const relativePath = getTextureRelativePath(uri);
             if (relativePath) {
@@ -505,7 +506,12 @@ export class ProjectService {
             }
         }
 
-        const texturesListUri = vscode.Uri.joinPath(resourcePackPath, "textures", "textures_list.json");
+        const texturesFolder = vscode.Uri.joinPath(resourcePackPath, "textures");
+        if (! await VscodeUtils.pathExists(texturesFolder)) {
+            await vscode.workspace.fs.createDirectory(texturesFolder);
+        }
+
+        const texturesListUri = vscode.Uri.joinPath(texturesFolder, "textures_list.json");
         await VscodeUtils.writeFile(
             texturesListUri,
             JSON.stringify(textureFilePaths, null, 4)

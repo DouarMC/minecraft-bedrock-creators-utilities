@@ -6,6 +6,7 @@ import { AddonMinecraftProject } from "../../core/project/MinecraftProject";
 import { ProjectService } from "../../core/project/ProjectService";
 import { PromptService } from "../../core/ui/PromptService";
 import { VscodeUtils } from "../../core/utils/VscodeUtils";
+import { MinecraftFileResolverService } from "../../core/minecraft/fileTypes/MinecraftFileResolverService";
 
 export class AddScriptApiFeature extends Feature {
     private static readonly ADD_SCRIPT_API_COMMAND_ID = "minecraft-bedrock-creators-utilities.addScriptApi";
@@ -32,7 +33,7 @@ export class AddScriptApiFeature extends Feature {
 
             let manifest: any;
             try {
-                manifest = await minecraftProject.getDataDrivenFiles("behavior_pack/manifest.json");
+                manifest = await MinecraftFileResolverService.getDataDrivenFiles("behavior_pack/manifest.json", minecraftProject);
             } catch (error) {
                 vscode.window.showErrorMessage("Impossible de lire le manifeste du Behavior Pack. Assurez-vous qu'il existe.");
                 return;

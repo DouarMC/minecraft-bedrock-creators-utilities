@@ -4,6 +4,7 @@ import { MinecraftFileResolverService } from "../fileTypes/MinecraftFileResolver
 import * as JsonParser from 'jsonc-parser';
 import { cloneDeep, set, unset } from "lodash";
 import { MinecraftJsonSchema } from "../../../../common/types/MinecraftJsonSchema";
+import { SCHEMA_BASE_URL } from "../../../constants";
 
 export class MinecraftSchemaService {
     /**
@@ -17,15 +18,19 @@ export class MinecraftSchemaService {
      * @returns 
      */
     public static async getSchemaForDocument(document: vscode.TextDocument): Promise<MinecraftJsonSchema | undefined> {
+        console.log("AAAA");
+
         // Récuperation du type de fichier Minecraft associé au document
         const fileType = await MinecraftFileResolverService.resolveFileType(document.uri);
-        if (! fileType || ! fileType.schemaDataUrl) {
+        if (! fileType || ! fileType.schemaPath) {
             return undefined;
         }
 
         // Récupération du schéma versionné depuis l'URL
-        const versionedSchema = await this.fetchVersionedSchema(fileType.schemaDataUrl);
+        const versionedSchema = await this.fetchVersionedSchema(fileType.schemaPath);
+        console.log("Versioned Schema:", versionedSchema);
         if (! versionedSchema) {
+            console.log(`Aucun schéma versionné trouvé pour le chemin : ${fileType.schemaPath}`);
             return undefined;
         }
 
@@ -33,20 +38,25 @@ export class MinecraftSchemaService {
         const formatVersion = this.extractFormatVersion(document);
 
         // Résolution du schéma adapté à la version
-        return this.resolveVersionedSchema(versionedSchema, formatVersion);
+        const resolvedSchema = this.resolveVersionedSchema(versionedSchema, formatVersion);
+
+        return resolvedSchema;
     }
 
     /**
      * Récupère un schéma versionné depuis une URL, avec mise en cache.
-     * @param url L'URL du schéma à récupérer.
+     * @param relativePath Le chemin relatif du schéma à récupérer.
      * @returns 
      */
-    private static async fetchVersionedSchema(url: string): Promise<VersionedSchema | undefined> {
+    private static async fetchVersionedSchema(relativePath: string): Promise<VersionedSchema | undefined> {
+        const url = `${SCHEMA_BASE_URL}/${relativePath}`;
+
         if (this.cache.has(url)) {
             return this.cache.get(url);
         }
 
         try {
+            console.log(`Téléchargement : ${url}`);
             const response = await fetch(url);
             if (! response.ok) {
                 throw new Error(response.statusText);

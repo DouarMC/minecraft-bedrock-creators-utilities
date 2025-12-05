@@ -80,7 +80,6 @@
         "build-schemas": "tsx scripts/buildSchemas.ts"
     },
     "devDependencies": {
-        "@types/archiver": "^6.0.3",
         "@types/lodash": "^4.17.20",
         "@types/node": "20.x",
         "@types/vscode": "^1.100.0",
@@ -91,7 +90,6 @@
         "typescript": "^5.8.3"
     },
     "dependencies": {
-        "archiver": "^7.0.1",
         "jsonc-parser": "^3.3.1",
         "lodash": "^4.17.21",
         "minimatch": "^10.1.1",

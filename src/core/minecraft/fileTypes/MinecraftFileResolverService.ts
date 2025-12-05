@@ -5,6 +5,9 @@ import { minecraftFileRegistry } from './minecraftFileRegistry';
 import { minimatch } from 'minimatch';
 import { MinecraftPack } from '../MinecraftPack';
 import * as JsonParser from "jsonc-parser";
+import { MinecraftFileId } from './MinecraftFileId';
+import { MinecraftGame } from '../games/MinecraftGame';
+import { AddonMinecraftProject, MinecraftProject, SkinPackMinecraftProject, WorldTemplateMinecraftProject } from '../../project/MinecraftProject';
 
 export class MinecraftFileResolverService {
     // Petit cache pour ne pas relire le fichier manifest 100 fois par seconde
@@ -79,7 +82,7 @@ export class MinecraftFileResolverService {
      */
     public static async resolveFileType(fileUri: vscode.Uri): Promise<MinecraftFileType | undefined> {
         if (! VscodeUtils.isFile(fileUri)) {
-            console.log("L'URI fourni ne correspond pas à un fichier.");
+            console.log("L'URI fourni ne correspond pas à un fichier.", fileUri.fsPath);
             return undefined;
         }
 
@@ -89,8 +92,6 @@ export class MinecraftFileResolverService {
             console.log("Ce fichier ne fait partie d'aucun pack Minecraft connu (pas de manifest).");
             return undefined;
         }
-
-        console.log(`Fichier détecté dans un ${pack.packType} !`);
 
         const candidateTypes = this.getAllFileTypes().filter(
             type => type.packType === pack.packType
@@ -107,9 +108,158 @@ export class MinecraftFileResolverService {
                         );
                         if (isExcluded) continue;
                     }
+
                     return fileType;
                 }
             }
         }
+
+        console.log("Aucun type de fichier Minecraft ne correspond à ce fichier :", relativePath);
+        return undefined;
+    }
+
+    /**
+     * 
+     * @param minecraftFileId 
+     * @param target
+     */
+    public static async getDataDrivenFiles(minecraftFileId: MinecraftFileId, target: MinecraftGame | MinecraftProject) : Promise<vscode.Uri[]> {
+        const dataDrivenFiles: vscode.Uri[] = [];
+
+        const dataDrivenFileType = minecraftFileRegistry[minecraftFileId];
+        if (! dataDrivenFileType) {
+            return dataDrivenFiles;
+        }
+
+        let researchFolders: vscode.Uri[] = [];
+        switch (dataDrivenFileType.packType) {
+            case "behavior_pack":
+                if (target instanceof MinecraftGame) {
+                    researchFolders = await target.getVanillaBehaviorPackFolders();
+                    if (dataDrivenFileType.searchInDefinitionsFolder === true) {
+                        researchFolders.push(await target.getDefinitionsFolder());
+                    }
+                } else {
+                    if (target instanceof AddonMinecraftProject === false) {
+                        console.warn("Le projet fourni n'est pas un AddonMinecraftProject. Impossible de récupérer les fichiers data-driven.");
+                        return dataDrivenFiles;
+                    }
+
+                    researchFolders = [await target.getBehaviorPackFolder()];
+                }
+                break;
+            case "resource_pack":
+                if (target instanceof MinecraftGame) {
+                    researchFolders = await target.getVanillaResourcePackFolders();
+                    if (dataDrivenFileType.searchInDefinitionsFolder === true) {
+                        researchFolders.push(await target.getDefinitionsFolder());
+                    }
+                } else {
+                    if (target instanceof AddonMinecraftProject === false) {
+                        console.warn("Le projet fourni n'est pas un AddonMinecraftProject. Impossible de récupérer les fichiers data-driven.");
+                        return dataDrivenFiles;
+                    }
+                    researchFolders = [await target.getResourcePackFolder()];
+                }
+                break;
+            case "skin_pack":
+                if (target instanceof SkinPackMinecraftProject) {
+                    // FLAG : À implémenter plus tard si besoin
+                }
+                break;
+            case "world_template":
+                if (target instanceof WorldTemplateMinecraftProject) {
+                    // FLAG : À implémenter plus tard si besoin
+                }
+                break;
+        }
+
+        // 2. Lancer la recherche pour chaque dossier racine trouvé
+        // On utilise Promise.all pour paralléliser la recherche (performance)
+        const searchPromises = researchFolders.map(async (folder) => {
+            const folderSpecificFiles: vscode.Uri[] = [];
+
+            // On vérifie si ce dossier est indexé par le workspace VS Code
+            const workspaceFolder = vscode.workspace.getWorkspaceFolder(folder);
+            const isIndexed = !!workspaceFolder;
+
+            for (const pattern of dataDrivenFileType.patterns) {
+                if (isIndexed) {
+                    // CAS 1 : PROJET UTILISATEUR (Rapide & Indexé)
+                    // On utilise l'API puissante de VS Code.
+                    // RelativePattern gère tout seul le fait de chercher DANS folderUri.
+                    const relativePattern = new vscode.RelativePattern(folder, pattern);
+
+                    // On peut passer les exclusions directement à findFiles pour optimiser
+                    const exclude = dataDrivenFileType.excludePatterns ? `{${dataDrivenFileType.excludePatterns.join(',')}}` : null;
+
+                    const foundFiles = await vscode.workspace.findFiles(relativePattern, exclude);
+                    folderSpecificFiles.push(...foundFiles);
+                } else {
+                    // CAS 2 : VANILLA / EXTERNE (Non indexé)
+                    // findFiles ne marche pas ici. On utilise un scanneur manuel.
+                    const found = await this.findFilesManual(folder, pattern, dataDrivenFileType.excludePatterns);
+                    folderSpecificFiles.push(...found);
+                }
+            }
+
+            return folderSpecificFiles;
+        });
+
+        // 3. Attendre toutes les recherches et aplatir le tableau
+        const results = await Promise.all(searchPromises);
+        for (const fileList of results) {
+            dataDrivenFiles.push(...fileList);
+        }
+
+        return dataDrivenFiles;
+    }
+
+    /**
+     * Scanne récursivement un dossier externe (Vanilla) pour trouver les fichiers correspondants.
+     * Utilise l'API FS de VS Code, donc compatible Web/Remote.
+     * @param root 
+     * @param pattern 
+     * @param excludes 
+     */
+    private static async findFilesManual(root: vscode.Uri, pattern: string, excludes?: string[]): Promise<vscode.Uri[]> {
+        const results: vscode.Uri[] = [];
+
+        // Fonction récursive locale
+        const walk = async (currentUri: vscode.Uri) => {
+            try {
+                const entries = await vscode.workspace.fs.readDirectory(currentUri);
+
+                for (const [name, type] of entries) {
+                    const fileUri = vscode.Uri.joinPath(currentUri, name);
+
+                    // Calculer le chemin relatif pour le matching (ex: "entities/cow.json")
+                    // On retire le prefixe racine
+                    const relativePath = fileUri.fsPath.replace(root.fsPath, '').replace(/^[\\\/]/, '').replace(/\\/g, '/');
+
+                    if (type === vscode.FileType.Directory) {
+                        // Optimisation : Ne pas descendre si le dossier est exclu
+                        if (excludes && excludes.some(ex => minimatch(relativePath + '/', ex))) {
+                            continue;
+                        }
+                        // Récursion
+                        await walk(fileUri);
+                    } else if (type === vscode.FileType.File) {
+                        // Vérification du pattern
+                        if (minimatch(relativePath, pattern, { dot: true, nocase: true })) {
+                            // Vérification de l'exclusion
+                            if (!excludes || !excludes.some(ex => minimatch(relativePath, ex))) {
+                                results.push(fileUri);
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error(`Erreur lors de la lecture du répertoire ${currentUri.fsPath}:`, error);
+            }
+        };
+
+        await walk(root);
+        return results;
     }
 }
