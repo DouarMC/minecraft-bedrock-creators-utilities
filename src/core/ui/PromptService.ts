@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { MinecraftAddonPack, MinecraftProduct, MinecraftProjectType, ProjectMetadata } from "../../types/projectConfig";
 import { SCRIPT_API_MODULES, SCRIPT_API_MODULES_NAMES, SCRIPT_API_MODULES_NAMES_PREVIEW, SCRIPT_API_MODULES_PREVIEW } from "../../utils/data/scriptApiModules";
 import { MinecraftProjectManager } from "../project/MinecraftProjectManager";
+import { SCHEMA_BASE_URL } from "../../constants";
 
 export interface FolderPickItem extends vscode.QuickPickItem {
     game: "stable" | "preview";
@@ -203,13 +204,13 @@ export class PromptService {
 
         const minecraftProduct = project.minecraftProduct;
 
-        const moduleNames = minecraftProduct === MinecraftProduct.Stable
-            ? SCRIPT_API_MODULES_NAMES
-            : SCRIPT_API_MODULES_NAMES_PREVIEW;
+        const minecraftScriptApiModules = await fetch(SCHEMA_BASE_URL + "minecraftScriptApiModules/stable.json");
+        if (!minecraftScriptApiModules.ok) {
+            throw new Error("Impossible de récupérer les modules de l'API Script depuis le serveur.");
+        }
 
-        const moduleVersions = minecraftProduct === MinecraftProduct.Stable
-            ? SCRIPT_API_MODULES
-            : SCRIPT_API_MODULES_PREVIEW;
+        const minecraftScriptApiModulesData = await minecraftScriptApiModules.json() as Record<string, any>;
+        const moduleNames = Object.keys(minecraftScriptApiModulesData);
         
         const selectedModules = await vscode.window.showQuickPick(moduleNames, {
             title: "Modules de l'API Script",
@@ -220,8 +221,43 @@ export class PromptService {
         if (!selectedModules || selectedModules.length === 0) return;
 
         const selectedWithVersions: Record<string, string> = {};
+
         for (const module of selectedModules) {
-            const versions = moduleVersions[module];
+            const versions: string[] = [];
+            const moduleVersionInfos = minecraftScriptApiModulesData[module];
+
+            // 1. Ajouter les versions stables (Inversées pour avoir la plus récente en premier)
+            if (Array.isArray(moduleVersionInfos.stable_versions)) {
+                // On fait une copie (.slice) pour ne pas modifier l'original, puis reverse
+                versions.push(...moduleVersionInfos.stable_versions.slice().reverse());
+            }
+
+            if (minecraftProduct === MinecraftProduct.Stable) {
+                // 2. Ajouter la Beta Stable (Si elle existe)
+                if (moduleVersionInfos.last_beta_version_stable) {
+                    const keys = Object.keys(moduleVersionInfos.last_beta_version_stable);
+                    if (keys.length > 0) versions.unshift(keys[0]); // unshift pour mettre en tout premier
+                }
+            } else {
+                // 3. Ajouter la Release Candidate Preview (Si elle existe - CRITIQUE CAR SOUVENT NULL)
+                if (moduleVersionInfos.last_release_candidate_version_preview) {
+                    const keys = Object.keys(moduleVersionInfos.last_release_candidate_version_preview);
+                    if (keys.length > 0) versions.unshift(keys[0]);
+                }
+
+                // 4. Ajouter la Beta Preview (Si elle existe)
+                if (moduleVersionInfos.last_beta_version_preview) {
+                    const keys = Object.keys(moduleVersionInfos.last_beta_version_preview);
+                    if (keys.length > 0) versions.unshift(keys[0]);
+                }
+            }
+
+            // Petite sécurité : si aucune version n'est trouvée (cas rare mais possible)
+            if (versions.length === 0) {
+                vscode.window.showWarningMessage(`Aucune version trouvée pour le module ${module}`);
+                continue;
+            }
+
             const version = await vscode.window.showQuickPick(versions, {
                 title: `Version du module ${module}`,
                 placeHolder: `Sélectionnez la version du module ${module}`
