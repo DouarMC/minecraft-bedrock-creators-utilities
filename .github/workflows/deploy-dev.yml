@@ -50,7 +50,7 @@ jobs:
           
           # B. Copier le fichier stable.json (API Versions) vers la racine du site
           # Le fichier sera accessible via /stable.json
-          cp dist/minecraftScriptApiModules/stable.json _site/stable.json
+          cp dist/minecraftScriptApiModules/stable.json _site/minecraftScriptApiModules/stable.json
 
       # 5. Configuration et Upload
       - name: Setup Pages
