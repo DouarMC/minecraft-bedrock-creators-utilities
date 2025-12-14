@@ -47,8 +47,11 @@ jobs:
           # A. Copier les Schémas générés vers la racine du site
           # Le contenu de dist/minecraftSchemas ira à la racine
           cp -r dist/minecraftSchemas/* _site/
-          
-          # B. Copier le fichier stable.json (API Versions) vers la racine du site
+
+          # B. Créer le dossier minecraftScriptApiModules dans le site
+          mkdir -p _site/minecraftScriptApiModules
+
+          # C. Copier le fichier stable.json (API Versions) vers la racine du site
           # Le fichier sera accessible via /stable.json
           cp dist/minecraftScriptApiModules/stable.json _site/minecraftScriptApiModules/stable.json
 
