@@ -1,0 +1,67 @@
+name: Deploy All Resources (Dev)
+
+on:
+  push:
+    branches: ["dev"]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Récupération du code
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 2. Installation de Node et des dépendances (Nécessaire pour le build des schémas)
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install Dependencies
+        run: npm ci
+
+      # 3. Génération des Schémas (Créé le dossier dist/minecraftSchemas)
+      - name: Build Schemas
+        run: npm run build-schemas
+
+      # 4. Préparation du site final (Fusion des deux sources)
+      - name: Prepare Final Artifact
+        run: |
+          # Créer un dossier temporaire pour le site web final
+          mkdir _site
+          
+          # A. Copier les Schémas générés vers la racine du site
+          # Le contenu de dist/minecraftSchemas ira à la racine
+          cp -r dist/minecraftSchemas/* _site/
+          
+          # B. Copier le fichier stable.json (API Versions) vers la racine du site
+          # Le fichier sera accessible via /stable.json
+          cp dist/minecraftScriptApiModules/stable.json _site/stable.json
+
+      # 5. Configuration et Upload
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './_site' # On upload le dossier fusionné
+
+      # 6. Déploiement
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
