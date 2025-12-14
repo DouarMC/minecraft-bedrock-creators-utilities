@@ -1,0 +1,39 @@
+name: Deploy API Module Versions (Dev)
+
+on:
+  push:
+    branches: ["dev"] # Déclenche ce workflow uniquement sur la branche 'dev'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "api-versions-pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Étape 1: Mettre en place les pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # Étape 3: Uploader ce dossier comme artefact
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist/minecraftScriptApiModules'
+
+      # Étape 4: Déployer sur GitHub Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
