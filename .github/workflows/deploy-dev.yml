@@ -52,7 +52,7 @@ jobs:
           mkdir -p _site/minecraftScriptApiModules
 
           # C. Copier le fichier stable.json (API Versions) vers la racine du site
-          # Le fichier sera accessible via /stable.json
+          # Le fichier sera accessible via /minecraftScriptApiModules/stable.json
           cp dist/minecraftScriptApiModules/stable.json _site/minecraftScriptApiModules/stable.json
 
       # 5. Configuration et Upload
