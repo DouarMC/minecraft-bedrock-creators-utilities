@@ -1,8 +1,10 @@
+.github/**
 .vscode/**
+common/**
+dist/**
+minecraftSchemas/**
+scripts/**
 src/**
 .gitignore
-**/tsconfig.json
 **/eslint.config.mjs
-scripts/**
-dist/**
-common/**
+**/tsconfig.json
