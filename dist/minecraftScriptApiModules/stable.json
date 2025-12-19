@@ -10,7 +10,7 @@
             "2.5.0": "2.5.0-rc.1.26.0-preview.25"
         },
         "last_beta_version_preview": {
-            "2.6.0": "2.6.0-beta.1.26.0-preview.25"
+            "2.6.0-beta": "2.6.0-beta.1.26.0-preview.25"
         }
     },
     "@minecraft/server-ui": {
