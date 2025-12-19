@@ -65,7 +65,7 @@ export class AddScriptApiFeature extends Feature {
                 return;
             }
 
-            let selectedModules: { [key: string]: string } | undefined;
+            let selectedModules: Record<string, { version: string, npmVersion: string }> | undefined;
             try {
                 selectedModules = await PromptService.askScriptApiModules();
             } catch (error) {
@@ -74,21 +74,30 @@ export class AddScriptApiFeature extends Feature {
             }
 
             if (selectedModules !== undefined) {
-                let packageJson: vscode.Uri;
+                let packageJsonUri: vscode.Uri;
                 try {
-                    packageJson = await minecraftProject.getPackageJsonFileUri();
+                    packageJsonUri = await minecraftProject.getPackageJsonFileUri();
                 } catch (error) {
                     vscode.window.showErrorMessage("Le fichier package.json est introuvable dans le projet.");
                     return;
                 }
 
+                let packageJsonContent: any;
                 try {
-                    ProjectService.addScriptApiModules(manifestJson, packageJson, selectedModules);
+                    const content = await vscode.workspace.fs.readFile(packageJsonUri);
+                    packageJsonContent = JSON.parse(content.toString());
+                } catch (e) {
+                    vscode.window.showErrorMessage("Impossible de lire le fichier package.json.");
+                    return;
+                }
+
+                try {
+                    ProjectService.addScriptApiModules(manifestJson, packageJsonContent, selectedModules);
                 } catch (error) {
                     vscode.window.showErrorMessage(`Erreur lors de l'ajout des modules de l'API de script : ${error}`);
                 }
 
-                await VscodeUtils.writeFile(packageJson, JSON.stringify(packageJson, null, 4));
+                await VscodeUtils.writeFile(packageJsonUri, JSON.stringify(packageJsonContent, null, 4));
 
                 await ProjectService.installNpmDependencies(minecraftProject.folder);
             }

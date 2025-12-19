@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
 import { MinecraftAddonPack, MinecraftProduct, MinecraftProjectType, ProjectMetadata } from "../../types/projectConfig";
-import { SCRIPT_API_MODULES, SCRIPT_API_MODULES_NAMES, SCRIPT_API_MODULES_NAMES_PREVIEW, SCRIPT_API_MODULES_PREVIEW } from "../../utils/data/scriptApiModules";
 import { MinecraftProjectManager } from "../project/MinecraftProjectManager";
 import { SCHEMA_BASE_URL } from "../../constants";
 
@@ -196,7 +195,7 @@ export class PromptService {
      * @throws {Error} Si aucun projet Minecraft n'est chargé.
      * @returns 
      */
-    public static async askScriptApiModules(): Promise<Record<string, string> | undefined> {
+    public static async askScriptApiModules(): Promise<Record<string, { version: string, npmVersion: string }> | undefined> {
         const project = MinecraftProjectManager.project;
         if (project === undefined) {
             throw new Error("Aucun projet Minecraft chargé.");
@@ -220,35 +219,46 @@ export class PromptService {
 
         if (!selectedModules || selectedModules.length === 0) return;
 
-        const selectedWithVersions: Record<string, string> = {};
+        const selectedWithVersions: Record<string, { version: string, npmVersion: string }> = {};
 
         for (const module of selectedModules) {
             const versions: string[] = [];
+            const versionMap: Record<string, string> = {};
             const moduleVersionInfos = minecraftScriptApiModulesData[module];
 
             // 1. Ajouter les versions stables (Inversées pour avoir la plus récente en premier)
             if (Array.isArray(moduleVersionInfos.stable_versions)) {
                 // On fait une copie (.slice) pour ne pas modifier l'original, puis reverse
-                versions.push(...moduleVersionInfos.stable_versions.slice().reverse());
+                const stableVersions = moduleVersionInfos.stable_versions.slice().reverse();
+                versions.push(...stableVersions);
+                for (const v of stableVersions) {
+                    versionMap[v] = v;
+                }
             }
 
             if (minecraftProduct === MinecraftProduct.Stable) {
                 // 2. Ajouter la Beta Stable (Si elle existe)
                 if (moduleVersionInfos.last_beta_version_stable) {
-                    const keys = Object.keys(moduleVersionInfos.last_beta_version_stable);
-                    if (keys.length > 0) versions.unshift(keys[0]); // unshift pour mettre en tout premier
+                    for (const [v, npmV] of Object.entries(moduleVersionInfos.last_beta_version_stable)) {
+                        versions.unshift(v);
+                        versionMap[v] = npmV as string;
+                    }
                 }
             } else {
                 // 3. Ajouter la Release Candidate Preview (Si elle existe - CRITIQUE CAR SOUVENT NULL)
                 if (moduleVersionInfos.last_release_candidate_version_preview) {
-                    const keys = Object.keys(moduleVersionInfos.last_release_candidate_version_preview);
-                    if (keys.length > 0) versions.unshift(keys[0]);
+                    for (const [v, npmV] of Object.entries(moduleVersionInfos.last_release_candidate_version_preview)) {
+                        versions.unshift(v);
+                        versionMap[v] = npmV as string;
+                    }
                 }
 
                 // 4. Ajouter la Beta Preview (Si elle existe)
                 if (moduleVersionInfos.last_beta_version_preview) {
-                    const keys = Object.keys(moduleVersionInfos.last_beta_version_preview);
-                    if (keys.length > 0) versions.unshift(keys[0]);
+                    for (const [v, npmV] of Object.entries(moduleVersionInfos.last_beta_version_preview)) {
+                        versions.unshift(v);
+                        versionMap[v] = npmV as string;
+                    }
                 }
             }
 
@@ -264,7 +274,10 @@ export class PromptService {
             });
 
             if (version) {
-                selectedWithVersions[module] = version;
+                selectedWithVersions[module] = {
+                    version: version,
+                    npmVersion: versionMap[version]
+                };
             }
         }
 

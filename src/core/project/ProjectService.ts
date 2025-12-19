@@ -240,24 +240,24 @@ export class ProjectService {
      * @param packageJson Le contenu du package.json
      * @param modules Les modules à ajouter avec leurs versions
      */
-    public static addScriptApiModules(behaviorManifest: any, packageJson: any, modules: Record<string, string>): void {
+    public static addScriptApiModules(behaviorManifest: any, packageJson: any, modules: Record<string, { version: string, npmVersion: string }>): void {
         behaviorManifest.dependencies = behaviorManifest.dependencies || [];
-        for (const [moduleName, moduleVersion] of Object.entries(modules)) {
+        for (const [moduleName, moduleInfo] of Object.entries(modules)) {
             const hasDependency = behaviorManifest.dependencies.some((dep: any) => dep.module_name === moduleName);
             if (! hasDependency) {
                 behaviorManifest.dependencies.push({
                     module_name: moduleName,
-                    version: moduleVersion
+                    version: moduleInfo.version
                 });
             }
             if (packageJson.dependencies === undefined) {
                 packageJson.dependencies = {};
             }
             if (packageJson.dependencies[moduleName] === undefined) {
-                packageJson.dependencies[moduleName] = moduleVersion;
-            } else if (packageJson.dependencies[moduleName] !== moduleVersion) {
+                packageJson.dependencies[moduleName] = moduleInfo.npmVersion;
+            } else if (packageJson.dependencies[moduleName] !== moduleInfo.npmVersion) {
                 // Met à jour la version si différente
-                packageJson.dependencies[moduleName] = moduleVersion;
+                packageJson.dependencies[moduleName] = moduleInfo.npmVersion;
             }
         }
     }
@@ -335,7 +335,7 @@ export class ProjectService {
         const execPromise = promisify(exec);
         try {
             await execPromise("npm -v"); // vérifie npm
-            const { stderr } = await execPromise("npm install", { cwd: projectFolder.fsPath });
+            const { stderr } = await execPromise("npm install --legacy-peer-deps", { cwd: projectFolder.fsPath });
             if (stderr) console.error(stderr);
 
             vscode.window.showInformationMessage("📦 Modules npm installés !");
