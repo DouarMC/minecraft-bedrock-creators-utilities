@@ -102,4 +102,6 @@ export const dynamicExamplesSourceKeys = {
     vanilla_data_driven_item_ids: "vanilla_data_driven_item_ids",
     item_tags: "item_tags",
     */
-};
+} as const;
+
+export type DynamicExamplesSourceKey = (typeof dynamicExamplesSourceKeys)[keyof typeof dynamicExamplesSourceKeys];

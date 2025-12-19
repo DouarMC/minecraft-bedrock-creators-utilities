@@ -1,3 +1,5 @@
+import { MinecraftProject } from "../../project/MinecraftProject";
+import { MinecraftGame } from "./MinecraftGame";
 import { MinecraftPreviewGame } from "./MinecraftPreviewGame";
 import { MinecraftStableGame } from "./MinecraftStableGame";
 
@@ -45,5 +47,16 @@ export class MinecraftGameManager {
         }
 
         return this.previewGame;
+    }
+
+    public static getMinecraftGameForProject(minecraftProject: MinecraftProject): MinecraftGame | undefined {
+        const minecraftProduct = minecraftProject.minecraftProduct;
+        if (minecraftProduct === "stable") {
+            return this.stableGame;
+        } else if (minecraftProduct === "preview") {
+            return this.previewGame;
+        } else {
+            return undefined;
+        }
     }
 }

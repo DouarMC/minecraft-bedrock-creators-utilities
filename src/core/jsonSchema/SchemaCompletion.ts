@@ -3,6 +3,7 @@ import * as JsonParser from "jsonc-parser";
 import { MinecraftJsonSchema, MinecraftJsonSchemaType } from "../../../common/types/MinecraftJsonSchema";
 import { SchemaUtils } from "./SchemaUtils";
 import { CompletionsCollector } from "./CompletionsCollector";
+import { DynamicSourceHandlers } from "./DynamicSourceHandlers";
 
 export class SchemaCompletion {
     public static async doCompletion(document: vscode.TextDocument, position: vscode.Position, schema: MinecraftJsonSchema): Promise<vscode.CompletionList | null> {
@@ -168,7 +169,7 @@ export class SchemaCompletion {
                     }
 
                     if (schemaPropertyNames["x-dynamic-examples-source"] !== undefined) {
-                        const dynamicExamples: string[] = []; // FLAG on fera plus tard await getDynamicExampleSourceValues(
+                        const dynamicExamples: string[] = await DynamicSourceHandlers.getDynamicExampleSourceValues(schemaPropertyNames["x-dynamic-examples-source"]);
                         for (const example of dynamicExamples) {
                             propertyNameCompletionItem(example, undefined, undefined, undefined);
                         }
@@ -480,7 +481,7 @@ export class SchemaCompletion {
         }
 
         if (schema["x-dynamic-examples-source"] !== undefined && document) {
-            const dynamicExamples: string[] = []; // FLAG on fera plus tard await getDynamicExampleSourceValues(
+            const dynamicExamples: string[] = await DynamicSourceHandlers.getDynamicExampleSourceValues(schema["x-dynamic-examples-source"]);
             for (const example of dynamicExamples) {
                 let type = schema.type;
                 let value = example as any;
