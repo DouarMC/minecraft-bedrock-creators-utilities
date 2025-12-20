@@ -77,7 +77,8 @@
         "pretest": "npm run compile && npm run lint",
         "lint": "eslint src",
         "test": "vscode-test",
-        "build-schemas": "tsx scripts/buildSchemas.ts"
+        "build-schemas": "tsx scripts/buildSchemas.ts",
+        "include-vanilla-identifier-to-json": "tsx scripts/includeVanillaIdentifierToJson.ts"
     },
     "devDependencies": {
         "@types/lodash": "^4.17.20",

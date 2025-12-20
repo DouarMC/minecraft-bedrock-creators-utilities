@@ -18,7 +18,6 @@ export class MinecraftSchemaService {
      * @returns 
      */
     public static async getSchemaForDocument(document: vscode.TextDocument): Promise<MinecraftJsonSchema | undefined> {
-        console.log("AAAA");
 
         // Récuperation du type de fichier Minecraft associé au document
         const fileType = await MinecraftFileResolverService.resolveFileType(document.uri);
@@ -28,7 +27,6 @@ export class MinecraftSchemaService {
 
         // Récupération du schéma versionné depuis l'URL
         const versionedSchema = await this.fetchVersionedSchema(fileType.schemaPath);
-        console.log("Versioned Schema:", versionedSchema);
         if (! versionedSchema) {
             console.log(`Aucun schéma versionné trouvé pour le chemin : ${fileType.schemaPath}`);
             return undefined;
