@@ -55,6 +55,13 @@ jobs:
           # Le fichier sera accessible via /minecraftScriptApiModules/stable.json
           cp dist/minecraftScriptApiModules/stable.json _site/minecraftScriptApiModules/stable.json
 
+          # D. Créer le dossier minecraftVanillaIdentifiers dans le site
+          mkdir -p _site/minecraftVanillaIdentifiers
+
+          # E. Copier le fichier stable.json (Vanilla Identifiers) vers la racine du site
+          # Le fichier sera accessible via /minecraftVanillaIdentifiers/stable.json
+          cp dist/minecraftVanillaIdentifiers/stable.json _site/minecraftVanillaIdentifiers/stable.json
+
       # 5. Configuration et Upload
       - name: Setup Pages
         uses: actions/configure-pages@v5
