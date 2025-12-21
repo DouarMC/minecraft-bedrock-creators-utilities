@@ -130,7 +130,7 @@ export class MinecraftSchemaService {
      * @param b La deuxième version à comparer.
      * @returns 
      */
-    private static compareVersions(a: string | number, b: string | number): number {
+    public static compareVersions(a: string | number, b: string | number): number {
         if (typeof a === "string" && typeof b === "string") {
             const aParts = a.split('.').map(Number);
             const bParts = b.split('.').map(Number);

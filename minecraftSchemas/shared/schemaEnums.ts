@@ -65,7 +65,6 @@ export const dynamicExamplesSourceKeys = {
     entity_ids: "entity_ids",
     feature_ids: "feature_ids",
     fog_ids: "fog_ids",
-    full_block_model_id: "full_block_model_id",
     inheritable_camera_preset_ids: "inheritable_camera_preset_ids",
     item_group_ids: "item_group_ids",
     item_ids: "item_ids",

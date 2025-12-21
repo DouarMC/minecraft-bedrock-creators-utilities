@@ -610,7 +610,7 @@ const versionedChanges: SchemaChange[] = [
                     oneOf: [
                         {
                             type: "string",
-                            "x-dynamic-examples-source": [dynamicExamplesSourceKeys.full_block_model_id, dynamicExamplesSourceKeys.model_ids]
+                            "x-dynamic-examples-source": [dynamicExamplesSourceKeys.model_ids]
                         },
                         {
                             type: "object",
@@ -619,7 +619,7 @@ const versionedChanges: SchemaChange[] = [
                                 identifier: {
                                     description: "L'identifiant du modèle pour le Bloc.",
                                     type: "string",
-                                    "x-dynamic-examples-source": [dynamicExamplesSourceKeys.full_block_model_id, dynamicExamplesSourceKeys.model_ids]
+                                    "x-dynamic-examples-source": [dynamicExamplesSourceKeys.model_ids]
                                 },
                                 bone_visibility: {
                                     description: "Définit la visibilité de chaque os du modèle. Par défaut, tous les os sont visibles.",
