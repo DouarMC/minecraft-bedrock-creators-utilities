@@ -186,7 +186,7 @@ export function getCommonDefinitions(): Record<string, MinecraftJsonSchema> {
                             description: "Le type de test à effectuer",
                             type: "string",
                             enum: [
-                                "clock_time", "distance_to_nearest_player", "home_distance", "owner_distance", "target_distance"
+                                "clock_time", "distance_to_nearest_player", "home_distance", "owner_distance", "target_distance", "y_rotation"
                             ]
                         },
                         subject: {

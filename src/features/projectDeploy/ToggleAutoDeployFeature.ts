@@ -72,7 +72,8 @@ export class ToggleAutoDeployFeature extends Feature {
             if (ignoredFiles.some(name => uri.fsPath.endsWith(name))) return;
 
             try {
-                await ProjectService.deployProject(minecraftProject);
+                // await ProjectService.deployProject(minecraftProject);
+                await vscode.commands.executeCommand("minecraft-bedrock-creators-utilities.deployProject");
             } catch (error: any) {
                 const errorMessage = error instanceof Error ? error.message : String(error);
                 vscode.window.showErrorMessage(`Échec du déploiement automatique du projet "${minecraftProject.id}": ${errorMessage}`);

@@ -11,7 +11,9 @@ const baseSchema: MinecraftJsonSchema = {
         format_version: {
             description: "La version du Format à utiliser.",
             type: "string",
-            enum: ["1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100"]
+            enum: [
+                "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100", "1.21.110", "1.21.120", "1.21.130"
+            ]
         },
         "minecraft:crafting_items_catalog": {
             description: "Contient la définition de l'organisation des items dans le menu créatif et dans le livre de recettes.",
