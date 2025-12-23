@@ -5,7 +5,6 @@ import { MinecraftJsonSchema } from "../../../../common/types/MinecraftJsonSchem
 import { VersionedSchema } from "../../../../common/types/VersionedSchema";
 
 const baseSchema: MinecraftJsonSchema = {
-    "x-experimental_options": ["Data Driven Jigsaw Structures"],
     description: "Ce fichier sert à créer une liste de processeurs qui peuvent être utilisés pour modifier les structures Jigsaw lorsqu'elles sont placées dans le monde. Les processeurs sont des fonctions qui s'exécutent lors de la mise en place d'un modèle de structure dans le monde. Actuellement, le seul processeur pris en charge est le processeur de règles de bloc, qui décrit comment les blocs individuels des modèles de structure doivent être modifiés lorsqu'ils sont placés dans le monde. Par exemple, vous pouvez vouloir remplacer aléatoirement la moitié des blocs de Pierre par de la Pierre Moussue. Ou vous pouvez remplacer le Gravier par du Gravier Suspect et ajouter une table de butin.",
     type: "object",
     required: ["format_version", "minecraft:processor_list"],

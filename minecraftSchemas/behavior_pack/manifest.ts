@@ -183,7 +183,8 @@ const baseSchema: MinecraftJsonSchema = {
                             version: {
                                 description: "La version du module de script.",
                                 type: "string",
-                                pattern: schemaPatterns.script_version
+                                pattern: [schemaPatterns.script_version, "beta"],
+                                examples: ["beta"]
                             }
                         }
                     },
@@ -305,7 +306,7 @@ export const versionedSchema: VersionedSchema = {
                         description: "Définit la version minimale du jeu pour que ce pack soit compatible avec.",
                         type: "string",
                         examples: [
-                            "1.8.0", "1.9.0", "1.10.0", "1.11.0", "1.12.0", "1.13.0", "1.14.0", "1.14.1", "1.14.20", "1.14.30", "1.15.0", "1.16.0", "1.16.20", "1.16.100", "1.16.200", "1.16.210", "1.16.220", "1.16.230", "1.17.0", "1.17.10", "1.17.20", "1.17.30", "1.17.40", "1.18.0", "1.18.10", "1.18.20", "1.18.30", "1.18.40", "1.19.0", "1.19.10", "1.19.20", "1.19.30", "1.19.40", "1.19.50", "1.19.60", "1.19.70", "1.19.80", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100"
+                            "1.8.0", "1.9.0", "1.10.0", "1.11.0", "1.12.0", "1.13.0", "1.14.0", "1.14.1", "1.14.20", "1.14.30", "1.15.0", "1.16.0", "1.16.20", "1.16.100", "1.16.200", "1.16.210", "1.16.220", "1.16.230", "1.17.0", "1.17.10", "1.17.20", "1.17.30", "1.17.40", "1.18.0", "1.18.10", "1.18.20", "1.18.30", "1.18.40", "1.19.0", "1.19.10", "1.19.20", "1.19.30", "1.19.40", "1.19.50", "1.19.60", "1.19.70", "1.19.80", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100", "1.21.110", "1.21.120", "1.21.130"
                         ]
                     }
                 },
@@ -543,6 +544,93 @@ export const versionedSchema: VersionedSchema = {
                                             description: "Type de paramètre.",
                                             type: "string",
                                             enum: ["toggle"]
+                                        }
+                                    }
+                                },
+                                {
+                                    type: "object",
+                                    required: ["default", "name", "options", "text", "type"],
+                                    properties: {
+                                        default: {
+                                            description: "Valeur par défaut du paramètre.",
+                                            type: "string",
+                                            minLength: 1
+                                        },
+                                        name: {
+                                            description: "Identifiant du paramètre.",
+                                            type: "string",
+                                            pattern: schemaPatterns.identifier_with_namespace
+                                        },
+                                        options: {
+                                            description: "Options disponibles pour le paramètre.",
+                                            type: "array",
+                                            minItems: 2,
+                                            maxItems: 20,
+                                            items: {
+                                                type: "object",
+                                                required: ["name", "text"],
+                                                properties: {
+                                                    name: {
+                                                        description: "Valeur de l'option.",
+                                                        type: "string",
+                                                        minLength: 1
+                                                    },
+                                                    text: {
+                                                        description: "Texte affiché pour l'option.",
+                                                        type: "string",
+                                                        minLength: 1
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        text: {
+                                            description: "Texte affiché pour le paramètre.",
+                                            type: "string",
+                                        },
+                                        type: {
+                                            description: "Type de paramètre.",
+                                            type: "string",
+                                            enum: ["dropdown"]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    action: "add",
+                    target: ["properties", "pack_optimization_version"],
+                    value: {
+                        value: {
+                            description: "La version du pack.",
+                            oneOf: [
+                                {
+                                    type: "string"
+                                },
+                                {
+                                    type: "object",
+                                    required: ["major", "minor", "patch"],
+                                    properties: {
+                                        buildMeta: {
+                                            description: "Informations supplémentaires sur la version.",
+                                            type: "string"
+                                        },
+                                        major: {
+                                            description: "La version majeure du pack.",
+                                            type: "integer"
+                                        },
+                                        minor: {
+                                            description: "La version mineure du pack.",
+                                            type: "integer"
+                                        },
+                                        patch: {
+                                            description: "La version de correction du pack.",
+                                            type: "integer"
+                                        },
+                                        preRelease: {
+                                            description: "La version pré-release du pack.",
+                                            type: "string"
                                         }
                                     }
                                 }

@@ -174,6 +174,15 @@ const versionedChanges: SchemaChange[] = [
                 }
             }
         ]
+    },
+    {
+        version: "1.21.120",
+        changes: [
+            {
+                action: "remove",
+                target: ["properties", "minecraft:water_settings", "properties", "waves", "properties", "sampleWidth"],
+            }
+        ]
     }
 ];
 

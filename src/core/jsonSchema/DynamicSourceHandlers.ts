@@ -206,6 +206,9 @@ export class DynamicSourceHandlers {
                     case "item_ids":
                         exampleValues.push(...await this.getItemIds(fileSourcesAvailable));
                         break;
+                    case "item_tags":
+                        exampleValues.push(...await this.getItemTags(fileSourcesAvailable));
+                        break;
                     case "item_texture_references":
                         exampleValues.push(...await this.getItemTextureReferences(fileSourcesAvailable));
                         break;
@@ -1007,6 +1010,12 @@ export class DynamicSourceHandlers {
         }
 
         return itemGroupIds;
+    }
+
+    private static async getItemTags(fileSources: (MinecraftGame | MinecraftProject)[]): Promise<string[]> {
+        const itemTags: string[] = (await this.getVanillaIdentifiersDist()).VANILLA_ITEM_TAGS;
+
+        return itemTags;
     }
 
     private static async getItemTextureReferences(fileSources: (MinecraftGame | MinecraftProject)[]): Promise<string[]> {

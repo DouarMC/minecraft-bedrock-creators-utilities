@@ -2,6 +2,7 @@ import { dynamicExamplesSourceKeys } from "../../shared/schemaEnums";
 import { schemaPatterns } from "../../shared/schemaPatterns";
 import { MinecraftJsonSchema } from "../../../common/types/MinecraftJsonSchema";
 import { VersionedSchema, SchemaChange } from "../../../common/types/VersionedSchema";
+import { deserialize } from "v8";
 
 const baseSchema: MinecraftJsonSchema = {
     description: "Définit les propriétés du client du biome.",
@@ -355,6 +356,121 @@ const versionedChanges: SchemaChange[] = [
                     description: "Définit si un assombrissement est appliqué à l'herbe. Si `true`, l'herbe sera assombrie par la lumière du soleil. Si `false`, l'herbe ne sera pas assombrie.",
                     default: false,
                     type: "boolean"
+                }
+            }
+        ]
+    },
+    {
+        version: "1.21.110",
+        changes: [
+            {
+                action: "add",
+                target: ["properties", "minecraft:client_biome", "properties", "components", "properties", "minecraft:precipitation"],
+                value: {
+                    description: "Définit l'apparence des précipitations du Biome. Les biomes sans ce composant auront des valeurs par défaut. Un seul type de précipitation peut être défini par biome.",
+                    type: "object",
+                    properties: {
+                        ash: {
+                            description: "Densité des particules de cendres dans l'air de ce biome. Utilisé dans le biome `soulsand_valley`.",
+                            type: "number"
+                        },
+                        blue_spores: {
+                            description: "Densité des particules de spores bleues dans l'air de ce biome. Utilisé dans le biome `warped_forest`.",
+                            type: "number"
+                        },
+                        red_spores: {
+                            description: "Densité des particules de spores rouges dans l'air de ce biome. Utilisé dans le biome `crimson_forest`.",
+                            type: "number"
+                        },
+                        white_ash: {
+                            description: "Densité des particules de cendres blanches dans l'air de ce biome. Utilisé dans le biome `basalt_deltas`.",
+                            type: "number"
+                        }
+                    }
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:client_biome", "properties", "components", "properties", "minecraft:biome_music", "properties", "underwater_music"],
+                value: {
+                    description: "Définit si la musique sous-marine est activée dans ce biome.",
+                    default: false,
+                    type: "boolean"
+                }
+            }
+        ]
+    },
+    {
+        version: "1.21.120",
+        changes: [
+            {
+                action: "modify",
+                target: ["properties", "minecraft:client_biome", "properties", "components", "properties", "minecraft:ambient_sounds", "properties", "addition"],
+                value: {
+                    description: "Son nommé qui se joue occasionnellement à la position de l'auditeur.",
+                    default: {
+                        asset: "",
+                        chance: 1
+                    },
+                    type: "object",
+                    required: ["asset", "chance"],
+                    properties: {
+                        asset: {
+                            description: "Le son nommé à jouer.",
+                            type: "string",
+                            minLength: 1
+                        },
+                        chance: {
+                            description: "Probabilité que le son soit joué à chaque intervalle, entre 0.0 et 1.0",
+                            type: "number",
+                            minimum: 0.0,
+                            maximum: 1.0
+                        }
+                    }
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:client_biome", "properties", "components", "properties", "minecraft:ambient_sounds", "properties", "underwater_addition"],
+                value: {
+                    description: "Son nommé qui se joue occasionnellement à la position de l'auditeur lorsqu'il est sous l'eau.",
+                    default: {
+                        asset: "",
+                        chance: 1
+                    },
+                    type: "object",
+                    required: ["asset", "chance"],
+                    properties: {
+                        asset: {
+                            description: "Le son nommé à jouer.",
+                            type: "string",
+                            minLength: 1
+                        },
+                        chance: {
+                            description: "Probabilité que le son soit joué à chaque intervalle, entre 0.0 et 1.0",
+                            type: "number",
+                            minimum: 0.0,
+                            maximum: 1.0
+                        }
+                    }
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:client_biome", "properties", "components", "properties", "minecraft:ambient_sounds", "properties", "underwater_loop"],
+                value: {
+                    description: "Son nommé qui se joue en boucle tant que la position de l'auditeur est à l'intérieur du biome et sous l'eau.",
+                    default: "",
+                    type: "string"
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:client_biome", "properties", "components", "properties", "minecraft:ambient_sounds", "properties", "underwater_mood"],
+                value: {
+                    description: "Son nommé qui se joue rarement à une position de bloc d'air proche lorsque le niveau de lumière est faible et que l'auditeur est sous l'eau.",
+                    default: "",
+                    type: "string"
                 }
             }
         ]

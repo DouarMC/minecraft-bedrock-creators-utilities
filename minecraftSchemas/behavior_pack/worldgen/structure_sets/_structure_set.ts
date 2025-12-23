@@ -4,7 +4,6 @@ import { MinecraftJsonSchema } from "../../../../common/types/MinecraftJsonSchem
 import { VersionedSchema } from "../../../../common/types/VersionedSchema";
 
 const baseSchema: MinecraftJsonSchema = {
-    "x-experimental_options": ["Data Driven Jigsaw Structures"],
     description: "Ce fichier sert à définir un Structure Set. Un Structure Set contient un ensemble de Structures Jigsaw et des règles pour déterminer comment ces structures doivent être placées dans le monde par rapport à d'autres instances de structures du même ensemble. Chaque structure dans un ensemble est associée à un poids qui influence la fréquence à laquelle elle est choisie.",
     type: "object",
     required: ["format_version", "minecraft:structure_set"],

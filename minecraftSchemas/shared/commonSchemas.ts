@@ -140,7 +140,7 @@ export function getCommonDefinitions(): Record<string, MinecraftJsonSchema> {
                             description: "La valeur à comparer (type varie selon le test)",
                             type: "string",
                             enum: [
-                                "any", "armor", "body", "feet", "hand", "head", "inventory", "leg", "torso"
+                                "any", "armor", "body", "feet", "hand", "head", "inventory", "leg", "main_hand", "torso"
                             ]
                         }
                     }
@@ -455,7 +455,7 @@ export function getCommonDefinitions(): Record<string, MinecraftJsonSchema> {
                             description: "Le domaine de l'équipement (hand, head, torso, leg, feet, armor, body)",
                             type: "string",
                             enum: [
-                                "any", "armor", "body", "feet", "hand", "head", "inventory", "leg", "torso"
+                                "any", "armor", "body", "feet", "hand", "head", "inventory", "leg", "main_hand", "torso"
                             ]
                         }
                     }

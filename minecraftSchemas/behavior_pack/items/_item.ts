@@ -3,6 +3,7 @@ import { dynamicExamplesSourceKeys, schemaEnums } from "../../shared/schemaEnums
 import { commonSchemas } from "../../shared/commonSchemas";
 import { MinecraftJsonSchema } from "../../../common/types/MinecraftJsonSchema";
 import { VersionedSchema, SchemaChange } from "../../../common/types/VersionedSchema";
+import { min } from "lodash";
 
 const baseSchema: MinecraftJsonSchema = {
     description: "Ce fichier crée ou modifie un Item.",
@@ -1106,7 +1107,7 @@ const versionedChanges: SchemaChange[] = [
                 action: "add",
                 target: ["properties", "minecraft:item", "properties", "components", "properties", "minecraft:food"],
                 value: {
-                    description: "Définit que l'Item est un aliment qui peut être consommé par le joueur.",
+                    description: "Définit que l'Item est un aliment qui peut être consommé par le joueur. L'Item recevra le tag `minecraft:is_food` automatiquement.",
                     type: "object",
                     properties: {
                         can_always_eat: {
@@ -1185,6 +1186,11 @@ const versionedChanges: SchemaChange[] = [
                     description: "Définit les modificateurs d'utilisation de l'Item comme la durée d'utilisation, et la vitesse du joueur lorsqu'il utilise l'Item.",
                     type: "object",
                     properties: {
+                        emit_vibrations: {
+                            description: "Définit si des vibrations sont émises lorsque l'Item commence ou arrête d'être utilisé.",
+                            default: true,
+                            type: "boolean"
+                        },
                         movement_modifier: {
                             description: "Le multiplicateur de vitesse du joueur lorsqu'il utilise l'Item.",
                             type: "number",
@@ -1645,6 +1651,272 @@ const versionedChanges: SchemaChange[] = [
                 action: "remove",
                 target: ["properties", "minecraft:item", "properties", "components", "properties", "minecraft:custom_components"],
                 notes: "Remplacé par les composants personnalisés V2."
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:item", "properties", "components", "properties", "minecraft:swing_duration"],
+                value: {
+                    description: "Définit la durée de l'animation de balancement de l'Item lorsqu'il est utilisé.",
+                    type: "object",
+                    properties: {
+                        value: {
+                            description: "La durée de l'animation de balancement en secondes.",
+                            default: 0.30000001192092896,
+                            type: "number",
+                            minimum: 0,
+                            maximum: 3.4028234663852886e+38
+                        }
+                    }
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:item", "properties", "components", "properties", "minecraft:fire_resistant"],
+                value: {
+                    description: "Définit si l'Item est résistant au feu et à la lave.",
+                    type: "object",
+                    properties: {
+                        value: {
+                            description: "Définit si l'Item est résistant au feu et à la lave.",
+                            default: true,
+                            type: "boolean"
+                        }
+                    }
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:item", "properties", "components", "properties", "minecraft:swing_sounds"],
+                value: {
+                    description: "Remplace les sons de balancement émis par l'utilisateur.",
+                    type: "object",
+                    properties: {
+                        attack_miss: {
+                            description: "Le son joué lorsque une attaque rate ou ne fait pas de dégâts en raison de l'invulnérabilité.",
+                            type: "string"
+                        },
+                        attack_hit: {
+                            description: "Le son joué lorsque une attaque touche une entité et lui inflige des dégâts.",
+                            type: "string"
+                        },
+                        attack_critical_hit: {
+                            description: "Le son joué lorsque une attaque inflige des dégâts critiques à une entité.",
+                            type: "string"
+                        }
+                    }
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:item", "properties", "components", "properties", "minecraft:kinetic_weapon"],
+                value: {
+                    description: "Permet à un Item d'infliger des dégâts cinétiques et leurs effets. Ces dégâts sont infligés à chaque itération pendant son utilisation, en ligne droite le long du vecteur de vue de l'utilisateur. Ils sont calculés en fonction de la vitesse de l'utilisateur et de la cible projetée sur ce vecteur (par produit scalaire). Plus l'utilisateur et la cible se rapprochent et plus ce mouvement est aligné avec le vecteur de vue de l'utilisateur, plus les dégâts sont importants. Après application des coefficients `damage_multiplier` et `damage_modifier`, les dégâts résultants sont arrondis à l'entier inférieur. L'Item doit avoir le composant `minecraft:use_modifiers`.",
+                    type: "object",
+                    properties: {
+                        creative_reach: {
+                            description: "Définit la portée utilisée lorsque l'utilisateur est en mode Créatif. Par défaut, utilise `reach` si non spécifié.",
+                            type: "object",
+                            properties: {
+                                max: {
+                                    description: "La portée maximale en mode Créatif.",
+                                    default: 0,
+                                    type: "number"
+                                },
+                                min: {
+                                    description: "La portée minimale en mode Créatif.",
+                                    default: 0,
+                                    type: "number"
+                                }
+                            }
+                        },
+                        damage_conditions: {
+                            description: "Les conditions qui doivent être remplies pour que les dégâts soient appliqués. Si non spécifié, les dégâts ne sont pas appliqués.",
+                            type: "object",
+                            properties: {
+                                max_duration: {
+                                    description: "Temps en ticks pendant lequel l'effet peut être appliqué. Si négatif, l'effet est appliqué indéfiniment.",
+                                    default: -1,
+                                    type: "integer",
+                                    minimum: -32768,
+                                    maximum: 32767
+                                },
+                                min_relative_speed: {
+                                    description: "Vitesse relative minimale de l'utilisateur par rapport à la cible (projetée sur le vecteur de vue via un produit scalaire) requise pour que l'effet soit appliqué.",
+                                    default: 0,
+                                    type: "number",
+                                    minimum: 0
+                                },
+                                min_speed: {
+                                    description: "Vitesse minimale de l'utilisateur (projetée sur le vecteur de vue via un produit scalaire) requise pour que l'effet soit appliqué.",
+                                    default: 0,
+                                    type: "number",
+                                    minimum: 0
+                                }
+                            }
+                        },
+                        damage_modifier: {
+                            description: "Valeur ajoutée au produit scalaire mis à l'échelle après application de `damage_multiplier`.",
+                            default: 0,
+                            type: "number"
+                        },
+                        damage_multiplier: {
+                            description: "Valeur multipliée au produit scalaire des vecteurs de vitesse de l'utilisateur et de la cible projetés sur le vecteur de vue.",
+                            default: 1,
+                            type: "number"
+                        },
+                        delay: {
+                            description: "Temps, en ticks, après lequel les dégâts cinétiques et leurs effets commencent à être appliqués.",
+                            default: 0,
+                            type: "integer",
+                            minimum: -32768,
+                            maximum: 32767
+                        },
+                        dismount_conditions: {
+                            description: "Conditions nécessaires pour que les cavaliers soient désarçonnés. Si non spécifié, les cavaliers ne peuvent pas être désarçonnés.",
+                            type: "object",
+                            properties: {
+                                max_duration: {
+                                    description: "Temps en ticks pendant lequel l'effet peut être appliqué. Si négatif, l'effet est appliqué indéfiniment.",
+                                    default: -1,
+                                    type: "integer",
+                                    minimum: -32768,
+                                    maximum: 32767
+                                },
+                                min_relative_speed: {
+                                    description: "Vitesse relative minimale de l'utilisateur par rapport à la cible (projetée sur le vecteur de vue via un produit scalaire) requise pour que l'effet soit appliqué.",
+                                    default: 0,
+                                    type: "number",
+                                    minimum: 0
+                                },
+                                min_speed: {
+                                    description: "Vitesse minimale de l'utilisateur (projetée sur le vecteur de vue via un produit scalaire) requise pour que l'effet soit appliqué.",
+                                    default: 0,
+                                    type: "number",
+                                    minimum: 0
+                                }
+                            }
+                        },
+                        hitbox_margin: {
+                            description: "Tolérance accrue pour le lancer de rayons du vecteur de vue afin de détecter les collisions d'entités.",
+                            default: 0,
+                            type: "number"
+                        },
+                        knockback_conditions: {
+                            description: "Conditions nécessaires pour que le recul soit appliqué. Si non spécifié, le recul n'est pas appliqué.",
+                            type: "object",
+                            properties: {
+                                max_duration: {
+                                    description: "Temps en ticks pendant lequel l'effet peut être appliqué. Si négatif, l'effet est appliqué indéfiniment.",
+                                    default: -1,
+                                    type: "integer",
+                                    minimum: -32768,
+                                    maximum: 32767
+                                },
+                                min_relative_speed: {
+                                    description: "Vitesse relative minimale de l'utilisateur par rapport à la cible (projetée sur le vecteur de vue via un produit scalaire) requise pour que l'effet soit appliqué.",
+                                    default: 0,
+                                    type: "number",
+                                    minimum: 0
+                                },
+                                min_speed: {
+                                    description: "Vitesse minimale de l'utilisateur (projetée sur le vecteur de vue via un produit scalaire) requise pour que l'effet soit appliqué.",
+                                    default: 0,
+                                    type: "number",
+                                    minimum: 0
+                                }
+                            }
+                        },
+                        reach: {
+                            description: "Définit la portée (en blocs) le long du vecteur de vue de l'utilisateur où les entités peuvent être touchées. Seules les cibles situées dans cette distance sont prises en compte. Les collisions avec les blocs entre l'utilisateur et la cible bloquent les dégâts et leurs effets.",
+                            default: {
+                                min: 0,
+                                max: 3
+                            },
+                            type: "object",
+                            properties: {
+                                max_duration: {
+                                    description: "Temps en ticks pendant lequel l'effet peut être appliqué. Si négatif, l'effet est appliqué indéfiniment.",
+                                    default: -1,
+                                    type: "integer",
+                                    minimum: -32768,
+                                    maximum: 32767
+                                },
+                                min_relative_speed: {
+                                    description: "Vitesse relative minimale de l'utilisateur par rapport à la cible (projetée sur le vecteur de vue via un produit scalaire) requise pour que l'effet soit appliqué.",
+                                    default: 0,
+                                    type: "number",
+                                    minimum: 0
+                                },
+                                min_speed: {
+                                    description: "Vitesse minimale de l'utilisateur (projetée sur le vecteur de vue via un produit scalaire) requise pour que l'effet soit appliqué.",
+                                    default: 0,
+                                    type: "number",
+                                    minimum: 0
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:item", "properties", "components", "properties", "minecraft:piercing_weapon"],
+                value: {
+                    description: "Permet à l'Item d'infliger des dégâts à toutes les entités détectées en ligne droite le long du vecteur de vue de l'utilisateur. Les Items avec ce composant ne peuvent pas détruire des blocs, car l'action d'attaque a toujours la priorité, quel que soit ce que l'utilisateur regarde.",
+                    type: "object",
+                    properties: {
+                        creative_reach: {
+                            description: "Définit la portée utilisée lorsque l'utilisateur est en mode Créatif. Par défaut, utilise `reach` si non spécifié.",
+                            type: "object",
+                            properties: {
+                                max: {
+                                    description: "La portée maximale en mode Créatif.",
+                                    default: 0,
+                                    type: "number"
+                                },
+                                min: {
+                                    description: "La portée minimale en mode Créatif.",
+                                    default: 0,
+                                    type: "number"
+                                }
+                            }
+                        },
+                        hitbox_margin: {
+                            description: "Tolérance accrue pour le lancer de rayons du vecteur de vue afin de détecter les collisions d'entités.",
+                            default: 0,
+                            type: "number"
+                        },
+                        reach: {
+                            description: "Définit la portée (en blocs) le long du vecteur de vue de l'utilisateur où les entités peuvent être touchées. Seules les cibles situées dans cette distance sont prises en compte. Les collisions avec les blocs entre l'utilisateur et la cible bloquent les dégâts et leurs effets.",
+                            default: {
+                                min: 0,
+                                max: 3
+                            },
+                            type: "object",
+                            properties: {
+                                max_duration: {
+                                    description: "Temps en ticks pendant lequel l'effet peut être appliqué. Si négatif, l'effet est appliqué indéfiniment.",
+                                    default: -1,
+                                    type: "integer",
+                                    minimum: -32768,
+                                    maximum: 32767
+                                },
+                                min_relative_speed: {
+                                    description: "Vitesse relative minimale de l'utilisateur par rapport à la cible (projetée sur le vecteur de vue via un produit scalaire) requise pour que l'effet soit appliqué.",
+                                    default: 0,
+                                    type: "number",
+                                    minimum: 0
+                                },
+                                min_speed: {
+                                    description: "Vitesse minimale de l'utilisateur (projetée sur le vecteur de vue via un produit scalaire) requise pour que l'effet soit appliqué.",
+                                    default: 0,
+                                    type: "number",
+                                    minimum: 0
+                                }
+                            }
+                        }
+                    }
+                }
             }
         ]
     }

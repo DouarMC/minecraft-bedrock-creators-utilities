@@ -5,7 +5,6 @@ import { MinecraftJsonSchema } from "../../../common/types/MinecraftJsonSchema";
 import { VersionedSchema } from "../../../common/types/VersionedSchema";
 
 const baseSchema: MinecraftJsonSchema = {
-    "x-experimental_options": ["Custom Biomes"],
     description: "Ce fichier définit un Biome.",
     type: "object",
     required: ["format_version", "minecraft:biome"],
@@ -14,7 +13,7 @@ const baseSchema: MinecraftJsonSchema = {
             description: "La version du format à utiliser.",
             type: "string",
             enum: [
-                "1.13.0", "1.14.0", "1.14.1", "1.14.20", "1.14.30", "1.15.0", "1.16.0", "1.16.20", "1.16.100", "1.16.200", "1.16.210", "1.16.220", "1.16.230", "1.17.0", "1.17.10", "1.17.20", "1.17.30", "1.17.40", "1.18.0", "1.18.10", "1.18.20", "1.18.30", "1.18.40", "1.19.0", "1.19.10", "1.19.20", "1.19.30", "1.19.40", "1.19.50", "1.19.60", "1.19.70", "1.19.80", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100", "1.21.110", "1.21.120", "1.21.130"
+                "1.21.110", "1.21.120", "1.21.130"
             ]
         },
         "minecraft:biome": {
@@ -43,20 +42,8 @@ const baseSchema: MinecraftJsonSchema = {
                             description: "Définit la temprature, l'humidité, les précipitations, etc. Les Biomes sans ce composant auront des valeurs par défaut.",
                             type: "object",
                             properties: {
-                                ash: {
-                                    description: "Densité des particules de cendres dans l'air de ce biome. Utilisé dans le biome `soulsand_valley`.",
-                                    type: "number"
-                                },
-                                blue_spores: {
-                                    description: "Densité des particules de spores bleues dans l'air de ce biome. Utilisé dans le biome `warped_forest`.",
-                                    type: "number"
-                                },
                                 downfall: {
-                                    description: "Cette valeur influence la couleur de la végétation et de l'eau. La valeur doit être comprise entre 0.0 et 1.0, où 0.0 donne des couleurs ternes et 1.0 des couleurs vives.",
-                                    type: "number"
-                                },
-                                red_spores: {
-                                    description: "Densité des particules de spores rouges dans l'air de ce biome. Utilisé dans le biome `crimson_forest`.",
+                                    description: "Cette valeur influence la couleur de la végétation et de l'eau. La valeur doit être comprise entre 0.0 et 1.0, où 0.0 donne des couleurs ternes et 1.0 des couleurs vives. Une valeur de `0` fera arrêter la pluie de tomber dans ce biome.",
                                     type: "number"
                                 },
                                 snow_accumulation: {
@@ -70,10 +57,6 @@ const baseSchema: MinecraftJsonSchema = {
                                 },
                                 temperature: {
                                     description: "La temperature affecte une variété de choses visuelles et comportementales, y compris le placement de la neige et de la glace, le séchage des blocs d'éponge, la couleur de l'eau, et la couleur de la végétation. Si la température est froide, la pluie sera remplacée par la neige et des couches de neige seront placées sur les blocs.",
-                                    type: "number"
-                                },
-                                white_ash: {
-                                    description: "Densité des particules de cendres blanches dans l'air de ce biome. Utilisé dans le biome `basalt_deltas`.",
                                     type: "number"
                                 }
                             }
@@ -222,7 +205,7 @@ const baseSchema: MinecraftJsonSchema = {
                             }
                         },
                         "minecraft:multinoise_generation_rules": {
-                            description: "Contrôle comment ce biome est instancié (et potentiellement modifié) lors de la génération du monde du Nether.",
+                            description: "Contrôle comment ce biome est instancié (et potentiellement modifié) lors de la génération du monde du Nether. Ce composant n'est pas utilisable pour les biomes personalisés.",
                             type: "object",
                             properties: {
                                 target_weirdness: {
@@ -248,7 +231,7 @@ const baseSchema: MinecraftJsonSchema = {
                             }
                         },
                         "minecraft:overworld_generation_rules": {
-                            description: "Définit comment ce Biome est instancié (et potentiellement modifié) lors de la génération du monde de l'overworld.",
+                            description: "Définit comment ce Biome est instancié (et potentiellement modifié) lors de la génération du monde de l'overworld. Ce composant n'est pas utilisable pour les biomes personalisés.",
                             type: "object",
                             properties: {
                                 mutate_transformation: {
@@ -728,7 +711,7 @@ const baseSchema: MinecraftJsonSchema = {
                                         },
                                         {
                                             type: "object",
-                                            required: ["foundation_material", "mid_material", "sea_floor_depth", "sea_floor_material", "sea_material", "top_material", "type"],
+                                            required: ["foundation_material", "max_puddle_depth_below_sea_level", "mid_material", "sea_floor_depth", "sea_floor_material", "sea_material", "top_material", "type"],
                                             properties: {
                                                 foundation_material: {
                                                     description: "Contrôle le type de bloc utilisé en profondeur dans ce biome.",
@@ -739,6 +722,12 @@ const baseSchema: MinecraftJsonSchema = {
                                                         },
                                                         commonSchemas.block_descriptor
                                                     ]
+                                                },
+                                                max_puddle_depth_below_sea_level: {
+                                                    description: "Contrôle la profondeur à laquelle les blocs de surface peuvent être remplacés par de l'eau pour former des flaques. Le nombre représente le nombre de blocs (0, 127) sous le niveau de la mer à partir duquel on descendra pour trouver un bloc de surface. La valeur doit être inférieure ou égale à 127.",
+                                                    type: "integer",
+                                                    minimum: 0,
+                                                    maximum: 127
                                                 },
                                                 mid_material: {
                                                     description: "Contrôle le type de bloc utilisé dans une couche sous la surface de ce biome.",

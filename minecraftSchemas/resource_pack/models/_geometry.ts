@@ -172,7 +172,8 @@ const baseSchema: MinecraftJsonSchema = {
                             }
                         },
                         poly_mesh: {
-                            description: "EXPERIMENTALE \nPermet de définir des objets géométriques complexes sous fomre de maillage triangulaire ou quadrilatéral. \nType: `Object`",
+                            "x-deprecated": true,
+                            description: "Permet de définir des objets géométriques complexes sous fomre de maillage triangulaire ou quadrilatéral.",
                             type: "object",
                             properties: {
                                 normalized_uvs: {
@@ -246,7 +247,7 @@ const baseSchema: MinecraftJsonSchema = {
                             }
                         },
                         texture_meshes: {
-                            description: "EXPERIMENTALE \nUtilise des textures pour créer des maillages directement à partir de pixels. \nType: `Object[]`",
+                            description: "Utilise des textures pour créer des maillages directement à partir de pixels.",
                             type: "array",
                             items: {
                                 type: "object",
@@ -291,6 +292,11 @@ const baseSchema: MinecraftJsonSchema = {
                                         items: {
                                             type: "number"
                                         }
+                                    },
+                                    use_pixel_depth: {
+                                        description: "Permet de cotrôler la relation entre a profondeur de la géométrie et la résolution de la texture. Si `true`, la géométrie aura une profondeur d'un pixel (dans l'espace entité, et non dans l'espace texture, et les textures dont la résolution est différente de 16x16 apparaîtront alors étirées. Si `false`, la géométrie sera construite à partir de voxels parfaitement cubiques, quel que soit le rapport hauteur/largeur de la texture.",
+                                        default: true,
+                                        type: "boolean"
                                     }
                                 }
                             }
@@ -702,7 +708,8 @@ const versionedChanges: SchemaChange[] = [
                                             }
                                         },
                                         poly_mesh: {
-                                            description: "EXPERIMENTALE \nPermet de définir des objets géométriques complexes sous fomre de maillage triangulaire ou quadrilatéral. \nType: `Object`",
+                                            "x-deprecated": true,
+                                            description: "Permet de définir des objets géométriques complexes sous fomre de maillage triangulaire ou quadrilatéral.",
                                             type: "object",
                                             properties: {
                                                 normalized_uvs: {
@@ -776,7 +783,7 @@ const versionedChanges: SchemaChange[] = [
                                             }
                                         },
                                         texture_meshes: {
-                                            description: "EXPERIMENTALE \nUtilise des textures pour créer des maillages directement à partir de pixels. \nType: `Object[]`",
+                                            description: "Utilise des textures pour créer des maillages directement à partir de pixels.",
                                             type: "array",
                                             items: {
                                                 type: "object",
@@ -1291,6 +1298,67 @@ const versionedChanges: SchemaChange[] = [
                         },
                         head: {
                             description: "Transformations d'affichage du modèle sur la tête du joueur. \nType: `Object`",
+                            type: "object",
+                            properties: {
+                                translation: {
+                                    description: "Le décalage du modèle (3 valeurs flottantes pour X, Y, Z). \nType: `Number[3]`",
+                                    type: "array",
+                                    minItems: 3,
+                                    maxItems: 3,
+                                    items: {
+                                        type: "number",
+                                        minimum: -80,
+                                        maximum: 80
+                                    }
+                                },
+                                rotation: {
+                                    description: "La rotation en degrés du modèle (3 valeurs flottantes pour X, Y, Z). \nType: `Number[3]`",
+                                    type: "array",
+                                    minItems: 3,
+                                    maxItems: 3,
+                                    items: {
+                                        type: "number",
+                                        minimum: -360,
+                                        maximum: 360
+                                    }
+                                },
+                                scale: {
+                                    description: "L'échelle du modèle (3 valeurs flottantes pour X, Y, Z). \nType: `Number[3]`",
+                                    type: "array",
+                                    minItems: 3,
+                                    maxItems: 3,
+                                    items: {
+                                        type: "number",
+                                        minimum: 0,
+                                        maximum: 4
+                                    }
+                                },
+                                rotation_pivot: {
+                                    description: "Le point de pivot de la rotation (3 valeurs flottantes pour X, Y, Z). \nType: `Number[3]`",
+                                    type: "array",
+                                    minItems: 3,
+                                    maxItems: 3,
+                                    items: {
+                                        type: "number",
+                                        minimum: -80,
+                                        maximum: 80
+                                    }
+                                },
+                                scale_pivot: {
+                                    description: "Le point de pivot de l'échelle (3 valeurs flottantes pour X, Y, Z). \nType: `Number[3]`",
+                                    type: "array",
+                                    minItems: 3,
+                                    maxItems: 3,
+                                    items: {
+                                        type: "number",
+                                        minimum: -80,
+                                        maximum: 80
+                                    }
+                                }
+                            }
+                        },
+                        embedded: {
+                            description: "Transformations d'affichage du modèle quand il est intégré dans un bloc (exemple: pot de fleur). Si ce champ n'est pas définit, la transformation âr défaut sera 0.75x `scale`.",
                             type: "object",
                             properties: {
                                 translation: {

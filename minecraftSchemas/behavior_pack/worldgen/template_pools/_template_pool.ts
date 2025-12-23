@@ -4,7 +4,6 @@ import { MinecraftJsonSchema } from "../../../../common/types/MinecraftJsonSchem
 import { VersionedSchema } from "../../../../common/types/VersionedSchema";
 
 const baseSchema: MinecraftJsonSchema = {
-    "x-experimental_options": ["Data Driven Jigsaw Structures"],
     description: "Ce fichier sert à définir une Template Pool pour les structures Jigsaw. Les Template Pools sont des groupes de structures templates liées avec des poids et des processeurs assignés. Pendant la génération du monde, la Jigsaw Structure Start Pool spécifie quelle Template Pool utiliser en premier. Un Structure Template est ensuite choisi aléatoirement dans le pool et placé comme première pièce de structure. Les blocs Jigsaw à l'intérieur de la structure placée peuvent également spécifier des Template Pools à partir desquels les pièces de structure suivantes sont placées récursivement jusqu'à ce que la Jigsaw Structure soit entièrement générée.",
     type: "object",
     required: ["format_version", "minecraft:template_pool"],

@@ -68,6 +68,7 @@ export const dynamicExamplesSourceKeys = {
     inheritable_camera_preset_ids: "inheritable_camera_preset_ids",
     item_group_ids: "item_group_ids",
     item_ids: "item_ids",
+    item_tags: "item_tags",
     item_texture_references: "item_texture_references",
     language_ids: "language_ids",
     lighting_settings_ids: "lighting_settings_ids",
@@ -99,7 +100,6 @@ export const dynamicExamplesSourceKeys = {
 
     /*
     vanilla_data_driven_item_ids: "vanilla_data_driven_item_ids",
-    item_tags: "item_tags",
     */
 } as const;
 

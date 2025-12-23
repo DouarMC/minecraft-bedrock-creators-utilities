@@ -1495,6 +1495,98 @@ const versionedChanges: SchemaChange[] = [
                 }
             }
         ]
+    },
+    {
+        version: "1.21.120",
+        changes: [
+            {
+                action: "add",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:redstone_producer"],
+                value: {
+                    description: "Définit le comportement du Bloc en tant que source de redstone.",
+                    type: "object",
+                    required: ["power"],
+                    properties: {
+                        power: {
+                            description: "La puissance de redstone émise par le Bloc. La valeur doit être comprise entre 0 et 15.",
+                            type: "integer",
+                            minimum: 0,
+                            maximum: 15
+                        },
+                        strongly_powered_face: {
+                            description: "Le bloc touchant cette face sera fortement alimenté avec un niveau de signal de `power`. Les blocs fortement alimentés alimenteront les blocs adjacents. Par défaut, le bloc n'alimentera aucune face.",
+                            type: "string",
+                            enum: ["up", "down", "north", "south", "east", "west"]
+                        },
+                        connected_faces: {
+                            description: "La liste des faces qui sont considérées comme connectées au circuit. Si une face n'est pas connectée, elle ne fournira pas de puissance au bloc touchant cette face. Par défaut, toutes les faces sont connectées.",
+                            type: "array",
+                            items: {
+                                type: "string",
+                                enum: ["up", "down", "north", "south", "east", "west"]
+                            }
+                        },
+                        transform_relative: {
+                            description: "Si `true`, les propriétés `strongly_powered_face` et `connected_faces` seront pivotés en fonction du composant `minecraft:transformation` du Bloc.",
+                            default: false,
+                            type: "boolean"
+                        }
+                    }
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:flower_pottable"],
+                value: {
+                    description: "Indique que le Bloc peut être placé dans un pot de fleur.",
+                    type: "object"
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:embedded_visual"],
+                value: {
+                    description: "Définit le modèle et les textures du Bloc lorsqu'il est placé dans un autre Bloc (comme un pot de fleur).",
+                    type: "object",
+                    properties: {
+                        geometry: {
+                            $ref: "#/properties/minecraft:block/properties/components/properties/minecraft:geometry"
+                        },
+                        material_instances: {
+                            $ref: "#/properties/minecraft:block/properties/components/properties/minecraft:material_instances"
+                        }
+                    }
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:precipitation_interactions"],
+                value: {
+                    description: "Détermine comment le Bloc intéragit avec les précipitations (pluie, neige, etc.).",
+                    type: "object",
+                    properties: {
+                        precipitation_behavior: {
+                            description: "Le comportement du Bloc lorsqu'il est exposé aux précipitations.",
+                            default: "obstruct_rain_accumulate_snow",
+                            type: "string",
+                            enum: [
+                                "obrain", "obstruct_rain_accumulate_snow", "none"
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:material_instances", "oneOf", "1", "properties", "alpha_masked_tint"],
+                value: {
+                    "x-experimental_options": ["Upcoming Creator Features"],
+                    description: "Quand `true`, la canal alpha de la texture sera utilisé pour multiplier la teinte de l'albédo de la texture. `tint_method` doit être différent de `none` et `render_method` doit être `opaque`.",
+                    default: false,
+                    type: "boolean"
+                }
+            }
+        ]
     }
 ];
 

@@ -274,18 +274,48 @@ const baseSchema: MinecraftJsonSchema = {
                         },
                         "minecraft:addrider": {
                             description: "Ajoute un cavalier à l'Entité. L'Entité doit avoir le composant `minecraft:rideable`.",
-                            type: "object",
-                            properties: {
-                                entity_type: {
-                                    description: "Définit le type de l'entité qui chevauchera cette Entité.",
-                                    type: "string",
-                                    "x-dynamic-examples-source": [dynamicExamplesSourceKeys.entity_ids, dynamicExamplesSourceKeys.vanilla_entity_ids_without_namespace]
+                            oneOf: [
+                                {
+                                    type: "object",
+                                    required: ["entity_type"],
+                                    properties: {
+                                        entity_type: {
+                                            description: "Définit le type de l'entité qui chevauchera cette Entité.",
+                                            type: "string",
+                                            "x-dynamic-examples-source": [dynamicExamplesSourceKeys.entity_ids, dynamicExamplesSourceKeys.vanilla_entity_ids_without_namespace]
+                                        },
+                                        spawn_event: {
+                                            description: "Le spawn event qui sera déclenché sur l'Entité chevauchée quand son cavalier sera crée.",
+                                            type: "string"
+                                        }
+                                    }
                                 },
-                                spawn_event: {
-                                    description: "Le spawn event qui sera déclenché sur l'Entité chevauchée quand son cavalier sera crée.",
-                                    type: "string"
+                                {
+                                    type: "object",
+                                    required: ["riders"],
+                                    properties: {
+                                        riders: {
+                                            description: "Une liste d'Entités qui chevaucheront cette Entité.",
+                                            type: "array",
+                                            items: {
+                                                type: "object",
+                                                required: ["entity_type"],
+                                                properties: {
+                                                    entity_type: {
+                                                        description: "Définit le type de l'entité qui chevauchera cette Entité.",
+                                                        type: "string",
+                                                        "x-dynamic-examples-source": [dynamicExamplesSourceKeys.entity_ids, dynamicExamplesSourceKeys.vanilla_entity_ids_without_namespace]
+                                                    },
+                                                    spawn_event: {
+                                                        description: "Le spawn event qui sera déclenché sur l'Entité chevauchée quand son cavalier sera crée.",
+                                                        type: "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
-                            }
+                            ]
                         },
                         "minecraft:admire_item": {
                             description: "Force l'Entité à ignorer les cibles attaquables pour une durée donnée.",
@@ -811,6 +841,10 @@ const baseSchema: MinecraftJsonSchema = {
                         },
                         "minecraft:body_rotation_blocked": {
                             description: "Lorsque ce composant est défini, l'entité ne tournera plus visuellement son corps pour correspondre à sa direction de face.",
+                            type: "object"
+                        },
+                        "minecraft:body_rotation_locked_to_vehicle": {
+                            description: "Fait en sorte que la rotation du corps de l'Entité soit verrouillée à celle de son véhicule.",
                             type: "object"
                         },
                         "minecraft:boostable": {
@@ -1562,14 +1596,28 @@ const baseSchema: MinecraftJsonSchema = {
                                 }
                             }
                         },
-                        "minecraft:dash": {
+                        "minecraft:dash_action": {
                             description: "Détermine si l'Entité chevauchable peut effectuer un dash comme le chameau.",
                             type: "object",
                             properties: {
+                                can_dash_underwater: {
+                                    description: "Définit si l'Entité peut effectuer un dash sous l'eau.",
+                                    default: false,
+                                    type: "boolean"
+                                },
                                 cooldown_time: {
                                     description: "Le temps de recharge du dash, en secondes.`",
                                     default: 1.0,
                                     type: "number"
+                                },
+                                direction: {
+                                    description:
+                                    "Définit la source utilisé pour déterminer la direction du dash. " +
+                                    "\n\n- `entity`: utilise la direction du regard de l'Entité." +
+                                    "\n\n- `passenger`: utilise la direction du regard du joueur qui chevauche l'Entité.",
+                                    default: "entity",
+                                    type: "string",
+                                    enum: ["entity", "passenger"]
                                 },
                                 horizontal_momentum: {
                                     description: "Le momentum horizontal du dash.",
@@ -2078,12 +2126,12 @@ const baseSchema: MinecraftJsonSchema = {
                             type: "object",
                             properties: {
                                 on_bred: {
-                                    description: "Une expression Molang définissant la quantité d'expérience récompensée lorsque l'Entité est élevée avec succès. Un tableau d'expressions ajoute le résultat de chaque expression ensemble pour un total final.",
+                                    description: "Une expression Molang définissant la quantité d'expérience récompensée lorsque l'Entité est élevée avec succès.",
                                     default: 0,
                                     type: "molang"
                                 },
                                 on_death: {
-                                    description: "Une expression Molang définissant la quantité d'expérience récompensée lorsque l'Entité meurt. Un tableau d'expressions ajoute le résultat de chaque expression ensemble pour un total final.",
+                                    description: "Une expression Molang définissant la quantité d'expérience récompensée lorsque l'Entité meurt.",
                                     default: 0,
                                     type: "molang"
                                 }
@@ -2310,6 +2358,22 @@ const baseSchema: MinecraftJsonSchema = {
                                 max: {
                                     description: "Distance maximale à laquelle l'Entité suivra un joueur.",
                                     type: "integer"
+                                }
+                            }
+                        },
+                        "minecraft:free_camera_controlled": {
+                            description: "Lorsque l'Entité est chevauchable, l'Entité sera controllée avec les touches du claiver et de la souris dans les 3 dimensions.",
+                            type: "object",
+                            properties: {
+                                backwards_movement_modifier: {
+                                    description: "Modifie la vitesse de l'Entité lorsqu'elle se déplace en arrière.",
+                                    default: 0.5,
+                                    type: "number"
+                                },
+                                strafe_speed_modifier: {
+                                    description: "Modifie la vitesse de l'Entité lorsqu'elle se déplace latéralement.",
+                                    default: 0.4,
+                                    type: "number"
                                 }
                             }
                         },
@@ -2799,22 +2863,6 @@ const baseSchema: MinecraftJsonSchema = {
                                 }
                             }
                         },
-                        "minecraft:input_air_controlled": {
-                            description: "Lorsque l'Entité est chevauchable, l'Entité sera controllée avec les touches du claiver et de la souris dans les 3 dimensions.",
-                            type: "object",
-                            properties: {
-                                backwards_movement_modifier: {
-                                    description: "Modifie la vitesse de l'Entité lorsqu'elle se déplace en arrière.",
-                                    default: 0.5,
-                                    type: "number"
-                                },
-                                strafe_speed_modifier: {
-                                    description: "Modifie la vitesse de l'Entité lorsqu'elle se déplace latéralement.",
-                                    default: 0.4,
-                                    type: "number"
-                                }
-                            }
-                        },
                         "minecraft:input_ground_controlled": {
                             description: "Permet à une Entité montable de pouvoir être contrôlée à l'aide des commandes clavier lorsqu'elle est montée par un joueur.",
                             type: "object"
@@ -2914,7 +2962,7 @@ const baseSchema: MinecraftJsonSchema = {
                                     description: "Le slot pour retirer et déposer l'item, le cas échéant, lors d'une interaction réussie. Les slots d'inventaire sont désignés par des nombres positifs; les slots d'armure sont désignés par slot.armor.head, slot.armor.chest, slot.armor.legs, slot.armor.feet et slot.armor.body.",
                                     type: "string",
                                     enum: [
-                                        "slot.armor.chest", "slot.armor.feet", "slot.armor.head", "slot.armor.legs", "slot.armor.body"
+                                        "slot.armor.chest", "slot.armor.feet", "slot.armor.head", "slot.armor.legs", "slot.armor.body", "slot.weapon.mainhand", "slot.weapon.offhand"
                                     ]
                                 },
                                 drop_item_y_offset: {
@@ -2926,7 +2974,7 @@ const baseSchema: MinecraftJsonSchema = {
                                     description: "Le slot pour équiper l'item, le cas échéant, lors d'une interaction réussie. Les slots d'inventaire sont désignés par des nombres positifs; les slots d'armure sont désignés par slot.armor.head, slot.armor.chest, slot.armor.legs, slot.armor.feet et slot.armor.body.",
                                     type: "string",
                                     enum: [
-                                        "slot.armor.chest", "slot.armor.feet", "slot.armor.head", "slot.armor.legs", "slot.armor.body"
+                                        "slot.armor.chest", "slot.armor.feet", "slot.armor.head", "slot.armor.legs", "slot.armor.body", "slot.weapon.mainhand", "slot.weapon.offhand"
                                     ]
                                 },
                                 health_amount: {
@@ -5033,6 +5081,10 @@ const baseSchema: MinecraftJsonSchema = {
                                             description: "Définit les dégâts que l'entité touchée subit.",
                                             type: "object",
                                             properties: {
+                                                apply_knockback_to_blocking_targets: {
+                                                    description: "Définit si le recul doit être appliqué aux cibles qui bloquent avec un bouclier.",
+                                                    type: "boolean"
+                                                },
                                                 catch_fire: {
                                                     description: "Détermine si l'entité touchée est en feu.",
                                                     default: false,
@@ -5819,9 +5871,9 @@ const baseSchema: MinecraftJsonSchema = {
                                                 "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
                                             },
                                             item: {
-                                                description: "Le nom de l'item que l'entité veut partager.",
+                                                description: "Le nom de l'item que l'entité veut partager. Peut être aussi un tag d'item.",
                                                 type: "string",
-                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
+                                                "x-dynamic-examples-source": [dynamicExamplesSourceKeys.item_ids, dynamicExamplesSourceKeys.item_tags]
                                             },
                                             max_amount: {
                                                 description: "Nombre maximum d'items que l'Entité tiendra.",
@@ -6684,6 +6736,17 @@ const baseSchema: MinecraftJsonSchema = {
                                     description: "L'ID de la variante. Par convention, 0 est l'ID de l'entité de base.",
                                     default: 0,
                                     type: "integer"
+                                }
+                            }
+                        },
+                        "minecraft:vertical_movement_action": {
+                            description: "Si cette Entité est conifugré comme étant chevauchable, ce composant ajoute la capacité à l'Entité de monter ou descendre lorsque le joueur appuie sur la touche de saut. Ce composant est automatiquement ajouté aux entités qui ont l'ancien composant `minecraft:input_air_controlled` avec une `format_version` de 1.21.100 ou inférieure.",
+                            type: "object",
+                            properties: {
+                                vertical_velocity: {
+                                    description: "Vitesse verticale à appliquer lors du déclèchement de l'action de saut.",
+                                    default: 0.5,
+                                    type: "number"
                                 }
                             }
                         },
@@ -13924,7 +13987,6 @@ const baseSchema: MinecraftJsonSchema = {
                             }
                         },
                         "minecraft:behavior.transport_items": {
-                            "x-experimental_options": ["Drop 3 2025"],
                             description: "Permet à l'Entité de transporter des items des conteneurs à des autres conteneurs. Si l'Entité ne tient aucun item, il cherchera un conteneur qui correspond à `source_container_types`, et il essaiera de prendre un item du premier slot non-vide. Il prendra le stack d'item le plus grand qui est entre `max_stack_size` et la taille du stack dans ce slot. Si le conteneur est vide ou qu'aucun stack d'items ne correspond, il retiendra ce coffre comme étant déjà fouillé et cherchera le conteneur le plus proche pour récupérer un stack d'items. S'il ne trouve aucun conteneur non-fouillé, il désactive cet objectif pendant `idle_cooldown` secondes et réinitialise les conteneurs fouillés. Une fois qu'il trouve et prend un stack d'items, il réinitialise les conteneurs fouillés. Si l'Entité porte un item, il essaiera de trouver un conteneur correspondant à `destination_container_types` et esssaiera de mettre son item dans celui-ci. Si le conteneur est plein, il retiendra ce coffre comme étant déjà fouillé et cherchera le conteneur le plus proche pour déposer son item. S'il ne trouve aucun conteneur non-fouillé, il désactive cet objectif pendant `idle_cooldown` secondes et réinitialise les conteneurs fouillés. Une fois qu'il trouve un conteneur avec de la place, il déposera son stack d'items et réinitialisera les conteneurs fouillés.",
                             type: "object",
                             properties: {
@@ -14328,6 +14390,19 @@ const baseSchema: MinecraftJsonSchema = {
                                         items: {
                                             type: "string"
                                         }
+                                    }
+                                }
+                            },
+                            drop_item: {
+                                description: "Permet à l'Entité de lacher son item d'un slot spécifié.",
+                                type: "object",
+                                properties: {
+                                    slot: {
+                                        description: "Le slot dont l'item sera lâché.",
+                                        type: "string",
+                                        enum: [
+                                            "slot.armor.chest", "slot.armor.feet", "slot.armor.head", "slot.armor.legs", "slot.armor.body", "slot.weapon.mainhand", "slot.weapon.offhand"
+                                        ]
                                     }
                                 }
                             },
