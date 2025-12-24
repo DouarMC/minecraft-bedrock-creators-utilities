@@ -1578,7 +1578,7 @@ const versionedChanges: SchemaChange[] = [
             },
             {
                 action: "add",
-                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:material_instances", "oneOf", "1", "properties", "alpha_masked_tint"],
+                target: ["definitions", "material_instance", "oneOf", "1", "properties", "alpha_masked_tint"],
                 value: {
                     "x-experimental_options": ["Upcoming Creator Features"],
                     description: "Quand `true`, la canal alpha de la texture sera utilisé pour multiplier la teinte de l'albédo de la texture. `tint_method` doit être différent de `none` et `render_method` doit être `opaque`.",

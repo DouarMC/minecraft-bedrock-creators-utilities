@@ -509,6 +509,15 @@ const versionedChanges: SchemaChange[] = [
                         duration: {
                             description: "Le temps de recharge de l'Item en secondes.",
                             type: "number"
+                        },
+                        type: {
+                            description:
+                            "Le type d'action auquel le cooldown s'applique. Les options sont mutuellement exclusives, donc le cooldown pour un type d'action n'affecte pas les autres.\n\n" +
+                            "-`use`: lors de l'utilisation d'un item.\n\n" +
+                            "-`attack`: lors de l'attaque avec un item.",
+                            default: "use",
+                            type: "string",
+                            enum: ["use", "attack"]
                         }
                     }
                 }
