@@ -275,6 +275,19 @@ const baseSchema: MinecraftJsonSchema = {
                                 }
                             ]
                         },
+                        "minecraft:support": {
+                            "x-experimental_options": ["Upcoming Creator Features"],
+                            description: "Définit la forme de support du Bloc. Actuellement, seuls les blocs ayant la même forme qu'une clôture Vanilla et qu'un escalier Vanilla sont autorisés. Pour fonctionner avec des escaliers personnalisés, il est nécessaire d'utiliser `minecraft:vertical_half` et `minecraft:cardinal_direction` ou `minecraft:facing_direction` qui peuvent être définis via le trait de bloc `minecraft:placement_direction`. Les blocs personnalisés sans ce composant auront par défaut une unité cube de support.",
+                            type: "object",
+                            required: ["shape"],
+                            properties: {
+                                shape: {
+                                    description: "La forme de support du Bloc.",
+                                    type: "string",
+                                    enum: ["fence", "stair"]
+                                }
+                            }
+                        },
                         "minecraft:tick": {
                             description: "Définit les paramètres pour le déclenchement de l'événement `onTick` des composants personnalisés de ce Bloc.",
                             type: "object",
@@ -1114,6 +1127,20 @@ const versionedChanges: SchemaChange[] = [
                                     items: {
                                         type: "string",
                                         enum: ["minecraft:block_face", "minecraft:vertical_half"]
+                                    }
+                                }
+                            }
+                        },
+                        "minecraft:connection": {
+                            description: "Trait qui expose le comportement similaire au barrières et aux vitres où les blocs se connectent automatiquement aux blocs adjacents. Utiliser ce trait active les états built-in `minecraft:connection_north`, `minecraft:connection_east`, `minecraft:connection_south` et `minecraft:connection_west`.",
+                            type: "object",
+                            properties: {
+                                enabled_states: {
+                                    description: "Liste des états built-in à activer.",
+                                    type: "array",
+                                    items: {
+                                        type: "string",
+                                        enum: ["minecraft:cardinal_connections"]
                                     }
                                 }
                             }

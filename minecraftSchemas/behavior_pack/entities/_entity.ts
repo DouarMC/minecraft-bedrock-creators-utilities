@@ -370,6 +370,11 @@ const baseSchema: MinecraftJsonSchema = {
                                                     growth: {
                                                         description: "Proportion de la croissance gagnée en utilisant cet item.",
                                                         type: "number"
+                                                    },
+                                                    result_item: {
+                                                        description: "Définit en quel item cet `item` se transforme après avoir été utilisé pour nourrir l'Entité.",
+                                                        type: "string",
+                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
                                                     }
                                                 }
                                             }
@@ -388,11 +393,6 @@ const baseSchema: MinecraftJsonSchema = {
                                 interact_filters: {
                                     description: "Liste des conditions à remplir pour que l'Entité soit nourrie.",
                                     ...commonSchemas.minecraft_filter
-                                },
-                                transform_to_item: {
-                                    description: "L'item utilisé se transformera en cet item après une interaction réussie.",
-                                    type: "string",
-                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
                                 }
                             }
                         },
@@ -835,16 +835,8 @@ const baseSchema: MinecraftJsonSchema = {
                             description: "Fait en sorte que le corps de l'Entité tourne toujours dans la direction de sa tête. Ne remplace pas `minecraft:body_rotation_blocked` s'il est présent.",
                             type: "object"
                         },
-                        "minecraft:rotation_axis_aligned": {
-                            description: "Fait tourner automatiquement le corps de l'entité pour s'aligner sur la direction cardinale la plus proche en fonction de sa direction de face actuelle. Combiner cela avec le composant `minecraft:body_rotation_blocked` fera en sorte que l'entité s'aligne sur la direction cardinale la plus proche et reste fixe dans cette orientation, indépendamment des futurs changements de sa direction de face.",
-                            type: "object"
-                        },
                         "minecraft:body_rotation_blocked": {
                             description: "Lorsque ce composant est défini, l'entité ne tournera plus visuellement son corps pour correspondre à sa direction de face.",
-                            type: "object"
-                        },
-                        "minecraft:body_rotation_locked_to_vehicle": {
-                            description: "Fait en sorte que la rotation du corps de l'Entité soit verrouillée à celle de son véhicule.",
                             type: "object"
                         },
                         "minecraft:boostable": {
@@ -954,6 +946,11 @@ const baseSchema: MinecraftJsonSchema = {
                                     default: false,
                                     type: "boolean"
                                 },
+                                can_dehydrate: {
+                                    description: "Si `true`, les entités qui ne respirent que dans l'eau subiront des dégâts de déshydratation lorsqu'elles seront hors de l'eau.",
+                                    default: false,
+                                    type: "boolean"
+                                },
                                 generates_bubbles: {
                                     description: "Définit si l'Entité aura des bulles visibles lorsqu'elle est dans l'eau.",
                                     default: true,
@@ -1007,8 +1004,27 @@ const baseSchema: MinecraftJsonSchema = {
                                     description: "Liste des items qui peuvent être utilisés pour amener l'Entité dans l'état d'amour.",
                                     type: "array",
                                     items: {
-                                        type: "string",
-                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
+                                        oneOf: [
+                                            {
+                                                type: "string",
+                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
+                                            },
+                                            {
+                                                type: "object",
+                                                properties: {
+                                                    item: {
+                                                        description: "L'item qui peut être utilisé pour amener l'Entité dans l'état d'amour.",
+                                                        type: "string",
+                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
+                                                    },
+                                                    result_item: {
+                                                        description: "Définit en quel item cet `item` se transforme après avoir été utilisé pour la reproduction de l'Entité.",
+                                                        type: "string",
+                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
+                                                    }
+                                                }
+                                            }
+                                        ]
                                     }
                                 },
                                 breeds_with: {
@@ -1292,7 +1308,22 @@ const baseSchema: MinecraftJsonSchema = {
                             description: "Oblige l'Entité à brûler à la lumière du jour.",
                             oneOf: [
                                 {
-                                    type: "object"
+                                    type: "object",
+                                    properties: {
+                                        protection_slot: {
+                                            description: "Définit quel emplacement d'armure protège l'Entité de la combustion à la lumière du jour.",
+                                            default: "slot.armor.head",
+                                            type: "string",
+                                            enum: [
+                                                "slot.armor.body",
+                                                "slot.armor.chest",
+                                                "slot.armor.feet",
+                                                "slot.armor.head",
+                                                "slot.armor.legs",
+                                                "slot.armor.offhand"
+                                            ]
+                                        }
+                                    }
                                 },
                                 {
                                     type: "boolean"
@@ -2094,6 +2125,11 @@ const baseSchema: MinecraftJsonSchema = {
                                     default: 0.05,
                                     type: "number"
                                 },
+                                lunge: {
+                                    description: "Montant d'épuisement appliqué lors du déclenchement de l'enchantement de charge, multiplié par le niveau de l'enchantement.",
+                                    default: 4,
+                                    type: "number"
+                                },
                                 mine: {
                                     description: "Montant d'épuisement appliqué lors de l'exploitation minière.",
                                     default: 0.005,
@@ -2706,6 +2742,11 @@ const baseSchema: MinecraftJsonSchema = {
                                             },
                                             item: {
                                                 description: "L'item qui peut être utilisé pour soigner l'Entité.",
+                                                type: "string",
+                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
+                                            },
+                                            result_item: {
+                                                description: "Définit en quel item cet `item` se transforme après avoir été utilisé pour soigner l'Entité.",
                                                 type: "string",
                                                 "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
                                             }
@@ -3590,6 +3631,11 @@ const baseSchema: MinecraftJsonSchema = {
                             description: "Applique un effet de mob aux entités qui entrent dans la portée.",
                             type: "object",
                             properties: {
+                                ambient: {
+                                    description: "Définit si l'effet est considéré comme un effet ambiant (comme ceux appliqués par les balises ou les conduits).",
+                                    default: false,
+                                    type: "boolean"
+                                },
                                 cooldown_time: {
                                     description: "Temps en secondes avant que l'effet puisse être appliqué à nouveau. ",
                                     default: 0,
@@ -5765,6 +5811,14 @@ const baseSchema: MinecraftJsonSchema = {
                                 }
                             }
                         },
+                        "minecraft:rotation_axis_aligned": {
+                            description: "Fait tourner automatiquement le corps de l'entité pour s'aligner sur la direction cardinale la plus proche en fonction de sa direction de face actuelle. Combiner cela avec le composant `minecraft:body_rotation_blocked` fera en sorte que l'entité s'aligne sur la direction cardinale la plus proche et reste fixe dans cette orientation, indépendamment des futurs changements de sa direction de face.",
+                            type: "object"
+                        },
+                        "minecraft:rotation_locked_to_vehicle": {
+                            description: "Fait en sorte que la rotation du corps de l'Entité soit verrouillée à celle de son véhicule.",
+                            type: "object"
+                        },
                         "minecraft:scale": {
                             description: "Définit la taille visuelle de l'entité en modifiant la taille du modèle.",
                             type: "object",
@@ -6216,8 +6270,27 @@ const baseSchema: MinecraftJsonSchema = {
                                         {
                                             type: "array",
                                             items: {
-                                                type: "string",
-                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
+                                                oneOf: [
+                                                    {
+                                                        type: "string",
+                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
+                                                    },
+                                                    {
+                                                        type: "object",
+                                                        properties: {
+                                                            item: {
+                                                                description: "L'item qui peut être utilisé pour apprivoiser l'entité.",
+                                                                type: "string",
+                                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
+                                                            },
+                                                            result_item: {
+                                                                description: "Définit en quel item cet `item` se transforme après avoir été utilisé pour apprivoiser l'Entité.",
+                                                                type: "string",
+                                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
+                                                            }
+                                                        }
+                                                    }
+                                                ]
                                             }
                                         }
                                     ]
