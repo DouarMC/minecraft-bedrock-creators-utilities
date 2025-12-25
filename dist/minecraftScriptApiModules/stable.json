@@ -84,5 +84,15 @@
         "last_beta_version_preview": {
             "1.0.0-beta": "1.0.0-beta.1.26.0-preview.25"
         }
+    },
+    "@minecraft/server-graphics": {
+        "stable_versions": [],
+        "last_beta_version_stable": {
+            "1.0.0-beta": "1.0.0-beta.1.21.130-stable"
+        },
+        "last_release_candidate_version_preview": null,
+        "last_beta_version_preview": {
+            "1.0.0-beta": "1.0.0-beta.1.26.0-preview.25"
+        }
     }
 }

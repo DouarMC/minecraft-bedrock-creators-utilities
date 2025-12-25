@@ -3,6 +3,7 @@ import { schemaEnums, dynamicExamplesSourceKeys } from "../../shared/schemaEnums
 import { commonSchemas } from "../../shared/commonSchemas";
 import { VersionedSchema, SchemaChange } from "../../../common/types/VersionedSchema";
 import { MinecraftJsonSchema } from "../../../common/types/MinecraftJsonSchema";
+import { describe } from "node:test";
 
 const baseSchema: MinecraftJsonSchema = {
     description: "Ce fichier crée un Bloc personnalisé.",
@@ -15,6 +16,11 @@ const baseSchema: MinecraftJsonSchema = {
             enum: [
                 "1.8.0", "1.9.0", "1.10.0", "1.11.0", "1.12.0", "1.13.0", "1.14.0", "1.14.1", "1.14.20", "1.14.30", "1.15.0", "1.16.0", "1.16.20", "1.16.100", "1.16.200", "1.16.210", "1.16.220", "1.16.230", "1.17.0", "1.17.10", "1.17.20", "1.17.30", "1.17.40", "1.18.0", "1.18.10", "1.18.20", "1.18.30", "1.18.40", "1.19.0", "1.19.10", "1.19.20", "1.19.30", "1.19.40", "1.19.50", "1.19.60", "1.19.70", "1.19.80", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100", "1.21.110", "1.21.110", "1.21.120", "1.21.130"
             ]
+        },
+        use_beta_features: {
+            description: "Définit si les fonctionnalités bêta doivent être activées. Cela signifie que si c'est définit sur `true`, il faut que l'option `Beta APIs` soit activée dans les options du jeu pour que le comportement fonctionne correctement.",
+            default: false,
+            type: "boolean"
         },
         "minecraft:block": {
             description: "Contient toute la définition du Bloc.",
@@ -102,6 +108,29 @@ const baseSchema: MinecraftJsonSchema = {
                                     }
                                 }
                             ]
+                        },
+                        "minecraft:connection_rule": {
+                            "x-experimental_options": ["Upcoming Creator Features"],
+                            description: "Définit si les autres blocs ayant un comportement de connexion (comme les clôtures, les murs, les barreaux et les vitres) peuvent tenter d'établir une connexion.",
+                            type: "object",
+                            properties: {
+                                accepts_connections_from: {
+                                    description: "La liste des types de connexions que ce Bloc accepte.",
+                                    type: "array",
+                                    items: {
+                                        type: "string",
+                                        enum: ["none", "only_fences", "all"]
+                                    }
+                                },
+                                enabled_directions: {
+                                    description: "Les directions dans lesquelles ce Bloc peut se connecter à d'autres blocs.",
+                                    type: "array",
+                                    items: {
+                                        type: "string",
+                                        enum: ["north", "south", "east", "west", "up", "down"]
+                                    }
+                                }
+                            }
                         },
                         "minecraft:custom_components": {
                             description: "Définit les composants personnalisés qu'utilise ce Bloc. Les composants personalisés se définissent dans les fichiers de scripts.",
@@ -209,6 +238,22 @@ const baseSchema: MinecraftJsonSchema = {
                                 }
                             ]
                         },
+                        "minecraft:leashable": {
+                            "x-experimental_options": ["Upcoming Creator Features"],
+                            description: "Permet aux entités attachables d'être attachées à ce Bloc avec une laisse.",
+                            type: "object",
+                            properties: {
+                                offset: {
+                                    description: "Définit le décalage de l'attache de la laisse par rapport au centre du Bloc.",
+                                    type: "array",
+                                    minItems: 3,
+                                    maxItems: 3,
+                                    items: {
+                                        type: "number"
+                                    }
+                                }
+                            }
+                        },
                         "minecraft:loot": {
                             description: "Définit la Loot Table (table de butin) utilisée quand le Bloc est détruit.",
                             oneOf: [
@@ -274,6 +319,25 @@ const baseSchema: MinecraftJsonSchema = {
                                     }
                                 }
                             ]
+                        },
+                        "minecraft:redstone_consumer": {
+                            "x-dynamic-examples-source": ["Upcoming Creator Features"],
+                            description: "Définit comment un Bloc peut consommer et potentiellement propager un signal de redstone. Ce composant n'est actuellement pas disponible dans les permutations de blocs.",
+                            type: "object",
+                            properties: {
+                                min_power: {
+                                    description: "Définit la valeur minimale pour la force du signal entrant. Si la force du signal est supérieure ou égale à cette valeur, l'événement `onRedstoneUpdate` est envoyé aux Scripts.",
+                                    default: 0,
+                                    type: "integer",
+                                    minimum: 0,
+                                    maximum: 15
+                                },
+                                propogates_power: {
+                                    description: "Définit si un signal de redstone peut passer à travers ce Bloc. Ce paramètre remplace la propriété `redstone_conductor` du composant `minecraft:redstone_conductivity`.",
+                                    default: false,
+                                    type: "boolean"
+                                }
+                            }
                         },
                         "minecraft:support": {
                             "x-experimental_options": ["Upcoming Creator Features"],
@@ -1099,11 +1163,12 @@ const versionedChanges: SchemaChange[] = [
                                     description:
                                     "La liste des états built-in à activer.\n\n" +
                                     "`minecraft:cardinal_direction`: Définit l'orientation cardinale lors du placement d'un Bloc.\n\n" +
-                                    "`minecraft:facing_direction`: Définit toutes les directions de placement du Bloc.",
+                                    "`minecraft:facing_direction`: Définit toutes les directions de placement du Bloc.\n\n" +
+                                    "`minecraft:corner_and_cardinal_direction`: Active l'état de bloc `minecraft:corner` avec les valeurs `none`, `inner_left`, `inner_right`, `outer_left` et `outer_right` qui fournit un comportement similaire aux escaliers Vanilla. `use_beta_features` doit être activé.",
                                     type: "array",
                                     items: {
                                         type: "string",
-                                        enum: ["minecraft:cardinal_direction", "minecraft:facing_direction"]
+                                        enum: ["minecraft:cardinal_direction", "minecraft:facing_direction", "minecraft:corner_and_cardinal_direction"]
                                     }
                                 },
                                 y_rotation_offset: {
@@ -1111,6 +1176,19 @@ const versionedChanges: SchemaChange[] = [
                                     default: 0,
                                     type: "number",
                                     enum: [0, 90, 180, 270]
+                                },
+                                blocks_to_corner_with: {
+                                    description: "Lorsque le trait `minecraft:corner_and_cardinal_direction` est activé, ce champ permet de définir les blocs avec lesquels ce bloc peut former un coin.",
+                                    type: "array",
+                                    items: {
+                                        oneOf: [
+                                            {
+                                                type: "string",
+                                                "x-dynamic-examples-source": [dynamicExamplesSourceKeys.block_ids, dynamicExamplesSourceKeys.vanilla_block_ids_without_namespace]
+                                            },
+                                            commonSchemas.block_descriptor
+                                        ]
+                                    }
                                 }
                             }
                         },
@@ -1611,6 +1689,108 @@ const versionedChanges: SchemaChange[] = [
                     description: "Quand `true`, la canal alpha de la texture sera utilisé pour multiplier la teinte de l'albédo de la texture. `tint_method` doit être différent de `none` et `render_method` doit être `opaque`.",
                     default: false,
                     type: "boolean"
+                }
+            }
+        ]
+    },
+    {
+        version: "1.21.130",
+        changes: [
+            {
+                action: "modify",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:collision_box"],
+                value: {
+                    "x-experimental_options": ["Upcoming Creator Features"],
+                    description: "Définit la boîte de collision du Bloc. Si cette valeur est `true`, le Bloc utilisera les valeurs par défaut pour `origin` et `size`.",
+                    default: true,
+                    oneOf: [
+                        {
+                            type: "boolean"
+                        },
+                        {
+                            type: "object",
+                            required: ["origin", "size"],
+                            properties: {
+                                origin: {
+                                    description: "La position de l'origine de la boîte de collision du Bloc.",
+                                    default: [-8, 0, -8],
+                                    type: "array",
+                                    minItems: 3,
+                                    maxItems: 3,
+                                    items: [
+                                        {
+                                            type: "number",
+                                            minimum: -8,
+                                            maximum: 8
+                                        },
+                                        {
+                                            type: "number",
+                                            minimum: 0,
+                                            maximum: 24
+                                        },
+                                        {
+                                            type: "number",
+                                            minimum: -8,
+                                            maximum: 8
+                                        }
+                                    ]
+                                },
+                                size: {
+                                    description: "La taille de la boîte de collision du Bloc.",
+                                    default: [16, 16, 16],
+                                    type: "array",
+                                    minItems: 3,
+                                    maxItems: 3,
+                                    items: {
+                                        type: "number"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            type: "array",
+                            items: {
+                                type: "object",
+                                required: ["origin", "size"],
+                                properties: {
+                                    origin: {
+                                        description: "La position de l'origine de la boîte de collision du Bloc.",
+                                        default: [-8, 0, -8],
+                                        type: "array",
+                                        minItems: 3,
+                                        maxItems: 3,
+                                        items: [
+                                            {
+                                                type: "number",
+                                                minimum: -8,
+                                                maximum: 8
+                                            },
+                                            {
+                                                type: "number",
+                                                minimum: 0,
+                                                maximum: 24
+                                            },
+                                            {
+                                                type: "number",
+                                                minimum: -8,
+                                                maximum: 8
+                                            }
+                                        ]
+                                    },
+                                    size: {
+                                        description: "La taille de la boîte de collision du Bloc.",
+                                        default: [16, 16, 16],
+                                        type: "array",
+                                        minItems: 3,
+                                        maxItems: 3,
+                                        items: {
+                                            type: "number"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]
                 }
             }
         ]

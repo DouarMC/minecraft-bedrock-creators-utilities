@@ -6770,6 +6770,10 @@ const baseSchema: MinecraftJsonSchema = {
                                 }
                             }
                         },
+                        "minecraft:underwater_mount_breathing": {
+                            description: "Interrompt la respiration de cette Entité sous l'eau.",
+                            type: "object"
+                        },
                         "minecraft:underwater_movement": {
                             description: "Définit la vitesse à laquelle une entité peut se déplacer dans l'eau.",
                             type: "object",
@@ -8630,6 +8634,11 @@ const baseSchema: MinecraftJsonSchema = {
                             description: "Permet à l'Entité de flotter sur l'eau. Les passagers seront éjectés si la tête de l'entité est sous l'eau.",
                             type: "object",
                             properties: {
+                                chance_per_tick_to_float: {
+                                    description: "La chance par tick de provoquer une impulsion vers le haut.",
+                                    default: 0.8,
+                                    type: "number"
+                                },
                                 priority: {
                                     description: "Plus la priorité est haute, plus vite cet objectif sera exécuté.",
                                     type: "integer"
@@ -8638,6 +8647,11 @@ const baseSchema: MinecraftJsonSchema = {
                                     description: "Si vrai, l'entité continuera à couler tant qu'elle a des passagers.",
                                     default: false,
                                     type: "boolean"
+                                },
+                                time_under_water_to_dismount_passengers: {
+                                    description: "Le temps en secondes que la tête d'un véhicule flottant peut rester sous l'eau avant de provoquer le débarquement de ses passagers.",
+                                    default: 0,
+                                    type: "number"
                                 }
                             }
                         },
@@ -10819,7 +10833,24 @@ const baseSchema: MinecraftJsonSchema = {
                                 attack_interval: {
                                     description: "La plage de temps (en secondes) entre la recherche d'une cible d'attaque, la plage est dans (0, 'attack_interval']. Utilisé uniquement si 'attack_interval' est supérieur à 0, sinon 'scan_interval' est utilisé.",
                                     default: 0,
-                                    type: "integer"
+                                    oneOf: [
+                                        {
+                                            type: "integer"
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                range_min: {
+                                                    description: "Le temps minimum en secondes entre les attaques.",
+                                                    type: "integer"
+                                                },
+                                                range_max: {
+                                                    description: "Le temps maximum en secondes entre les attaques.",
+                                                    type: "integer"
+                                                }
+                                            }
+                                        }
+                                    ]
                                 },
                                 attack_interval_min: {
                                     description: "Alias pour 'attack_interval'; fournit la même fonctionnalité que 'attack_interval'.",
@@ -10899,6 +10930,13 @@ const baseSchema: MinecraftJsonSchema = {
                                     description: "Permet à l'Entité de ne pas disparaitre lorsqu'elle cible un joueur.",
                                     default: false,
                                     type: "boolean"
+                                },
+                                target_acquisition_probability: {
+                                    description: "Probabilité (0.0 à 1.0) que cette entité acceptera une cible trouvée. Vérifié chaque fois qu'une cible valide est trouvée lors de la numérisation.",
+                                    default: 1,
+                                    type: "number",
+                                    minimum: 0.0,
+                                    maximum: 1.0
                                 },
                                 target_invisible_multiplier: {
                                     description: "Multiplié avec le pourcentage de couverture d'armure de la cible pour modifier 'max_dist' lors de la détection d'une cible invisible.",
@@ -14172,6 +14210,198 @@ const baseSchema: MinecraftJsonSchema = {
                                             commonSchemas.block_descriptor
                                         ]
                                     }
+                                }
+                            }
+                        },
+                        "minecraft:behavior.use_kinetic_weapon": {
+                            description: "Permet à l'Entité d'utiliser des items avec le composant `minecraft:kinetic_weapon`. L'Entité s'approchera de sa cible avant d'utiliser l'arme et de la charger avec. Si sa cible est trop proche, l'Entité battera en retraite et repositionne avant de réattaquer à nouveau.",
+                            type: "object",
+                            properties: {
+                                approach_distance: {
+                                    description: "La distance auprès de la cible à laquelle l'Entité s'approchera avant d'utiliser son arme cinétique.",
+                                    default: 8,
+                                    type: "number",
+                                    minimum: 0
+                                },
+                                attack_once: {
+                                    description: "Permet à l'Entité d'effectuer cette attaque de mêlée une seule fois au cours de sa vie.",
+                                    default: false,
+                                    type: "boolean"
+                                },
+                                can_spread_on_fire: {
+                                    description: "Permet à l'Entité, si en feu et les mains vides, d'enflammer sa cible lors d'une attaque réussie.",
+                                    default: false,
+                                    type: "boolean"
+                                },
+                                control_flags: {
+                                    default: [],
+                                    type: "array",
+                                    items: {
+                                        type: "string",
+                                        enum: ["move", "look", "jump"]
+                                    }
+                                },
+                                cooldown_distance: {
+                                    description: "La distance auquel l'Entité battera en retraite une fois que toutes les valeurs de `max_duration` du composant `minecraft:kinetic_weapon` de l'item se sont écoulées. Après avoir atteint cette position et une fois que le `cooldown` s'est écoulé, l'Entité s'approchera à nouveau. Cette valeur est ajoutée au point médian de portée.",
+                                    default: {
+                                        max: 8,
+                                        min: 8
+                                    },
+                                    type: "object",
+                                    properties: {
+                                        max: {
+                                            description: "La distance maximale auquel l'Entité battera en retraite.",
+                                            type: "number",
+                                            minimum: 0
+                                        },
+                                        min: {
+                                            description: "La distance minimale auquel l'Entité battera en retraite.",
+                                            type: "number",
+                                            minimum: 0
+                                        }
+                                    }
+                                },
+                                cooldown_speed_multiplier: {
+                                    description: "Multiplicateur appliqué à la vitesse de déplacement du mob pendant le cooldown.",
+                                    default: 1,
+                                    type: "number",
+                                    minimum: 0
+                                },
+                                cooldown_time: {
+                                    description: "Temps de cooldown en secondes entre les attaques consécutives.",
+                                    default: 1,
+                                    type: "number",
+                                    minimum: 0
+                                },
+                                hijack_mount_navigation: {
+                                    description: "Permet au mob de remplacer le comportement de navigation de son monture avec la logique définie par cet objectif. Nécessite que la monture exécute l'objectif `minecraft:behavior.mount_pathing`, dont le comportement par défaut sera ignoré.",
+                                    default: false,
+                                    type: "boolean"
+                                },
+                                inner_boundary_time_increase: {
+                                    description: "Temps, en secondes, ajouté à l'intervalle de recalcul du chemin d'attaque lorsque la cible est au-delà de la `path_inner_boundary`.",
+                                    default: 0.25,
+                                    type: "number",
+                                    minimum: 0
+                                },
+                                max_path_time: {
+                                    description: "Temps maximum, en secondes, avant de recalculer un nouveau chemin d'attaque vers la cible (avant l'application des augmentations).",
+                                    default: 0.550000011920929,
+                                    type: "number",
+                                    minimum: 0
+                                },
+                                melee_fov: {
+                                    description: "Point de vue, en degrés, utilisé par le composant de détection codé en dur pour détecter une cible d'attaque au corps à corps.",
+                                    default: 90,
+                                    type: "number",
+                                    minimum: 0
+                                },
+                                min_path_time: {
+                                    description: "Temps minimum, en secondes, avant de recalculer un nouveau chemin d'attaque vers la cible (avant l'application des augmentations).",
+                                    default: 0.20000000298023224,
+                                    type: "number",
+                                    minimum: 0
+                                },
+                                outer_boundary_time_increase: {
+                                    description: "Temps en secondes ajouté à l'intervalle de recalcul du chemin d'attaque lorsque la cible est au-delà de la `path_outer_boundary`.",
+                                    default: 0.5,
+                                    type: "number",
+                                    minimum: 0
+                                },
+                                path_fail_time_increase: {
+                                    description: "Temps en secondes ajouté à l'intervalle de recalcul du chemin d'attaque lorsque le mob ne peut pas se déplacer le long du chemin actuel.",
+                                    default: 0.75,
+                                    type: "number",
+                                    minimum: 0
+                                },
+                                path_inner_boundary: {
+                                    description: "Distance à laquelle pour augmenter le recalcul du chemin d'attaque par `inner_boundary_time_increase`",
+                                    default: 16,
+                                    type: "number",
+                                    minimum: 0
+                                },
+                                path_outer_boundary: {
+                                    description: "Distance à laquelle pour augmenter le recalcul du chemin d'attaque par `outer_boundary_time_increase`",
+                                    default: 32,
+                                    type: "number",
+                                    minimum: 0
+                                },
+                                priority: {
+                                    description: "La priorité de l'objectif.",
+                                    default: 0,
+                                    type: "integer"
+                                },
+                                random_stop_interval: {
+                                    description: "Définit une chance entre 1 et N que l'Entité arrête son attaque en cours, où N équivaut à `random_stop_interval`.",
+                                    default: 0,
+                                    type: "integer",
+                                    minimum: 0
+                                },
+                                reposition_distance: {
+                                    description: "La distance à laquelle le mob se repositionne une fois que la cible est plus proche du point médian de la portée (`reach`) minimale et maximale du composant `minecraft:kinetic_weapon` de l'item. Après avoir atteint cette position, le mob chargera à nouveau. Cette valeur est ajoutée au point médian de portée.",
+                                    default: {
+                                        max: 2,
+                                        min: 2
+                                    },
+                                    type: "object",
+                                    properties: {
+                                        max: {
+                                            description: "La distance maximale à laquelle le mob se repositionne.",
+                                            type: "number",
+                                            minimum: 0
+                                        },
+                                        min: {
+                                            description: "La distance minimale à laquelle le mob se repositionne.",
+                                            type: "number",
+                                            minimum: 0
+                                        }
+                                    }
+                                },
+                                reposition_speed_multiplier: {
+                                    description: "Multiplicateur appliqué à la vitesse de déplacement du mob pendant le repositionnement.",
+                                    default: 1,
+                                    type: "number",
+                                    minimum: 0
+                                },
+                                require_complete_path: {
+                                    description: "Indique si un chemin de navigation complet du mob à la cible est requis",
+                                    default: false,
+                                    type: "boolean"
+                                },
+                                speed_multiplier: {
+                                    description: "Multiplicateur appliqué à la vitesse de déplacement du mob lors de l'approche de sa cible.",
+                                    default: 1,
+                                    type: "number",
+                                    minimum: 0
+                                },
+                                track_target: {
+                                    description: "Permet au mob de suivre sa cible même s'il ne dispose pas d'un composant de détection codé en dur.",
+                                    default: false,
+                                    type: "boolean"
+                                },
+                                weapon_min_speed_multiplier: {
+                                    description: "Multiplicateur appliqué à chaque condition `min_speed` et `min_relative_speed` dans le composant `minecraft:kinetic_weapon` de l'item.",
+                                    default: 1,
+                                    type: "number",
+                                    minimum: 0
+                                },
+                                weapon_reach_multiplier: {
+                                    description: " Multiplicateur appliqué à la portée du composant `minecraft:kinetic_weapon` de l'item.",
+                                    default: 1,
+                                    type: "number",
+                                    minimum: 0
+                                },
+                                x_max_rotation: {
+                                    description: "Rotation maximale, en degrés, sur l'axe X pendant que le mob essaie de regarder sa cible.",
+                                    default: 30,
+                                    type: "number",
+                                    minimum: 0
+                                },
+                                y_max_head_rotation: {
+                                    description: "Rotation maximale, en degrés, sur l'axe Y pendant que le mob essaie de regarder sa cible.",
+                                    default: 30,
+                                    type: "number",
+                                    minimum: 0
                                 }
                             }
                         },

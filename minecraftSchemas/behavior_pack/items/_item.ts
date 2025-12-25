@@ -1206,6 +1206,10 @@ const versionedChanges: SchemaChange[] = [
                             minimum: 0,
                             maximum: 1
                         },
+                        start_sound: {
+                            description: "Son à jouer lorsque l'Item commence à être utilisé.",
+                            type: "string"
+                        },
                         use_duration: {
                             description: "La durée d'utilisation de l'Item en secondes.",
                             type: "number",
