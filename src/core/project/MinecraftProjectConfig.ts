@@ -1,9 +1,25 @@
 import { MinecraftProduct, MinecraftProjectType, ProjectMetadata } from "../../types/projectConfig";
 
+/**
+ * Représente la configuration d'un projet Minecraft Bedrock, avec les métadonnées et les options spécifiques au projet.
+ */
 export class MinecraftProjectConfig {
+    /**
+     * Les métadonnées du projet, incluant le type de projet, l'ID, le nom d'affichage, l'auteur et le produit Minecraft ciblé.
+     */
     public metadata: ProjectMetadata;
+
+    /**
+     * Les options spécifiques au projet.
+     */
     public options: {
+        /**
+         * Catégorie d'options liées au déploiement du projet.
+         */
         deploy: {
+            /**
+             * Indique si l'extension demandera à l'utilisateur de lancer Minecraft après le déploiement du projet, si Minecraft n'est pas déjà en cours d'exécution.
+             */
             prompt_to_launch_minecraft: boolean;
         };
     };
@@ -14,15 +30,17 @@ export class MinecraftProjectConfig {
      * @param rawConfig Le contenu brut de la configuration
      */
     public constructor(rawConfig: any) {
-        if (! rawConfig || typeof rawConfig !== "object") {
+        if (! rawConfig || typeof rawConfig !== "object") { // Vérifie que la configuration est un objet valide
             throw new Error("Configuration de projet invalide : objet JSON attendu.");
         }
 
-        const metadata = rawConfig.metadata;
+        // verifie que metadata est le bon type.
+        const metadata = rawConfig.metadata; 
         if (! metadata || typeof metadata !== "object") {
             throw new Error("Configuration de projet invalide : 'metadata' manquant ou invalide.");
         }
 
+        // Vérifie que les champs requis dans metadata sont présents et ont le bon type, et que les valeurs de type et minecraftProduct sont reconnues
         const {type, id, displayName, author, minecraftProduct} = metadata;
         if (typeof type !== "string") {
             throw new Error("Configuration de projet invalide : 'metadata.type' n'est pas une chaîne de caractères.");
@@ -49,6 +67,7 @@ export class MinecraftProjectConfig {
             throw new Error(`Configuration de projet invalide : 'metadata.minecraftProduct' a une valeur non reconnue : ${minecraftProduct}`);
         }
 
+        // Si toutes les vérifications sont passées, on peut assigner les valeurs à la configuration du projet
         this.metadata = {
             type: type as MinecraftProjectType,
             id,
@@ -56,7 +75,7 @@ export class MinecraftProjectConfig {
             author,
             minecraftProduct: minecraftProduct as MinecraftProduct
         };
-
+        
         this.options = typeof rawConfig.options === "object" ? rawConfig.options : {};
     }
 

@@ -119,22 +119,23 @@ export class MinecraftFileResolverService {
     }
 
     /**
-     * 
+     * Récupère tous les fichiers data-driven d'un type donné associés à un projet ou au jeu lui-même.
      * @param minecraftFileId 
      * @param target
      */
     public static async getDataDrivenFiles(minecraftFileId: MinecraftFileId, target: MinecraftGame | MinecraftProject) : Promise<vscode.Uri[]> {
-        const dataDrivenFiles: vscode.Uri[] = [];
+        const dataDrivenFiles: vscode.Uri[] = []; // Les fichiers data-driven trouvés à retourner
 
+        // Identifier le type de fichier data-driven pour savoir où chercher
         const dataDrivenFileType = minecraftFileRegistry[minecraftFileId];
         if (! dataDrivenFileType) {
             return dataDrivenFiles;
         }
 
-        let researchFolders: vscode.Uri[] = [];
+        let researchFolders: vscode.Uri[] = []; // Les dossiers racines à partir desquels on va lancer la recherche
         switch (dataDrivenFileType.packType) {
             case "behavior_pack":
-                if (target instanceof MinecraftGame) {
+                if (target instanceof MinecraftGame) { // Si la cible est le jeu lui-même, on cherche dans les dossiers vanilla
                     researchFolders = await target.getVanillaBehaviorPackFolders();
                     if (dataDrivenFileType.searchInDefinitionsFolder === true) {
                         researchFolders.push(await target.getDefinitionsFolder());
@@ -145,7 +146,20 @@ export class MinecraftFileResolverService {
                         return dataDrivenFiles;
                     }
 
-                    researchFolders = [await target.getBehaviorPackFolder()];
+                    let bpFolder: vscode.Uri | undefined;
+                    try {
+                        bpFolder = await target.getBehaviorPackFolder();
+                    } catch (error) {
+                        if (error instanceof Error) {
+                            throw new Error(`Erreur lors de la récupération du dossier de Behavior Pack du projet : ${error.message}`);
+                        }
+
+                        throw error;
+                    }
+
+                    if (bpFolder) {
+                        researchFolders = [bpFolder];
+                    }
                 }
                 break;
             case "resource_pack":
@@ -159,17 +173,31 @@ export class MinecraftFileResolverService {
                         console.warn("Le projet fourni n'est pas un AddonMinecraftProject. Impossible de récupérer les fichiers data-driven.");
                         return dataDrivenFiles;
                     }
-                    researchFolders = [await target.getResourcePackFolder()];
+
+                    let rpFolder: vscode.Uri | undefined;
+                    try {
+                        rpFolder = await target.getResourcePackFolder();
+                    } catch (error) {
+                        if (error instanceof Error) {
+                            throw new Error(`Erreur lors de la récupération du dossier de Resource Pack du projet : ${error.message}`);
+                        }
+
+                        throw error;
+                    }
+
+                    if (rpFolder) {
+                        researchFolders = [rpFolder];
+                    }
                 }
                 break;
             case "skin_pack":
                 if (target instanceof SkinPackMinecraftProject) {
-                    // FLAG : À implémenter plus tard si besoin
+                    // TODO
                 }
                 break;
             case "world_template":
                 if (target instanceof WorldTemplateMinecraftProject) {
-                    // FLAG : À implémenter plus tard si besoin
+                    // TODO
                 }
                 break;
         }

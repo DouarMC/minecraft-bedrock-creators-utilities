@@ -286,7 +286,7 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         packType: "resource_pack",
         patterns: ["**/biomes/*.json"],
         excludePatterns: undefined,
-        schemaPath: "resource_pack/biomes/_biome.json"
+        schemaPath: "resource_pack/biomes/_client_biome.json"
     }),
     "resource_pack/biomes_client.json": new MinecraftFileType({
         id: "resource_pack/biomes_client.json",

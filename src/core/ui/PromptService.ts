@@ -9,7 +9,10 @@ export interface FolderPickItem extends vscode.QuickPickItem {
 }
 
 export class PromptService {
-    public static readonly PACK_TYPE_ITEMS: vscode.QuickPickItem[] = [
+    /**
+     * Contient les différents types de pack d'addons.
+     */
+    public static readonly ADDON_PACK_TYPE_ITEMS: vscode.QuickPickItem[] = [
         {
             label: MinecraftAddonPack.BehaviorPack,
             description: "Pack de comportement.",
@@ -57,6 +60,10 @@ export class PromptService {
             alwaysShow: true
         }
     ];
+
+    /**
+     * Contient les différents types de modules du pack de comportement.
+     */
     public static readonly BEHAVIOR_PACK_MODULE_TYPES: vscode.QuickPickItem[] = [
         {
             label: "data",
@@ -71,6 +78,10 @@ export class PromptService {
             alwaysShow: true
         }
     ];
+
+    /**
+     * Contient les différents dossiers Minecraft que l'utilisateur peut choisir d'ouvrir via la fonctionnalité d'exploration des dossiers Minecraft. Chaque item contient le jeu ciblé (Stable ou Preview) et le type de dossier (com.mojang ou dossier de ressources vanilla) pour permettre d'ouvrir le bon dossier en fonction de la sélection de l'utilisateur.
+     */
     public static readonly MINECRAFT_FOLDERS_TO_OPEN: FolderPickItem[] = [
         {
             game: "stable",
@@ -103,12 +114,12 @@ export class PromptService {
     ];
 
     /**
-     * Affiche une boîte de dialogue pour sélectionner les types de packs d'un addon.
+     * Affiche une boîte de dialogue pour sélectionner les types de packs d'un addon à créer.
      * @returns 
      */
     public static async askAddonPackTypes(): Promise<MinecraftAddonPack[]> {
         const packAddonItems = await vscode.window.showQuickPick(
-            PromptService.PACK_TYPE_ITEMS,
+            PromptService.ADDON_PACK_TYPE_ITEMS,
             {
                 title: "Types de packs de l'addon",
                 placeHolder: "Sélectionnez le/les types de packs pour l'addon",
@@ -122,9 +133,10 @@ export class PromptService {
 
     /**
      * Affiche une série de boîtes de dialogue pour récupérer les métadonnées du projet.
-     * @returns 
+     * @returns Renvoie un objet contenant les métadonnées du projet ou undefined si l'utilisateur a annulé la saisie.
      */
     public static async askProjectMetadata(): Promise<ProjectMetadata | undefined> {
+        // Selection du type de projet (Addon, Skin Pack, World Template)
         const selectedProjectTypeItem = await vscode.window.showQuickPick(
             PromptService.PROJECT_TYPE_ITEMS,
             {
@@ -134,42 +146,51 @@ export class PromptService {
                 ignoreFocusOut: true
             }
         );
-        if (selectedProjectTypeItem === undefined) return; // L'utilisateur a annulé la sélection
+        // Si l'utilisateur annule la sélection, on retourne undefined pour indiquer que l'opération a été annulée
+        if (selectedProjectTypeItem === undefined) {
+            return;
+        }
 
+        // Demande de l'ID du projet avec validation pour n'accepter que les caractères valides (lettres minuscules, chiffres, tirets, underscores)
+        // Anlève les espaces inutiles et convertit en minuscules pour éviter les erreurs de format
         const id = (await vscode.window.showInputBox({
             title: "ID du projet",
             prompt: "Entrez l'id du projet",
             placeHolder: "mon_pack",
             ignoreFocusOut: true,
             validateInput: (value: string) => {
-                const trimmed = value.trim();
-                if (!/^[a-z0-9-_]+$/.test(trimmed)) {
+                const trimmed = value.trim(); // Enlève les espaces inutiles
+                if (!/^[a-z0-9-_]+$/.test(trimmed)) { // Vérifie que l'ID ne contient que des caractères valides
                     return "⚠️ L'ID ne peut contenir que des lettres minuscules, des chiffres, des tirets (-) et des underscores (_).";
                 }
-                if (trimmed.length === 0) {
+                if (trimmed.length === 0) { // Vérifie que l'ID n'est pas vide après avoir enlevé les espaces
                     return "⚠️ L'ID ne peut pas être vide.";
                 }
-                return null;
+                return undefined; // Retourne undefined si l'ID est valide
             }
         }))?.trim().toLowerCase();
-        if (id === undefined) return;
+        // Si l'utilisateur annule la saisie ou si l'ID est vide après validation, on retourne undefined pour indiquer que l'opération a été annulée
+        if (id === undefined) {
+            return;
+        }
 
+        // Demande du nom d'affichage du projet (optionnel, fallback à l'ID si vide)
         const displayName = (await vscode.window.showInputBox({
             title: "Nom d'affichage du projet",
             prompt: "Entrez le nom d'affichage du projet",
             placeHolder: id,
             ignoreFocusOut: true
         }))?.trim() || id; // fallback à l'id si vide
-        if (displayName === undefined) return;
 
+        // Demande de l'auteur du projet (optionnel, fallback à "Unknown Author" si vide)
         const author = (await vscode.window.showInputBox({
             title: "Auteur du projet",
             prompt: "Entrez l'auteur du projet",
             placeHolder: "Mon Nom",
             ignoreFocusOut: true
         }))?.trim() || "Unknown Author"; // fallback à "Unknown Author" si vide
-        if (author === undefined) return;
 
+        // Selection du produit Minecraft ciblé (Stable ou Preview)
         const selectedMinecraftProductItem = await vscode.window.showQuickPick(
             PromptService.MINECRAFT_PRODUCT_ITEMS,
             {
@@ -179,7 +200,10 @@ export class PromptService {
                 ignoreFocusOut: true
             }
         );
-        if (selectedMinecraftProductItem === undefined) return;
+        // Si l'utilisateur annule la sélection, on retourne undefined pour indiquer que l'opération a été annulée
+        if (selectedMinecraftProductItem === undefined) {
+            return;
+        }
 
         return {
             type: selectedProjectTypeItem.label as MinecraftProjectType,
@@ -192,60 +216,76 @@ export class PromptService {
 
     /**
      * Demande à l'utilisateur les modules de l'API Script à inclure et leurs versions.
-     * @throws {Error} Si aucun projet Minecraft n'est chargé.
+     * @throws {Error} Si aucun projet Minecraft n'est chargé, ou si la récupération des modules de l'API Script depuis le serveur échoue, ou si la création de la structure de l'API Script dans le projet échoue.
      * @returns 
      */
     public static async askScriptApiModules(): Promise<Record<string, { version: string, npmVersion: string }> | undefined> {
+        // Récupère le projet Minecraft actuellement chargé pour connaître le produit Minecraft ciblé (Stable ou Preview), nécessaire pour filtrer les versions des modules de l'API Script à proposer à l'utilisateur
         const project = MinecraftProjectManager.project;
         if (project === undefined) {
             throw new Error("Aucun projet Minecraft chargé.");
         }
 
-        const minecraftProduct = project.minecraftProduct;
+        const minecraftProduct = project.minecraftProduct; // On récupère le produit Minecraft ciblé (Stable ou Preview) à partir du projet chargé
 
-        const minecraftScriptApiModules = await fetch(SCHEMA_BASE_URL + "minecraftScriptApiModules/stable.json");
-        if (!minecraftScriptApiModules.ok) {
+        let minecraftScriptApiModules: Response;
+        try { // Tente de récupérer les modules de l'API Script depuis le repo github de mon projet
+            minecraftScriptApiModules = await fetch(SCHEMA_BASE_URL + "minecraftScriptApiModules/stable.json");
+        } catch (error) {
+            if (error instanceof Error) {
+                throw new Error(`Erreur lors de la récupération des modules de l'API Script depuis le serveur : ${error.message}`);
+            }
+
+            throw error;
+        }
+
+        if (! minecraftScriptApiModules.ok) { // Si la réponse du serveur n'est pas OK (ex: 404, 500, etc.), on considère que la récupération a échoué et on affiche une erreur à l'utilisateur
             throw new Error("Impossible de récupérer les modules de l'API Script depuis le serveur.");
         }
 
-        const minecraftScriptApiModulesData = await minecraftScriptApiModules.json() as Record<string, any>;
-        const moduleNames = Object.keys(minecraftScriptApiModulesData);
+        const minecraftScriptApiModulesData = await minecraftScriptApiModules.json() as Record<string, any>; // On parse la réponse JSON
+        const moduleNames = Object.keys(minecraftScriptApiModulesData); // On récupère les noms des modules de l'API Script à partir de la réponse
+
+        if (moduleNames.length === 0) { // Si aucun module n'est trouvé dans la réponse, on affiche une erreur à l'utilisateur
+            throw new Error("Aucun module de l'API Script trouvé sur le serveur.");
+        }
         
+        // Affiche une boîte de dialogue pour sélectionner les modules de l'API Script à inclure
         const selectedModules = await vscode.window.showQuickPick(moduleNames, {
             title: "Modules de l'API Script",
             placeHolder: "Sélectionnez les modules à inclure",
             canPickMany: true
         });
 
-        if (!selectedModules || selectedModules.length === 0) return;
+        if (!selectedModules || selectedModules.length === 0) { // Si l'utilisateur n'a sélectionné aucun module, on considère que l'opération a été annulée et on retourne undefined
+            return;
+        }
 
-        const selectedWithVersions: Record<string, { version: string, npmVersion: string }> = {};
+        const selectedWithVersions: Record<string, { version: string, npmVersion: string }> = {}; // On prépare un objet pour stocker les modules sélectionnés avec leurs versions correspondantes
+        for (const module of selectedModules) { // Pour chaque module sélectionné
+            const versions: string[] = []; // Tableau qui va contenir les versions disponibles pour le module sélectionné, à afficher dans la boîte de dialogue de sélection de version. On va ajouter les versions dans cet ordre : stables (de la plus récente à la plus ancienne), puis si le produit Minecraft ciblé est Stable on ajoute la Beta Stable, sinon on ajoute la Release Candidate Preview et la Beta Preview (de la plus récente à la plus ancienne)
+            const versionMap: Record<string, string> = {}; // Objet qui va faire le lien entre les versions affichées à l'utilisateur (clés) et les versions npm correspondantes (valeurs), nécessaire pour ensuite ajouter la bonne version npm dans le package.json du projet en fonction de la version sélectionnée par l'utilisateur
 
-        for (const module of selectedModules) {
-            const versions: string[] = [];
-            const versionMap: Record<string, string> = {};
-            const moduleVersionInfos = minecraftScriptApiModulesData[module];
-
-            // 1. Ajouter les versions stables (Inversées pour avoir la plus récente en premier)
-            if (Array.isArray(moduleVersionInfos.stable_versions)) {
+            const moduleVersionInfos = minecraftScriptApiModulesData[module]; // On récupère les informations de version pour le module sélectionné à partir de la réponse du serveur
+            if (Array.isArray(moduleVersionInfos.stable_versions)) { // Si des versions stables sont disponibles pour le module sélectionné
                 // On fait une copie (.slice) pour ne pas modifier l'original, puis reverse
                 const stableVersions = moduleVersionInfos.stable_versions.slice().reverse();
-                versions.push(...stableVersions);
-                for (const v of stableVersions) {
+                versions.push(...stableVersions); // On ajoute les versions stables à la liste des versions à afficher
+                for (const v of stableVersions) { // On ajoute les versions stables dans le versionMap pour faire le lien entre la version affichée et la version npm correspondante
                     versionMap[v] = v;
                 }
             }
 
-            if (minecraftProduct === MinecraftProduct.Stable) {
-                // 2. Ajouter la Beta Stable (Si elle existe)
+            if (minecraftProduct === MinecraftProduct.Stable) { // Si le projet cible la version Stable de Minecraft
+                // On ajoutee la Beta Stable (Si elle existe)
                 if (moduleVersionInfos.last_beta_version_stable) {
                     for (const [v, npmV] of Object.entries(moduleVersionInfos.last_beta_version_stable)) {
                         versions.unshift(v);
                         versionMap[v] = npmV as string;
                     }
                 }
-            } else {
-                // 3. Ajouter la Release Candidate Preview (Si elle existe - CRITIQUE CAR SOUVENT NULL)
+            } else { // Si le projet cible la version Preview de Minecraft
+                // On ajoute la Release Candidate Preview (Si elle existe)
                 if (moduleVersionInfos.last_release_candidate_version_preview) {
                     for (const [v, npmV] of Object.entries(moduleVersionInfos.last_release_candidate_version_preview)) {
                         versions.unshift(v);
@@ -253,7 +293,7 @@ export class PromptService {
                     }
                 }
 
-                // 4. Ajouter la Beta Preview (Si elle existe)
+                // // On ajoute la Beta Preview (Si elle existe)
                 if (moduleVersionInfos.last_beta_version_preview) {
                     for (const [v, npmV] of Object.entries(moduleVersionInfos.last_beta_version_preview)) {
                         versions.unshift(v);
@@ -262,18 +302,20 @@ export class PromptService {
                 }
             }
 
-            // Petite sécurité : si aucune version n'est trouvée (cas rare mais possible)
+            // Si aucune version n'est disponible pour le module sélectionné, on affiche un message d'avertissement et on passe au module suivant
             if (versions.length === 0) {
                 vscode.window.showWarningMessage(`Aucune version trouvée pour le module ${module}`);
                 continue;
             }
 
+            // Affiche une boîte de dialogue pour sélectionner la version du module sélectionné à inclure
             const version = await vscode.window.showQuickPick(versions, {
                 title: `Version du module ${module}`,
-                placeHolder: `Sélectionnez la version du module ${module}`
+                placeHolder: `Sélectionnez la version du module ${module}`,
+                ignoreFocusOut: true
             });
 
-            if (version) {
+            if (version) { // Si l'utilisateur a sélectionné une version, on l'ajoute à la liste des modules sélectionnés avec la version correspondante
                 selectedWithVersions[module] = {
                     version: version,
                     npmVersion: versionMap[version]
@@ -286,7 +328,7 @@ export class PromptService {
 
     /**
      * Affiche une boîte de dialogue pour sélectionner les types de modules du pack de comportement.
-     * @returns 
+     * @returns Un tableau contenant les types de modules sélectionnés ("data" et/ou "script"). Si aucun module n'est sélectionné, retourne un tableau vide.
      */
     public static async askBehaviorPackModuleTypes(): Promise<("data" | "script")[]> {
         const selectedModuleItems = await vscode.window.showQuickPick(

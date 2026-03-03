@@ -177,7 +177,8 @@ const baseSchema: MinecraftJsonSchema = {
                                     "@minecraft/common",
                                     "@minecraft/debug-utilities",
                                     "@minecraft/server-editor",
-                                    "@minecraft/diagnostics"
+                                    "@minecraft/diagnostics",
+                                    "@minecraft/server-graphics"
                                 ]
                             },
                             version: {

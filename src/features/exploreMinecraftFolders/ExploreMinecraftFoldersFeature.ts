@@ -6,6 +6,9 @@ import { MinecraftGame } from "../../core/minecraft/games/MinecraftGame";
 import { FileSystemUtils } from "../../core/utils/FileSystemUtils";
 
 export class ExploreMinecraftFoldersFeature extends Feature {
+    /**
+     * ID de la commande pour explorer les dossiers Minecraft.
+     */
     private static readonly EXPLORE_MINECRAFT_FOLDERS_COMMAND_ID = "minecraft-bedrock-creators-utilities.exploreMinecraftFolders";
 
     public register(): void {
@@ -15,18 +18,19 @@ export class ExploreMinecraftFoldersFeature extends Feature {
                 return; // L'utilisateur a annulé la sélection
             }
 
-
+            // Récupère le jeu Minecraft correspondant à la sélection de l'utilisateur (Stable ou Preview)
             let minecraftGame: MinecraftGame;
             try {
                 minecraftGame = folderToOpenItem.game === "stable" ? MinecraftGameManager.getStableGame() : MinecraftGameManager.getPreviewGame();
             } catch (error) {
-                vscode.window.showWarningMessage(`⚠️ Le jeu Minecraft ${folderToOpenItem.game} n'est pas installé. Veuillez l'installer avant d'essayer d'ouvrir ses dossiers.`);
+                vscode.window.showErrorMessage(`⚠️ Le jeu Minecraft ${folderToOpenItem.game} n'est pas installé. Veuillez l'installer avant d'essayer d'ouvrir ses dossiers.`);
                 return;
             }
-            if (await minecraftGame.isInstalled() === false) {
-                vscode.window.showWarningMessage(`⚠️ Le jeu Minecraft ${folderToOpenItem.game} n'est pas installé. Veuillez l'installer avant d'essayer d'ouvrir ses dossiers.`);
+            if (await minecraftGame.isInstalled() === false) { // Vérifie que le jeu est toujours installé avant d'essayer d'ouvrir ses dossiers
+                vscode.window.showErrorMessage(`⚠️ Le jeu Minecraft ${folderToOpenItem.game} n'est pas installé. Veuillez l'installer avant d'essayer d'ouvrir ses dossiers.`);
                 return;
             }
+
 
             let folderToOpen: vscode.Uri;
             try {

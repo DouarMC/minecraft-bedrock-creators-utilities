@@ -4,10 +4,14 @@ import { MinecraftProjectManager } from "../../core/project/MinecraftProjectMana
 import { ProjectService } from "../../core/project/ProjectService";
 
 export class ExportProjectFeature extends Feature {
+    /**
+     * Identifiant de la commande d'exportation du projet.
+     */
     private static readonly EXPORT_PROJECT_COMMAND_ID = "minecraft-bedrock-creators-utilities.exportProject";
 
     public register(): void {
         const disposable = vscode.commands.registerCommand(ExportProjectFeature.EXPORT_PROJECT_COMMAND_ID, async () => {
+            // Vérifier qu'un projet Minecraft Bedrock est chargé
             const minecraftProject = MinecraftProjectManager.project;
             if (minecraftProject === undefined) {
                 vscode.window.showErrorMessage("Aucun projet Minecraft Bedrock n'est chargé.");

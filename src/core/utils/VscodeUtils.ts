@@ -7,9 +7,14 @@ export class VscodeUtils {
         this.context = context;
     }
 
+    /**
+     * Récupère le contexte de l'extension
+     * @returns
+     * @throws {Error} Si le contexte n'a pas été initialisé
+     */
     public static getContext(): vscode.ExtensionContext {
         if (! this.context) {
-            throw new Error("ExtensionContext not initialized. Did you call VscodeUtils.initialize() in activate()?");
+            throw new Error("Le contexte de l'extension n'a pas été initialisé. Assurez-vous d'appeler VscodeUtils.initializeContext(context) dans la fonction activate de votre extension.");
         }
         return this.context;
     }

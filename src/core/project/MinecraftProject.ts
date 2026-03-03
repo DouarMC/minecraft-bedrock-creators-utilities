@@ -4,6 +4,9 @@ import { VscodeUtils } from "../utils/VscodeUtils";
 import { MinecraftProjectConfig } from "./MinecraftProjectConfig";
 
 export class MinecraftProject {
+    /**
+     * Contient le nom du fichier de configuration du projet Minecraft, qui doit être présent à la racine du dossier du projet pour que celui-ci soit reconnu comme un projet Minecraft valide. Ce fichier contient les métadonnées et les options spécifiques au projet.
+     */
     public static readonly PROJECT_CONFIG_FILE_NAME = ".mcbe_project.json";
 
     public readonly folder: vscode.Uri;
@@ -106,6 +109,9 @@ export class MinecraftProject {
     }
 }
 
+/**
+ * Classe représentant un projet Minecraft Bedrock de type Addon
+ */
 export class AddonMinecraftProject extends MinecraftProject {
     /**
      * Récupère le dossier "addon" du projet
@@ -114,7 +120,19 @@ export class AddonMinecraftProject extends MinecraftProject {
      */
     public async getAddonFolder(): Promise<vscode.Uri> {
         const addonFolderUri = vscode.Uri.joinPath(this.folder, "addon");
-        if (! await VscodeUtils.isDirectory(addonFolderUri)) {
+
+        let isDirectory: boolean;
+        try {
+            isDirectory = await VscodeUtils.isDirectory(addonFolderUri);
+        } catch (error) {
+            if (error instanceof Error) {
+                throw new Error(`Le dossier 'addon' est inaccessible dans le projet : ${error.message}`);
+            }
+
+            throw error;
+        }
+
+        if (isDirectory === false) {
             throw new Error("Le dossier 'addon' est introuvable dans le projet.");
         }
 
@@ -122,14 +140,38 @@ export class AddonMinecraftProject extends MinecraftProject {
     }
 
     /**
-     * Récupère le dossier "behavior_pack" du projet
-     * @throws {Error} Si le dossier "behavior_pack" et/ou "addon" est introuvable
+     * Récupère le dossier "behavior_pack" du projet ou ne retourne pas d'URI s'il n'existe pas
+     * @throws {Error} Si le dossier "addon" est introuvable/inaccessible, ou si le dossier "behavior_pack" est inaccessible
      * @returns 
      */
-    public async getBehaviorPackFolder(): Promise<vscode.Uri> {
-        const behaviorPackFolderUri = vscode.Uri.joinPath(await this.getAddonFolder(), "behavior_pack");
-        if (! await VscodeUtils.isDirectory(behaviorPackFolderUri)) {
-            throw new Error("Le dossier 'behavior_pack' est introuvable dans le projet.");
+    public async getBehaviorPackFolder(): Promise<vscode.Uri | undefined> {
+        // On tente de récuperer le dossier addon
+        let addonFolderUri: vscode.Uri;
+        try {
+            addonFolderUri = await this.getAddonFolder();
+        } catch (error) {
+            if (error instanceof Error) {
+                throw new Error(`Impossible de récupérer le dossier 'behavior_pack' : ${error.message}`);
+            }
+
+            throw error;
+        }
+
+        // Si le dossier addon est récupéré, on peut tenter de récupérer le dossier behavior_pack à l'intérieur
+        const behaviorPackFolderUri = vscode.Uri.joinPath(addonFolderUri, "behavior_pack");
+        let isBehaviorPackDirectory: boolean;
+        try {
+            isBehaviorPackDirectory = await VscodeUtils.isDirectory(behaviorPackFolderUri);
+        } catch (error) {
+            if (error instanceof Error) {
+                throw new Error(`Le dossier 'behavior_pack' est inaccessible dans le projet : ${error.message}`);
+            }
+
+            throw error;
+        }
+
+        if (isBehaviorPackDirectory === false) {
+            return undefined; // Si le dossier behavior_pack n'existe pas, on retourne undefined au lieu de lancer une erreur, car ce dossier est optionnel dans un projet Addon
         }
 
         return behaviorPackFolderUri;
@@ -137,13 +179,35 @@ export class AddonMinecraftProject extends MinecraftProject {
 
     /**
      * Récupère le dossier "resource_pack" du projet
-     * @throws {Error} Si le dossier "resource_pack" et/ou "addon" est introuvable
+     * @throws {Error} Si le dossier "addon" est introuvable/inaccessible, ou si le dossier "resource_pack" est inaccessible
      * @returns
      */
-    public async getResourcePackFolder(): Promise<vscode.Uri> {
-        const resourcePackFolderUri = vscode.Uri.joinPath(await this.getAddonFolder(), "resource_pack");
-        if (! await VscodeUtils.isDirectory(resourcePackFolderUri)) {
-            throw new Error("Le dossier 'resource_pack' est introuvable dans le projet.");
+    public async getResourcePackFolder(): Promise<vscode.Uri | undefined> {
+        let addonFolderUri: vscode.Uri;
+        try {
+            addonFolderUri = await this.getAddonFolder();
+        } catch (error) {
+            if (error instanceof Error) {
+                throw new Error(`Impossible de récupérer le dossier 'resource_pack' : ${error.message}`);
+            }
+
+            throw error;
+        }
+
+        const resourcePackFolderUri = vscode.Uri.joinPath(addonFolderUri, "resource_pack");
+        let isResourcePackDirectory: boolean;
+        try {
+            isResourcePackDirectory = await VscodeUtils.isDirectory(resourcePackFolderUri);
+        } catch (error) {
+            if (error instanceof Error) {
+                throw new Error(`Le dossier 'resource_pack' est inaccessible dans le projet : ${error.message}`);
+            }
+
+            throw error;
+        }
+
+        if (isResourcePackDirectory === false) {
+            return undefined; // Si le dossier resource_pack n'existe pas, on retourne undefined au lieu de lancer une erreur, car ce dossier est optionnel dans un projet Addon
         }
 
         return resourcePackFolderUri;
@@ -151,13 +215,35 @@ export class AddonMinecraftProject extends MinecraftProject {
 
     /**
      * Récupère le dossier "scripts" du projet
-     * @throws {Error} Si le dossier "scripts" et/ou "addon" est introuvable
+     * @throws {Error} Si le dossier "addon" est introuvable ou si le dossier "scripts" est inaccessible
      * @returns 
      */
-    public async getScriptsFolder(): Promise<vscode.Uri> {
-        const scriptsFolderUri = vscode.Uri.joinPath(await this.getAddonFolder(), "scripts");
-        if (! await VscodeUtils.isDirectory(scriptsFolderUri)) {
-            throw new Error("Le dossier 'scripts' est introuvable dans le projet.");
+    public async getScriptsFolder(): Promise<vscode.Uri | undefined> {
+        let addonFolderUri: vscode.Uri;
+        try {
+            addonFolderUri = await this.getAddonFolder();
+        } catch (error) {
+            if (error instanceof Error) {
+                throw new Error(`Impossible de récupérer le dossier 'scripts' : ${error.message}`);
+            }
+
+            throw error;
+        }
+
+        const scriptsFolderUri = vscode.Uri.joinPath(addonFolderUri, "scripts");
+        let isScriptsDirectory: boolean;
+        try {
+            isScriptsDirectory = await VscodeUtils.isDirectory(scriptsFolderUri);
+        } catch (error) {
+            if (error instanceof Error) {
+                throw new Error(`Le dossier 'scripts' est inaccessible dans le projet : ${error.message}`);
+            }
+
+            throw error;
+        }
+
+        if (isScriptsDirectory === false) {
+            return undefined; // Si le dossier scripts n'existe pas, on retourne undefined au lieu de lancer une erreur, car ce dossier est optionnel dans un projet Addon
         }
 
         return scriptsFolderUri;
@@ -165,9 +251,9 @@ export class AddonMinecraftProject extends MinecraftProject {
 }
 
 export class SkinPackMinecraftProject extends MinecraftProject {
-    // À implémenter plus tard
+    // TODO
 }
 
 export class WorldTemplateMinecraftProject extends MinecraftProject {
-    // À implémenter plus tard
+    // TODO
 }
