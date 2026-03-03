@@ -636,7 +636,7 @@ export class ProjectService {
                 }
 
                 try { // Gestion des modules Script API à inclure dans le projet
-                    const selectedModules = await PromptService.askScriptApiModules(); // Demande à l'utilisateur les modules Script API à inclure dans le projet, avec leurs versions
+                    const selectedModules = await PromptService.askScriptApiModules(metadata.minecraftProduct); // Demande à l'utilisateur les modules Script API à inclure dans le projet, avec leurs versions
                     if (selectedModules !== undefined) {
                         this.addScriptApiModules(behaviorManifest, packageJsonContent, selectedModules);
                     }

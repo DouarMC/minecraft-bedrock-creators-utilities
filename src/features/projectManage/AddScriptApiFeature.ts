@@ -90,7 +90,7 @@ export class AddScriptApiFeature extends Feature {
             // Demande à l'utilisateur de sélectionner les modules de l'API de script à ajouter au projet
             let selectedModules: Record<string, { version: string, npmVersion: string }> | undefined;
             try {
-                selectedModules = await PromptService.askScriptApiModules();
+                selectedModules = await PromptService.askScriptApiModules(minecraftProject.minecraftProduct);
             } catch (error) {
                 let errorMessage;
                 if (error instanceof Error) {

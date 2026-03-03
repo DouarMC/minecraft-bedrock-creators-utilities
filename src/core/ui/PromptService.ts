@@ -216,18 +216,11 @@ export class PromptService {
 
     /**
      * Demande à l'utilisateur les modules de l'API Script à inclure et leurs versions.
+     * @param minecraftProduct Le produit Minecraft ciblé (Stable ou Preview) pour filtrer les versions des modules de l'API Script à proposer à l'utilisateur en fonction de la version de Minecraft ciblée par le projet.
      * @throws {Error} Si aucun projet Minecraft n'est chargé, ou si la récupération des modules de l'API Script depuis le serveur échoue, ou si la création de la structure de l'API Script dans le projet échoue.
      * @returns 
      */
-    public static async askScriptApiModules(): Promise<Record<string, { version: string, npmVersion: string }> | undefined> {
-        // Récupère le projet Minecraft actuellement chargé pour connaître le produit Minecraft ciblé (Stable ou Preview), nécessaire pour filtrer les versions des modules de l'API Script à proposer à l'utilisateur
-        const project = MinecraftProjectManager.project;
-        if (project === undefined) {
-            throw new Error("Aucun projet Minecraft chargé.");
-        }
-
-        const minecraftProduct = project.minecraftProduct; // On récupère le produit Minecraft ciblé (Stable ou Preview) à partir du projet chargé
-
+    public static async askScriptApiModules(minecraftProduct: MinecraftProduct): Promise<Record<string, { version: string, npmVersion: string }> | undefined> {
         let minecraftScriptApiModules: Response;
         try { // Tente de récupérer les modules de l'API Script depuis le repo github de mon projet
             minecraftScriptApiModules = await fetch(SCHEMA_BASE_URL + "minecraftScriptApiModules/stable.json");

@@ -4,6 +4,7 @@ import { PromptService } from "../../core/ui/PromptService";
 import { ProjectService } from "../../core/project/ProjectService";
 import { MinecraftProjectType } from "../../types/projectConfig";
 import { Feature } from "../../core/features/Feature";
+import { MinecraftProjectManager } from "../../core/project/MinecraftProjectManager";
 
 /**
  * Fonctionnalité pour initialiser un projet Minecraft Bedrock.
@@ -86,6 +87,9 @@ export class InitProjectFeature extends Feature {
             if (projectMetadata.type === MinecraftProjectType.Addon) {
                 try {
                     await ProjectService.createAddonStructure(projectFolder, projectMetadata);
+                    // Ouvrir le dossier du projet dans VSCode
+                    await vscode.commands.executeCommand("vscode.openFolder", projectFolder, false);
+
                 } catch (error) {
                     if (error instanceof Error) {
                         vscode.window.showErrorMessage(`Erreur lors de la création de la structure du projet Add-on : ${error.message}`);
@@ -97,9 +101,6 @@ export class InitProjectFeature extends Feature {
             } else if (projectMetadata.type === MinecraftProjectType.WorldTemplate) {
                 // TODO
             }
-
-            // Ouvrir le dossier du projet dans VSCode
-            await vscode.commands.executeCommand("vscode.openFolder", projectFolder, false);
 
             // Afficher un message de succès une fois que le projet a été initialisé
             vscode.window.showInformationMessage("✅ L'environnement du projet Minecraft Bedrock a été initialisé avec succès !");
