@@ -2,7 +2,6 @@ import { dynamicExamplesSourceKeys } from "../../shared/schemaEnums";
 import { schemaPatterns } from "../../shared/schemaPatterns";
 import { MinecraftJsonSchema } from "../../../common/types/MinecraftJsonSchema";
 import { VersionedSchema, SchemaChange } from "../../../common/types/VersionedSchema";
-import { describe } from "node:test";
 
 const baseSchema: MinecraftJsonSchema = {
     description: "Définit les propriétés du client du biome.",
@@ -13,7 +12,7 @@ const baseSchema: MinecraftJsonSchema = {
             description: "La version du Format à utiliser.",
             type: "string",
             enum: [
-                "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100", "1.21.110", "1.21.120", "1.21.130"
+                "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100", "1.21.110", "1.21.120", "1.21.130", "1.26.0"
             ]
         },
         "minecraft:client_biome": {

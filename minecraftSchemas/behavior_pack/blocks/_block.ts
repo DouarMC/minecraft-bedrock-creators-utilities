@@ -3,7 +3,6 @@ import { schemaEnums, dynamicExamplesSourceKeys } from "../../shared/schemaEnums
 import { commonSchemas } from "../../shared/commonSchemas";
 import { VersionedSchema, SchemaChange } from "../../../common/types/VersionedSchema";
 import { MinecraftJsonSchema } from "../../../common/types/MinecraftJsonSchema";
-import { describe } from "node:test";
 
 const baseSchema: MinecraftJsonSchema = {
     description: "Ce fichier crée un Bloc personnalisé.",
@@ -14,7 +13,7 @@ const baseSchema: MinecraftJsonSchema = {
             description: "La version du format à utiliser.",
             type: "string",
             enum: [
-                "1.8.0", "1.9.0", "1.10.0", "1.11.0", "1.12.0", "1.13.0", "1.14.0", "1.14.1", "1.14.20", "1.14.30", "1.15.0", "1.16.0", "1.16.20", "1.16.100", "1.16.200", "1.16.210", "1.16.220", "1.16.230", "1.17.0", "1.17.10", "1.17.20", "1.17.30", "1.17.40", "1.18.0", "1.18.10", "1.18.20", "1.18.30", "1.18.40", "1.19.0", "1.19.10", "1.19.20", "1.19.30", "1.19.40", "1.19.50", "1.19.60", "1.19.70", "1.19.80", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100", "1.21.110", "1.21.110", "1.21.120", "1.21.130"
+                "1.8.0", "1.9.0", "1.10.0", "1.11.0", "1.12.0", "1.13.0", "1.14.0", "1.14.1", "1.14.20", "1.14.30", "1.15.0", "1.16.0", "1.16.20", "1.16.100", "1.16.200", "1.16.210", "1.16.220", "1.16.230", "1.17.0", "1.17.10", "1.17.20", "1.17.30", "1.17.40", "1.18.0", "1.18.10", "1.18.20", "1.18.30", "1.18.40", "1.19.0", "1.19.10", "1.19.20", "1.19.30", "1.19.40", "1.19.50", "1.19.60", "1.19.70", "1.19.80", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100", "1.21.110", "1.21.110", "1.21.120", "1.21.130", "1.26.0"
             ]
         },
         use_beta_features: {
@@ -373,6 +372,166 @@ const baseSchema: MinecraftJsonSchema = {
                                     }
                                 }
                             }
+                        },
+
+                        "tag:acacia": {
+                            description: "Exemples d'usages vanilla : [`minecraft:acacia_log`]",
+                            type: "object"
+                        },
+                        "tag:birch": {
+                            description: "Exemples d'usages vanilla : [`minecraft:birch_log`]",
+                            type: "object"
+                        },
+                        "tag:minecraft:cornerable_stairs": {
+                            description: "Les blocs avec ce tag sont considérés comme des escaliers pouvant se connecter en coin. Actuellement, il faut que l'option `Beta APIs` du monde soit activée pour que les escaliers vanilla possèdent ce tag. Pour ajouter ce tag aux blocs customs, il faut que la propriété `use_beta_features` soit définie sur `true` et que ce bloc possède les états de blocs `minecraft:cardinal_direction`. Exemples d'usages vanilla : [`minecraft:oak_stairs`, `minecraft:stone_brick_stairs`]",
+                            type: "object"
+                        },
+                        "tag:minecraft:crop": {
+                            description: "Ce tag permet aux blocs de recevoir du pollen de la part des entités possédant le composant `minecraft:grows_crop`. Comme les blocs personalisés ne peuvent pas avoir d'état de croissance, le pollen ne fera que des particules et des sons. Exemples d'usages vanilla : [`minecraft:wheat`, `minecraft:beetroot`]",
+                        },
+                        "tag:dark_oak": {
+                            description: "Exemples d'usages vanilla : [`minecraft:dark_oak_log`]",
+                            type: "object"
+                        },
+                        "tag:diamond_pick_diggable": {
+                            description: "Tag obsolète, utilisez les tags `minecraft:is_pickaxe_item_destructible` et `minecraft:diamond_tier_destructible`. Exemples d'usages vanilla : [`minecraft:obsidian`, `minecraft:end_portal_frame`]",
+                            type: "object"
+                        },
+                        "tag:minecraft:diamond_tier_destructible": {
+                            description: "Ce tag indique au bloc qu'il doit être détruit par un outil de niveau diamant minimum pour que le butin soit obtenu. Celà n'empêche pas automatiquement l'obtention de butin pour les blocs personnalisés. Exemples d'usages vanilla : [`minecraft:obsidian`, `minecraft:ancient_debris`]",
+                            type: "object"
+                        },
+                        "tag:dirt": {
+                            description: "Ce tag permet au bloc d'avoir des arbres placés dessus lors de la génération du monde. Si un arbre est placé au-dessus, le bloc sera remplacé par de la terre. Permet également de placer certaines plantes sur ce bloc, notamment le bambou, le buisson mort, les pétales roses, la canne à sucre et les fleurs sauvages. Exemples d'usages vanilla : [`minecraft:dirt`, `minecraft:grass_block`]",
+                            type: "object"
+                        },
+                        "tag:fertilize_area": {
+                            description: "Exemples d'usages vanilla : [`minecraft:grass_block`, `minecraft:azure_bluet`]",
+                            type: "object"
+                        },
+                        "tag:grass": {
+                            description: "Exemples d'usages vanilla : [`minecraft:grass_block`, `minecraft:grass_path`]",
+                            type: "object"
+                        },
+                        "tag:gravel": {
+                            description: "Permet à ce bloc d'avoir du Bambou placé dessus. Exemples d'usages vanilla : [`minecraft:gravel`]",
+                            type: "object"
+                        },
+                        "tag:minecraft:has_fence_connections": {
+                            description: "Ce tag permet d'identifier un bloc personnalisé comme un bloc créant des connexions telles qu'une clôture, cette étiquette est requise pour créer des connexions entre les clôtures personnalisées et les clôtures Vanilla.",
+                            type: "object"
+                        },
+                        "tag:iron_pick_diggable": {
+                            description: "Tag obsolète, utilisez les tags `minecraft:is_pickaxe_item_destructible` et `minecraft:iron_tier_destructible`. Exemples d'usages vanilla : [`minecraft:coal_ore`, `minecraft:emerald_ore`, `minecraft:deepslate_diamond_ore`]",
+                            type: "object"
+                        },
+                        "tag:minecraft:iron_tier_destructible": {
+                            description: "Ce tag indique au bloc qu'il doit être détruit par un outil de niveau fer minimum pour que le butin soit obtenu. Celà n'empêche pas automatiquement l'obtention de butin pour les blocs personnalisés. Exemples d'usages vanilla : [`minecraft:coal_ore`, `minecraft:emerald_ore`, `minecraft:deepslate_diamond_ore`]",
+                            type: "object"
+                        },
+                        "tag:minecraft:is_axe_item_destructible": {
+                            description: "Ce tag indique que le bloc est plus rapide à casser avec une hache. Les haches personalisés doivent vérifier ce tag dans le composant `minecraft:digger`. Exemples d'usages vanilla : [`minecraft:oak_log`, `minecraft:oak_planks`, `minecraft:bookshelf`]",
+                            type: "object"
+                        },
+                        "tag:minecraft:is_hoe_item_destructible": {
+                            description: "Ce tag indique que le bloc est plus rapide à casser avec une houe. Les houes personalisées doivent vérifier ce tag dans le composant `minecraft:digger`. Exemples d'usages vanilla : [`minecraft:dirt`, `minecraft:grass_block`, `minecraft:farmland`]",
+                            type: "object"
+                        },
+                        "tag:minecraft:is_pickaxe_item_destructible": {
+                            description: "Ce tag indique que le bloc est plus rapide à casser avec une pioche. Les pioches personalisées doivent vérifier ce tag dans le composant `minecraft:digger`. Exemples d'usages vanilla : [`minecraft:stone`, `minecraft:coal_ore`, `minecraft:iron_ore`]",
+                            type: "object"
+                        },
+                        "tag:minecraft:is_shears_item_destructible": {
+                            description: "Ce tag indique que le bloc est plus rapide à casser avec des cisailles. Les cisailles personalisées doivent vérifier ce tag dans le composant `minecraft:digger`. Exemples d'usages vanilla : [`minecraft:web`]",
+                            type: "object"
+                        },
+                        "tag:minecraft:is_shovel_item_destructible": {
+                            description: "Ce tag indique que le bloc est plus rapide à casser avec une pelle. Les pelles personalisées doivent vérifier ce tag dans le composant `minecraft:digger`. Exemples d'usages vanilla : [`minecraft:dirt`, `minecraft:gravel`, `minecraft:sand`]",
+                            type: "object"
+                        },
+                        "tag:minecraft:is_sword_item_destructible": {
+                            description: "Ce tag indique que le bloc est plus rapide à casser avec une épée. Les épées personalisées doivent vérifier ce tag dans le composant `minecraft:digger`. Exemples d'usages vanilla : [`minecraft:web`]",
+                            type: "object"
+                        },
+                        "tag:jungle": {
+                            description: "Exemples d'usages vanilla : [`minecraft:jungle_log`]",
+                            type: "object"
+                        },
+                        "tag:log": {
+                            description: "Exemples d'usages vanilla : [`minecraft:oak_log`, `minecraft:spruce_log`, `minecraft:birch_log`, `minecraft:jungle_log`, `minecraft:acacia_log`, `minecraft:dark_oak_log`]",
+                            type: "object"
+                        },
+                        "tag:metal": {
+                            description: "Exemples d'usages vanilla : [`minecraft:cauldron`, `minecraft:exposed_copper_bars`, `minecraft:iron_door`, `minecraft:gold_block`, `minecraft:weathered_copper_bars`]",
+                            type: "object"
+                        },
+                        "tag:mob_spawner": {
+                            description: "Exemples d'usages vanilla : [`minecraft:mob_spawner`]",
+                            type: "object"
+                        },
+                        "tag:not_feature_replaceable": {
+                            description: "Exemples d'usages vanilla : [`minecraft:cherry_shelf`, `minecraft:end_portal_frame`, `minecraft:trial_spawner`]",
+                            type: "object"
+                        },
+                        "tag:oak": {
+                            description: "Exemples d'usages vanilla : [`minecraft:oak_log`]",
+                            type: "object"
+                        },
+                        "tag:one_way_collidable": {
+                            description: "Ce tag indique au bloc qu'il empêche les entités situées à l'intérieur de ce bloc d'être automatiquement repoussées hors de la zone de collision du bloc. Cela permet aux entités de rester à l'intérieur du bloc sans être expulsées, même si le bloc a une forme de collision solide. Exemples d'usages vanilla : [`minecraft:waxed_copper_trapdoor`, `minecraft:mangrove_fence_gate`, `minecraft:acacia_door`]",
+                            type: "object"
+                        },
+                        "tag:plant": {
+                            description: "Exemples d'usages vanilla : [`minecraft:oak_sapling`, `minecraft:dark_oak_sapling`, `minecraft:pitcher_plant`, `minecraft:sunflower`, `minecraft:tall_grass`]",
+                            type: "object"
+                        },
+                        "tag:pumpkin": {
+                            description: "Exemples d'usages vanilla : [`minecraft:pumpkin`, `minecraft:carved_pumpkin`]",
+                            type: "object"
+                        },
+                        "tag:rail": {
+                            description: "Ce tag infique au bloc qu'il permet de placer des chariots dessus. Ce qui permet aux entités avec le composants `minecraft:rail_movement` (comme les chariots) de s'aligner sur le bloc et de se déplacer dessus vers le nord ou le sud tant que le bloc n'a pas de boîte de collision. Exemples d'usages vanilla : [`minecraft:rail`, `minecraft:powered_rail`, `minecraft:detector_rail`, `minecraft:activator_rail`]",
+                            type: "object"
+                        },
+                        "tag:sand": {
+                            description: "Ce tag permet au bloc d'avoir des cactus et de la canne à sucre placés dessus. Exemples d'usages vanilla : [`minecraft:sand`]",
+                            type: "object"
+                        },
+                        "tag:snow": {
+                            description: "Exemples d'usages vanilla : [`minecraft:snow_layer`]",
+                            type: "object"
+                        },
+                        "tag:spruce": {
+                            description: "Exemples d'usages vanilla : [`minecraft:spruce_log`]",
+                            type: "object"
+                        },
+                        "tag:stone": {
+                            description: "Exemples d'usages vanilla : [`minecraft:stone`, `minecraft:granite`, `minecraft:diorite`, `minecraft:andesite`]",
+                            type: "object"
+                        },
+                        "tag:stone_pick_diggable": {
+                            description: "Tag obsolète, utilisez les tags `minecraft:is_pickaxe_item_destructible` et `minecraft:stone_tier_destructible`. Exemples d'usages vanilla : [`minecraft:cobblestone`, `minecraft:stone`, `minecraft:coal_ore`]",
+                            type: "object"
+                        },
+                        "tag:minecraft:stone_tier_destructible": {
+                            description: "Ce tag indique au bloc qu'il doit être détruit par un outil de niveau pierre minimum pour que le butin soit obtenu. Celà n'empêche pas automatiquement l'obtention de butin pour les blocs personnalisés. Exemples d'usages vanilla : [`minecraft:cobblestone`, `minecraft:stone`, `minecraft:coal_ore`]",
+                            type: "object"
+                        },
+                        "tag:text_sign": {
+                            description: "Exemples d'usages vanilla : [`minecraft:acacia_hanging_sign`, `minecraft:spruce_sign`, `minecraft:birch_sign`, `minecraft:jungle_sign`, `minecraft:acacia_sign`, `minecraft:dark_oak_sign`]",
+                            type: "object"
+                        },
+                        "tag:trapdoors": {
+                            description: "Les blocs considéré comme des trappes sont évités par les Breezes. Exemples d'usages vanilla : [`minecraft:oak_trapdoor`, `minecraft:iron_trapdoor`, `minecraft:mangrove_trapdoor`]",
+                            type: "object"
+                        },
+                        "tag:water": {
+                            description: "Ce tag permet au bloc d'avoir de la canne à sucre d'être placé sur les blocs horizontalement adjacents qui ont le tag de `dirt`.",
+                            type: "object"
+                        },
+                        "tag:wood": {
+                            description: "Exemples d'usages vanilla : [`minecraft:oak_log`, `minecraft:cherry_standing_sign`, `minecraft:birch_log`, `minecraft:jungle_pressure_plate`, `minecraft:acacia_log`, `minecraft:dark_oak_log`]",
+                            type: "object"
                         }
                     }
                 }

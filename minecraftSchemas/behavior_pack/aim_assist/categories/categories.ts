@@ -12,7 +12,7 @@ const baseSchema: MinecraftJsonSchema = {
             description: "La version du format à utiliser.",
             type: "string",
             enum: [
-                "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100", "1.21.110", "1.21.120", "1.21.130"
+                "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100", "1.21.110", "1.21.120", "1.21.130", "1.26.0"
             ]
         },
         "minecraft:aim_assist_categories": {
