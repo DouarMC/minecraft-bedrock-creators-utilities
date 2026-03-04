@@ -49,7 +49,7 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         id: "behavior_pack/blocks/<all>.json",
         displayName: "Blocks Definition",
         packType: "behavior_pack",
-        patterns: ["**/blocks/*.json"],
+        patterns: ["**/blocks/**/*.json"],
         excludePatterns: undefined,
         schemaPath: "behavior_pack/blocks/_block.json"
     }),
@@ -139,7 +139,7 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         id: "behavior_pack/items/<all>.json",
         displayName: "Items Definition",
         packType: "behavior_pack",
-        patterns: ["**/items/*.json"],
+        patterns: ["**/items/**/*.json"],
         excludePatterns: undefined,
         schemaPath: "behavior_pack/items/_item.json"
     }),
@@ -147,7 +147,7 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         id: "behavior_pack/loot_tables/<all>.json",
         displayName: "Loot Tables",
         packType: "behavior_pack",
-        patterns: ["**/loot_tables/*.json"],
+        patterns: ["**/loot_tables/**/*.json"],
         excludePatterns: undefined,
         schemaPath: "behavior_pack/loot_tables/_loot_table.json"
     }),
@@ -171,7 +171,7 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         id: "behavior_pack/recipes/<all>.json",
         displayName: "Recipes",
         packType: "behavior_pack",
-        patterns: ["**/recipes/*.json"],
+        patterns: ["**/recipes/**/*.json"],
         excludePatterns: undefined,
         schemaPath: "behavior_pack/recipes/_recipe.json"
     }),
@@ -211,7 +211,7 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         id: "behavior_pack/trading/<all>.json",
         displayName: "Trading",
         packType: "behavior_pack",
-        patterns: ["**/trading/*.json"],
+        patterns: ["**/trading/**/*.json"],
         excludePatterns: undefined,
         schemaPath: "behavior_pack/trading/_trading.json"
     }),
@@ -219,7 +219,7 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         id: "behavior_pack/worldgen/processors/<all>.json",
         displayName: "World Generation Processors",
         packType: "behavior_pack",
-        patterns: ["**/worldgen/processors/*.json"],
+        patterns: ["**/worldgen/processors/**/*.json"],
         excludePatterns: undefined,
         schemaPath: "behavior_pack/worldgen/processors/_processor.json"
     }),
@@ -227,7 +227,7 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         id: "behavior_pack/worldgen/structure_sets/<all>.json",
         displayName: "World Generation Structure Sets",
         packType: "behavior_pack",
-        patterns: ["**/worldgen/structure_sets/*.json"],
+        patterns: ["**/worldgen/structure_sets/**/*.json"],
         excludePatterns: undefined,
         schemaPath: "behavior_pack/worldgen/structure_sets/_structure_set.json"
     }),
@@ -235,7 +235,7 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         id: "behavior_pack/worldgen/structures/<all>.json",
         displayName: "World Generation Structures",
         packType: "behavior_pack",
-        patterns: ["**/worldgen/structures/*.json"],
+        patterns: ["**/worldgen/structures/**/*.json"],
         excludePatterns: undefined,
         schemaPath: "behavior_pack/worldgen/structures/_jigsaw_structure.json"
     }),
@@ -243,7 +243,7 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         id: "behavior_pack/worldgen/template_pools/<all>.json",
         displayName: "World Generation Template Pools",
         packType: "behavior_pack",
-        patterns: ["**/worldgen/template_pools/*.json"],
+        patterns: ["**/worldgen/template_pools/**/*.json"],
         excludePatterns: undefined,
         schemaPath: "behavior_pack/worldgen/template_pools/_template_pool.json"
     }),
@@ -436,7 +436,7 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         id: "resource_pack/models/<all>.json",
         displayName: "Models",
         packType: "resource_pack",
-        patterns: ["**/models/*.json"],
+        patterns: ["**/models/**/*.json"],
         excludePatterns: undefined,
         schemaPath: "resource_pack/models/_geometry.json"
     }),
@@ -532,7 +532,7 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         id: "resource_pack/textures/*.{tga,png,jpg,jpeg}",
         displayName: "Texture Files",
         packType: "resource_pack",
-        patterns: ["**/textures/*.{tga,png,jpg,jpeg}"],
+        patterns: ["**/textures/**/*.{tga,png,jpg,jpeg}"],
         excludePatterns: undefined,
         schemaPath: undefined
     }),
@@ -540,7 +540,7 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         id: "resource_pack/textures/<all>.texture_set.json",
         displayName: "Texture Sets",
         packType: "resource_pack",
-        patterns: ["**/textures/*.texture_set.json"],
+        patterns: ["**/textures/**/*.texture_set.json"],
         excludePatterns: undefined,
         schemaPath: "resource_pack/textures/_texture_set.json"
     }),
@@ -580,7 +580,7 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         id: "resource_pack/ui/<all>.json",
         displayName: "UI Definition",
         packType: "resource_pack",
-        patterns: ["**/ui/*.json"],
+        patterns: ["**/ui/**/*.json"],
         excludePatterns: undefined,
         schemaPath: "resource_pack/ui/_ui_element.json"
     }),

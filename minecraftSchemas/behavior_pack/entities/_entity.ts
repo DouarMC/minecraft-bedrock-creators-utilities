@@ -6070,6 +6070,10 @@ const baseSchema: MinecraftJsonSchema = {
                                 }
                             }
                         },
+                        "minecraft:spawn_egg_interaction": {
+                            description: "Permet à une entité d'interagir avec son propre œuf de spawn pour faire apparaître un bébé. Exécute l'événement `minecraft:entity_born` sur l'entité créée ainsi que l'événement `on_spawn` défini.",
+                            type: "object"
+                        },
                         "minecraft:spawn_entity": {
                             description: "Ajoute un événement de spawn d'entité à l'entité.",
                             type: "object",
@@ -13917,23 +13921,45 @@ const baseSchema: MinecraftJsonSchema = {
                             properties: {
                                 cooldown_range: {
                                     description: "Plage de temps de refroidissement minimum et maximum (en secondes) entre chaque exécution de ce comportement.",
-                                    default: [10.0, 10.0],
-                                    type: "array",
-                                    minItems: 2,
-                                    maxItems: 2,
-                                    items: {
-                                        type: "number"
-                                    }
+                                    oneOf: [
+                                        {
+                                            type: "number"
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                min: {
+                                                    description: "Le temps minimum en secondes entre chaque exécution de ce comportement.",
+                                                    type: "number"
+                                                },
+                                                max: {
+                                                    description: "Le temps maximum en secondes entre chaque exécution de ce comportement.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
                                 },
                                 duration_range: {
                                     description: "Plage de temps minimum et maximum (en secondes) que ce comportement doit être actif.",
-                                    default: [2.0 , 2.0],
-                                    type: "array",
-                                    minItems: 2,
-                                    maxItems: 2,
-                                    items: {
-                                        type: "number"
-                                    }
+                                    oneOf: [
+                                        {
+                                            type: "number"
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                min: {
+                                                    description: "Le temps minimum en secondes que ce comportement doit être actif.",
+                                                    type: "number"
+                                                },
+                                                max: {
+                                                    description: "Le temps maximum en secondes que ce comportement doit être actif.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
                                 },
                                 on_end: {
                                     description: "Événement à déclencher lorsque ce comportement se termine.",
@@ -13961,23 +13987,45 @@ const baseSchema: MinecraftJsonSchema = {
                             properties: {
                                 cooldown_range: {
                                     description: "Plage de temps de refroidissement minimum et maximum (en secondes) entre chaque exécution de ce comportement.",
-                                    default: [10.0, 10.0],
-                                    type: "array",
-                                    minItems: 2,
-                                    maxItems: 2,
-                                    items: {
-                                        type: "number"
-                                    }
+                                    oneOf: [
+                                        {
+                                            type: "number"
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                min: {
+                                                    description: "Le temps minimum en secondes entre chaque exécution de ce comportement.",
+                                                    type: "number"
+                                                },
+                                                max: {
+                                                    description: "Le temps maximum en secondes entre chaque exécution de ce comportement.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
                                 },
                                 duration_range: {
                                     description: "Plage de temps minimum et maximum (en secondes) que ce comportement doit être actif.",
-                                    default: [2.0 , 2.0],
-                                    type: "array",
-                                    minItems: 2,
-                                    maxItems: 2,
-                                    items: {
-                                        type: "number"
-                                    }
+                                    oneOf: [
+                                        {
+                                            type: "number"
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                min: {
+                                                    description: "Le temps minimum en secondes que ce comportement doit être actif.",
+                                                    type: "number"
+                                                },
+                                                max: {
+                                                    description: "Le temps maximum en secondes que ce comportement doit être actif.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
                                 },
                                 on_end: {
                                     description: "Événement à déclencher lorsque ce comportement se termine.",
@@ -14005,23 +14053,45 @@ const baseSchema: MinecraftJsonSchema = {
                             properties: {
                                 cooldown_range: {
                                     description: "Plage de temps de refroidissement minimum et maximum (en secondes) entre chaque exécution de ce comportement.",
-                                    default: [10.0, 10.0],
-                                    type: "array",
-                                    minItems: 2,
-                                    maxItems: 2,
-                                    items: {
-                                        type: "number"
-                                    }
+                                    oneOf: [
+                                        {
+                                            type: "number"
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                min: {
+                                                    description: "Le temps minimum en secondes entre chaque exécution de ce comportement.",
+                                                    type: "number"
+                                                },
+                                                max: {
+                                                    description: "Le temps maximum en secondes entre chaque exécution de ce comportement.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
                                 },
                                 duration_range: {
                                     description: "Plage de temps minimum et maximum (en secondes) que ce comportement doit être actif.",
-                                    default: [2.0 , 2.0],
-                                    type: "array",
-                                    minItems: 2,
-                                    maxItems: 2,
-                                    items: {
-                                        type: "number"
-                                    }
+                                    oneOf: [
+                                        {
+                                            type: "number"
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                min: {
+                                                    description: "Le temps minimum en secondes que ce comportement doit être actif.",
+                                                    type: "number"
+                                                },
+                                                max: {
+                                                    description: "Le temps maximum en secondes que ce comportement doit être actif.",
+                                                    type: "number"
+                                                }
+                                            }
+                                        }
+                                    ]
                                 },
                                 on_end: {
                                     description: "Événement à déclencher lorsque ce comportement se termine.",
@@ -15015,6 +15085,137 @@ const versionedChanges: SchemaChange[] = [
                     description: "Si vrai, l'événement `on_unleash` ne sera déclenché que si l'Entité est déliée par un joueur.",
                     default : false,
                     type: "boolean"
+                }
+            }
+        ]
+    },
+    {
+        version: "1.26.0",
+        changes: [
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.nearest_attackable_target", "properties", "attack_interval"],
+                value: {
+                    description: "La plage de temps (en secondes) entre la recherche d'une cible d'attaque, la plage est dans (0, 'attack_interval']. Utilisé uniquement si 'attack_interval' est supérieur à 0, sinon 'scan_interval' est utilisé.",
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "Le temps minimum en secondes entre les attaques.",
+                            type: "integer"
+                        },
+                        max: {
+                            description: "Le temps maximum en secondes entre les attaques.",
+                            type: "integer"
+                        }
+                    }
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.timer_flag_1", "properties", "cooldown_range"],
+                value: {
+                    description: "Plage de temps de refroidissement minimum et maximum (en secondes) entre chaque exécution de ce comportement.",
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "Le temps minimum en secondes entre chaque exécution de ce comportement.",
+                            type: "number"
+                        },
+                        max: {
+                            description: "Le temps maximum en secondes entre chaque exécution de ce comportement.",
+                            type: "number"
+                        }
+                    }
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.timer_flag_1", "properties", "duration_range"],
+                value: {
+                    description: "Plage de temps minimum et maximum (en secondes) que ce comportement doit être actif.",
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "Le temps minimum en secondes que ce comportement doit être actif.",
+                            type: "number"
+                        },
+                        max: {
+                            description: "Le temps maximum en secondes que ce comportement doit être actif.",
+                            type: "number"
+                        }
+                    }
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.timer_flag_2", "properties", "cooldown_range"],
+                value: {
+                    description: "Plage de temps de refroidissement minimum et maximum (en secondes) entre chaque exécution de ce comportement.",
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "Le temps minimum en secondes entre chaque exécution de ce comportement.",
+                            type: "number"
+                        },
+                        max: {
+                            description: "Le temps maximum en secondes entre chaque exécution de ce comportement.",
+                            type: "number"
+                        }
+                    }
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.timer_flag_2", "properties", "duration_range"],
+                value: {
+                    description: "Plage de temps minimum et maximum (en secondes) que ce comportement doit être actif.",
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "Le temps minimum en secondes que ce comportement doit être actif.",
+                            type: "number"
+                        },
+                        max: {
+                            description: "Le temps maximum en secondes que ce comportement doit être actif.",
+                            type: "number"
+                        }
+                    }
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.timer_flag_3", "properties", "cooldown_range"],
+                value: {
+                    description: "Plage de temps de refroidissement minimum et maximum (en secondes) entre chaque exécution de ce comportement.",
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "Le temps minimum en secondes entre chaque exécution de ce comportement.",
+                            type: "number"
+                        },
+                        max: {
+                            description: "Le temps maximum en secondes entre chaque exécution de ce comportement.",
+                            type: "number"
+                        }
+                    }
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.timer_flag_3", "properties", "duration_range"],
+                value: {
+                    description: "Plage de temps minimum et maximum (en secondes) que ce comportement doit être actif.",
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "Le temps minimum en secondes que ce comportement doit être actif.",
+                            type: "number"
+                        },
+                        max: {
+                            description: "Le temps maximum en secondes que ce comportement doit être actif.",
+                            type: "number"
+                        }
+                    }
                 }
             }
         ]

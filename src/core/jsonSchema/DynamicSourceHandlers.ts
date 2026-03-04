@@ -784,6 +784,20 @@ export class DynamicSourceHandlers {
     private static async getEntityIds(fileSources: (MinecraftGame | MinecraftProject)[]): Promise<string[]> {
         const entityIds: string[] = [...(await this.getVanillaIdentifiersDist()).VANILLA_ENTITY_IDS];
 
+        const files = await this.getDataDrivenFilesFromSources("behavior_pack/entities/<all>.json", fileSources);
+        for (const file of files) {
+            try {
+                const json = await this.getFileContent(file);
+
+                const id = json?.["minecraft:entity"]?.description?.identifier;
+                if (typeof id === "string") {
+                    entityIds.push(id);
+                }
+            } catch (error) {
+                console.warn(`⚠️ Failed to read or parse entity from ${file.toString()}:`, error);
+            }
+        }
+
         return entityIds;
     }
 
@@ -1153,6 +1167,7 @@ export class DynamicSourceHandlers {
                 const json = await this.getFileContent(file);
                 const formatVersion = json?.format_version;
                 if (typeof formatVersion !== "string") continue;
+
                 if (MinecraftSchemaService.compareVersions(formatVersion, "1.8.0") >= 0 && MinecraftSchemaService.compareVersions(formatVersion, "1.12.0") < 0) {
                     const keys = Object.keys(json);
                     for (const key of keys) {
