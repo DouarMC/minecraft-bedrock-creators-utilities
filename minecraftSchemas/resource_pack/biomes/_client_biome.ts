@@ -2,7 +2,7 @@ import { dynamicExamplesSourceKeys } from "../../shared/schemaEnums";
 import { schemaPatterns } from "../../shared/schemaPatterns";
 import { MinecraftJsonSchema } from "../../../common/types/MinecraftJsonSchema";
 import { VersionedSchema, SchemaChange } from "../../../common/types/VersionedSchema";
-import { deserialize } from "v8";
+import { describe } from "node:test";
 
 const baseSchema: MinecraftJsonSchema = {
     description: "Définit les propriétés du client du biome.",
@@ -471,6 +471,27 @@ const versionedChanges: SchemaChange[] = [
                     description: "Son nommé qui se joue rarement à une position de bloc d'air proche lorsque le niveau de lumière est faible et que l'auditeur est sous l'eau.",
                     default: "",
                     type: "string"
+                }
+            }
+        ]
+    },
+    {
+        version: "1.21.130",
+        changes: [
+            {
+                action: "add",
+                target: ["properties", "minecraft:client_biome", "properties", "components", "properties", "minecraft:cubemap_identifier"],
+                value: {
+                    description: "Définit les paramètres de cubemap utilisés avec le mode `Vibrant Visuals`. Les biomes sans ce composant auront des paramètres de cubemap par défaut.",
+                    type: "object",
+                    required: ["cubemap_identifier"],
+                    properties: {
+                        cubemap_identifier: {
+                            description: "Identifiant des paramètres de cubemap à utiliser.",
+                            type: "string",
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.cubemap_settings_ids
+                        }
+                    }
                 }
             }
         ]

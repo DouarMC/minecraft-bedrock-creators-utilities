@@ -77,6 +77,9 @@ export class DynamicSourceHandlers {
                     case "culling_layer_ids":
                         exampleValues.push(...await this.getCullingLayerIds(fileSourcesAvailable));
                         break;
+                    case "cubemap_settings_ids":
+                        exampleValues.push(...await this.getCubemapSettingsIds(fileSourcesAvailable));
+                        break;
                     case "data_driven_aim_assist_category_ids":
                         exampleValues.push(...await this.getAimAssistCategoryIds(fileSourcesAvailable.filter(source => source instanceof MinecraftProject)));
                         break;
@@ -1652,5 +1655,24 @@ export class DynamicSourceHandlers {
         }
 
         return waterSettingsIds;
+    }
+
+    private static async getCubemapSettingsIds(fileSources: (MinecraftProject | MinecraftGame)[]): Promise<string[]> {
+        const cubemapSettingsIds: string[] = [];
+
+        const files = await this.getDataDrivenFilesFromSources("resource_pack/cubemaps/<all>.json", fileSources);
+        for (const file of files) {
+            try {
+                const json = await this.getFileContent(file);
+                const id = json?.["minecraft:cubemap_settings"]?.description?.identifier;
+                if (typeof id === "string") {
+                    cubemapSettingsIds.push(id);
+                }
+            } catch (error) {
+                console.warn(`⚠️ Failed to read or parse cubemap settings from ${file.toString()}:`, error);
+            }
+        }
+
+        return cubemapSettingsIds;
     }
 }

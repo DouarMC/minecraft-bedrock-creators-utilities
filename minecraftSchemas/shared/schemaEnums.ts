@@ -23,6 +23,7 @@ export const dynamicExamplesSourceKeys = {
     color_grading_settings_ids: "color_grading_settings_ids",
     culling_layer_ids: "culling_layer_ids",
     crafting_recipe_tags: "crafting_recipe_tags",
+    cubemap_settings_ids: "cubemap_settings_ids",
 
     data_driven_aim_assist_category_ids: "data_driven_aim_assist_category_ids",
     data_driven_aim_assist_preset_ids: "data_driven_aim_assist_preset_ids",
