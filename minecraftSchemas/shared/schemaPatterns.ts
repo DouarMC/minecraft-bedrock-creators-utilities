@@ -2,6 +2,7 @@ export const schemaPatterns = {
     animation_timeline_keyframe: "^([0-9]+(\.[0-9]+)?)$",
     atmospherics_keyframe: "^(0(\.\d+)?|1(\.0+)?)$",
     color_hex_rgba: "^#[0-9a-fA-F]{8}$",
+    cubemap_keyframe: "^(0(\.\d+)?|1(\.0+)?)$",
     lighting_keyframe: "^(0(\.\d+)?|1(\.0+)?)$",
     particle_lifetime_keyframe: "^[0-9]+(\\.[0-9]+)?$",
     render_controller_identifier: "^controller\\.render\\.",

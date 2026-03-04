@@ -336,6 +336,14 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         excludePatterns: undefined,
         schemaPath: "resource_pack/credits/credits.json"
     }),
+    "resource_pack/cubemaps/<all>.json": new MinecraftFileType({
+        id: "resource_pack/cubemaps/<all>.json",
+        displayName: "Cubemap Settings",
+        packType: "resource_pack",
+        patterns: ["**/cubemaps/*.json"],
+        excludePatterns: undefined,
+        schemaPath: "resource_pack/cubemaps/_cubemap_settings.json"
+    }),
     "resource_pack/entity/<all>.json": new MinecraftFileType({
         id: "resource_pack/entity/<all>.json",
         displayName: "Entity Definition",

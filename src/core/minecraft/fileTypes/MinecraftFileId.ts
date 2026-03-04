@@ -40,6 +40,7 @@ export type MinecraftFileId =
     "resource_pack/block_culling/<all>.json" |
     "resource_pack/color_grading/<all>.json" |
     "resource_pack/credits/credits.json" |
+    "resource_pack/cubemaps/<all>.json" |
     "resource_pack/entity/<all>.json" |
     "resource_pack/fogs/<all>.json" |
     "resource_pack/font/emoticons.json" |
