@@ -319,25 +319,6 @@ const baseSchema: MinecraftJsonSchema = {
                                 }
                             ]
                         },
-                        "minecraft:redstone_consumer": {
-                            "x-dynamic-examples-source": ["Upcoming Creator Features"],
-                            description: "Définit comment un Bloc peut consommer et potentiellement propager un signal de redstone. Ce composant n'est actuellement pas disponible dans les permutations de blocs.",
-                            type: "object",
-                            properties: {
-                                min_power: {
-                                    description: "Définit la valeur minimale pour la force du signal entrant. Si la force du signal est supérieure ou égale à cette valeur, l'événement `onRedstoneUpdate` est envoyé aux Scripts.",
-                                    default: 0,
-                                    type: "integer",
-                                    minimum: 0,
-                                    maximum: 15
-                                },
-                                propogates_power: {
-                                    description: "Définit si un signal de redstone peut passer à travers ce Bloc. Ce paramètre remplace la propriété `redstone_conductor` du composant `minecraft:redstone_conductivity`.",
-                                    default: false,
-                                    type: "boolean"
-                                }
-                            }
-                        },
                         "minecraft:support": {
                             "x-experimental_options": ["Upcoming Creator Features"],
                             description: "Définit la forme de support du Bloc. Actuellement, seuls les blocs ayant la même forme qu'une clôture Vanilla et qu'un escalier Vanilla sont autorisés. Pour fonctionner avec des escaliers personnalisés, il est nécessaire d'utiliser `minecraft:vertical_half` et `minecraft:cardinal_direction` ou `minecraft:facing_direction` qui peuvent être définis via le trait de bloc `minecraft:placement_direction`. Les blocs personnalisés sans ce composant auront par défaut une unité cube de support.",
@@ -1518,6 +1499,11 @@ const versionedChanges: SchemaChange[] = [
                                             type: "string",
                                             enum: ["up", "down", "north", "south", "east", "west"]
                                         }
+                                    },
+                                    use_liquid_clipping: {
+                                        description: "Si `true`, le Bloc utilisera la valeur de `minecraft:collision_box` pour visuellement clipper le liquide. Par exemple, si le type de liquide est `water` et que `use_liquid_clipping` est `true`, l'eau ne sera rendue que dans les parties du Bloc qui ne sont pas couvertes par la boîte de collision du Bloc. Si cette valeur est `false`, le liquide sera rendu à travers tout le Bloc, même dans les parties qui sont couvertes par la boîte de collision du Bloc.",
+                                        default: true,
+                                        type: "boolean"
                                     }
                                 }
                             }
@@ -1844,7 +1830,6 @@ const versionedChanges: SchemaChange[] = [
                 action: "add",
                 target: ["definitions", "material_instance", "oneOf", "1", "properties", "alpha_masked_tint"],
                 value: {
-                    "x-experimental_options": ["Upcoming Creator Features"],
                     description: "Quand `true`, la canal alpha de la texture sera utilisé pour multiplier la teinte de l'albédo de la texture. `tint_method` doit être différent de `none` et `render_method` doit être `opaque`.",
                     default: false,
                     type: "boolean"
@@ -1951,6 +1936,38 @@ const versionedChanges: SchemaChange[] = [
                         }
                     ]
                 }
+            }
+        ]
+    },
+    {
+        version: "1.26.0",
+        changes: [
+            {
+                action: "add",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:redstone_consumer"],
+                value: {
+                    description: "Définit comment un Bloc peut consommer et potentiellement propager un signal de redstone. Ce composant n'est actuellement pas disponible dans les permutations de blocs.",
+                    type: "object",
+                    properties: {
+                        min_power: {
+                            description: "Définit la valeur minimale pour la force du signal entrant. Si la force du signal est supérieure ou égale à cette valeur, l'événement `onRedstoneUpdate` est envoyé aux Scripts.",
+                            default: 0,
+                            type: "integer",
+                            minimum: 0,
+                            maximum: 15
+                        },
+                        propagates_power: {
+                            description: "Définit si un signal de redstone peut passer à travers ce Bloc. Ce paramètre remplace la propriété `redstone_conductor` du composant `minecraft:redstone_conductivity`.",
+                            default: false,
+                            type: "boolean"
+                        }
+                    }
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:liquid_detection", "properties", "use_liquid_clipping", "default"],
+                value: false
             }
         ]
     }

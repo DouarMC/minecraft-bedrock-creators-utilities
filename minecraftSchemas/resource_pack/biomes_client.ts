@@ -9,7 +9,7 @@ const baseSchema: MinecraftJsonSchema = {
     required: ["biomes"],
     properties: {
         biomes: {
-            description: "Contient les Biomes auquel on peut attribuer des propriétés.",
+            description: "Contient les Biomes auquel on peut attribuer des propriétés. Chaque biome en tant que clé doit avoir un namespace pour les mondes avec une `base_game_version` de `1.21.40` ou supérieure. Si ce fichier est chargé dans une monde avec une `base_game_version` inférieure à `1.21.40`, les biomes sans namespace auront le namespace par défaut `minecraft`.",
             type: "object",
             properties: {
                 default: {
