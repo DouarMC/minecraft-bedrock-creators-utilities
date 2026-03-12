@@ -439,7 +439,7 @@ const baseSchema: MinecraftJsonSchema = {
                                         required: ["dimension", "amount", "targets", "noise_frequency_scale"],
                                         properties: {
                                             dimension: {
-                                                description: "Dimension dans laquelle ce remplacement peut se produire. Doit être 'minecraft:overworld'.",
+                                                description: "Dimension dans laquelle ce remplacement peut se produire. Ne supporte uniquement la dimension `minecraft:overworld`.",
                                                 type: "string",
                                                 enum: ["minecraft:overworld"]
                                             },
@@ -449,7 +449,7 @@ const baseSchema: MinecraftJsonSchema = {
                                                 minItems: 1,
                                                 items: {
                                                     type: "string",
-                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.vanilla_biome_ids_without_namespace
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.data_driven_biome_ids
                                                 }
                                             },
                                             amount: {
@@ -994,7 +994,38 @@ const baseSchema: MinecraftJsonSchema = {
 
 export const versionedSchema: VersionedSchema = {
     baseSchema: baseSchema,
-    versionedChanges: []
+    versionedChanges: [
+        {
+            version: "1.26.0",
+            changes: [
+                {
+                    action: "modify",
+                    target: ["properties", "minecraft:biome", "properties", "components", "properties", "minecraft:replace_biomes", "properties", "replacements", "items", "properties", "dimension"],
+                    value: {
+                        description: "Dimension dans laquelle ce remplacement peut se produire. Ne supporte uniquement les dimension `minecraft:overworld` et `minecraft:nether`. Seuls les biomes avec la propriété `type` du composant `minecraft:surface_builder` définie sur `minecraft:overworld`, `minecraft:frozen_ocean`, `minecraft:capped`, et `minecraft:the_end` peuvent remplacés les biomes du Nether.",
+                        type: "string",
+                        enum: ["minecraft:overworld", "minecraft:nether"]
+                    }
+                },
+                {
+                    action: "add",
+                    target: ["properties", "minecraft:biome", "properties", "components", "properties", "minecraft:village_type"],
+                    value: {
+                        description: "Définit le type des villages de ce Biome.",
+                        type: "object",
+                        required: ["type"],
+                        properties: {
+                            type: {
+                                description: "Le type de village.",
+                                type: "string",
+                                enum: ["default", "desert", "ice", "savanna", "taiga"]
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ]
 };
 
 export default versionedSchema;

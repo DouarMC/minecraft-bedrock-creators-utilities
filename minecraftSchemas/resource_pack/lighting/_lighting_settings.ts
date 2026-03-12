@@ -12,7 +12,7 @@ const baseSchema: MinecraftJsonSchema = {
             description: "La version du format à utiliser.",
             type: "string",
             enum: [
-                "1.21.40", "1.21.60", "1.21.70", "1.21.80"
+                "1.21.40", "1.21.60", "1.21.70", "1.21.80", "1.26.0"
             ]
         },
         "minecraft:lighting_settings": {
@@ -214,7 +214,7 @@ const baseSchema: MinecraftJsonSchema = {
                             oneOf: [
                                 {
                                     type: "string",
-                                    pattern: "^#[0-9a-fA-F]{6}$"
+                                    pattern: schemaPatterns.color_hex
                                 },
                                 {
                                     type: "array",
@@ -543,6 +543,106 @@ const versionedChanges: SchemaChange[] = [
                             }
                         }
                     }
+                }
+            }
+        ]
+    },
+    {
+        version: "1.26.0",
+        changes: [
+            {
+                action: "modify",
+                target: ["properties", "minecraft:lighting_settings", "properties", "ambient", "properties", "illuminance"],
+                value: {
+                    description: "Définit l'intensité de la lumière ambiante en lux. Plus la valeur est élevée, plus l'environnement sera éclairé uniformément. Cette valeur peut être un nombre unique ou un objet de paires clé-valeur représentant des keyframes pour permettre des variations d'intensité au fil de l'heure dans le cycle jour/nuit.",
+                    oneOf: [
+                        {
+                            type: "number",
+                            minimum: 0
+                        },
+                        {
+                            type: "object",
+                            propertyNames: {
+                                pattern: schemaPatterns.lighting_keyframe
+                            },
+                            additionalProperties: {
+                                type: "number",
+                                minimum: 0
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:lighting_settings", "properties", "ambient", "properties", "color"],
+                value: {
+                    description: "Définit la couleur de la lumière ambiante. Cette valeur peut être une chaîne de caractères représentant une couleur hexadécimale (par exemple, `#ffffff`), ou un tableau de trois entiers (R, G, B) représentant la couleur en RGB, et peut également être un objet de paires clé-valeur représentant des keyframes pour permettre des variations de couleur au fil de l'heure dans le cycle jour/nuit.",
+                    oneOf: [
+                        {
+                            type: "string",
+                            pattern: schemaPatterns.color_hex
+                        },
+                        {
+                            type: "array",
+                            minItems: 3,
+                            maxItems: 3,
+                            items: {
+                                type: "integer",
+                                minimum: 0,
+                                maximum: 255
+                            }
+                        },
+                        {
+                            type: "object",
+                            propertyNames: {
+                                pattern: schemaPatterns.lighting_keyframe
+                            },
+                            additionalProperties: {
+                                oneOf: [
+                                    {
+                                        type: "string",
+                                        pattern: schemaPatterns.color_hex
+                                    },
+                                    {
+                                        type: "array",
+                                        minItems: 3,
+                                        maxItems: 3,
+                                        items: {
+                                            type: "integer",
+                                            minimum: 0,
+                                            maximum: 255
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:lighting_settings", "properties", "sky", "properties", "intensity"],
+                value: {
+                    description: "Facteur d'intensité (entre 0.1 et 1.0) qui détermine combien de lumière le ciel apporte à l'environnement. Une valeur plus faible donne un ciel plus sombre ; une valeur de 1.0 utilise la contribution maximale du ciel. Cette valeur peut être un nombre unique ou un objet de paires clé-valeur représentant des keyframes pour permettre des variations d'intensité au fil de l'heure dans le cycle jour/nuit.",
+                    oneOf: [
+                        {
+                            type: "number",
+                            minimum: 0.1,
+                            maximum: 1.0
+                        },
+                        {
+                            type: "object",
+                            propertyNames: {
+                                pattern: schemaPatterns.lighting_keyframe
+                            },
+                            additionalProperties: {
+                                type: "number",
+                                minimum: 0.1,
+                                maximum: 1.0
+                            }
+                        }
+                    ]
                 }
             }
         ]

@@ -1032,7 +1032,8 @@ const versionedChanges: SchemaChange[] = [
                     oneOf: [
                         {
                             type: "integer",
-                            minimum: 0
+                            minimum: 0,
+                            maximum: 32767
                         },
                         {
                             type: "object",
@@ -1041,7 +1042,8 @@ const versionedChanges: SchemaChange[] = [
                                 value: {
                                     description: "Le nombre de dégâts supplémentaires infligés par l'Item lorsqu'il est utilisé comme arme.",
                                     type: "integer",
-                                    minimum: 0
+                                    minimum: 0,
+                                    maximum: 32767
                                 }
                             }
                         }

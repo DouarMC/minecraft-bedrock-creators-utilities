@@ -990,11 +990,6 @@ const baseSchema: MinecraftJsonSchema = {
                                     default: false,
                                     type: "boolean"
                                 },
-                                blend_attributes: {
-                                    description: "Définit si les entités mélangeront leurs attributs dans leur progéniture.",
-                                    default: true,
-                                    type: "boolean"
-                                },
                                 breed_cooldown: {
                                     description: "Temps en secondes avant que l'Entité puisse se reproduire à nouveau.",
                                     default: 60,
@@ -1028,62 +1023,19 @@ const baseSchema: MinecraftJsonSchema = {
                                     }
                                 },
                                 breeds_with: {
-                                    description: "Liste des définitions d'entités avec lesquelles l'Entité peut se reproduire.",
-                                    type: "array",
-                                    items: {
-                                        type: "object",
-                                        properties: {
-                                            baby_type: {
-                                                description: "Définit le type de l'entité enfant.",
-                                                type: "string",
-                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.entity_ids
-                                            },
-                                            breed_event: {
-                                                description: "Evénement à déclencher lorsque l'Entité se reproduit.",
-                                                oneOf: [
-                                                    {
-                                                        type: "string"
-                                                    },
-                                                    commonSchemas.entity_event_trigger
-                                                ]
-                                            },
-                                            mate_type: {
-                                                description: "Définit le type de l'entité partenaire.",
-                                                type: "string",
-                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.entity_ids
-                                            }
-                                        }
+                                    description: "Définit les événements qui seront déclenché sur cette Entité en fonction du type du partenaire de reproduction.",
+                                    type: "object",
+                                    propertyNames: {
+                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.entity_ids
+                                    },
+                                    additionalProperties: {
+                                        ...commonSchemas.entity_event_trigger
                                     }
                                 },
                                 causes_pregnancy: {
                                     description: "Définit si l'Entité deviendra enceinte au lieu de faire apparaitre un bébé.",
                                     default: false,
                                     type: "boolean"
-                                },
-                                combine_parent_colors: {
-                                    description: "Définit si lorsque deux Entités de ce type se reproduisent, la couleur du bébé sera un mélange des couleurs (`minecraft:color`) des parents à condition qu'elles soient compatibles. Sinon la couleur du bébé sera choisie aléatoirement entre celle du père ou de la mère.",
-                                    type: "boolean"
-                                },
-                                deny_parents_variant: {
-                                    description: "Détermine à quel point il est probable qu'un bébé de parents avec la même variante nie cette variante et prenne plutôt une variante aléatoire dans la plage donnée.",
-                                    type: "object",
-                                    properties: {
-                                        chance: {
-                                            description: "Le pourcentage de chance de nier la variante des parents.",
-                                            default: 0,
-                                            type: "number"
-                                        },
-                                        max_variant: {
-                                            description: "Le maximum inclusif de la plage de variante.",
-                                            default: 0,
-                                            type: "integer"
-                                        },
-                                        min_variant: {
-                                            description: "Le minimum inclusif de la plage de variante.",
-                                            default: 0,
-                                            type: "integer"
-                                        }
-                                    }
                                 },
                                 environment_requirements: {
                                     description: "La liste des exigences de blocs à proximité pour amener l'Entité dans l'état d'amour.",
@@ -1119,108 +1071,9 @@ const baseSchema: MinecraftJsonSchema = {
                                     minimum: 0,
                                     maximum: 1
                                 },
-                                inherit_tamed: {
-                                    description: "Définit si les bébés des parents apprivoisés seront automatiquement apprivoisés.",
-                                    default: true,
-                                    type: "boolean"
-                                },
                                 love_filters: {
                                     description: "Les filtres à exécuter lors de la tentative de tomber amoureux.",
                                     ...commonSchemas.minecraft_filter
-                                },
-                                mutation_factor: {
-                                    description: "Détermine à quel point les bébés sont susceptibles de NE PAS hériter des variantes de l'un de leurs parents. Les valeurs sont comprises entre 0,0 et 1,0, un nombre plus élevé correspondant à une probabilité de mutation plus élevée.",
-                                    type: "object",
-                                    properties: {
-                                        color: {
-                                            description: "Le pourcentage de chance d'une mutation sur la couleur de l'entité.",
-                                            default: 0,
-                                            type: "number",
-                                            minimum: 0.0,
-                                            maximum: 1.0  
-                                        },
-                                        extra_variant: {
-                                            description: "Le pourcentage de chance d'une mutation sur le type de variante supplémentaire de l'entité.",
-                                            default: 0,
-                                            type: "number",
-                                            minimum: 0.0,
-                                            maximum: 1.0
-                                        },
-                                        variant: {
-                                            description: "Le pourcentage de chance d'une mutation sur le type de variante de l'entité.",
-                                            default: 0,
-                                            type: "number",
-                                            minimum: 0.0,
-                                            maximum: 1.0
-                                        }
-                                    }
-                                },
-                                mutation_strategy: {
-                                    description: "Stratégie utilisée pour muter les variantes et les variantes supplémentaires pour la progéniture. Les alternatives valides actuelles sont 'random' et 'none'.",
-                                    default: "none",
-                                    type: "string",
-                                    enum: ["none", "random"]
-                                },
-                                parent_centric_attribute_blending: {
-                                    description: "[EXPERIMENTALE] Liste des attributs qui devraient bénéficier du mélange des attributs centrés sur les parents. Par exemple, les chevaux mélangent leur santé, leur mouvement et leur force de saut dans leur progéniture.",
-                                    type: "array",
-                                    items: {
-                                        type: "string"
-                                    }
-                                },
-                                property_inheritance: {
-                                    description: "Définit les propriétés d'entités de l'Entité qui seront héritées par la progéniture.",
-                                    type: "object",
-                                    propertyNames: {
-                                        pattern: schemaPatterns.identifier_with_namespace
-                                    },
-                                    additionalProperties: {
-                                        type: "object",
-                                        properties: {
-                                            mutation_chance: {
-                                                description: "Définit la chance que la propriété ne soit pas héritée de l'un des parents.",
-                                                default: 0,
-                                                type: "number"
-                                            },
-                                            mutation_values: {
-                                                description: "Contient les valeurs à sélectionner si la propriété est mutée et que le composant a une mutation aléatoire définie.",
-                                                type: "array",
-                                                items: {
-                                                    oneOf: [
-                                                        {
-                                                            type: "boolean"
-                                                        },
-                                                        {
-                                                            type: "number"
-                                                        },
-                                                        {
-                                                            type: "string"
-                                                        }
-                                                    ]
-                                                }
-                                            }
-                                        }
-                                    }
-                                },
-                                random_extra_variant_mutation_interval: {
-                                    description: "Plage utilisée pour déterminer une variante supplémentaire aléatoire.",
-                                    default: 0,
-                                    type: "array",
-                                    minItems: 2,
-                                    maxItems: 2,
-                                    items: {
-                                        type: "integer"
-                                    }
-                                },
-                                random_variant_mutation_interval: {
-                                    description: "Plage utilisée pour déterminer une variante aléatoire.",
-                                    default: 0,
-                                    type: "array",
-                                    minItems: 2,
-                                    maxItems: 2,
-                                    items: {
-                                        type: "integer"
-                                    }
                                 },
                                 require_full_health: {
                                     description: "Définit si l'Entité doit être en pleine santé pour se reproduire.",
@@ -1236,7 +1089,7 @@ const baseSchema: MinecraftJsonSchema = {
                                     description: "L'item utilisé pour la reproduction se transformera en cet item une fois utilisé.",
                                     type: "string",
                                     "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
-                                },
+                                }
                             }
                         },
                         "minecraft:bribeable": {
@@ -3334,8 +3187,54 @@ const baseSchema: MinecraftJsonSchema = {
                             type: "object"
                         },
                         "minecraft:jump.dynamic": {
-                            description: "Définit un contrôle de saut dynamique qui changera les propriétés de saut en fonction du modificateur de vitesse de l'Entité.",
-                            type: "object"
+                            description: "Définit un contrôle de saut dynamique qui changera les propriétés de saut en fonction du modificateur de vitesse de l'Entité. Nécessite que l'Entité possède le composant `minecraft:movement.skip`",
+                            type: "object",
+                            properties: {
+                                regular_skip_data: {
+                                    description: "Définit les propriétés de saut normales.",
+                                    type: "object",
+                                    properties: {
+                                        distance_scale: {
+                                            description: "Définit le multiplicateur appliqué à la vélocité horizontale lors d'un saut.",
+                                            type: "number"
+                                        },
+                                        height: {
+                                            description: "Définit la force appliquée verticalement lors d'un saut.",
+                                            type: "number"
+                                        },
+                                        jump_delay: {
+                                            description: "Définit le nombre de ticks entre les sauts séquentiels.",
+                                            type: "integer"
+                                        },
+                                        animation_duration: {
+                                            description: "Définit la durée de l'animation de saut.",
+                                            type: "integer"
+                                        }
+                                    }
+                                },
+                                fast_skip_data: {
+                                    description: "Définit les propriétés de saut lors des déplacements rapides.",
+                                    type: "object",
+                                    properties: {
+                                        distance_scale: {
+                                            description: "Définit le multiplicateur appliqué à la vélocité horizontale lors d'un saut.",
+                                            type: "number"
+                                        },
+                                        height: {
+                                            description: "Définit la force appliquée verticalement lors d'un saut.",
+                                            type: "number"
+                                        },
+                                        jump_delay: {
+                                            description: "Définit le nombre de ticks entre les sauts séquentiels.",
+                                            type: "integer"
+                                        },
+                                        animation_duration: {
+                                            description: "Définit la durée de l'animation de saut.",
+                                            type: "integer"
+                                        }
+                                    }
+                                }
+                            }
                         },
                         "minecraft:jump.static": {
                             description: "Donne à l'Entité la capacité de sauter.",
@@ -4670,6 +4569,152 @@ const baseSchema: MinecraftJsonSchema = {
                                                 }
                                             }
                                         }
+                                    }
+                                }
+                            }
+                        },
+                        "minecraft:offspring": {
+                            description: "Définit la manière dont l'Entité peut engendrer une progéniture.",
+                            type: "object",
+                            properties: {
+                                blend_attributes: {
+                                    description: "Définit si les entités mélangeront leurs attributs dans leur progéniture.",
+                                    default: true,
+                                    type: "boolean"
+                                },
+                                combine_parent_colors: {
+                                    description: "Définit si lorsque deux Entités de ce type se reproduisent, la couleur du bébé sera un mélange des couleurs (`minecraft:color`) des parents à condition qu'elles soient compatibles. Sinon la couleur du bébé sera choisie aléatoirement entre celle du père ou de la mère.",
+                                    type: "boolean"
+                                },
+                                deny_parents_variant: {
+                                    description: "Détermine à quel point il est probable qu'un bébé de parents avec la même variante nie cette variante et prenne plutôt une variante aléatoire dans la plage donnée.",
+                                    type: "object",
+                                    properties: {
+                                        chance: {
+                                            description: "Le pourcentage de chance de nier la variante des parents.",
+                                            default: 0,
+                                            type: "number"
+                                        },
+                                        max_variant: {
+                                            description: "Le maximum inclusif de la plage de variante.",
+                                            default: 0,
+                                            type: "integer"
+                                        },
+                                        min_variant: {
+                                            description: "Le minimum inclusif de la plage de variante.",
+                                            default: 0,
+                                            type: "integer"
+                                        }
+                                    }
+                                },
+                                inherit_tamed: {
+                                    description: "Définit si les bébés des parents apprivoisés seront automatiquement apprivoisés.",
+                                    default: true,
+                                    type: "boolean"
+                                },
+                                mutation_factor: {
+                                    description: "Détermine à quel point les bébés sont susceptibles de NE PAS hériter des variantes de l'un de leurs parents. Les valeurs sont comprises entre 0,0 et 1,0, un nombre plus élevé correspondant à une probabilité de mutation plus élevée.",
+                                    type: "object",
+                                    properties: {
+                                        color: {
+                                            description: "Le pourcentage de chance d'une mutation sur la couleur de l'entité.",
+                                            default: 0,
+                                            type: "number",
+                                            minimum: 0.0,
+                                            maximum: 1.0  
+                                        },
+                                        extra_variant: {
+                                            description: "Le pourcentage de chance d'une mutation sur le type de variante supplémentaire de l'entité.",
+                                            default: 0,
+                                            type: "number",
+                                            minimum: 0.0,
+                                            maximum: 1.0
+                                        },
+                                        variant: {
+                                            description: "Le pourcentage de chance d'une mutation sur le type de variante de l'entité.",
+                                            default: 0,
+                                            type: "number",
+                                            minimum: 0.0,
+                                            maximum: 1.0
+                                        }
+                                    }
+                                },
+                                mutation_strategy: {
+                                    description: "Stratégie utilisée pour muter les variantes et les variantes supplémentaires pour la progéniture. Les alternatives valides actuelles sont 'random' et 'none'.",
+                                    default: "none",
+                                    type: "string",
+                                    enum: ["none", "random"]
+                                },
+                                offspring_pairs: {
+                                    description: "Contient des paires clés/valeurs où chaque clé est un type d'entité avec lequel cette entité peut se reproduire, et la valeur est le type d'entité de la progéniture résultante. Par exemple, un âne et un cheval peuvent se reproduire pour créer une mule.",
+                                    type: "object",
+                                    propertyNames: {
+                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.entity_ids
+                                    },
+                                    additionalProperties: {
+                                        type: "string",
+                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.entity_ids
+                                    }
+                                },
+                                parent_centric_attribute_blending: {
+                                    description: "[EXPERIMENTALE] Liste des attributs qui devraient bénéficier du mélange des attributs centrés sur les parents. Par exemple, les chevaux mélangent leur santé, leur mouvement et leur force de saut dans leur progéniture.",
+                                    type: "array",
+                                    items: {
+                                        type: "string"
+                                    }
+                                },
+                                property_inheritance: {
+                                    description: "Définit les propriétés d'entités de l'Entité qui seront héritées par la progéniture.",
+                                    type: "object",
+                                    propertyNames: {
+                                        pattern: schemaPatterns.identifier_with_namespace
+                                    },
+                                    additionalProperties: {
+                                        type: "object",
+                                        properties: {
+                                            mutation_chance: {
+                                                description: "Définit la chance que la propriété ne soit pas héritée de l'un des parents.",
+                                                default: 0,
+                                                type: "number"
+                                            },
+                                            mutation_values: {
+                                                description: "Contient les valeurs à sélectionner si la propriété est mutée et que le composant a une mutation aléatoire définie.",
+                                                type: "array",
+                                                items: {
+                                                    oneOf: [
+                                                        {
+                                                            type: "boolean"
+                                                        },
+                                                        {
+                                                            type: "number"
+                                                        },
+                                                        {
+                                                            type: "string"
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                random_extra_variant_mutation_interval: {
+                                    description: "Plage utilisée pour déterminer une variante supplémentaire aléatoire.",
+                                    default: 0,
+                                    type: "array",
+                                    minItems: 2,
+                                    maxItems: 2,
+                                    items: {
+                                        type: "integer"
+                                    }
+                                },
+                                random_variant_mutation_interval: {
+                                    description: "Plage utilisée pour déterminer une variante aléatoire.",
+                                    default: 0,
+                                    type: "array",
+                                    minItems: 2,
+                                    maxItems: 2,
+                                    items: {
+                                        type: "integer"
                                     }
                                 }
                             }
@@ -7865,13 +7910,29 @@ const baseSchema: MinecraftJsonSchema = {
                                 },
                                 target_zone: {
                                     description: "Distance minimale et maximale de l'entité par rapport à la cible pour commencer à charger.",
-                                    default: [10, 150],
-                                    type: "array",
-                                    minItems: 2,
-                                    maxItems: 2,
-                                    items: {
-                                        type: "number"
-                                    }
+                                    default: {
+                                        range_min: 10,
+                                        range_max: 150
+                                    },
+                                    oneOf: [
+                                        {
+                                            type: "integer"
+                                        },
+                                        {
+                                            type: "object",
+                                            required: ["range_min", "range_max"],
+                                            properties: {
+                                                range_min: {
+                                                    description: "Distance minimale de l'entité par rapport à la cible pour commencer à charger.",
+                                                    type: "integer"
+                                                },
+                                                range_max: {
+                                                    description: "Distance maximale de l'entité par rapport à la cible pour commencer à charger.",
+                                                    type: "integer"
+                                                }
+                                            }
+                                        }
+                                    ]
                                 },
                                 turn_speed: {
                                     description: "La vitesse à laquelle l'entité tourne lorsqu'elle charge vers le joueur.",
@@ -7987,13 +8048,29 @@ const baseSchema: MinecraftJsonSchema = {
                                 },
                                 target_zone: {
                                     description: "Distance minimale et maximale de l'entité par rapport à la cible pour commencer à effectuer une attaque de strafe.",
-                                    default: [10, 150],
-                                    type: "array",
-                                    minItems: 2,
-                                    maxItems: 2,
-                                    items: {
-                                        type: "number"
-                                    }
+                                    default: {
+                                        range_min: 10,
+                                        range_max: 160
+                                    },
+                                    oneOf: [
+                                        {
+                                            type: "integer"
+                                        },
+                                        {
+                                            type: "object",
+                                            required: ["range_min", "range_max"],
+                                            properties: {
+                                                range_min: {
+                                                    description: "Distance minimale de l'entité par rapport à la cible pour commencer à effectuer une attaque de strafe.",
+                                                    type: "integer"
+                                                },
+                                                range_max: {
+                                                    description: "Distance maximale de l'entité par rapport à la cible pour commencer à effectuer une attaque de strafe.",
+                                                    type: "integer"
+                                                }
+                                            }
+                                        }
+                                    ]
                                 },
                                 turn_speed: {
                                     description: "La vitesse à laquelle l'entité tourne lorsqu'elle effectue une attaque de strafe.",
@@ -9808,12 +9885,20 @@ const baseSchema: MinecraftJsonSchema = {
                                 },
                                 look_time: {
                                     description: "La durée en secondes pendant laquelle l'Entité regardera une autre Entité.",
-                                    default: [2, 4],
-                                    type: "array",
-                                    minItems: 2,
-                                    maxItems: 2,
-                                    items: {
-                                        type: "number"
+                                    default: {
+                                        range_min: 2,
+                                        range_max: 4
+                                    },
+                                    type: "object",
+                                    properties: {
+                                        range_max: {
+                                            description: "La durée maximale en secondes pendant laquelle l'Entité regardera une autre Entité.",
+                                            type: "number"
+                                        },
+                                        range_min: {
+                                            description: "La durée minimale en secondes pendant laquelle l'Entité regardera une autre Entité.",
+                                            type: "number"
+                                        }
                                     }
                                 },
                                 priority: {
@@ -9850,12 +9935,20 @@ const baseSchema: MinecraftJsonSchema = {
                                 },
                                 look_time: {
                                     description: "La durée en secondes pendant laquelle l'Entité regardera le joueur.",
-                                    default: [2, 4],
-                                    type: "array",
-                                    minItems: 2,
-                                    maxItems: 2,
-                                    items: {
-                                        type: "number"
+                                    default: {
+                                        range_min: 2,
+                                        range_max: 4
+                                    },
+                                    type: "object",
+                                    properties: {
+                                        range_max: {
+                                            description: "La durée maximale en secondes pendant laquelle l'Entité regardera une autre Entité.",
+                                            type: "number"
+                                        },
+                                        range_min: {
+                                            description: "La durée minimale en secondes pendant laquelle l'Entité regardera une autre Entité.",
+                                            type: "number"
+                                        }
                                     }
                                 },
                                 priority: {
@@ -9897,12 +9990,20 @@ const baseSchema: MinecraftJsonSchema = {
                                 },
                                 look_time: {
                                     description: "La durée en secondes pendant laquelle l'Entité regardera une cible.",
-                                    default: [2, 4],
-                                    type: "array",
-                                    minItems: 2,
-                                    maxItems: 2,
-                                    items: {
-                                        type: "number"
+                                    default: {
+                                        range_min: 2,
+                                        range_max: 4
+                                    },
+                                    type: "object",
+                                    properties: {
+                                        range_max: {
+                                            description: "La durée maximale en secondes pendant laquelle l'Entité regardera une autre Entité.",
+                                            type: "number"
+                                        },
+                                        range_min: {
+                                            description: "La durée minimale en secondes pendant laquelle l'Entité regardera une autre Entité.",
+                                            type: "number"
+                                        }
                                     }
                                 },
                                 priority: {
@@ -9939,12 +10040,20 @@ const baseSchema: MinecraftJsonSchema = {
                                 },
                                 look_time: {
                                     description: "La durée en secondes pendant laquelle l'Entité regardera le joueur qui commerce avec elle.",
-                                    default: [2, 4],
-                                    type: "array",
-                                    minItems: 2,
-                                    maxItems: 2,
-                                    items: {
-                                        type: "number"
+                                    default: {
+                                        range_min: 2,
+                                        range_max: 4
+                                    },
+                                    type: "object",
+                                    properties: {
+                                        range_max: {
+                                            description: "La durée maximale en secondes pendant laquelle l'Entité regardera une autre Entité.",
+                                            type: "number"
+                                        },
+                                        range_min: {
+                                            description: "La durée minimale en secondes pendant laquelle l'Entité regardera une autre Entité.",
+                                            type: "number"
+                                        }
                                     }
                                 },
                                 priority: {
@@ -14801,7 +14910,7 @@ const baseSchema: MinecraftJsonSchema = {
                                 }
                             },
                             execute_event_on_home_block: {
-                                description: "[EXEPERIMENTAL] Execute un événement sur le bloc de la maison de l'Entité. L'Entité doit avoir le composant 'minecraft:home' pour que cet événement fonctionne.",
+                                description: "[EXEPERIMENTAL] Execute un événement sur le bloc de la maison de l'Entité. L'Entité doit avoir le composant 'minecraft:home' pour que cet événement fonctionne. Il est possible d'utiliser l'evenement executé sur le bloc avec l'API Script si celui ci est un bloc personalisé avec la classe `BlockComponentEntityEvent`.",
                                 type: "object",
                                 properties: {
                                     event: {
@@ -15217,7 +15326,59 @@ const versionedChanges: SchemaChange[] = [
                         }
                     }
                 }
-            }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:interact", "properties", "interactions", "items", "properties", "swing", "default"],
+                value: true
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.dragonchargeplayer", "properties", "target_zone"],
+                value: {
+                    description: "Distance minimale et maximale de l'entité par rapport à la cible pour commencer à charger.",
+                    default: {
+                        range_min: 10,
+                        range_max: 150
+                    },
+                    type: "object",
+                    required: ["range_min", "range_max"],
+                    properties: {
+                        range_min: {
+                            description: "Distance minimale de l'entité par rapport à la cible pour commencer à charger.",
+                            type: "integer"
+                        },
+                        range_max: {
+                            description: "Distance maximale de l'entité par rapport à la cible pour commencer à charger.",
+                            type: "integer"
+                        }
+                    }
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.dragonstrafeplayer", "properties", "target_zone"],
+                value: {
+                    description: "Distance minimale et maximale de l'entité par rapport à la cible pour commencer à charger.",
+                    default: {
+                        range_min: 10,
+                        range_max: 150
+                    },
+                    type: "object",
+                    required: ["range_min", "range_max"],
+                    properties: {
+                        range_min: {
+                            description: "Distance minimale de l'entité par rapport à la cible pour commencer à charger.",
+                            type: "integer"
+                        },
+                        range_max: {
+                            description: "Distance maximale de l'entité par rapport à la cible pour commencer à charger.",
+                            type: "integer"
+                        }
+                    }
+                }
+            },
+            
         ]
     }
 ];

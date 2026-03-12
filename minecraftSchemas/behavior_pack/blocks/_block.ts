@@ -108,29 +108,6 @@ const baseSchema: MinecraftJsonSchema = {
                                 }
                             ]
                         },
-                        "minecraft:connection_rule": {
-                            "x-experimental_options": ["Upcoming Creator Features"],
-                            description: "Définit si les autres blocs ayant un comportement de connexion (comme les clôtures, les murs, les barreaux et les vitres) peuvent tenter d'établir une connexion.",
-                            type: "object",
-                            properties: {
-                                accepts_connections_from: {
-                                    description: "La liste des types de connexions que ce Bloc accepte.",
-                                    type: "array",
-                                    items: {
-                                        type: "string",
-                                        enum: ["none", "only_fences", "all"]
-                                    }
-                                },
-                                enabled_directions: {
-                                    description: "Les directions dans lesquelles ce Bloc peut se connecter à d'autres blocs.",
-                                    type: "array",
-                                    items: {
-                                        type: "string",
-                                        enum: ["north", "south", "east", "west", "up", "down"]
-                                    }
-                                }
-                            }
-                        },
                         "minecraft:custom_components": {
                             description: "Définit les composants personnalisés qu'utilise ce Bloc. Les composants personalisés se définissent dans les fichiers de scripts.",
                             type: "array",
@@ -237,22 +214,6 @@ const baseSchema: MinecraftJsonSchema = {
                                 }
                             ]
                         },
-                        "minecraft:leashable": {
-                            "x-experimental_options": ["Upcoming Creator Features"],
-                            description: "Permet aux entités attachables d'être attachées à ce Bloc avec une laisse.",
-                            type: "object",
-                            properties: {
-                                offset: {
-                                    description: "Définit le décalage de l'attache de la laisse par rapport au centre du Bloc.",
-                                    type: "array",
-                                    minItems: 3,
-                                    maxItems: 3,
-                                    items: {
-                                        type: "number"
-                                    }
-                                }
-                            }
-                        },
                         "minecraft:loot": {
                             description: "Définit la Loot Table (table de butin) utilisée quand le Bloc est détruit.",
                             oneOf: [
@@ -318,19 +279,6 @@ const baseSchema: MinecraftJsonSchema = {
                                     }
                                 }
                             ]
-                        },
-                        "minecraft:support": {
-                            "x-experimental_options": ["Upcoming Creator Features"],
-                            description: "Définit la forme de support du Bloc. Actuellement, seuls les blocs ayant la même forme qu'une clôture Vanilla et qu'un escalier Vanilla sont autorisés. Pour fonctionner avec des escaliers personnalisés, il est nécessaire d'utiliser `minecraft:vertical_half` et `minecraft:cardinal_direction` ou `minecraft:facing_direction` qui peuvent être définis via le trait de bloc `minecraft:placement_direction`. Les blocs personnalisés sans ce composant auront par défaut une unité cube de support.",
-                            type: "object",
-                            required: ["shape"],
-                            properties: {
-                                shape: {
-                                    description: "La forme de support du Bloc.",
-                                    type: "string",
-                                    enum: ["fence", "stair"]
-                                }
-                            }
                         },
                         "minecraft:tick": {
                             description: "Définit les paramètres pour le déclenchement de l'événement `onTick` des composants personnalisés de ce Bloc.",
@@ -889,7 +837,7 @@ const versionedChanges: SchemaChange[] = [
                 action: "add",
                 target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:collision_box"],
                 value: {
-                    description: "Définit la boîte de collision du Bloc. Si cette valeur est `true`, le Bloc utilisera les valeurs par défaut pour `origin` et `size`.",
+                    description: "Définit la boîte de collision du Bloc. Si cette valeur est `true`, le Bloc utilisera les valeurs par défaut pour `origin` et `size`. Si cette valeur est une liste, le Bloc utilisera plusieurs boîtes de collision, ce qui permet de créer des formes de collision plus complexes que les boîtes rectangulaires standard. Les Blocs ont une limite de 16 unités en largeur, et 24 en hauteur.",
                     default: true,
                     oneOf: [
                         {
@@ -897,6 +845,7 @@ const versionedChanges: SchemaChange[] = [
                         },
                         {
                             type: "object",
+                            required: ["origin", "size"],
                             properties: {
                                 origin: {
                                     description: "La position de l'origine de la boîte de collision du Bloc.",
@@ -913,7 +862,7 @@ const versionedChanges: SchemaChange[] = [
                                         {
                                             type: "number",
                                             minimum: 0,
-                                            maximum: 16
+                                            maximum: 24
                                         },
                                         {
                                             type: "number",
@@ -930,6 +879,49 @@ const versionedChanges: SchemaChange[] = [
                                     maxItems: 3,
                                     items: {
                                         type: "number"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            type: "array",
+                            items: {
+                                type: "object",
+                                required: ["origin", "size"],
+                                properties: {
+                                    origin: {
+                                        description: "La position de l'origine de la boîte de collision du Bloc.",
+                                        default: [-8, 0, -8],
+                                        type: "array",
+                                        minItems: 3,
+                                        maxItems: 3,
+                                        items: [
+                                            {
+                                                type: "number",
+                                                minimum: -8,
+                                                maximum: 8
+                                            },
+                                            {
+                                                type: "number",
+                                                minimum: 0,
+                                                maximum: 24
+                                            },
+                                            {
+                                                type: "number",
+                                                minimum: -8,
+                                                maximum: 8
+                                            }
+                                        ]
+                                    },
+                                    size: {
+                                        description: "La taille de la boîte de collision du Bloc.",
+                                        default: [16, 16, 16],
+                                        type: "array",
+                                        minItems: 3,
+                                        maxItems: 3,
+                                        items: {
+                                            type: "number"
+                                        }
                                     }
                                 }
                             }
@@ -1345,20 +1337,6 @@ const versionedChanges: SchemaChange[] = [
                                     items: {
                                         type: "string",
                                         enum: ["minecraft:block_face", "minecraft:vertical_half"]
-                                    }
-                                }
-                            }
-                        },
-                        "minecraft:connection": {
-                            description: "Trait qui expose le comportement similaire au barrières et aux vitres où les blocs se connectent automatiquement aux blocs adjacents. Utiliser ce trait active les états built-in `minecraft:connection_north`, `minecraft:connection_east`, `minecraft:connection_south` et `minecraft:connection_west`.",
-                            type: "object",
-                            properties: {
-                                enabled_states: {
-                                    description: "Liste des états built-in à activer.",
-                                    type: "array",
-                                    items: {
-                                        type: "string",
-                                        enum: ["minecraft:cardinal_connections"]
                                     }
                                 }
                             }
@@ -1838,108 +1816,6 @@ const versionedChanges: SchemaChange[] = [
         ]
     },
     {
-        version: "1.21.130",
-        changes: [
-            {
-                action: "modify",
-                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:collision_box"],
-                value: {
-                    "x-experimental_options": ["Upcoming Creator Features"],
-                    description: "Définit la boîte de collision du Bloc. Si cette valeur est `true`, le Bloc utilisera les valeurs par défaut pour `origin` et `size`.",
-                    default: true,
-                    oneOf: [
-                        {
-                            type: "boolean"
-                        },
-                        {
-                            type: "object",
-                            required: ["origin", "size"],
-                            properties: {
-                                origin: {
-                                    description: "La position de l'origine de la boîte de collision du Bloc.",
-                                    default: [-8, 0, -8],
-                                    type: "array",
-                                    minItems: 3,
-                                    maxItems: 3,
-                                    items: [
-                                        {
-                                            type: "number",
-                                            minimum: -8,
-                                            maximum: 8
-                                        },
-                                        {
-                                            type: "number",
-                                            minimum: 0,
-                                            maximum: 24
-                                        },
-                                        {
-                                            type: "number",
-                                            minimum: -8,
-                                            maximum: 8
-                                        }
-                                    ]
-                                },
-                                size: {
-                                    description: "La taille de la boîte de collision du Bloc.",
-                                    default: [16, 16, 16],
-                                    type: "array",
-                                    minItems: 3,
-                                    maxItems: 3,
-                                    items: {
-                                        type: "number"
-                                    }
-                                }
-                            }
-                        },
-                        {
-                            type: "array",
-                            items: {
-                                type: "object",
-                                required: ["origin", "size"],
-                                properties: {
-                                    origin: {
-                                        description: "La position de l'origine de la boîte de collision du Bloc.",
-                                        default: [-8, 0, -8],
-                                        type: "array",
-                                        minItems: 3,
-                                        maxItems: 3,
-                                        items: [
-                                            {
-                                                type: "number",
-                                                minimum: -8,
-                                                maximum: 8
-                                            },
-                                            {
-                                                type: "number",
-                                                minimum: 0,
-                                                maximum: 24
-                                            },
-                                            {
-                                                type: "number",
-                                                minimum: -8,
-                                                maximum: 8
-                                            }
-                                        ]
-                                    },
-                                    size: {
-                                        description: "La taille de la boîte de collision du Bloc.",
-                                        default: [16, 16, 16],
-                                        type: "array",
-                                        minItems: 3,
-                                        maxItems: 3,
-                                        items: {
-                                            type: "number"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    ]
-                }
-            }
-        ]
-    },
-    {
         version: "1.26.0",
         changes: [
             {
@@ -1968,6 +1844,85 @@ const versionedChanges: SchemaChange[] = [
                 action: "modify",
                 target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:liquid_detection", "properties", "use_liquid_clipping", "default"],
                 value: false
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:connection_rule"],
+                value: {
+                    description: "Définit si les autres blocs ayant un comportement de connexion (comme les clôtures, les murs, les barreaux et les vitres) peuvent tenter d'établir une connexion.",
+                    type: "object",
+                    properties: {
+                        accepts_connections_from: {
+                            description: "La liste des types de connexions que ce Bloc accepte.",
+                            type: "array",
+                            items: {
+                                type: "string",
+                                enum: ["none", "only_fences", "all"]
+                            }
+                        },
+                        enabled_directions: {
+                            description: "Les directions dans lesquelles ce Bloc peut se connecter à d'autres blocs.",
+                            type: "array",
+                            items: {
+                                type: "string",
+                                enum: ["north", "south", "east", "west", "up", "down"]
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:support"],
+                value: {
+                    description: "Définit la forme de support du Bloc. Actuellement, seuls les blocs ayant la même forme qu'une clôture Vanilla et qu'un escalier Vanilla sont autorisés. Pour fonctionner avec des escaliers personnalisés, il est nécessaire d'utiliser `minecraft:vertical_half` et `minecraft:cardinal_direction` ou `minecraft:facing_direction` qui peuvent être définis via le trait de bloc `minecraft:placement_direction`. Les blocs personnalisés sans ce composant auront par défaut une unité cube de support.",
+                    type: "object",
+                    required: ["shape"],
+                    properties: {
+                        shape: {
+                            description: "La forme de support du Bloc.",
+                            type: "string",
+                            enum: ["fence", "stair"]
+                        }
+                    }
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:leashable"],
+                value: {
+                    description: "Permet aux entités attachables d'être attachées à ce Bloc avec une laisse.",
+                    type: "object",
+                    properties: {
+                        offset: {
+                            description: "Définit le décalage de l'attache de la laisse par rapport au centre du Bloc.",
+                            type: "array",
+                            minItems: 3,
+                            maxItems: 3,
+                            items: {
+                                type: "number"
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:block", "properties", "description", "properties", "traits", "properties", "minecraft:connection"],
+                value: {
+                    description: "Trait qui expose le comportement similaire au barrières et aux vitres où les blocs se connectent automatiquement aux blocs adjacents. Utiliser ce trait active les états built-in `minecraft:connection_north`, `minecraft:connection_east`, `minecraft:connection_south` et `minecraft:connection_west`.",
+                    type: "object",
+                    properties: {
+                        enabled_states: {
+                            description: "Liste des états built-in à activer.",
+                            type: "array",
+                            items: {
+                                type: "string",
+                                enum: ["minecraft:cardinal_connections"]
+                            }
+                        }
+                    }
+                }
             }
         ]
     }

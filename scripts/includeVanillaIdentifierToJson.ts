@@ -116,7 +116,8 @@ async function includeVanillaIdentifierToJson() {
         ],
         "VANILLA_MODEL_IDS": [
             "minecraft:geometry.full_block",
-            "minecraft:geometry.cross"
+            "minecraft:geometry.cross",
+            "minecraft:geometry.full_block_v1"
         ]
     };
 

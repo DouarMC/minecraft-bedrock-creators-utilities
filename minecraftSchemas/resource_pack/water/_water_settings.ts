@@ -12,7 +12,7 @@ const baseSchema: MinecraftJsonSchema = {
             description: "La version du format à utiliser.",
             type: "string",
             enum: [
-                "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100", "1.21.110", "1.21.120", "1.21.130", "1.26.0"
+                "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100", "1.21.110", "1.21.120", "1.26.0"
             ]
         },
         "minecraft:water_settings": {
@@ -181,6 +181,22 @@ const versionedChanges: SchemaChange[] = [
             {
                 action: "remove",
                 target: ["properties", "minecraft:water_settings", "properties", "waves", "properties", "sampleWidth"],
+            }
+        ]
+    },
+    {
+        version: "1.26.0",
+        changes: [
+            {
+                action: "add",
+                target: ["properties", "minecraft:water_settings", "properties", "biome_water_color_contribution"],
+                value: {
+                    description: "Définit la contribution de la couleur d'eau du biome à la couleur finale de l'eau. Plus la valeur est élevée, plus la couleur d'eau du biome influencera la teinte de l'eau.",
+                    default: 0.0,
+                    type: "number",
+                    minimum: 0.0,
+                    maximum: 1.0
+                }
             }
         ]
     }
