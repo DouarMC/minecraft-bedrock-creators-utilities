@@ -108,7 +108,8 @@ async function includeVanillaIdentifierToJson() {
             "minecraft:wooden_tier",
             "minecraft:wool",
             "minecraft:is_shears",
-            "minecraft:is_armor"
+            "minecraft:is_armor",
+            "minecraft:metal_nuggets"
         ],
         "VANILLA_CULLING_LAYER_IDS": [
             "minecraft:culling_layer.undefined",
