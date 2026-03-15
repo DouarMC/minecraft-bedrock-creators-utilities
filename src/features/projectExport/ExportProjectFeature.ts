@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
-import { Feature } from "../../core/features/Feature";
-import { MinecraftProjectManager } from "../../core/project/MinecraftProjectManager";
-import { ProjectService } from "../../core/project/ProjectService";
+import { Feature } from "../Feature";
+import { MinecraftProjectManager } from "../../services/projects/MinecraftProjectManager";
+import { ProjectService } from "../../services/projects/ProjectService";
 
 export class ExportProjectFeature extends Feature {
     /**

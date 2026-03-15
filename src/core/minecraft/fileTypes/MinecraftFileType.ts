@@ -1,4 +1,4 @@
-import { MinecraftPackType } from "../MinecraftPackType";
+import { MinecraftPackType } from "../models/MinecraftTypes";
 import { MinecraftFileId } from "./MinecraftFileId";
 
 export class MinecraftFileType {

@@ -1,14 +1,13 @@
-import * as vscode from "vscode";
-import { MinecraftPackType } from "./MinecraftPackType";
+import { MinecraftPackType } from "./MinecraftTypes";
 import { Manifest } from "./fileStructures/Manifest";
 
 export class MinecraftPack {
-    public readonly rootUri: vscode.Uri;
+    public readonly rootUri: string;
     public readonly manifest: Manifest;
     public readonly packType: MinecraftPackType;
 
     public constructor(
-        rootUri: vscode.Uri,
+        rootUri: string,
         manifest: any,
         packType: MinecraftPackType
     ) {

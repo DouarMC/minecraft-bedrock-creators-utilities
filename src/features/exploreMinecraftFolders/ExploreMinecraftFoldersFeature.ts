@@ -1,9 +1,9 @@
 import * as vscode from "vscode";
-import { Feature } from "../../core/features/Feature";
-import { PromptService } from "../../core/ui/PromptService";
-import { MinecraftGameManager } from "../../core/minecraft/games/MinecraftGameManager";
-import { MinecraftGame } from "../../core/minecraft/games/MinecraftGame";
-import { FileSystemUtils } from "../../core/utils/FileSystemUtils";
+import { Feature } from "../Feature";
+import { PromptService } from "../../services/prompts/PromptService";
+import { MinecraftGameManager } from "../../services/minecraft/MinecraftGameManager";
+import { MinecraftGame } from "../../core/minecraft/models/games/MinecraftGame";
+import { FileSystemUtils } from "../../vscode-utils/FileSystemUtils";
 
 export class ExploreMinecraftFoldersFeature extends Feature {
     /**
@@ -26,7 +26,7 @@ export class ExploreMinecraftFoldersFeature extends Feature {
                 vscode.window.showErrorMessage(`⚠️ Le jeu Minecraft ${folderToOpenItem.game} n'est pas installé. Veuillez l'installer avant d'essayer d'ouvrir ses dossiers.`);
                 return;
             }
-            if (await minecraftGame.isInstalled() === false) { // Vérifie que le jeu est toujours installé avant d'essayer d'ouvrir ses dossiers
+            if (await MinecraftGameManager.isInstalled(minecraftGame)) { // Vérifie que le jeu est toujours installé avant d'essayer d'ouvrir ses dossiers
                 vscode.window.showErrorMessage(`⚠️ Le jeu Minecraft ${folderToOpenItem.game} n'est pas installé. Veuillez l'installer avant d'essayer d'ouvrir ses dossiers.`);
                 return;
             }
@@ -35,8 +35,8 @@ export class ExploreMinecraftFoldersFeature extends Feature {
             let folderToOpen: vscode.Uri;
             try {
                 folderToOpen = folderToOpenItem.folderType === "comMojangFolder"
-                    ? await minecraftGame.getComMojangFolder()
-                    : await minecraftGame.getDataFolder();
+                    ? await MinecraftGameManager.getComMojangFolder(minecraftGame)
+                    : await MinecraftGameManager.getDataFolder(minecraftGame);
             } catch (error) {
                 vscode.window.showWarningMessage(`⚠️ Impossible de trouver le dossier ${folderToOpenItem.folderType}. Veuillez vérifier que Minecraft ${folderToOpenItem.game} est correctement installé.`);
                 return;

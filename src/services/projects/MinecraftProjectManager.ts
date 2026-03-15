@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
-import { MinecraftProject } from "./MinecraftProject";
+import { MinecraftProject } from "../../core/minecraft/models/projects/MinecraftProject";
+import { MinecraftProjectLoader } from "./MinecraftProjectLoader";
 
 export class MinecraftProjectManager {
     /**
@@ -25,7 +26,7 @@ export class MinecraftProjectManager {
         });
 
         // Surveille les changements du fichier de configuration du projet Minecraft
-        this.configWatcher = vscode.workspace.createFileSystemWatcher(`**/${MinecraftProject.PROJECT_CONFIG_FILE_NAME}`);
+        this.configWatcher = vscode.workspace.createFileSystemWatcher(`**/${MinecraftProjectLoader.CONFIG_FILE_NAME}`);
         this.configWatcher.onDidChange(async () => await this.reload());
         this.configWatcher.onDidCreate(async () => await this.reload());
         this.configWatcher.onDidDelete(() => this.clear());
@@ -44,8 +45,8 @@ export class MinecraftProjectManager {
         }
 
         try {
-            this.currentProject = await MinecraftProject.load(folder);
-            console.log(`[MBCU] Projet Minecraft chargé : ${this.currentProject.id}`);
+            this.currentProject = await MinecraftProjectLoader.load(folder);
+            console.log(`[MBCU] Projet Minecraft chargé : ${this.currentProject?.id}`);
         } catch (error) {
             console.error("[MBCU] Échec du chargement du projet Minecraft :", error);
             this.currentProject = undefined;

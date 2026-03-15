@@ -1,13 +1,15 @@
 import * as vscode from 'vscode';
-import { MinecraftFileType } from './MinecraftFileType';
-import { VscodeUtils } from '../../utils/VscodeUtils';
-import { minecraftFileRegistry } from './minecraftFileRegistry';
+import { MinecraftFileType } from '../../core/minecraft/fileTypes/MinecraftFileType';
+import { VscodeUtils } from '../../vscode-utils/VscodeUtils';
+import { minecraftFileRegistry } from '../../core/minecraft/fileTypes/minecraftFileRegistry';
 import { minimatch } from 'minimatch';
-import { MinecraftPack } from '../MinecraftPack';
+import { MinecraftPack } from '../../core/minecraft/models/MinecraftPack';
 import * as JsonParser from "jsonc-parser";
-import { MinecraftFileId } from './MinecraftFileId';
-import { MinecraftGame } from '../games/MinecraftGame';
-import { AddonMinecraftProject, MinecraftProject, SkinPackMinecraftProject, WorldTemplateMinecraftProject } from '../../project/MinecraftProject';
+import { MinecraftFileId } from '../../core/minecraft/fileTypes/MinecraftFileId';
+import { MinecraftGame } from '../../core/minecraft/models/games/MinecraftGame';
+import { AddonMinecraftProject } from '../../core/minecraft/models/projects/AddonMinecraftProject';
+import { MinecraftProject } from '../../core/minecraft/models/projects/MinecraftProject';
+import { MinecraftGameManager } from './MinecraftGameManager';
 
 export class MinecraftFileResolverService {
     // Petit cache pour ne pas relire le fichier manifest 100 fois par seconde
@@ -51,7 +53,7 @@ export class MinecraftFileResolverService {
                 const packType = MinecraftPack.determinePackType(manifestJson);
                 if (packType) {
                     // On a trouvé un manifest valide.
-                    const pack = new MinecraftPack(currentFolder, manifestJson, packType);
+                    const pack = new MinecraftPack(currentFolder.fsPath, manifestJson, packType);
                     MinecraftFileResolverService.packCache.set(cacheKey, pack);
                     return pack;
                 }
@@ -136,9 +138,9 @@ export class MinecraftFileResolverService {
         switch (dataDrivenFileType.packType) {
             case "behavior_pack":
                 if (target instanceof MinecraftGame) { // Si la cible est le jeu lui-même, on cherche dans les dossiers vanilla
-                    researchFolders = await target.getVanillaBehaviorPackFolders();
+                    researchFolders = await MinecraftGameManager.getVanillaBehaviorPackFolders(target);
                     if (dataDrivenFileType.searchInDefinitionsFolder === true) {
-                        researchFolders.push(await target.getDefinitionsFolder());
+                        researchFolders.push(await MinecraftGameManager.getDefinitionsFolder(target));
                     }
                 } else {
                     if (target instanceof AddonMinecraftProject === false) {
@@ -146,27 +148,26 @@ export class MinecraftFileResolverService {
                         return dataDrivenFiles;
                     }
 
-                    let bpFolder: vscode.Uri | undefined;
+                    const bpPath = target.getBehaviorPackPath();
+                    const bpUri = VscodeUtils.getUriFromPath(bpPath);
                     try {
-                        bpFolder = await target.getBehaviorPackFolder();
+                        if (await VscodeUtils.isDirectory(bpUri)) {
+                            researchFolders = [bpUri];
+                        }
                     } catch (error) {
                         if (error instanceof Error) {
-                            throw new Error(`Erreur lors de la récupération du dossier de Behavior Pack du projet : ${error.message}`);
+                            throw new Error(`Erreur lors de l'accès au dossier de Behavior Pack du projet : ${error.message}`);
                         }
 
                         throw error;
-                    }
-
-                    if (bpFolder) {
-                        researchFolders = [bpFolder];
                     }
                 }
                 break;
             case "resource_pack":
                 if (target instanceof MinecraftGame) {
-                    researchFolders = await target.getVanillaResourcePackFolders();
+                    researchFolders = await MinecraftGameManager.getVanillaResourcePackFolders(target);
                     if (dataDrivenFileType.searchInDefinitionsFolder === true) {
-                        researchFolders.push(await target.getDefinitionsFolder());
+                        researchFolders.push(await MinecraftGameManager.getDefinitionsFolder(target));
                     }
                 } else {
                     if (target instanceof AddonMinecraftProject === false) {
@@ -174,31 +175,30 @@ export class MinecraftFileResolverService {
                         return dataDrivenFiles;
                     }
 
-                    let rpFolder: vscode.Uri | undefined;
+                    const rpPath = target.getResourcePackPath();
+                    const rpUri = VscodeUtils.getUriFromPath(rpPath);
                     try {
-                        rpFolder = await target.getResourcePackFolder();
+                        if (await VscodeUtils.isDirectory(rpUri)) {
+                            researchFolders = [rpUri];
+                        }
                     } catch (error) {
                         if (error instanceof Error) {
-                            throw new Error(`Erreur lors de la récupération du dossier de Resource Pack du projet : ${error.message}`);
+                            throw new Error(`Erreur lors de l'accès au dossier de Resource Pack du projet : ${error.message}`);
                         }
-
-                        throw error;
-                    }
-
-                    if (rpFolder) {
-                        researchFolders = [rpFolder];
                     }
                 }
                 break;
             case "skin_pack":
+                /* TODO
                 if (target instanceof SkinPackMinecraftProject) {
-                    // TODO
                 }
+                */
                 break;
             case "world_template":
+                /* TODO
                 if (target instanceof WorldTemplateMinecraftProject) {
-                    // TODO
                 }
+                */
                 break;
         }
 

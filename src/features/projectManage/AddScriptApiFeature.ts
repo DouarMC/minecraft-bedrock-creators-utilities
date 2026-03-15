@@ -1,12 +1,13 @@
 import * as vscode from "vscode";
+import * as path from "path";
 import * as JsonParser from "jsonc-parser";
-import { Feature } from "../../core/features/Feature";
-import { MinecraftProjectManager } from "../../core/project/MinecraftProjectManager";
-import { AddonMinecraftProject } from "../../core/project/MinecraftProject";
-import { ProjectService } from "../../core/project/ProjectService";
-import { PromptService } from "../../core/ui/PromptService";
-import { VscodeUtils } from "../../core/utils/VscodeUtils";
-import { MinecraftFileResolverService } from "../../core/minecraft/fileTypes/MinecraftFileResolverService";
+import { Feature } from "../Feature";
+import { MinecraftProjectManager } from "../../services/projects/MinecraftProjectManager";
+import { AddonMinecraftProject } from "../../core/minecraft/models/projects/AddonMinecraftProject";
+import { ProjectService } from "../../services/projects/ProjectService";
+import { PromptService } from "../../services/prompts/PromptService";
+import { VscodeUtils } from "../../vscode-utils/VscodeUtils";
+import { MinecraftFileResolverService } from "../../services/minecraft/MinecraftFileResolverService";
 
 export class AddScriptApiFeature extends Feature {
     /**
@@ -29,9 +30,11 @@ export class AddScriptApiFeature extends Feature {
             }
 
             // Récupère le dossier du Behavior Pack du projet
-            let projectBehaviorPack: vscode.Uri | undefined;
             try {
-                projectBehaviorPack = await minecraftProject.getBehaviorPackFolder();
+                if (! await VscodeUtils.isDirectory(minecraftProject.getBehaviorPackPath())) {
+                    vscode.window.showErrorMessage("Le projet ne contient pas de dossier de Behavior Pack valide. Assurez-vous que le projet est correctement structuré.");
+                    return;
+                }
             } catch (error) {
                 let errorMessage;
                 if (error instanceof Error) {
@@ -75,7 +78,7 @@ export class AddScriptApiFeature extends Feature {
 
             // Active l'API de script dans le manifeste, et ajoute les modules sélectionnés par l'utilisateur
             try {
-                await ProjectService.createScriptApiStructure(minecraftProject.folder);
+                await ProjectService.createScriptApiStructure(VscodeUtils.getUriFromPath(minecraftProject.folder));
             } catch (error) {
                 let errorMessage;
                 if (error instanceof Error) {
@@ -106,7 +109,7 @@ export class AddScriptApiFeature extends Feature {
                 // On récupère le package.json du projet pour y ajouter les modules de l'API de script en dépendances, et ainsi les installer via npm
                 let packageJsonUri: vscode.Uri;
                 try {
-                    packageJsonUri = await minecraftProject.getPackageJsonFileUri();
+                    packageJsonUri = VscodeUtils.getUriFromPath(path.join(minecraftProject.folder, "package.json"));
                 } catch (error) {
                     let errorMessage;
                     if (error instanceof Error) {
@@ -138,7 +141,7 @@ export class AddScriptApiFeature extends Feature {
                 await VscodeUtils.writeFile(packageJsonUri, JSON.stringify(packageJsonContent, null, 4));
 
                 // Installe les dépendances npm des modules de l'API de script ajoutés au projet
-                await ProjectService.installNpmDependencies(minecraftProject.folder);
+                await ProjectService.installNpmDependencies(VscodeUtils.getUriFromPath(minecraftProject.folder));
             }
 
             // Enregistre les modifications dans le manifeste du projet

@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { Feature } from "../../core/features/Feature";
+import { Feature } from "../Feature";
 import { MinecraftSchemaService } from "../../core/minecraft/schemas/MinecraftSchemaService";
 import { SchemaHover } from "../../core/jsonSchema/SchemaHover";
 import { SchemaCompletion } from "../../core/jsonSchema/SchemaCompletion";

@@ -1,14 +1,14 @@
 import * as vscode from "vscode";
 import * as JsonParser from "jsonc-parser";
 import { DynamicExamplesSourceKey } from "../../../minecraftSchemas/shared/schemaEnums";
-import { MinecraftFileResolverService } from "../minecraft/fileTypes/MinecraftFileResolverService";
-import { MinecraftGame } from "../minecraft/games/MinecraftGame";
-import { MinecraftGameManager } from "../minecraft/games/MinecraftGameManager";
-import { MinecraftProject } from "../project/MinecraftProject";
-import { MinecraftProjectManager } from "../project/MinecraftProjectManager";
+import { MinecraftFileResolverService } from "../../services/minecraft/MinecraftFileResolverService";
+import { MinecraftGame } from "../minecraft/models/games/MinecraftGame";
+import { MinecraftGameManager } from "../../services/minecraft/MinecraftGameManager";
+import { MinecraftProject } from "../minecraft/models/projects/MinecraftProject";
+import { MinecraftProjectManager } from "../../services/projects/MinecraftProjectManager";
 import { MinecraftFileId } from "../minecraft/fileTypes/MinecraftFileId";
-import { SCHEMA_BASE_URL } from "../../constants";
-import { MinecraftSchemaService } from "../minecraft/schemas/MinecraftSchemaService";
+import { ExtensionConfig } from "../ExtensionConfig";
+import { VersionResolver } from "../minecraft/versioning/VersionResolver";
 
 export class DynamicSourceHandlers {
     public static async getDynamicExampleSourceValues(key: DynamicExamplesSourceKey | DynamicExamplesSourceKey[] | Object): Promise<string[]> {
@@ -304,7 +304,7 @@ export class DynamicSourceHandlers {
     }
 
     private static async getVanillaIdentifiersDist(): Promise<any> {
-        const vanillaDistFile = await fetch(SCHEMA_BASE_URL + "minecraftVanillaIdentifiers/stable.json");
+        const vanillaDistFile = await fetch(ExtensionConfig.SCHEMA_BASE_URL + "minecraftVanillaIdentifiers/stable.json");
         if (! vanillaDistFile.ok) {
             throw new Error(`Failed to fetch vanilla identifiers distribution: ${vanillaDistFile.statusText}`);
         }
@@ -1168,14 +1168,14 @@ export class DynamicSourceHandlers {
                 const formatVersion = json?.format_version;
                 if (typeof formatVersion !== "string") continue;
 
-                if (MinecraftSchemaService.compareVersions(formatVersion, "1.8.0") >= 0 && MinecraftSchemaService.compareVersions(formatVersion, "1.12.0") < 0) {
+                if (VersionResolver.compare(formatVersion, "1.8.0") >= 0 && VersionResolver.compare(formatVersion, "1.12.0") < 0) {
                     const keys = Object.keys(json);
                     for (const key of keys) {
                         if (key.startsWith("geometry.") && typeof json[key] === "object") {
                             modelIds.push(key);
                         }
                     }
-                } else if (MinecraftSchemaService.compareVersions(formatVersion, "1.12.0") >= 0) {
+                } else if (VersionResolver.compare(formatVersion, "1.12.0") >= 0) {
                     const minecraftGeometry = json?.["minecraft:geometry"];
                     if (Array.isArray(minecraftGeometry)) {
                         for (const geometryEntry of minecraftGeometry) {
@@ -1228,7 +1228,7 @@ export class DynamicSourceHandlers {
                 if (typeof id === "string") {
                     const formatVersion = json?.format_version;
                     if (typeof formatVersion !== "string") continue;
-                    if (MinecraftSchemaService.compareVersions(formatVersion, "1.16.100") >= 0) {
+                    if (VersionResolver.compare(formatVersion, "1.16.100") >= 0) {
                         if (itemIds.includes(id)) {
                             itemIds.splice(itemIds.indexOf(id), 1);
                         }

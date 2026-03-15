@@ -22,12 +22,14 @@ export class VscodeUtils {
     /**
      * Vérifie si un URI est un dossier
      * @throws {Error} Lève une erreur si le dossier ne peut pas être vérifié.
-     * @param uri L'URI à vérifier
+     * @param uri L'URI à vérifier. Peut être une chaîne de caractères ou un vscode.Uri.
      * @returns 
      */
-    public static async isDirectory(uri: vscode.Uri): Promise<boolean> {
+    public static async isDirectory(uri: vscode.Uri | string): Promise<boolean> {
+        const uriObj = typeof uri === "string" ? vscode.Uri.file(uri) : uri;
+
         try {
-            const stat = await vscode.workspace.fs.stat(uri);
+            const stat = await vscode.workspace.fs.stat(uriObj);
             return stat.type === vscode.FileType.Directory;
         } catch(error: any) {
             if (error instanceof vscode.FileSystemError) {
@@ -36,13 +38,13 @@ export class VscodeUtils {
                 }
 
                 if (error.code === "NoPermissions") {
-                    throw new Error(`Accès refusé au dossier : ${uri.fsPath}`, { cause: error });
+                    throw new Error(`Accès refusé au dossier : ${uriObj.fsPath}`, { cause: error });
                 }
 
-                throw new Error(`Erreur du système de fichiers (${error.code}) : ${uri.fsPath}`, { cause: error });
+                throw new Error(`Erreur du système de fichiers (${error.code}) : ${uriObj.fsPath}`, { cause: error });
             }
 
-            throw new Error(`Erreur lors de la vérification du dossier : ${uri.fsPath}`, { cause: error });
+            throw new Error(`Erreur lors de la vérification du dossier : ${uriObj.fsPath}`, { cause: error });
         }
     }
 
@@ -85,6 +87,15 @@ export class VscodeUtils {
 
             throw new Error(`Erreur lors de la vérification du fichier : ${uri.fsPath}`, { cause: error });
         }
+    }
+
+    /**
+     * Convertit un chemin de fichier en URI
+     * @param path Le chemin de fichier à convertir
+     * @returns 
+     */
+    public static getUriFromPath(path: string): vscode.Uri {
+        return vscode.Uri.file(path);
     }
 
     /**

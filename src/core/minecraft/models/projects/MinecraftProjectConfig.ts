@@ -1,4 +1,5 @@
-import { MinecraftProduct, MinecraftProjectType, ProjectMetadata } from "../../types/projectConfig";
+import { ProjectMetadata } from "../../../../types/projectConfig";
+import { MinecraftProduct, MinecraftProjectType } from "../MinecraftTypes";
 
 /**
  * Représente la configuration d'un projet Minecraft Bedrock, avec les métadonnées et les options spécifiques au projet.
@@ -41,11 +42,14 @@ export class MinecraftProjectConfig {
         }
 
         // Vérifie que les champs requis dans metadata sont présents et ont le bon type, et que les valeurs de type et minecraftProduct sont reconnues
-        const {type, id, displayName, author, minecraftProduct} = metadata;
+        const {id, displayName, author} = metadata;
+        const type = metadata.type as MinecraftProjectType;
+        const minecraftProduct = metadata.minecraftProduct as MinecraftProduct;
         if (typeof type !== "string") {
             throw new Error("Configuration de projet invalide : 'metadata.type' n'est pas une chaîne de caractères.");
         }
-        if (! Object.values(MinecraftProjectType).includes(type as MinecraftProjectType)) {
+
+        if (type !== "addon" && type !== "skin_pack" && type !== "world_template") {
             throw new Error(`Configuration de projet invalide : 'metadata.type' a une valeur non reconnue : ${type}`);
         }
         if (typeof id !== "string") {
@@ -63,7 +67,7 @@ export class MinecraftProjectConfig {
         if (typeof minecraftProduct !== "string") {
             throw new Error("Configuration de projet invalide : 'metadata.minecraftProduct' n'est pas une chaîne de caractères.");
         }
-        if (! Object.values(MinecraftProduct).includes(minecraftProduct as MinecraftProduct)) {
+        if (minecraftProduct !== "stable" && minecraftProduct !== "preview") {
             throw new Error(`Configuration de projet invalide : 'metadata.minecraftProduct' a une valeur non reconnue : ${minecraftProduct}`);
         }
 

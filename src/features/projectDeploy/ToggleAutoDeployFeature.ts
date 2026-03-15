@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
-import { Feature } from "../../core/features/Feature";
-import { MinecraftProjectManager } from "../../core/project/MinecraftProjectManager";
-import { ProjectService } from "../../core/project/ProjectService";
+import { Feature } from "../Feature";
+import { MinecraftProjectManager } from "../../services/projects/MinecraftProjectManager";
+import { ProjectService } from "../../services/projects/ProjectService";
 
 /**
  * Fonctionnalité pour basculer le déploiement automatique d'un projet Minecraft Bedrock lorsque des changements sont détectés dans le dossier "addon" du projet. Cette fonctionnalité utilise un watcher pour surveiller les changements de fichiers et déclencher le déploiement automatique en conséquence. L'état du déploiement automatique est affiché dans la barre de statut de VSCode, permettant aux utilisateurs de voir rapidement s'il est activé ou désactivé, et de cliquer pour basculer son état.

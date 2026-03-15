@@ -1,17 +1,20 @@
 import * as vscode from 'vscode';
-import { VscodeUtils } from '../utils/VscodeUtils';
-import { MinecraftProjectConfig } from './MinecraftProjectConfig';
-import { MinecraftAddonPack, ProjectMetadata } from '../../types/projectConfig';
-import { AddonMinecraftProject, MinecraftProject } from './MinecraftProject';
+import { VscodeUtils } from '../../vscode-utils/VscodeUtils';
+import { MinecraftProjectConfig } from '../../core/minecraft/models/projects/MinecraftProjectConfig';
+import { AddonMinecraftProject } from '../../core/minecraft/models/projects/AddonMinecraftProject';
 import { AddonPackageJson } from '../../types/addonPackageJson';
-import { PromptService } from '../ui/PromptService';
+import { PromptService } from '../prompts/PromptService';
 import { randomUUID } from 'crypto';
 import { promisify } from 'util';
 import { exec } from 'child_process';
-import { MinecraftGameManager } from '../minecraft/games/MinecraftGameManager';
-import { FileSystemUtils } from '../utils/FileSystemUtils';
-import { MinecraftFileResolverService } from '../minecraft/fileTypes/MinecraftFileResolverService';
-import { MinecraftGame } from '../minecraft/games/MinecraftGame';
+import { MinecraftGameManager } from '../minecraft/MinecraftGameManager';
+import { FileSystemUtils } from '../../vscode-utils/FileSystemUtils';
+import { MinecraftFileResolverService } from '../minecraft/MinecraftFileResolverService';
+import { MinecraftGame } from '../../core/minecraft/models/games/MinecraftGame';
+import { ProjectMetadata } from '../../types/projectConfig';
+import { MinecraftProjectLoader } from './MinecraftProjectLoader';
+import { MinecraftAddonPackType } from '../../core/minecraft/models/MinecraftTypes';
+import { MinecraftProject } from '../../core/minecraft/models/projects/MinecraftProject';
 
 export class ProjectService {
     /**
@@ -22,7 +25,7 @@ export class ProjectService {
      */
     public static async copyTemplateFile(templateRelativePath: string, destination: vscode.Uri): Promise<void> {
         const extensionContext = VscodeUtils.getContext();
-        const templateUri = vscode.Uri.joinPath(extensionContext.extensionUri, "templates", templateRelativePath);
+        const templateUri = vscode.Uri.joinPath(extensionContext.extensionUri, "assets", "templates", templateRelativePath);
 
         try { // Vérifie que le fichier modèle existe avant de tenter de le copier
             if (! await VscodeUtils.pathExists(templateUri)) {
@@ -92,7 +95,7 @@ export class ProjectService {
 
         try { // Tente d'écrire le fichier de configuration du projet à la racine du projet, en écrasant s'il existe déjà un fichier à cet emplacement
             await VscodeUtils.writeFile(
-                vscode.Uri.joinPath(projectFolder, MinecraftProject.PROJECT_CONFIG_FILE_NAME),
+                vscode.Uri.joinPath(projectFolder, MinecraftProjectLoader.CONFIG_FILE_NAME),
                 JSON.stringify(mcbeProjectContent, null, 4)
             );
         } catch (error) {
@@ -153,7 +156,7 @@ export class ProjectService {
      * @throws {Error} Si la création du dossier échoue pour une raison autre que le fait que le dossier existe déjà
      */
     private static async createBehaviorPackFolder(projectFolder: vscode.Uri): Promise<vscode.Uri> {
-        const behaviorPackFolder = vscode.Uri.joinPath(projectFolder, "addon", MinecraftAddonPack.BehaviorPack);
+        const behaviorPackFolder = vscode.Uri.joinPath(projectFolder, "addon", "behavior_pack"); // Chemin du dossier du pack de comportement à créer
 
         try { // Tente de créer le dossier du pack de comportement
             await vscode.workspace.fs.createDirectory(behaviorPackFolder);
@@ -180,7 +183,7 @@ export class ProjectService {
      * @throws {Error} Si la création du dossier échoue pour une raison autre que le fait que le dossier existe déjà
      */
     private static async createResourcePackFolder(projectFolder: vscode.Uri): Promise<vscode.Uri> {
-        const resourcePackFolder = vscode.Uri.joinPath(projectFolder, "addon", MinecraftAddonPack.ResourcePack);
+        const resourcePackFolder = vscode.Uri.joinPath(projectFolder, "addon", "resource_pack"); // Chemin du dossier du pack de ressources à créer
         try {
             await vscode.workspace.fs.createDirectory(resourcePackFolder);
         } catch (error) {
@@ -441,7 +444,7 @@ export class ProjectService {
     public static async createPackIconFile(packFolder: vscode.Uri): Promise<void> {
         try {
             const extensionContext = VscodeUtils.getContext();
-            const iconSource = vscode.Uri.joinPath(extensionContext.extensionUri, "resources", "default_pack_icon.png");
+            const iconSource = vscode.Uri.joinPath(extensionContext.extensionUri, "assets", "icons", "default_pack_icon.png");
             const iconTarget = vscode.Uri.joinPath(packFolder, "pack_icon.png");
 
             await vscode.workspace.fs.copy(iconSource, iconTarget);
@@ -466,7 +469,7 @@ export class ProjectService {
      * 
      * @throws {Error} Si la création des fichiers échoue
      */
-    public static async createEnUsLangFile(packFolder: vscode.Uri, projectMetadata: ProjectMetadata, packType: MinecraftAddonPack): Promise<void> {
+    public static async createEnUsLangFile(packFolder: vscode.Uri, projectMetadata: ProjectMetadata, packType: MinecraftAddonPackType): Promise<void> {
         // Crée le dossier "texts"
         const textsFolder = vscode.Uri.joinPath(packFolder, "texts");
         try {
@@ -496,7 +499,7 @@ export class ProjectService {
         // en_US.lang
         const displayName = projectMetadata.displayName;
         const author = projectMetadata.author;
-        const packLabel = packType === MinecraftAddonPack.BehaviorPack ? "BP" : "RP";
+        const packLabel = packType === "behavior_pack" ? "BP" : "RP";
         const langContent =
             `pack.name=${displayName} ${packLabel} [v0.0.1] - by ${author}` +
             `\npack.description=Pack for ${displayName} - Created by ${author}`;
@@ -595,8 +598,8 @@ export class ProjectService {
         }
 
 
-        const isBehaviorPack = packsAddon.includes(MinecraftAddonPack.BehaviorPack); // Variable indiquant si le pack de comportement doit être créé
-        const isResourcePack = packsAddon.includes(MinecraftAddonPack.ResourcePack); // Variable indiquant si le pack de ressources doit être créé
+        const isBehaviorPack = packsAddon.includes("behavior_pack"); // Variable indiquant si le pack de comportement doit être créé
+        const isResourcePack = packsAddon.includes("resource_pack"); // Variable indiquant si le pack de ressources doit être créé
 
         let behaviorManifest: any = undefined; // Variable qui contiendra le manifeste du pack de comportement s'il est créé
         let resourceManifest: any = undefined; // Variable qui contiendra le manifeste du pack de ressources s'il est créé
@@ -660,7 +663,7 @@ export class ProjectService {
             }
 
             try { // Tente de créer le fichier en_US.lang pour le pack de comportement
-                await this.createEnUsLangFile(behaviorPackFolder, metadata, MinecraftAddonPack.BehaviorPack);
+                await this.createEnUsLangFile(behaviorPackFolder, metadata, "behavior_pack");
             } catch (error) {
                 if (error instanceof Error) {
                     throw new Error(`Erreur lors de la création du fichier en_US.lang du pack de comportement : ${error.message}`);
@@ -698,7 +701,7 @@ export class ProjectService {
             }
 
             try { // Tente de créer le fichier en_US.lang pour le pack de ressources
-                await this.createEnUsLangFile(resourcePackFolder, metadata, MinecraftAddonPack.ResourcePack);
+                await this.createEnUsLangFile(resourcePackFolder, metadata, "resource_pack");
             } catch (error) {
                 if (error instanceof Error) {
                     throw new Error(`Erreur lors de la création du fichier en_US.lang du pack de ressources : ${error.message}`);
@@ -712,7 +715,7 @@ export class ProjectService {
         this.configurePackDependencies(behaviorManifest, resourceManifest);
 
         if (behaviorManifest !== undefined) { // Si le manifeste du pack de comportement a été créé, on l'écrit dans le fichier manifest.json du dossier du pack de comportement
-            const behaviorManifestPath = vscode.Uri.joinPath(addonFolder, MinecraftAddonPack.BehaviorPack, "manifest.json");
+            const behaviorManifestPath = vscode.Uri.joinPath(addonFolder, "behavior_pack", "manifest.json");
             try {
                 await VscodeUtils.writeFile(behaviorManifestPath, JSON.stringify(behaviorManifest, null, 4));
             } catch (error) {
@@ -725,7 +728,7 @@ export class ProjectService {
         }
 
         if (resourceManifest !== undefined) { // Si le manifeste du pack de ressources a été créé, on l'écrit dans le fichier manifest.json du dossier du pack de ressources
-            const resourceManifestPath = vscode.Uri.joinPath(addonFolder, MinecraftAddonPack.ResourcePack, "manifest.json");
+            const resourceManifestPath = vscode.Uri.joinPath(addonFolder, "resource_pack", "manifest.json");
             try {
                 await VscodeUtils.writeFile(resourceManifestPath, JSON.stringify(resourceManifest, null, 4));
             } catch (error) {
@@ -782,7 +785,7 @@ export class ProjectService {
 
         let comMojangFolder: vscode.Uri;
         try {
-            comMojangFolder = await game.getComMojangFolder();
+            comMojangFolder = await MinecraftGameManager.getComMojangFolder(game);
         } catch (error) {
             if (error instanceof Error) {
                 throw new Error(`Erreur lors de la récupération du chemin de base pour le déploiement : ${error.message}`);
@@ -803,7 +806,10 @@ export class ProjectService {
     public static async isTypeScriptCompilationNeeded(minecraftProject: AddonMinecraftProject): Promise<boolean> {
         let scriptsFolder: vscode.Uri | undefined;
         try {
-            scriptsFolder = await minecraftProject.getScriptsFolder();
+            scriptsFolder = VscodeUtils.getUriFromPath(minecraftProject.getScriptsPath());
+            if (! await VscodeUtils.isDirectory(scriptsFolder)) {
+                throw new Error(`Le chemin "scripts" existe mais n'est pas un dossier : ${scriptsFolder.fsPath}`);
+            }
         } catch (error) {
             if (error instanceof Error) {
                 throw new Error(`Erreur lors de la vérification de l'existence du dossier "scripts" : ${error.message}`);
@@ -826,7 +832,7 @@ export class ProjectService {
      */
     public static async compileTypeScript(minecraftProject: AddonMinecraftProject): Promise<void> {
         const execPromise = promisify(exec);
-        const { stdout, stderr } = await execPromise(`tsc`, {cwd: minecraftProject.folder.fsPath});
+        const { stdout, stderr } = await execPromise(`tsc`, {cwd: minecraftProject.folder});
 
         if (stderr) {
             throw new Error(stderr);
@@ -887,7 +893,10 @@ export class ProjectService {
         const textureFilePaths: string[] = [];
         let resourcePackFolder: vscode.Uri | undefined = undefined;
         try {
-            resourcePackFolder = await minecraftProject.getResourcePackFolder();
+            resourcePackFolder = VscodeUtils.getUriFromPath(minecraftProject.getResourcePackPath());
+            if (! await VscodeUtils.isDirectory(resourcePackFolder)) {
+                throw new Error(`Le chemin du pack de ressources existe mais n'est pas un dossier : ${resourcePackFolder.fsPath}`);
+            }
         } catch (error) {
             if (error instanceof Error) {
                 throw new Error(`Erreur lors de la récupération du chemin du pack de ressources pour la création du fichier textures_list.json : ${error.message}`);
@@ -959,7 +968,9 @@ export class ProjectService {
             let resourcePack: vscode.Uri | undefined = undefined; // Variable qui contiendra le chemin du pack de ressources s'il existe
 
             try { // Tentative de récupérer le chemin du pack de comportement, il peut ne pas exister et c'est pas grave, mais si une erreur survient lors de la récupération du chemin du pack de comportement, on veut le savoir
-                behaviorPack = await minecraftProject.getBehaviorPackFolder();
+                if (await VscodeUtils.isDirectory(VscodeUtils.getUriFromPath(minecraftProject.getBehaviorPackPath()))) {
+                    behaviorPack = VscodeUtils.getUriFromPath(minecraftProject.getBehaviorPackPath());
+                }
             } catch (error) {
                 if (error instanceof Error) {
                     throw new Error(`Erreur lors de la récupération du chemin du pack de comportement : ${error.message}`);
@@ -967,7 +978,9 @@ export class ProjectService {
             }
 
             try { // Tentative de récupérer le chemin du pack de ressources, il peut ne pas exister et c'est pas grave, mais si une erreur survient lors de la récupération du chemin du pack de ressources, on veut le savoir
-                resourcePack = await minecraftProject.getResourcePackFolder();
+                if (await VscodeUtils.isDirectory(VscodeUtils.getUriFromPath(minecraftProject.getResourcePackPath()))) {
+                    resourcePack = VscodeUtils.getUriFromPath(minecraftProject.getResourcePackPath());
+                }
             } catch (error) {
                 if (error instanceof Error) {
                     throw new Error(`Erreur lors de la récupération du chemin du pack de ressources : ${error.message}`);
@@ -1072,7 +1085,9 @@ export class ProjectService {
             let behaviorPack: vscode.Uri | undefined = undefined;
             let resourcePack: vscode.Uri | undefined = undefined;
             try {
-                behaviorPack = await minecraftProject.getBehaviorPackFolder();
+                if (await VscodeUtils.isDirectory(VscodeUtils.getUriFromPath(minecraftProject.getBehaviorPackPath()))) {
+                    behaviorPack = VscodeUtils.getUriFromPath(minecraftProject.getBehaviorPackPath());
+                }
             } catch (error) {
                 if (error instanceof Error) {
                     throw new Error(`Erreur lors de la récupération du chemin du pack de comportement pour le déploiement : ${error.message}`);
@@ -1081,7 +1096,9 @@ export class ProjectService {
                 throw error;
             }
             try {
-                resourcePack = await minecraftProject.getResourcePackFolder();
+                if (await VscodeUtils.isDirectory(VscodeUtils.getUriFromPath(minecraftProject.getResourcePackPath()))) {
+                    resourcePack = VscodeUtils.getUriFromPath(minecraftProject.getResourcePackPath());
+                }
             } catch (error) {
                 if (error instanceof Error) {
                     throw new Error(`Erreur lors de la récupération du chemin du pack de ressources pour le déploiement : ${error.message}`);
@@ -1147,12 +1164,16 @@ export class ProjectService {
             let behaviorPack: vscode.Uri | undefined = undefined;
             let resourcePack: vscode.Uri | undefined = undefined;
             try {
-                behaviorPack = await minecraftProject.getBehaviorPackFolder();
+                if (await VscodeUtils.isDirectory(VscodeUtils.getUriFromPath(minecraftProject.getBehaviorPackPath()))) {
+                    behaviorPack = VscodeUtils.getUriFromPath(minecraftProject.getBehaviorPackPath());
+                }
             } catch (error) {
                 console.log("Il n'y a pas de Behavior Pack à exporter.", error);
             }
             try {
-                resourcePack = await minecraftProject.getResourcePackFolder();
+                if (await VscodeUtils.isDirectory(VscodeUtils.getUriFromPath(minecraftProject.getResourcePackPath()))) {
+                    resourcePack = VscodeUtils.getUriFromPath(minecraftProject.getResourcePackPath());
+                }
             } catch (error) {
                 console.log("Il n'y a pas de Resource Pack à exporter.", error);
             }
@@ -1162,7 +1183,7 @@ export class ProjectService {
             }
 
             // Création du dossier d'exportation à la racine du projet
-            const exportFolder = vscode.Uri.joinPath(minecraftProject.folder, "export");
+            const exportFolder = VscodeUtils.getUriFromPath(minecraftProject.folder + "/export");
             if (! await VscodeUtils.pathExists(exportFolder)) {
                 await vscode.workspace.fs.createDirectory(exportFolder);
             }

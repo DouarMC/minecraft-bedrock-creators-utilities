@@ -1,10 +1,8 @@
 import * as vscode from "vscode";
-import { VscodeUtils } from "../../core/utils/VscodeUtils";
-import { PromptService } from "../../core/ui/PromptService";
-import { ProjectService } from "../../core/project/ProjectService";
-import { MinecraftProjectType } from "../../types/projectConfig";
-import { Feature } from "../../core/features/Feature";
-import { MinecraftProjectManager } from "../../core/project/MinecraftProjectManager";
+import { VscodeUtils } from "../../vscode-utils/VscodeUtils";
+import { PromptService } from "../../services/prompts/PromptService";
+import { ProjectService } from "../../services/projects/ProjectService";
+import { Feature } from "../Feature";
 
 /**
  * Fonctionnalité pour initialiser un projet Minecraft Bedrock.
@@ -84,7 +82,7 @@ export class InitProjectFeature extends Feature {
             }
 
             // En fonction du type de projet sélectionné, crée la structure de base du projet Minecraft Bedrock correspondante, et affiche une erreur si la création échoue
-            if (projectMetadata.type === MinecraftProjectType.Addon) {
+            if (projectMetadata.type === "addon") {
                 try {
                     await ProjectService.createAddonStructure(projectFolder, projectMetadata);
                     // Ouvrir le dossier du projet dans VSCode
@@ -96,9 +94,9 @@ export class InitProjectFeature extends Feature {
                         return;
                     }
                 }
-            } else if (projectMetadata.type === MinecraftProjectType.SkinPack) {
+            } else if (projectMetadata.type === "skin_pack") {
                 // TODO
-            } else if (projectMetadata.type === MinecraftProjectType.WorldTemplate) {
+            } else if (projectMetadata.type === "world_template") {
                 // TODO
             }
 

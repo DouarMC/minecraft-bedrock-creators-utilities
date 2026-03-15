@@ -1,10 +1,10 @@
 import * as vscode from "vscode";
 
-import { VscodeUtils } from "./core/utils/VscodeUtils";
-import { Feature } from "./core/features/Feature";
+import { VscodeUtils } from "./vscode-utils/VscodeUtils";
+import { Feature } from "./features/Feature";
 import { InitProjectFeature } from "./features/projectInit/InitProjectFeature";
-import { MinecraftProjectManager } from "./core/project/MinecraftProjectManager";
-import { MinecraftGameManager } from "./core/minecraft/games/MinecraftGameManager";
+import { MinecraftProjectManager } from "./services/projects/MinecraftProjectManager";
+import { MinecraftGameManager } from "./services/minecraft/MinecraftGameManager";
 import { DeployProjectFeature } from "./features/projectDeploy/DeployProjectFeature";
 import { ToggleAutoDeployFeature } from "./features/projectDeploy/ToggleAutoDeployFeature";
 import { ExploreMinecraftFoldersFeature } from "./features/exploreMinecraftFolders/ExploreMinecraftFoldersFeature";
@@ -13,6 +13,7 @@ import { AddScriptApiFeature } from "./features/projectManage/AddScriptApiFeatur
 import { MinecraftSchemaFeature } from "./features/schema/MinecraftSchemaFeature";
 
 export async function activate(context: vscode.ExtensionContext) {
+    console.warn("[MBCU] Activating Minecraft Bedrock Code Utils extension...");
     VscodeUtils.initializeContext(context);
 
     await MinecraftProjectManager.initialize();
