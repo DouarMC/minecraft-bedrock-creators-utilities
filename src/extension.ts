@@ -11,6 +11,7 @@ import { ExploreMinecraftFoldersFeature } from "./features/exploreMinecraftFolde
 import { ExportProjectFeature } from "./features/projectExport/ExportProjectFeature";
 import { AddScriptApiFeature } from "./features/projectManage/AddScriptApiFeature";
 import { MinecraftSchemaFeature } from "./features/schema/MinecraftSchemaFeature";
+import { McStatsVisualizerFeature } from "./features/mcstats/McStatsVisualizerFeature";
 
 export async function activate(context: vscode.ExtensionContext) {
     console.warn("[MBCU] Activating Minecraft Bedrock Code Utils extension...");
@@ -26,7 +27,8 @@ export async function activate(context: vscode.ExtensionContext) {
         new ExploreMinecraftFoldersFeature(context),
         new ExportProjectFeature(context),
         new AddScriptApiFeature(context),
-        new MinecraftSchemaFeature(context)
+        new MinecraftSchemaFeature(context),
+        new McStatsVisualizerFeature(context)
     ];
 
     for (const feature of features) {

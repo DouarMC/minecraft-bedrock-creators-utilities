@@ -33,7 +33,7 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         id: "behavior_pack/animations/<all>.json",
         displayName: "Behavior Animations",
         packType: "behavior_pack",
-        patterns: ["**/animations/*.json"],
+        patterns: ["**/animations/**/*.json"],
         excludePatterns: undefined,
         schemaPath: "behavior_pack/animations/_animations.json"
     }),
@@ -251,7 +251,7 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         id: "resource_pack/animation_controllers/<all>.json",
         displayName: "Resource Animation Controllers",
         packType: "resource_pack",
-        patterns: ["**/animation_controllers/*.json"],
+        patterns: ["**/animation_controllers/**/*.json"],
         excludePatterns: undefined,
         schemaPath: "resource_pack/animation_controllers/_animation_controllers.json"
     }),
@@ -259,7 +259,7 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         id: "resource_pack/animations/<all>.json",
         displayName: "Resource Animations",
         packType: "resource_pack",
-        patterns: ["**/animations/*.json"],
+        patterns: ["**/animations/**/*.json"],
         excludePatterns: undefined,
         schemaPath: "resource_pack/animations/_animations.json"
     }),
@@ -444,7 +444,7 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         id: "resource_pack/particles/<all>.json",
         displayName: "Particles",
         packType: "resource_pack",
-        patterns: ["**/particles/*.json"],
+        patterns: ["**/particles/**/*.json"],
         excludePatterns: undefined,
         schemaPath: "resource_pack/particles/_particle_effect.json"
     }),

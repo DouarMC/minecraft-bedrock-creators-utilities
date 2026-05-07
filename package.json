@@ -49,6 +49,11 @@
                 "command": "minecraft-bedrock-creators-utilities.addScriptApi",
                 "title": "Ajouter l'API de script au projet Minecraft Bedrock courant",
                 "category": "Minecraft Bedrock Utilities"
+            },
+            {
+                "command": "minecraft-bedrock-creators-utilities.visualizeMcStats",
+                "title": "Visualiser un fichier McStats.",
+                "category": "Minecraft Bedrock Utilities"
             }
         ],
         "jsonValidation": [
@@ -94,6 +99,7 @@
         "jsonc-parser": "^3.3.1",
         "lodash": "^4.17.21",
         "minimatch": "^10.1.1",
-        "zip-lib": "^1.1.2"
+        "zip-lib": "^1.1.2",
+        "zlib": "^1.0.5"
     }
 }

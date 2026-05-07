@@ -560,9 +560,9 @@ const baseSchema: MinecraftJsonSchema = {
                                             description:
                                             "Le mode de direction de la particule." +
                                             "\n\n- `derive_from_velocity`: la direction est dérivée de la vélocité de la particule." +
-                                            "\n\n- `custom_direction`: la direction est spécifiée manuellement via un vecteur.",
+                                            "\n\n- `custom`: la direction est spécifiée manuellement via un vecteur.",
                                             type: "string",
-                                            enum: ["derive_from_velocity", "custom_direction"]
+                                            enum: ["derive_from_velocity", "custom"]
                                         },
                                         min_speed_threshold: {
                                             description: "Utilisé uniquement en mode `derive_from_velocity`. La direction est définie si la vitesse de la particule est supérieure au seuil.",
@@ -570,7 +570,7 @@ const baseSchema: MinecraftJsonSchema = {
                                             type: "number"
                                         },
                                         custom_direction: {
-                                            description: "Utilisé uniquement en mode `custom_direction`. Spécifie le vecteur de direction.",
+                                            description: "Utilisé uniquement en mode `custom`. Spécifie le vecteur de direction.",
                                             type: "array",
                                             minItems: 3,
                                             maxItems: 3,
