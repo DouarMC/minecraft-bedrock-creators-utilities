@@ -15380,6 +15380,34 @@ const versionedChanges: SchemaChange[] = [
             },
             
         ]
+    },
+    {
+        version: "1.26.10",
+        changes: [
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.drop_item_for", "properties", "time_of_day_range"],
+                value: {
+                    description: "Les heures de la journée pendant lesquelles cet objectif peut être utilisé. Pour référence : midi est 0.0, le coucher du soleil est 0.25, minuit est 0.5, et le lever du soleil est 0.75, et retour à midi pour 1.0.",
+                    default: {
+                        min: 0,
+                        max: 1
+                    },
+                    type: "object",
+                    required: ["min", "max"],
+                    properties: {
+                        min: {
+                            description: "L'heure minimale de la journée pendant laquelle cet objectif peut être utilisé.",
+                            type: "number",
+                        },
+                        max: {
+                            description: "L'heure maximale de la journée pendant laquelle cet objectif peut être utilisé.",
+                            type: "number"
+                        }
+                    }
+                }
+            }
+        ]
     }
 ];
 

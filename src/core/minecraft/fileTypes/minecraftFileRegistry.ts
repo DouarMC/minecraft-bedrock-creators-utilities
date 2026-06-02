@@ -89,7 +89,7 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         id: "behavior_pack/entities/<all>.json",
         displayName: "Entities Definition",
         packType: "behavior_pack",
-        patterns: ["**/entities/*.json"],
+        patterns: ["**/entities/**/*.json"],
         excludePatterns: undefined,
         schemaPath: "behavior_pack/entities/_entity.json"
     }),

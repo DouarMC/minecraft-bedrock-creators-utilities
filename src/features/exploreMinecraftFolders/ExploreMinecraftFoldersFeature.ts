@@ -26,7 +26,8 @@ export class ExploreMinecraftFoldersFeature extends Feature {
                 vscode.window.showErrorMessage(`⚠️ Le jeu Minecraft ${folderToOpenItem.game} n'est pas installé. Veuillez l'installer avant d'essayer d'ouvrir ses dossiers.`);
                 return;
             }
-            if (await MinecraftGameManager.isInstalled(minecraftGame)) { // Vérifie que le jeu est toujours installé avant d'essayer d'ouvrir ses dossiers
+
+            if (! await MinecraftGameManager.isInstalled(minecraftGame)) { // Vérifie que le jeu est toujours installé avant d'essayer d'ouvrir ses dossiers
                 vscode.window.showErrorMessage(`⚠️ Le jeu Minecraft ${folderToOpenItem.game} n'est pas installé. Veuillez l'installer avant d'essayer d'ouvrir ses dossiers.`);
                 return;
             }
