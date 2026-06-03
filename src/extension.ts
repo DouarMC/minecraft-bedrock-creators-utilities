@@ -14,7 +14,7 @@ import { MinecraftSchemaFeature } from "./features/schema/MinecraftSchemaFeature
 import { McStatsVisualizerFeature } from "./features/mcstats/McStatsVisualizerFeature";
 
 export async function activate(context: vscode.ExtensionContext) {
-    console.warn("[MBCU] Activating Minecraft Bedrock Code Utils extension...");
+    console.log("[MBCU] Activating Minecraft Bedrock Code Utils extension...");
     VscodeUtils.initializeContext(context);
 
     await MinecraftProjectManager.initialize();

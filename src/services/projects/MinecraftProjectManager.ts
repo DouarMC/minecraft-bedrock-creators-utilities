@@ -18,6 +18,7 @@ export class MinecraftProjectManager {
      * Initialise le MinecraftProjectManager en configurant les écouteurs nécessaires.
      */
     public static async initialize(): Promise<void> {
+        // Charge le projet Minecraft au démarrage de l'extension
         await this.reload();
 
         // Reload quand les dossiers de workspace changent

@@ -16,11 +16,13 @@ export class MinecraftProjectLoader {
      * @returns 
      */
     public static async load(folder: vscode.Uri): Promise<MinecraftProject | undefined> {
+        // Vérifie que le dossier contient un projet Minecraft valide en recherchant le fichier de configuration du projet à la racine du dossier
         if (! await this.isProjectFolder(folder)) {
             console.warn(`[MBCU] Le dossier n'est pas un projet Minecraft valide (fichier de configuration manquant) : ${folder.fsPath}`);
             return;
         }
 
+        // Recuperation de la configuration du projet Minecraft
         const config = await this.getConfig(folder);
         if (! config) {
             return;
@@ -48,7 +50,6 @@ export class MinecraftProjectLoader {
         try {
             return await VscodeUtils.isFile(configUri);
         } catch {
-            console.warn(`[MBCU] Fichier de configuration du projet Minecraft non trouvé : ${configUri.fsPath}`);
             return false;
         }
     }

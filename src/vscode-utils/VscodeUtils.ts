@@ -1,8 +1,18 @@
 import * as vscode from "vscode";
 
+/**
+ * Classe utilitaire pour les opérations liées à VSCode, comme la gestion du contexte de l'extension, la manipulation de fichiers et de dossiers, etc.
+ */
 export class VscodeUtils {
+    /**
+     * Le contexte de l'extension, initialisé dans la fonction activate de l'extension. Permet d'accéder à des fonctionnalités de VSCode comme les commandes, les événements, etc.
+     */
     private static context: vscode.ExtensionContext | undefined;
 
+    /**
+     * Initialise le contexte de l'extension. Doit être appelé dans la fonction activate de l'extension.
+     * @param context 
+     */
     public static initializeContext(context: vscode.ExtensionContext): void {
         this.context = context;
     }
