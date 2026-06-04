@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Schema DevTools</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div id="sidebar">
+        <h2>Fichiers Schémas</h2>
+        <div id="file-list">Chargement des fichiers...</div>
+    </div>
+    
+    <div id="main">
+        <h2 id="current-file">Sélectionnez un fichier pour commencer</h2>
+        
+        <div id="editor-zone" style="display: none;">
+            <div class="card">
+                <h3>🚀 Action Rapide : Ajouter une Version Minecraft</h3>
+                <p>Cette action va ajouter la version dans le <code>enum</code> de <code>format_version</code> et initialiser un bloc vide dans <code>versionedChanges</code>.</p>
+                
+                <div class="form-group">
+                    <input type="text" id="new-version" placeholder="Ex: 1.26.20">
+                    <button id="btn-add-version">Injecter la version</button>
+                </div>
+                <div id="version-status" class="status"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/app.js"></script>
+</body>
+</html>

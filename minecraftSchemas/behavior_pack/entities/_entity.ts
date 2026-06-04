@@ -15406,6 +15406,28 @@ const versionedChanges: SchemaChange[] = [
                         }
                     }
                 }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.ram_attack", "properties", "cooldown_range"],
+                value: {
+                    description: "La plage de temps (en secondes) entre chaque attaque de charge.",
+                    default: {
+                        min: 10,
+                        max: 20
+                    },
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "Le temps minimum en secondes entre chaque attaque de charge.",
+                            type: "number"
+                        },
+                        max: {
+                            description: "Le temps maximum en secondes entre chaque attaque de charge.",
+                            type: "number"
+                        }
+                    }
+                }
             }
         ]
     }

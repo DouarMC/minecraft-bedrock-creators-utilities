@@ -83,7 +83,8 @@
         "lint": "eslint src",
         "test": "vscode-test",
         "build-schemas": "tsx scripts/buildSchemas.ts",
-        "include-vanilla-identifier-to-json": "tsx scripts/includeVanillaIdentifierToJson.ts"
+        "include-vanilla-identifier-to-json": "tsx scripts/includeVanillaIdentifierToJson.ts",
+        "dev-schema-editor": "tsx scripts/schemaEditor/index.ts"
     },
     "devDependencies": {
         "@types/lodash": "^4.17.20",
