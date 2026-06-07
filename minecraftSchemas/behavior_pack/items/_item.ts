@@ -1934,6 +1934,20 @@ const versionedChanges: SchemaChange[] = [
                 }
             }
         ]
+    },
+    {
+        version: "1.26.0",
+        changes: [
+            {
+                action: "add",
+                target: ["properties", "minecraft:item", "properties", "components", "properties", "minecraft:block_placer", "properties", "aligned_placement"],
+                value: {
+                    description: "Définit si l'Item permet de placer les blocs en pont rapide.",
+                    default: false,
+                    type: "boolean"
+                }
+            }
+        ]
     }
 ];
 

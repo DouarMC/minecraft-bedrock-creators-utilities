@@ -1445,6 +1445,7 @@ const versionedChanges: SchemaChange[] = [
                         detection_rules: {
                             description: "Liste des règles de détection des liquides pour le Bloc.",
                             type: "array",
+                            minItems: 1,
                             items: {
                                 type: "object",
                                 properties: {

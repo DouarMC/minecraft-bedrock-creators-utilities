@@ -393,6 +393,40 @@ const baseSchema: MinecraftJsonSchema = {
                                 interact_filters: {
                                     description: "Liste des conditions à remplir pour que l'Entité soit nourrie.",
                                     ...commonSchemas.minecraft_filter
+                                },
+                                pause_growth_items: {
+                                    description: "Liste des items qui peuvent être donnés à l'Entité pour faire une pause dans sa croissance.",
+                                    type: "array",
+                                    items: {
+                                        type: "string",
+                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
+                                    }
+                                },
+                                reset_growth_items: {
+                                    description: "Liste des items qui peuvent être donnés à l'Entité pour réinitialiser sa croissance.",
+                                    type: "array",
+                                    items: {
+                                        type: "string",
+                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
+                                    }
+                                },
+                                reset_growth: {
+                                    description: "Evenement d'entité à déclencher quand la croissance de l'Entité est réinitialisée.",
+                                    oneOf: [
+                                        {
+                                            type: "string"
+                                        },
+                                        commonSchemas.entity_event_trigger
+                                    ]
+                                },
+                                pause_growth: {
+                                    description: "Evenement d'entité à déclencher quand la croissance de l'Entité est mise en pause.",
+                                    oneOf: [
+                                        {
+                                            type: "string"
+                                        },
+                                        commonSchemas.entity_event_trigger
+                                    ]
                                 }
                             }
                         },
@@ -1136,6 +1170,11 @@ const baseSchema: MinecraftJsonSchema = {
                                     description: "Multiplicateur pour la vitesse pour faire une grosse vague. Déclenché en fonction de `big_wave_probability`.",
                                     default: 10.0,
                                     type: "number"
+                                },
+                                can_auto_step_from_liquid: {
+                                    description: "Définit si l'Entité peut sortir du bloc liquide et se poser sur des blocs solides voisins lorsqu'elle est poussée contre eux.",
+                                    default: false,
+                                    type: "boolean"
                                 },
                                 drag_down_on_buoyancy_removed: {
                                     description: "De combien l'Entité sera tirée vers le bas lorsqu'on lui retire ce composant.",
@@ -5573,6 +5612,14 @@ const baseSchema: MinecraftJsonSchema = {
                                 }
                             }
                         },
+                        "minecraft:pushable_by_block": {
+                            description: "Définit que l'Entité peut être poussée par les blocs mobiles tels que les pistons ou les boites de shulker ouvertes.",
+                            type: "object"
+                        },
+                        "minecraft:pushable_by_entity": {
+                            description: "Définit que l'Entité peut être poussée par d'autres entités.",
+                            type: "object"
+                        },
                         "minecraft:raid_trigger": {
                             description: "Tente de déclencher un raid à l'emplacement de l'entité.",
                             type: "object",
@@ -9776,7 +9823,8 @@ const baseSchema: MinecraftJsonSchema = {
                                 lay_seconds: {
                                     description: "La durée du processus de ponte de l'oeuf en secondes.",
                                     default: 10.0,
-                                    type: "number"
+                                    type: "number",
+                                    minimum: 0
                                 },
                                 on_lay: {
                                     description: "Les événements à déclencher lorsque l'Entité pond un oeuf.",
@@ -15449,6 +15497,142 @@ const versionedChanges: SchemaChange[] = [
                             type: "number"
                         }
                     }
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.celebrate", "properties", "jump_interval"],
+                value: {
+                    description: "La plage de temps en secondes entre les sauts de l'entité.",
+                    default: {
+                        min: 1,
+                        max: 3.5
+                    },
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "Le temps minimum en secondes entre les sauts de l'entité.",
+                            type: "number"
+                        },
+                        max: {
+                            description: "Le temps maximum en secondes entre les sauts de l'entité.",
+                            type: "number"
+                        }
+                    }
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.celebrate_survive", "properties", "fireworks_interval"],
+                value: {
+                    description: "La plage de temps en secondes entre les tirs de feux d'artifice.",
+                    default: {
+                        min: 10,
+                        max: 20
+                    },
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "Le temps minimum en secondes entre les tirs de feux d'artifice.",
+                            type: "number"
+                        },
+                        max: {
+                            description: "Le temps maximum en secondes entre les tirs de feux d'artifice.",
+                            type: "number"
+                        }
+                    }
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.random_search_and_dig", "properties", "cooldown_range"],
+                value: {
+                    description: "La plage de temps (en secondes) entre chaque recherche de bloc cible.",
+                    default: {
+                        min: 0,
+                        max: 0
+                    },
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "Le temps minimum en secondes entre chaque recherche de bloc cible.",
+                            type: "number",
+                            minimum: 0
+                        },
+                        max: {
+                            description: "Le temps maximum en secondes entre chaque recherche de bloc cible.",
+                            type: "number",
+                            minimum: 0
+                        }
+                    }
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.random_search_and_dig", "properties", "digging_duration_range"],
+                value: {
+                    description: "La plage de temps (en secondes) que l'Entité passera à creuser le bloc cible.",
+                    default: {
+                        min: 0,
+                        max: 0
+                    },
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "Le temps minimum en secondes que l'Entité passera à creuser le bloc cible.",
+                            type: "number",
+                            minimum: 0
+                        },
+                        max: {
+                            description: "Le temps maximum en secondes que l'Entité passera à creuser le bloc cible.",
+                            type: "number",
+                            minimum: 0
+                        }
+                    }
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.play_dead", "properties", "random_damage_range"],
+                value: {
+                    description: "La plage de dégâts qui peuvent déclencher le comportement de mort en fonction de l'aléatoire. Les dégâts subis en dessous du minimum ne déclencheront jamais le comportement. Les dégâts subis au-dessus du maximum déclencheront toujours le comportement.",
+                    default: {
+                        min: 0,
+                        max: 0
+                    },
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "Le minimum de dégâts qui peuvent déclencher le comportement de mort en fonction de l'aléatoire.",
+                            type: "number"
+                        },
+                        max: {
+                            description: "Le maximum de dégâts qui peuvent déclencher le comportement de mort en fonction de l'aléatoire.",
+                            type: "number"
+                        }
+                    }
+                }
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:pushable"]
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:buoyant", "properties", "simulate_waves"]
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:buoyant", "properties", "movement_type"],
+                value: {
+                    description:
+                    "Définit le type de mouvement vertical de l'Entité lorsqu'elle est dans l'eau." +
+                    "\n- `waves`: simule des vagues basé sur la vitesse de l'entité." +
+                    "\n- `bobbing`: fait que l'entité se balance doucement de haut en bas." +
+                    "\n- `none`: désactive tout mouvement vertical de l'entité.",
+                    default: "waves",
+                    type: "string",
+                    enum: ["waves", "bobbing", "none"]
                 }
             }
         ]
