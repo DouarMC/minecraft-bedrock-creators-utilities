@@ -175,6 +175,14 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         excludePatterns: undefined,
         schemaPath: "behavior_pack/recipes/_recipe.json"
     }),
+    "behavior_pack/shapes/<all>.json": new MinecraftFileType({
+        id: "behavior_pack/shapes/<all>.json",
+        displayName: "Voxel Shapes",
+        packType: "behavior_pack",
+        patterns: ["**/shapes/*.json"],
+        excludePatterns: undefined,
+        schemaPath: "behavior_pack/shapes/_voxel_shape.json"
+    }),
     "behavior_pack/spawn_rules/<all>.json": new MinecraftFileType({
         id: "behavior_pack/spawn_rules/<all>.json",
         displayName: "Spawn Rules",

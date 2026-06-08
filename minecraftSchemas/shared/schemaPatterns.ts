@@ -12,6 +12,7 @@ export const schemaPatterns = {
 
     // Identifiants Minecraft (Namespaces et Controllers)
     identifier_with_namespace: "^[a-z0-9_\\-]+:[a-zA-Z0-9_.\\-]+$",
+    identifier_with_namespace_exclude_minecraft: "^(?!minecraft:)[a-z0-9_\\-]+:[a-zA-Z0-9_.\\-]+$",
     culling_layer_identifier: "^[a-z0-9_\\-]+:culling_layer\\.[a-z0-9_\\-]+$",
     render_controller_identifier: "^controller\\.render\\.",
     animation_controller_identifier: "^controller\\.animation\\.",

@@ -27,7 +27,7 @@ const baseSchema: MinecraftJsonSchema = {
             required: ["description"],
             properties: {
                 description: {
-                    description: "Contient les propeiétés de Descriptions du Bloc.",
+                    description: "Contient les propriétés de Descriptions du Bloc.",
                     type: "object",
                     required: ["identifier"],
                     properties: {

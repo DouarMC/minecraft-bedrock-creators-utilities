@@ -195,6 +195,12 @@ const baseSchema: MinecraftJsonSchema = {
                             description: "Définie si l'Item tenu par cet Entité doit être entièrement éclairé, ou alors être éclairé en fonction de l'éclairage ambiant.",
                             type: "boolean"
                         },
+                        held_item_scale: {
+                            description: "Définit la taille de l'Item tenu par cet Entité.",
+                            default: 1,
+                            type: "number",
+                            exclusiveMinimum: 0
+                        },
                         hide_armor: {
                             description: "Définit si l'armure de l'Entité doit être caché ou non. Ce paramètre a la priorité sur `enable_attachables`.",
                             type: "boolean"
