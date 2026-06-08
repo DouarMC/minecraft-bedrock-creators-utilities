@@ -3175,7 +3175,8 @@
         "minecraft:wooden_tier",
         "minecraft:wool",
         "minecraft:is_shears",
-        "minecraft:is_armor"
+        "minecraft:is_armor",
+        "minecraft:metal_nuggets"
     ],
     "VANILLA_CULLING_LAYER_IDS": [
         "minecraft:culling_layer.undefined",
@@ -3183,6 +3184,11 @@
     ],
     "VANILLA_MODEL_IDS": [
         "minecraft:geometry.full_block",
-        "minecraft:geometry.cross"
+        "minecraft:geometry.cross",
+        "minecraft:geometry.full_block_v1"
+    ],
+    "VANILLA_VOXEL_SHAPE_IDS": [
+        "minecraft:empty",
+        "minecraft:unit_cube"
     ]
 }
