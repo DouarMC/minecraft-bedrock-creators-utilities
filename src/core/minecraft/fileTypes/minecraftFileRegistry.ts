@@ -416,6 +416,14 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         excludePatterns: undefined,
         schemaPath: "resource_pack/lighting/_lighting_settings.json"
     }),
+    "resource_pack/local_lighting/local_lighting.json": new MinecraftFileType({
+        id: "resource_pack/local_lighting/local_lighting.json",
+        displayName: "Local Lights",
+        packType: "resource_pack",
+        patterns: ["**/local_lighting/local_lighting.json"],
+        excludePatterns: undefined,
+        schemaPath: "resource_pack/local_lighting/local_lighting.json"
+    }),
     "resource_pack/loading_messages.json": new MinecraftFileType({
         id: "resource_pack/loading_messages.json",
         displayName: "Loading Messages",

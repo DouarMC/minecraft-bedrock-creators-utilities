@@ -50,6 +50,7 @@ export type MinecraftFileId =
     "resource_pack/font/<all>.ttf" |
     "resource_pack/items/<all>.json" |
     "resource_pack/lighting/<all>.json" |
+    "resource_pack/local_lighting/local_lighting.json" |
     "resource_pack/materials/<all>.material" |
     "resource_pack/models/<all>.json" |
     "resource_pack/particles/<all>.json" |
