@@ -1729,6 +1729,39 @@ const versionedChanges: SchemaChange[] = [
                         }
                     }
                 }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:block", "properties", "description", "properties", "traits", "properties", "minecraft:multi_block"],
+                value: {
+                    "x-experimental_options": ["Upcoming Creator Features"],
+                    description: "Trait qui expose l'état de bloc built-in `minecraft:multi_block_part` qui fournit des informations sur la partie d'un multibloc. Un multibloc est un ensemble de blocs qui forment ensemble une structure plus grande comme une porte. La boite de selection du bloc prendra automatiquement en compte les différentes parties du multibloc pour fournir une sélection plus précise en mettant `minecraft:selection_box` à `true`. Egalement ce trait peut combiner les boites de selections de chaque partie du multibloc.",
+                    type: "object",
+                    required: ["enabled_states", "direction"],
+                    properties: {
+                        enabled_states: {
+                            description:
+                            "Liste des états built-in à activer.\n\n" +
+                            "`minecraft:multi_block_part`: Indique quelle partie du multibloc le bloc représente. Les valeurs possibles sont `none`, `head`, `body` et `tail`.",
+                            type: "array",
+                            items: {
+                                type: "string",
+                                enum: ["minecraft:multi_block_part"]
+                            }
+                        },
+                        direction: {
+                            description: "Définit la direction de placement du multibloc de 0 à N. Les valeurs valides sont `up` et `down`.",
+                            type: "string",
+                            enum: ["up", "down"]
+                        },
+                        parts: {
+                            description: "Définit la valeur de l'état `minecraft:multi_block_part` pour chaque partie du multibloc.",
+                            type: "integer",
+                            minimum: 2,
+                            maximum: 4
+                        }
+                    }
+                }
             }
         ]
     },
@@ -1928,6 +1961,31 @@ const versionedChanges: SchemaChange[] = [
                                 type: "string",
                                 enum: ["minecraft:cardinal_connections"]
                             }
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    {
+        version: "1.26.10",
+        changes: [
+            {
+                action: "add",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:chest_obstruction"],
+                value: {
+                    description: "Définit le comportement du Bloc lorsqu'il est placé au dessus d'un coffre ou un coffre de l'ender pour l'empecher ou non de bloquer l'ouverture du coffre.",
+                    type: "object",
+                    properties: {
+                        obstruction_rule: {
+                            description:
+                            "Définit comment le Bloc est évalué durant l'ouverture du coffre. Les Blocs avec une `format_version` antérieure à 1.26.10 seront traités en fonction de leur modèle définit ainsi que leur `material_instances`" +
+                            "\n- `always`: le Bloc bloquera toujours l'ouverture du coffre." +
+                            "\n- `never`: le Bloc n'empêchera jamais l'ouverture du coffre." +
+                            "\n- `shape`: utilisera la boite de collision du Bloc pour déterminer s'il bloque l'ouverture du coffre.",
+                            default: "shape",
+                            type: "string",
+                            enum: ["always", "never", "shape"]
                         }
                     }
                 }

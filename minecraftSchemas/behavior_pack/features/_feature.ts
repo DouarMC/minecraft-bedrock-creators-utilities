@@ -1798,6 +1798,67 @@ const baseSchema: MinecraftJsonSchema = {
                                                                         commonSchemas.block_descriptor
                                                                     ]
                                                                 },
+                                                                decoration_blocks_sequence: {
+                                                                    description: "Définit une séquence de blocs à placer comme décoration dans l'ordre donné pour la canopé. Ceci remplace `decoration_block` et num_steps` si défini.",
+                                                                    type: "array",
+                                                                    items: {
+                                                                        oneOf: [
+                                                                            {
+                                                                                type: "string",
+                                                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                            },
+                                                                            commonSchemas.block_descriptor,
+                                                                            {
+                                                                                type: "object",
+                                                                                properties: {
+                                                                                    block: {
+                                                                                        description: "Le bloc à utilisé pour la décoration de la canopée.",
+                                                                                        oneOf: [
+                                                                                            {
+                                                                                                type: "string",
+                                                                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                                            },
+                                                                                            commonSchemas.block_descriptor
+                                                                                        ]
+                                                                                    },
+                                                                                    count: {
+                                                                                        description: "Le nombre de fois que ce bloc doit être placé dans la séquence de décoration de la canopée.",
+                                                                                        oneOf: [
+                                                                                            {
+                                                                                                type: "integer",
+                                                                                                minimum: 1
+                                                                                            },
+                                                                                            {
+                                                                                                type: "array",
+                                                                                                minItems: 2,
+                                                                                                maxItems: 2,
+                                                                                                items: {
+                                                                                                    type: "integer",
+                                                                                                    minimum: 1
+                                                                                                }
+                                                                                            },
+                                                                                            {
+                                                                                                type: "object",
+                                                                                                properties: {
+                                                                                                    range_min: {
+                                                                                                        description: "Valeur minimale pour le nombre de fois que ce bloc doit être placé dans la séquence de décoration de la canopée.",
+                                                                                                        type: "integer",
+                                                                                                        minimum: 1
+                                                                                                    },
+                                                                                                    range_max: {
+                                                                                                        description: "Valeur maximale pour le nombre de fois que ce bloc doit être placé dans la séquence de décoration de la canopé.",
+                                                                                                        type: "integer",
+                                                                                                        minimum: 1
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        ]
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                },
                                                                 num_steps: {
                                                                     description: "Nombre de blocs de décoration à placer.",
                                                                     type: "integer"
