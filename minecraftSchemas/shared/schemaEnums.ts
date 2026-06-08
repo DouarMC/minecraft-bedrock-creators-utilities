@@ -97,6 +97,7 @@ export const dynamicExamplesSourceKeys = {
     vanilla_entity_ids_without_namespace: "vanilla_entity_ids_without_namespace",
     vanilla_ui_global_variables: "vanilla_ui_global_variables",
     vanilla_item_group_ids_without_namespace: "vanilla_item_group_ids_without_namespace",
+    voxel_shape_ids: "voxel_shape_ids",
     water_settings_ids: "water_settings_ids",
 
     /*

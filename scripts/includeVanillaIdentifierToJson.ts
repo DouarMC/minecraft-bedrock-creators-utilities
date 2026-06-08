@@ -119,6 +119,10 @@ async function includeVanillaIdentifierToJson() {
             "minecraft:geometry.full_block",
             "minecraft:geometry.cross",
             "minecraft:geometry.full_block_v1"
+        ],
+        "VANILLA_VOXEL_SHAPE_IDS": [
+            "minecraft:empty",
+            "minecraft:unit_cube"
         ]
     };
 

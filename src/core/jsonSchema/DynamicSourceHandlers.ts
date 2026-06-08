@@ -290,6 +290,8 @@ export class DynamicSourceHandlers {
                     case "vanilla_ui_global_variables":
                         exampleValues.push(...await this.getVanillaUiGlobalVariables(fileSourcesAvailable));
                         break;
+                    case "voxel_shape_ids":
+                        exampleValues.push(...await this.getVoxelShapeIds(fileSourcesAvailable));
                     case "water_settings_ids":
                         exampleValues.push(...await this.getWaterSettingsIds(fileSourcesAvailable));
                         break;
@@ -1689,5 +1691,24 @@ export class DynamicSourceHandlers {
         }
 
         return cubemapSettingsIds;
+    }
+
+    private static async getVoxelShapeIds(fileSources: (MinecraftProject | MinecraftGame)[]): Promise<string[]> {
+        const voxelShapeIds: string[] = [...(await this.getVanillaIdentifiersDist()).VANILLA_VOXEL_SHAPE_IDS];
+
+        const voxelShapeFiles = await this.getDataDrivenFilesFromSources("behavior_pack/shapes/<all>.json", fileSources);
+        for (const file of voxelShapeFiles) {
+            try {
+                const json = await this.getFileContent(file);
+                const id = json?.["minecraft:voxel_shape"]?.description?.identifier;
+                if (typeof id === "string") {
+                    voxelShapeIds.push(id);
+                }
+            } catch (error) {
+                console.warn(`⚠️ Failed to read or parse voxel shape from ${file.toString()}:`, error);
+            }
+        }
+
+        return voxelShapeIds;
     }
 }

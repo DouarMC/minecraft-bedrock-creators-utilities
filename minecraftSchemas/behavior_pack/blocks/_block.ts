@@ -804,6 +804,13 @@ const versionedChanges: SchemaChange[] = [
                                     type: "string",
                                     pattern: schemaPatterns.culling_layer_identifier,
                                     "x-dynamic-examples-source": dynamicExamplesSourceKeys.culling_layer_ids
+                                },
+                                culling_shape: {
+                                    "x-experimental_options": ["Experimental Voxel Shape Features"], 
+                                    description: "Définit la Voxel Shape à utiliser pour le culling des faces adjacentes du Bloc. Les Voxel Shapes fonctionnent avec les règles de Block Culling et ne fonctionnent pas si aucune règle n'a été définit pour le Bloc. Seuls les blocs adjacents utilisant des Voxel Shapes seront masqué par cette Shape. Les Blocs avec la modèle `minecraft:geometry.full_block` utiliseront toujours la Voxel Shape `minecraft:unit_cube`.",
+                                    default: "minecraft:empty",
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.voxel_shape_ids
                                 }
                             }
                         }
