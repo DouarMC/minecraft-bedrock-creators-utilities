@@ -1179,7 +1179,8 @@ const versionedChanges: SchemaChange[] = [
                             description: "Les tags associés à l'Item.",
                             type: "array",
                             items: {
-                                type: "string"
+                                type: "string",
+                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_tags
                             }
                         }
                     }

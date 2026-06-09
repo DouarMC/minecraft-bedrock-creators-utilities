@@ -17,6 +17,7 @@ export const dynamicExamplesSourceKeys = {
     block_culling_rules_ids: "block_culling_rules_ids",
     block_ids: "block_ids",
     block_sound_references: "block_sound_references",
+    block_tags: "block_tags",
     block_texture_references: "block_texture_references",
     camera_preset_ids: "camera_preset_ids",
     cooldown_category_ids: "cooldown_category_ids",

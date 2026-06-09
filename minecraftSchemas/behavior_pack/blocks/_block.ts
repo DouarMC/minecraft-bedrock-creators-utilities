@@ -1314,7 +1314,7 @@ const versionedChanges: SchemaChange[] = [
                                     description: "Ajoute un décalage de rotation en Y pour les états de Bloc.",
                                     default: 0,
                                     type: "number",
-                                    enum: [0, 90, 180, 270]
+                                    enum: [0, 90, 180, 270, 360]
                                 },
                                 blocks_to_corner_with: {
                                     description: "Lorsque le trait `minecraft:corner_and_cardinal_direction` est activé, ce champ permet de définir les blocs avec lesquels ce bloc peut former un coin.",
@@ -1772,7 +1772,7 @@ const versionedChanges: SchemaChange[] = [
                 action: "add",
                 target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:redstone_producer"],
                 value: {
-                    description: "Définit le comportement du Bloc en tant que source de redstone.",
+                    description: "Définit le comportement du Bloc en tant que source de redstone. Avec une `format_version >= 1.26.20`, ce composant ne peut être utilisé dans les permutations uniquement s'il est définit dans les composants de base du Bloc.",
                     type: "object",
                     required: ["power"],
                     properties: {
@@ -1987,6 +1987,183 @@ const versionedChanges: SchemaChange[] = [
                             type: "string",
                             enum: ["always", "never", "shape"]
                         }
+                    }
+                }
+            }
+        ]
+    },
+    {
+        version: "1.26.20",
+        changes: [
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:acacia"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:birch"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:minecraft:cornerable_stairs"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:minecraft:crop"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:dark_oak"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:diamond_pick_diggable"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:minecraft:diamond_tier_destructible"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:dirt"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:fertilize_area"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:grass"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:gravel"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:minecraft:has_fence_connections"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:iron_pick_diggable"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:minecraft:iron_tier_destructible"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:minecraft:is_axe_item_destructible"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:minecraft:is_hoe_item_destructible"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:minecraft:is_pickaxe_item_destructible"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:minecraft:is_shears_item_destructible"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:minecraft:is_shovel_item_destructible"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:minecraft:is_sword_item_destructible"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:jungle"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:log"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:metal"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:mob_spawner"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:not_feature_replaceable"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:oak"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:one_way_collidable"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:plant"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:pumpkin"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:rail"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:sand"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:snow"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:spruce"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:stone"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:stone_pick_diggable"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:minecraft:stone_tier_destructible"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:text_sign"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:trapdoors"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:water"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:wood"],
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:tags"],
+                value: {
+                    description: "Définit les tags à donner au Bloc.",
+                    type: "array",
+                    items: {
+                        type: "string",
+                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_tags
                     }
                 }
             }

@@ -59,6 +59,9 @@ export class DynamicSourceHandlers {
                     case "block_sound_references":
                         exampleValues.push(...await this.getBlockSoundReferences(fileSourcesAvailable));
                         break;
+                    case "block_tags":
+                        exampleValues.push(...await this.getBlockTags(fileSourcesAvailable));
+                        break;
                     case "block_texture_references":
                         exampleValues.push(...await this.getBlockTextureReferences(fileSourcesAvailable));
                         break;
@@ -1710,5 +1713,11 @@ export class DynamicSourceHandlers {
         }
 
         return voxelShapeIds;
+    }
+
+    private static async getBlockTags(fileSources: (MinecraftGame | MinecraftProject)[]): Promise<string[]> {
+        const blockTags: string[] = (await this.getVanillaIdentifiersDist()).VANILLA_BLOCK_TAGS;
+
+        return blockTags;
     }
 }

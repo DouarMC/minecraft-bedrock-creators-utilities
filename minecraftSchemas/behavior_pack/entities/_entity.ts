@@ -15636,6 +15636,33 @@ const versionedChanges: SchemaChange[] = [
                 }
             }
         ]
+    },
+    {
+        version: "1.26.20",
+        changes: [
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.admire_item", "properties", "sound_interval"],
+                value: {
+                    description: "La plage de temps en secondes pour attendre avant de jouer le son à nouveau.",
+                    default: {
+                        min: 0,
+                        max: 0
+                    },
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "Le temps minimum en secondes pour attendre avant de jouer le son à nouveau.",
+                            type: "number"
+                        },
+                        max: {
+                            description: "Le temps maximum en secondes pour attendre avant de jouer le son à nouveau.",
+                            type: "number"
+                        }
+                    }
+                }
+            }
+        ]
     }
 ];
 

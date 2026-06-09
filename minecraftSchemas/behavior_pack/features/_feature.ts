@@ -1281,6 +1281,11 @@ const baseSchema: MinecraftJsonSchema = {
                             description: "Détermine si la Feature peut être placée sous l'eau.",
                             default: false,
                             type: "boolean"
+                        },
+                        embed_in_surface: {
+                            description: "Définit si la Feature doit être partiellement intégrée dans la surface à laquelle elle est accrochée. Si vrai, la moitié inférieure de la Feature sera intégrée dans la surface.",
+                            default: false,
+                            type: "boolean"
                         }
                     }
                 }
