@@ -2163,6 +2163,7 @@ const versionedChanges: SchemaChange[] = [
                     type: "array",
                     items: {
                         type: "string",
+                        pattern: schemaPatterns.identifier_with_namespace,
                         "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_tags
                     }
                 }
