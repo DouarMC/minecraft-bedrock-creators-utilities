@@ -15807,6 +15807,74 @@ const versionedChanges: SchemaChange[] = [
                         }
                     }
                 }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:apply_knockback_rules"],
+                value: {
+                    description: "Définit des règles pour le recul que cette Entité infligera aux autres entités lors d'une attaque.",
+                    type: "object",
+                    properties: {
+                        presets: {
+                            description: "Définit des ensembles de règles de recul prédéfinis.",
+                            type: "array",
+                            items: {
+                                type: "object",
+                                properties: {
+                                    filter: {
+                                        description: "Un filtre qui définit les critères pour que les règles de recul soient appliquées à une entité attaquée.",
+                                        ...commonSchemas.minecraft_filter
+                                    },
+                                    horizontal_power: {
+                                        description: "Définit la puissance du recul horizontal appliqué à l'entité attaquée.",
+                                        default: 1.0,
+                                        type: "number"
+                                    },
+                                    vertical_power: {
+                                        description: "Définit la puissance du recul vertical appliqué à l'entité attaquée.",
+                                        default: 0.4,
+                                        type: "number"
+                                    },
+                                    vertical_velocity_cap: {
+                                        description: "Définit la vitesse verticale maximale que le recul peut appliquer à l'entité attaquée.",
+                                        default: 0.4,
+                                        type: "number"
+                                    },
+                                    check_if_target_is_immersed_in_water: {
+                                        description: "Définit si la cible doit être immergée dans l'eau pour que les règles de recul soient appliquées.",
+                                        default: false,
+                                        type: "boolean"
+                                    },
+                                    scale_previous_velocity: {
+                                        description: "Modifie la vélocité précédente de la cible au moment de l'impact.",
+                                        default: 0.5,
+                                        type: "number"
+                                    },
+                                    horizontal_hit_angle_scale: {
+                                        description: "Ajuste la réponse angulaire horizontale de la cible lorsqu'elle est touchée en fonction de la direction de visée de l'attaquant.",
+                                        default: 0.0,
+                                        type: "number"
+                                    },
+                                    vertical_hit_angle_scale: {
+                                        description: "Ajuste la réponse angulaire verticale de la cible lorsqu'elle est touchée en fonction de la direction de visée de l'attaquant.",
+                                        default: 0.0,
+                                        type: "number"
+                                    },
+                                    vertical_position_angle_scale: {
+                                        description: "Ajuste la réponse angulaire verticale de la cible lorsqu'elle est touchée en fonction de la position relative des pieds de l'attaquant.",
+                                        default: 0.0,
+                                        type: "number"
+                                    },
+                                    scale_with_damage: {
+                                        description: "Définit si la force de recul doit être mise à l'échelle en fonction des dégâts infligés à la cible.",
+                                        default: false,
+                                        type: "boolean"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         ]
     }
