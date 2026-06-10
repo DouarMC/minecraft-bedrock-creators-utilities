@@ -6298,6 +6298,61 @@ const baseSchema: MinecraftJsonSchema = {
                                 }
                             }
                         },
+                        "minecraft:spawn_on_death": {
+                            description: "Composant permettant à l'Entité de faire apparaître des entités à sa mort.",
+                            type: "object",
+                            required: ["filters"],
+                            properties: {
+                                entity_to_spawn: {
+                                    description: "Identifiant de l'entité à faire apparaître à la mort de l'entité parente. Par défaut, celà fera apparaitre une entité du même type.",
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.entity_ids
+                                },
+                                spawn_method: {
+                                    description: "La méthode à utiliser pour générer l'entité.",
+                                    default: "spawned",
+                                    type: "string",
+                                    enum: ["born", "spawned", "summoned"]
+                                },
+                                spawn_amount: {
+                                    description: "Le nombre d'entités à faire apparaître à la mort de l'entité parente.",
+                                    default: 1,
+                                    type: "integer",
+                                    minimum: 1
+                                },
+                                inherit_parent_name: {
+                                    description: "Définit si les entités générées hériteront du nom de l'entité parente.",
+                                    default: true,
+                                    type: "boolean"
+                                },
+                                additional_spawn_range: {
+                                    description: "Définit la plage aléatoire d'entités supplémentaires à faire apparaître à la mort de l'entité parente.",
+                                    default: {
+                                        min: 0,
+                                        max: 0
+                                    },
+                                    type: "object",
+                                    properties: {
+                                        min: {
+                                            description: "Le nombre minimum d'entités supplémentaires à faire apparaître à la mort de l'entité parente.",
+                                            default: 0,
+                                            type: "integer",
+                                            minimum: 0
+                                        },
+                                        max: {
+                                            description: "Le nombre maximum d'entités supplémentaires à faire apparaître à la mort de l'entité parente.",
+                                            default: 0,
+                                            type: "integer",
+                                            minimum: 0
+                                        }
+                                    }
+                                },
+                                filters: {
+                                    description: "Si présent, les entités spécifiées ne seront générées à la mort de l'entité parente que si le filtre est évalué à true.",
+                                    ...commonSchemas.minecraft_filter
+                                }
+                            }
+                        },
                         "minecraft:spell_effects": {
                             description: "Permet à une entité d'ajouter ou de supprimer des effets de statut d'elle-même. Ce composant fontionne une fois quand il est ajouté à l'Entité. Supprimer le composant n'aura aucun effet sur les effets actuels de l'entité.",
                             type: "object",
@@ -11630,6 +11685,24 @@ const baseSchema: MinecraftJsonSchema = {
                                     description: "Si vrai, le mob suivra la cible lorsqu'il ramasse des items.",
                                     default: false,
                                     type: "boolean"
+                                },
+                                on_pickup_item_start: {
+                                    description: "L'événement à déclencher lorsque l'entité commence à ramasser un item.",
+                                    oneOf: [
+                                        {
+                                            type: "string"
+                                        },
+                                        commonSchemas.entity_event_trigger
+                                    ]
+                                },
+                                on_pickup_item_end: {
+                                    description: "L'événement à déclencher lorsque l'entité termine de ramasser un item.",
+                                    oneOf: [
+                                        {
+                                            type: "string"
+                                        },
+                                        commonSchemas.entity_event_trigger
+                                    ]
                                 }
                             }
                         },

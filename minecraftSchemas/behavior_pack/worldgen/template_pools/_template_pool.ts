@@ -53,7 +53,8 @@ const baseSchema: MinecraftJsonSchema = {
                                                 const: "minecraft:empty_pool_element",
                                                 enum: [
                                                     "minecraft:empty_pool_element",
-                                                    "minecraft:single_pool_element"
+                                                    "minecraft:single_pool_element",
+                                                    "minecraft:feature_pool_element"
                                                 ]
                                             }
                                         }
@@ -63,12 +64,13 @@ const baseSchema: MinecraftJsonSchema = {
                                         required: ["element_type", "location"],
                                         properties: {
                                             element_type: {
-                                                description: "Le type de l'élément. \nType: `String`",
+                                                description: "Le type de l'élément.",
                                                 type: "string",
                                                 const: "minecraft:single_pool_element",
                                                 enum: [
                                                     "minecraft:empty_pool_element",
-                                                    "minecraft:single_pool_element"
+                                                    "minecraft:single_pool_element",
+                                                    "minecraft:feature_pool_element"
                                                 ]
                                             },
                                             location: {
@@ -84,6 +86,27 @@ const baseSchema: MinecraftJsonSchema = {
                                                 description: "Spécifie comment les structures doivent être placées par rapport au terrain.",
                                                 type: "string",
                                                 enum: ["rigid", "terrain_matching"]
+                                            }
+                                        }
+                                    },
+                                    {
+                                        type: "object",
+                                        required: ["element_type", "feature"],
+                                        properties: {
+                                            element_type: {
+                                                description: "Le type de l'élément.",
+                                                type: "string",
+                                                const: "minecraft:feature_pool_element",
+                                                enum: [
+                                                    "minecraft:empty_pool_element",
+                                                    "minecraft:single_pool_element",
+                                                    "minecraft:feature_pool_element"
+                                                ]
+                                            },
+                                            feature: {
+                                                description: "L'identifiant de la Feature à placer.",
+                                                type: "string",
+                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.feature_ids
                                             }
                                         }
                                     }

@@ -40,6 +40,10 @@ export class VersionResolver {
      * Compare deux versions (logique pure).
      */
     public static compare(a: string | number, b: string | number): number {
+        if (a === "beta" && b === "beta") return 0;
+        if (a === "beta") return 1;
+        if (b === "beta") return -1;
+
         if (typeof a === "string" && typeof b === "string") {
             const aParts = a.split('.').map(Number);
             const bParts = b.split('.').map(Number);
