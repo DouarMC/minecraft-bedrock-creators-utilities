@@ -1359,6 +1359,11 @@ const baseSchema: MinecraftJsonSchema = {
                                     }
                                 }
                             }
+                        },
+                        rotate_around_center: {
+                            description: "Définit si la structure doit être tournée autour de son centre ou de son coin inférieur nord-ouest lors du placement.",
+                            default: false,
+                            type: "boolean"
                         }
                     }
                 }
