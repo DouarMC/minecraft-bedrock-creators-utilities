@@ -4763,6 +4763,53 @@ const baseSchema: MinecraftJsonSchema = {
                             description: "Ajoute un déclencheur d'événement lors de la mort de l'Entité.",
                             ...commonSchemas.entity_event_trigger
                         },
+                        "minecraft:on_equipment_changed": {
+                            description: "Permet de déclencher un événement lorsqu'une entité s'équipe ou se déséquipe d'un item dans un slot donné. Ne fonctionne pas avec le composant `minecraft:inventory` mais plutot avec `minecraft:equippable`",
+                            type: "object",
+                            properties: {
+                                slots: {
+                                    description: "Les emplacements d'équipement qui déclenchent l'événement lorsqu'ils sont équipés ou déséquipés.",
+                                    type: "array",
+                                    items: {
+                                        type: "object",
+                                        properties: {
+                                            on_equip: {
+                                                description: "L'événement à déclencher lorsqu'un item est équipé dans ce slot.",
+                                                oneOf: [
+                                                    {
+                                                        type: "string"
+                                                    },
+                                                    commonSchemas.entity_event_trigger
+                                                ]
+                                            },
+                                            on_unequip: {
+                                                description: "L'événement à déclencher lorsqu'un item est déséquipé de ce slot.",
+                                                oneOf: [
+                                                    {
+                                                        type: "string"
+                                                    },
+                                                    commonSchemas.entity_event_trigger
+                                                ]
+                                            },
+                                            slot: {
+                                                description: "Le slot d'équipement qui déclenche les événements.",
+                                                default: "slot.weapon.mainhand",
+                                                type: "string",
+                                                enum: [
+                                                    "slot.armor.body",
+                                                    "slot.armor.chest",
+                                                    "slot.armor.feet",
+                                                    "slot.armor.head",
+                                                    "slot.armor.legs",
+                                                    "slot.weapon.mainhand",
+                                                    "slot.weapon.offhand"
+                                                ]
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         "minecraft:on_friendly_anger": {
                             description: "Ajoute un déclencheur d'événement lorsqu'une entité amicale de même type entre dans un état de colère.",
                             ...commonSchemas.entity_event_trigger

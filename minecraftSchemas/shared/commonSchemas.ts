@@ -468,6 +468,79 @@ export function getCommonDefinitions(): Record<string, MinecraftJsonSchema> {
                             description: "Le type de test à effectuer",
                             type: "string",
                             enum: [
+                                "has_equipment_block_tag"
+                            ]
+                        },
+                        subject: {
+                            type: "string",
+                            default: "self",
+                            description: "Le sujet du test",
+                            enum: ["block", "damager", "other", "parent", "player", "self", "target"]
+                        },
+                        operator: {
+                            type: "string",
+                            default: "==",
+                            description: "L'opérateur de comparaison",
+                            enum: ["!=", "<", "<=", "<>", "=", "==", ">", ">=", "equals", "not"]
+                        },
+                        value: {
+                            description: "La valeur à comparer (type varie selon le test)",
+                            type: "string",
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_tags
+                        },
+                        domain: {
+                            description: "Le domaine de l'équipement (hand, head, torso, leg, feet, armor, body)",
+                            type: "string",
+                            enum: [
+                                "any", "armor", "body", "feet", "hand", "head", "inventory", "leg", "main_hand", "torso"
+                            ]
+                        }
+                    }
+                },
+                {
+                    type: "object",
+                    required: ["test", "value", "domain"],
+                    properties: {
+                        test: {
+                            description: "Le type de test à effectuer",
+                            type: "string",
+                            enum: [
+                                "has_same_equipment_in_slot_as"
+                            ]
+                        },
+                        subject: {
+                            type: "string",
+                            default: "self",
+                            description: "Le sujet du test",
+                            enum: ["block", "damager", "other", "parent", "player", "self", "target"]
+                        },
+                        operator: {
+                            type: "string",
+                            default: "==",
+                            description: "L'opérateur de comparaison",
+                            enum: ["!=", "<", "<=", "<>", "=", "==", ">", ">=", "equals", "not"]
+                        },
+                        value: {
+                            description: "La valeur à comparer (type varie selon le test)",
+                            type: "boolean"
+                        },
+                        domain: {
+                            description: "Le domaine de l'équipement (hand, head, torso, leg, feet, armor, body)",
+                            type: "string",
+                            enum: [
+                                "main_hand", "head", "torso", "leg", "feet", "body"
+                            ]
+                        }
+                    }
+                },
+                {
+                    type: "object",
+                    required: ["test", "value", "domain"],
+                    properties: {
+                        test: {
+                            description: "Le type de test à effectuer",
+                            type: "string",
+                            enum: [
                                 "has_equipment_tag"
                             ]
                         },
