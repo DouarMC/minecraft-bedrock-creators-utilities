@@ -1496,10 +1496,11 @@ const baseSchema: MinecraftJsonSchema = {
                                                 "Définit si le déclencheur inflige des dégâts à l'entité." +
                                                 "\n\n- `yes`: inflige des dégâts à l'entité." +
                                                 "\n\n- `no`: n'inflige pas de dégâts à l'entité." +
-                                                "\n\n- `no_but_side_effects_apply`: n'inflige pas de dégâts à l'entité, mais les effets secondaires de l'attaque le sont. Cela signifie que l'arme de l'attaquant perd de la durabilité, les effets secondaires des enchantements sont appliqués, etc.",
+                                                "\n\n- `no_but_side_effects_apply`: n'inflige pas de dégâts à l'entité, mais les effets secondaires de l'attaque le sont. Cela signifie que l'arme de l'attaquant perd de la durabilité, les effets secondaires des enchantements sont appliqués, etc." +
+                                                "\n\n- `no_but_entity_effects_apply`: n'inflige pas de dégâts à l'entité, mais le recul et les enchantements.",
                                                 default: "yes",
                                                 type: "string",
-                                                enum: ["yes", "no", "no_but_side_effects_apply"]
+                                                enum: ["yes", "no", "no_but_side_effects_apply", "no_but_entity_effects_apply"]
                                             },
                                             on_damage: {
                                                 description: "Définit l'événement à appeler lorsque l'Entité est endommagée par le type de dégâts spécifié.",
@@ -2306,7 +2307,7 @@ const baseSchema: MinecraftJsonSchema = {
                             }
                         },
                         "minecraft:friction_modifier": {
-                            description: "Définit comment la friction affecte l'Entité.",
+                            description: "Définit comment la friction affecte l'Entité. Avec une `format_version >= 1.26.20`, ce composant change et n'affecte que le sol. Avec une `format_verison < 1.26.20`, ce composant ajoutera à l'entité `minecraft:uses_legacy_friction` et affectera tous les types de friction.",
                             type: "object",
                             properties: {
                                 value: {
@@ -6879,6 +6880,14 @@ const baseSchema: MinecraftJsonSchema = {
                                     type: "number"
                                 }
                             }
+                        },
+                        "minecraft:uses_legacy_friction": {
+                            description: "Définit que l'Entité utilise l'ancien système de friction. Ce composant est automatiquement ajouté aux entités qui ont une `format_version` de 1.26.20 ou inférieure.",
+                            type: "object"
+                        },
+                        "minecraft:uses_uniform_air_drag": {
+                            description: "Définit que la résistance de l'air est appliquée uniformément sur les axes vertical et horizontal, au lieu d'être plus importante sur le mouvement horizontal.",
+                            type: "object"
                         },
                         "minecraft:variable_max_auto_step": {
                             description: "Permet aux entités d'avoir une hauteur de marche automatique maximale qui est différente en fonction de si elles sont sur un bloc qui empêche de sauter.",
