@@ -1517,7 +1517,7 @@ const versionedChanges: SchemaChange[] = [
                 action: "add",
                 target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:replaceable"],
                 value: {
-                    description: "Si ce Bloc possède ce composant, il peut être remplacé par d'autres blocs quand ils sont placés à sa place.",
+                    description: "Si ce Bloc possède ce composant, il peut être remplacé par d'autres blocs quand ils sont placés à sa place. Ne peut pas être utilisé dans les permutations.",
                     type: "object"
                 }
             }
@@ -1634,7 +1634,7 @@ const versionedChanges: SchemaChange[] = [
                 action: "add",
                 target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:random_offset"],
                 value: {
-                    description: "Définit un décalage aléatoire pour la position du Bloc.",
+                    description: "Définit un décalage aléatoire pour la position du Bloc. Ne peut pas être utilisé dans les permutations de blocs.",
                     type: "object",
                     properties: {
                         x: {
@@ -1839,7 +1839,7 @@ const versionedChanges: SchemaChange[] = [
                             default: "obstruct_rain_accumulate_snow",
                             type: "string",
                             enum: [
-                                "obrain", "obstruct_rain_accumulate_snow", "none"
+                                "obrain", "obstruct_rain_accumulate_snow", "none", "snow_log_no_collision"
                             ]
                         }
                     }
@@ -1968,7 +1968,7 @@ const versionedChanges: SchemaChange[] = [
         ]
     },
     {
-        version: "1.26.10",
+        version: "1.26.20",
         changes: [
             {
                 action: "add",
@@ -1979,7 +1979,7 @@ const versionedChanges: SchemaChange[] = [
                     properties: {
                         obstruction_rule: {
                             description:
-                            "Définit comment le Bloc est évalué durant l'ouverture du coffre. Les Blocs avec une `format_version` antérieure à 1.26.10 seront traités en fonction de leur modèle définit ainsi que leur `material_instances`" +
+                            "Définit comment le Bloc est évalué durant l'ouverture du coffre. Les Blocs avec une `format_version` antérieure à 1.26.20 seront traités en fonction de leur modèle définit ainsi que leur `material_instances`" +
                             "\n- `always`: le Bloc bloquera toujours l'ouverture du coffre." +
                             "\n- `never`: le Bloc n'empêchera jamais l'ouverture du coffre." +
                             "\n- `shape`: utilisera la boite de collision du Bloc pour déterminer s'il bloque l'ouverture du coffre.",
@@ -1989,12 +1989,7 @@ const versionedChanges: SchemaChange[] = [
                         }
                     }
                 }
-            }
-        ]
-    },
-    {
-        version: "1.26.20",
-        changes: [
+            },
             {
                 action: "remove",
                 target: ["properties", "minecraft:block", "properties", "components", "properties", "tag:acacia"],

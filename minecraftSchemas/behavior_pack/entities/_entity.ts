@@ -242,6 +242,32 @@ const baseSchema: MinecraftJsonSchema = {
                                     ]
                                 }
                             }
+                        },
+                        entity_version: {
+                            "x-experimental_options": ["Upcoming Creator Features"],
+                            description: "Définit les versions de l'Entité et les actions à effectuer lors de la mise à jour d'une version à une autre. Utile pour faire des mises à jour progressives de l'Entité et éviter que les anciennes versions de l'Entité soient cassées par des changements dans les nouvelles versions.",
+                            type: "object",
+                            properties: {
+                                upgrades: {
+                                    description: "Contient une liste de mises à jour de version pour l'Entité. Chaque mise à jour de version définit une version qui commence par 1 (0 est resérvé à la version initiale), et un identifiant d'upgrade.",
+                                    type: "array",
+                                    items: {
+                                        type: "object",
+                                        required: ["upgrade_to", "name"],
+                                        properties: {
+                                            upgrade_to: {
+                                                description: "La version vers laquelle cette mise à jour met à niveau.",
+                                                type: "integer",
+                                                minimum: 1
+                                            },
+                                            name: {
+                                                description: "L'identifiant de cette mise à jour.",
+                                                type: "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 },
@@ -3288,7 +3314,8 @@ const baseSchema: MinecraftJsonSchema = {
                             properties: {
                                 value: {
                                     description: "Le montant de résistance au recul que l'Entité a.",
-                                    type: "number"
+                                    type: "number",
+                                    minimum: -2
                                 },
                                 max: {
                                     description: "La valeur maximale de résistance au recul que l'Entité peut avoir.",
@@ -5104,6 +5131,12 @@ const baseSchema: MinecraftJsonSchema = {
                                 is_dangerous: {
                                     description: "Définit si le projectile doit être traité comme dangereux pour les joueurs.",
                                     default: false,
+                                    type: "boolean"
+                                },
+                                isolated_physics: {
+                                    "x-experimental_options": ["Custom Projectiles"],
+                                    description: "Définit si le projectile ne sera pas affecté par des forces extérieures telles que le frottement et la trainée.",
+                                    default: true,
                                     type: "boolean"
                                 },
                                 knockback: {
@@ -9211,7 +9244,7 @@ const baseSchema: MinecraftJsonSchema = {
                             }
                         },
                         "minecraft:behavior.follow_target_captain": {
-                            description: "Force l'Entité à suivre son capitaine. L'Entité qui est définit comme capitaine doit avoir le composant 'minecraft:is_illager_captain'.",
+                            description: "Obsolète : Utilisez `minecraft:behavior.follow_target_leader`. Force l'Entité à suivre son capitaine. L'Entité qui est définit comme capitaine doit avoir le composant 'minecraft:is_illager_captain'.",
                             type: "object",
                             properties: {
                                 follow_distance: {
@@ -9221,6 +9254,40 @@ const baseSchema: MinecraftJsonSchema = {
                                 },
                                 priority: {
                                     description: "Plus la priorité est haute, plus vite cet objectif sera exécuté.",
+                                    type: "integer"
+                                },
+                                within_radius: {
+                                    description: "Définit la distance en blocs à laquelle l'Entité doit être de sa cible pour considérer qu'elle l'a atteinte.",
+                                    default: 0.0,
+                                    type: "number"
+                                }
+                            }
+                        },
+                        "minecraft:behavior.follow_target_leader": {    
+                            description: "Force l'Entité à suivre son capitaine.",
+                            type: "object",
+                            properties: {
+                                always_look_for_leader: {
+                                    description: "Définit si l'Entité cherchera toujours un leader valide à suivre si elle n'en a pas.",
+                                    default: false,
+                                    type: "boolean"
+                                },
+                                follow_distance: {
+                                    description: "Définit la distance en blocs à laquelle l'Entité restera de sa cible tout en la suivant.",
+                                    default: 0.0,
+                                    type: "number"
+                                },
+                                leader_filters: {
+                                    description: "Filtres à appliquer pour sélectionner les leaders à suivre. Si aucun leader valide n'est trouvé, l'Entité ne suivra personne.",
+                                    ...commonSchemas.minecraft_filter
+                                },
+                                priority: {
+                                    description: "Plus la priorité est haute, plus vite cet objectif sera exécuté.",
+                                    type: "integer"
+                                },
+                                search_cooldown: {
+                                    description: "Définit le temps en ticks que l'Entité doit attendre avant de rechercher à nouveau un leader à suivre si elle n'en a pas ou si son leader actuel n'est plus valide.",
+                                    default: 20,
                                     type: "integer"
                                 },
                                 within_radius: {
@@ -15235,6 +15302,215 @@ const baseSchema: MinecraftJsonSchema = {
                             }
                         }
                     }
+                },
+                upgrades: {
+                    "x-experimental_options": ["Upcoming Creator Features"],
+                    description: "Contient les mises à jour à effectuer utilisable dans `entity_version`.",
+                    type: "object",
+                    additionalProperties: {
+                        type: "object",
+                        properties: {
+                            add: {
+                                description: "Les groupes de composants à ajouter à l'Entité lors de cet événement.",
+                                type: "object",
+                                properties: {
+                                    component_groups: {
+                                        description: "Les groupes de composants à ajouter à l'Entité lors de cet événement.",
+                                        type: "array",
+                                        items: {
+                                            type: "string"
+                                        }
+                                    }
+                                }
+                            },
+                            drop_item: {
+                                description: "Permet à l'Entité de lacher son item d'un slot spécifié.",
+                                type: "object",
+                                properties: {
+                                    slot: {
+                                        description: "Le slot dont l'item sera lâché.",
+                                        type: "string",
+                                        enum: [
+                                            "slot.armor.chest", "slot.armor.feet", "slot.armor.head", "slot.armor.legs", "slot.armor.body", "slot.weapon.mainhand", "slot.weapon.offhand"
+                                        ]
+                                    }
+                                }
+                            },
+                            emit_particle: {
+                                description: "Emet un effet de particules.",
+                                type: "object",
+                                properties: {
+                                    particle: {
+                                        description: "Le nom de l'effet de particules à émettre.",
+                                        type: "string"
+                                    }
+                                }
+                            },
+                            emit_vibration: {
+                                description: "Émet une vibration.",
+                                type: "object",
+                                properties: {
+                                    vibration: {
+                                        description: "Le type de vibration à émettre.",
+                                        type: "string",
+                                        enum: ["entity_interact", "shear", "entity_act", "entity_die"]
+                                    }
+                                }
+                            },
+                            execute_event_on_home_block: {
+                                description: "[EXEPERIMENTAL] Execute un événement sur le bloc de la maison de l'Entité. L'Entité doit avoir le composant 'minecraft:home' pour que cet événement fonctionne. Il est possible d'utiliser l'evenement executé sur le bloc avec l'API Script si celui ci est un bloc personalisé avec la classe `BlockComponentEntityEvent`.",
+                                type: "object",
+                                properties: {
+                                    event: {
+                                        description: "L'événement à exécuter sur le bloc de la maison de l'Entité.",
+                                        type: "string"
+                                    }
+                                }
+                            },
+                            filters: {
+                                description: "Principalement utilisé pour les réponses 'sequences'. Sert de conditions pour déterminer si l'événement doit être déclenché.",
+                                ...commonSchemas.minecraft_filter
+                            },
+                            first_valid: {
+                                description: "Exécute le premier événement valide dans la liste.",
+                                type: "array",
+                                items: {
+                                    $ref: "#/properties/minecraft:entity/properties/events/additionalProperties"
+                                }
+                            },
+                            play_sound: {
+                                description: "Joue un son.",
+                                type: "object",
+                                properties: {
+                                    sound: {
+                                        description: "Le nom du son à jouer.",
+                                        type: "string"
+                                    }
+                                }
+                            },
+                            queue_command: {
+                                description: "Mettre en file d'attente une commande slash ou une série de commandes slash définies dans un tableau pour se déclencher à la fin du tick.",
+                                type: "object",
+                                properties: {
+                                    command: {
+                                        description: "La ou les commandes à exécuter.",
+                                        oneOf: [
+                                            {
+                                                type: "string"
+                                            },
+                                            {
+                                                type: "array",
+                                                items: {
+                                                    type: "string"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    target: {
+                                        description: "La cible de la commande",
+                                        default: "self",
+                                        type: "string",
+                                        enum: ["self", "other", "parent", "player", "target"]
+                                    }
+                                }
+                            },
+                            randomize: {
+                                description: "Exécute un événement aléatoire parmi une liste d'événements.",
+                                type: "array",
+                                items: {
+                                    type: "object",
+                                    properties: {
+                                        weight: {
+                                            description: "Le poids de cet événement. Plus le poids est élevé, plus la probabilité que cet événement soit choisi est grande.",
+                                            type: "number"
+                                        }
+                                    },
+                                    $ref: "#/properties/minecraft:entity/properties/events/additionalProperties"
+                                }
+                            },
+                            remove: {
+                                description: "Supprime les groupes de composants de l'Entité lors de cet événement.",
+                                type: "object",
+                                properties: {
+                                    component_groups: {
+                                        description: "Les groupes de composants à supprimer de l'Entité lors de cet événement.",
+                                        type: "array",
+                                        items: {
+                                            type: "string"
+                                        }
+                                    }
+                                }
+                            },
+                            reset_target: {
+                                description: "Réinitialise la cible de l'Entité.",
+                                type: "object"
+                            },
+                            sequence: {
+                                description: "Exécute une séquence d'événements dans l'ordre.",
+                                type: "array",
+                                items: {
+                                    $ref: "#/properties/minecraft:entity/properties/events/additionalProperties"
+                                }
+                            },
+                            set_home_position: {
+                                description: "Définit la position de la maison de l'Entité à sa position actuelle.",
+                                type: "object"
+                            },
+                            set_property: {
+                                description: "Définit la valeur des propriétés d'entités de l'Entité.",
+                                type: "object",
+                                propertyNames: {
+                                    pattern: schemaPatterns.identifier_with_namespace
+                                },
+                                additionalProperties: {
+                                    oneOf: [
+                                        {
+                                            type: "string"
+                                        },
+                                        {
+                                            type: "number"
+                                        },
+                                        {
+                                            type: "boolean"
+                                        }
+                                    ]
+                                }
+                            },
+                            stop_movement: {
+                                description: "Arrête le mouvement de l'Entité.",
+                                type: "object",
+                                properties: {
+                                    stop_vertical_movement: {
+                                        description: "Si vrai, l'Entité arrêtera également son mouvement vertical.",
+                                        type: "boolean"
+                                    },
+                                    stop_horizontal_movement: {
+                                        description: "Si vrai, l'Entité arrêtera également son mouvement horizontal.",
+                                        type: "boolean"
+                                    }
+                                }
+                            },
+                            triggger: {
+                                description: "Déclenche un événement.",
+                                type: "object",
+                                properties: {
+                                    filters: {
+                                        description: "Les filtres permettent aux objets de données de spécifier des critères de test."
+                                    },
+                                    event: {
+                                        description: "L'événement à déclencher.",
+                                        type: "string"
+                                    },
+                                    target: {
+                                        description: "La cible de l'événement.",
+                                        default: "self",
+                                        type: "string",
+                                        enum: ["baby", "block", "damager", "other", "parent", "player", "self", "target"]
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -15785,6 +16061,32 @@ const versionedChanges: SchemaChange[] = [
                         }
                     }
                 }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.random_hover", "properties", "hover_height"],
+                value: {
+                    description: "La hauteur au-dessus de la surface que l'Entité essaiera de maintenir.",
+                    default: {
+                        min: 0,
+                        max: 0
+                    },
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "La hauteur minimale au-dessus de la surface que l'Entité essaiera de maintenir.",
+                            type: "number"
+                        },
+                        max: {
+                            description: "La hauteur maximale au-dessus de la surface que l'Entité essaiera de maintenir.",
+                            type: "number"
+                        }
+                    }
+                }
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.follow_target_captain"]
             }
         ]
     },
@@ -15872,6 +16174,21 @@ const versionedChanges: SchemaChange[] = [
                                     }
                                 }
                             }
+                        }
+                    }
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:air_drag_modifier"],
+                value: {
+                    description: "Définit un multiplicateur pour la résistance de l'air qui affecte le mouvement de l'Entité lorsqu'elle est dans les airs. Une valeur de `0` signifie qu'il n'y aucune resistance de l'air. Une valeur de `1` signfie que la résistance de l'air est normale. Une valeur de `2` signifie que la résistance a l'air est doublé.",
+                    type: "object",
+                    properties: {
+                        value: {
+                            description: "Le multiplicateur de résistance de l'air qui affecte le mouvement de l'Entité lorsqu'elle est dans les airs.",
+                            default: 1,
+                            type: "number"
                         }
                     }
                 }

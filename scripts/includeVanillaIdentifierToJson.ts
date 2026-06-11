@@ -109,7 +109,21 @@ async function includeVanillaIdentifierToJson() {
             "minecraft:wool",
             "minecraft:is_shears",
             "minecraft:is_armor",
-            "minecraft:metal_nuggets"
+            "minecraft:metal_nuggets",
+            "minecraft:copper_tier",
+            "minecraft:egg",
+            "minecraft:harness",
+            "minecraft:nautilus_armor",
+            "minecraft:is_spear",
+            "minecraft:sulfur_cube_archetype_bouncy",
+            "minecraft:sulfur_cube_archetype_fast_flat",
+            "minecraft:sulfur_cube_archetype_fast_sliding",
+            "minecraft:sulfur_cube_archetype_high_resistance",
+            "minecraft:sulfur_cube_archetype_light",
+            "minecraft:sulfur_cube_archetype_regular",
+            "minecraft:sulfur_cube_archetype_slow_flat",
+            "minecraft:sulfur_cube_archetype_slow_sliding",
+            "minecraft:sulfur_cube_archetype_sticky"
         ],
         "VANILLA_CULLING_LAYER_IDS": [
             "minecraft:culling_layer.undefined",
