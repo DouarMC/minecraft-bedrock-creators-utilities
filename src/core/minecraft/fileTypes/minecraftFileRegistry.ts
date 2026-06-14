@@ -356,7 +356,7 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         id: "resource_pack/entity/<all>.json",
         displayName: "Entity Definition",
         packType: "resource_pack",
-        patterns: ["**/entity/*.json"],
+        patterns: ["**/entity/**/*.json"],
         excludePatterns: undefined,
         schemaPath: "resource_pack/entity/_client_entity.json"
     }),

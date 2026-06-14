@@ -1492,52 +1492,59 @@ const baseSchema: MinecraftJsonSchema = {
                             properties: {
                                 triggers: {
                                     description: "Liste des déclencheurs avec les événements à appeler lors de la prise de dégâts spécifiques.",
-                                    type: "array",
-                                    items: {
-                                        type: "object",
-                                        properties: {
-                                            cause: {
-                                                description: "Type de dégâts qui déclenchera l'événement.",
-                                                default: "none",
-                                                type: "string",
-                                                enum: schemaEnums.entity_damage_causes
-                                            },
-                                            damage_modifier: {
-                                                description: "Un modificateur qui ajoute/retire aux dégâts de base reçus du type de dégâts spécifié. Il ne réduit pas les dégâts à moins de 0.",
-                                                default: 0,
-                                                type: "number"
-                                            },
-                                            damage_multiplier: {
-                                                description: "Un multiplicateur qui modifie les dégâts de base reçus du type de dégâts spécifié. Si `deals_damage` est vrai, le multiplicateur ne peut que réduire les dégâts que l'entité recevra à un minimum de 1.",
-                                                default: 1,
-                                                type: "number"
-                                            },
-                                            deals_damage: {
-                                                description:
-                                                "Définit si le déclencheur inflige des dégâts à l'entité." +
-                                                "\n\n- `yes`: inflige des dégâts à l'entité." +
-                                                "\n\n- `no`: n'inflige pas de dégâts à l'entité." +
-                                                "\n\n- `no_but_side_effects_apply`: n'inflige pas de dégâts à l'entité, mais les effets secondaires de l'attaque le sont. Cela signifie que l'arme de l'attaquant perd de la durabilité, les effets secondaires des enchantements sont appliqués, etc." +
-                                                "\n\n- `no_but_entity_effects_apply`: n'inflige pas de dégâts à l'entité, mais le recul et les enchantements.",
-                                                default: "yes",
-                                                type: "string",
-                                                enum: ["yes", "no", "no_but_side_effects_apply", "no_but_entity_effects_apply"]
-                                            },
-                                            on_damage: {
-                                                description: "Définit l'événement à appeler lorsque l'Entité est endommagée par le type de dégâts spécifié.",
-                                                oneOf: [
-                                                    {
-                                                        type: "string"
-                                                    },
-                                                    commonSchemas.entity_event_trigger
-                                                ]
-                                            },
-                                            on_damage_sound_event: {
-                                                description: "Définit l'événement sonore à jouer lorsque l'Entité est endommagée par le type de dégâts spécifié.",
-                                                type: "string"
+                                    oneOf: [
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                cause: {
+                                                    description: "Type de dégâts qui déclenchera l'événement.",
+                                                    default: "none",
+                                                    type: "string",
+                                                    enum: schemaEnums.entity_damage_causes
+                                                },
+                                                damage_modifier: {
+                                                    description: "Un modificateur qui ajoute/retire aux dégâts de base reçus du type de dégâts spécifié. Il ne réduit pas les dégâts à moins de 0.",
+                                                    default: 0,
+                                                    type: "number"
+                                                },
+                                                damage_multiplier: {
+                                                    description: "Un multiplicateur qui modifie les dégâts de base reçus du type de dégâts spécifié. Si `deals_damage` est vrai, le multiplicateur ne peut que réduire les dégâts que l'entité recevra à un minimum de 1.",
+                                                    default: 1,
+                                                    type: "number"
+                                                },
+                                                deals_damage: {
+                                                    description:
+                                                    "Définit si le déclencheur inflige des dégâts à l'entité." +
+                                                    "\n\n- `yes`: inflige des dégâts à l'entité." +
+                                                    "\n\n- `no`: n'inflige pas de dégâts à l'entité." +
+                                                    "\n\n- `no_but_side_effects_apply`: n'inflige pas de dégâts à l'entité, mais les effets secondaires de l'attaque le sont. Cela signifie que l'arme de l'attaquant perd de la durabilité, les effets secondaires des enchantements sont appliqués, etc." +
+                                                    "\n\n- `no_but_entity_effects_apply`: n'inflige pas de dégâts à l'entité, mais le recul et les enchantements.",
+                                                    default: "yes",
+                                                    type: "string",
+                                                    enum: ["yes", "no", "no_but_side_effects_apply", "no_but_entity_effects_apply"]
+                                                },
+                                                on_damage: {
+                                                    description: "Définit l'événement à appeler lorsque l'Entité est endommagée par le type de dégâts spécifié.",
+                                                    oneOf: [
+                                                        {
+                                                            type: "string"
+                                                        },
+                                                        commonSchemas.entity_event_trigger
+                                                    ]
+                                                },
+                                                on_damage_sound_event: {
+                                                    description: "Définit l'événement sonore à jouer lorsque l'Entité est endommagée par le type de dégâts spécifié.",
+                                                    type: "string"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            type: "array",
+                                            items: {
+                                                $ref: "#/properties/minecraft:entity/properties/components/properties/minecraft:damage_sensor/properties/triggers/oneOf/0"
                                             }
                                         }
-                                    }
+                                    ]
                                 }
                             }
                         },
