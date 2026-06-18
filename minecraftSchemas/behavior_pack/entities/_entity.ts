@@ -698,6 +698,11 @@ const baseSchema: MinecraftJsonSchema = {
                                     description: "Temps de recharge en secondes entre les attaques.",
                                     default: 0,
                                     type: "number"
+                                },
+                                use_self_as_damage_source: {
+                                    description: "Définit si l'Entité doit être utilisée comme source de dégâts pour l'attaque.",
+                                    default: true,
+                                    type: "boolean"
                                 }
                             }
                         },
@@ -3429,6 +3434,11 @@ const baseSchema: MinecraftJsonSchema = {
                                     description: "Distance en blocs à laquelle l'effet de 'ressort' commence à agir pour garder cette Entité proche de l'Entité qui l'a attachée.",
                                     default: 4,
                                     type: "number"
+                                },
+                                unleash_on_removal: {
+                                    description: "Définit si l'Entité sera détachée de la laisse si ce composant est supprimé de l'Entité. Pour les entités avec `format_version < 1.26.30`, la valeur par défaut est `false`.",
+                                    default: true,
+                                    type: "boolean"
                                 }
                             }
                         },
@@ -3439,6 +3449,11 @@ const baseSchema: MinecraftJsonSchema = {
                                 can_retrieve_from: {
                                     description: "Définit si les joueurs peuvent récupérer les entités liées à cette Entité.",
                                     default: false,
+                                    type: "boolean"
+                                },
+                                unleash_on_removal: {
+                                    description: "Définit si l'Entité sera détachée de la laisse si ce composant est supprimé de l'Entité. Pour les entités avec `format_version < 1.26.30`, la valeur par défaut est `false`.",
+                                    default: true,
                                     type: "boolean"
                                 }
                             }
@@ -5141,7 +5156,6 @@ const baseSchema: MinecraftJsonSchema = {
                                     type: "boolean"
                                 },
                                 isolated_physics: {
-                                    "x-experimental_options": ["Custom Projectiles"],
                                     description: "Définit si le projectile ne sera pas affecté par des forces extérieures telles que le frottement et la trainée.",
                                     default: true,
                                     type: "boolean"
@@ -5606,6 +5620,11 @@ const baseSchema: MinecraftJsonSchema = {
                                             type: "object"
                                         }
                                     }
+                                },
+                                owner_launch_immunity_ticks: {
+                                    description: "Le nombre de ticks pendant lesquels le propriétaire du projectile est immunisé contre les dégâts du projectile.",
+                                    default: 5,
+                                    type: "integer"
                                 },
                                 particle: {
                                     description: "La particule à afficher lorsqu'un projectile est lancé.",
@@ -11772,6 +11791,11 @@ const baseSchema: MinecraftJsonSchema = {
                                         },
                                         commonSchemas.entity_event_trigger
                                     ]
+                                },
+                                stop_if_holding_item: {
+                                    description: "Définit si l'entité arrête de ramasser des items lorsqu'elle tient un item dans sa main.",
+                                    default: false,
+                                    type: "boolean"
                                 }
                             }
                         },
@@ -15156,7 +15180,7 @@ const baseSchema: MinecraftJsonSchema = {
                                 }
                             },
                             execute_event_on_home_block: {
-                                description: "[EXEPERIMENTAL] Execute un événement sur le bloc de la maison de l'Entité. L'Entité doit avoir le composant 'minecraft:home' pour que cet événement fonctionne. Il est possible d'utiliser l'evenement executé sur le bloc avec l'API Script si celui ci est un bloc personalisé avec la classe `BlockComponentEntityEvent`.",
+                                description: "Execute un événement sur le bloc de la maison de l'Entité. L'Entité doit avoir le composant 'minecraft:home' pour que cet événement fonctionne. Il est possible d'utiliser l'evenement executé sur le bloc avec l'API Script si celui ci est un bloc personalisé avec la classe `BlockComponentEntityEvent`.",
                                 type: "object",
                                 properties: {
                                     event: {
@@ -15304,6 +15328,20 @@ const baseSchema: MinecraftJsonSchema = {
                                         default: "self",
                                         type: "string",
                                         enum: ["baby", "block", "damager", "other", "parent", "player", "self", "target"]
+                                    }
+                                }
+                            },
+                            unleash: {
+                                description: "Evenement de lâcher la laisse de l'Entité.",
+                                type: "object",
+                                properties: {
+                                    unleash_self: {
+                                        description: "Si vrai, l'Entité se détachera de la laisse.",
+                                        type: "boolean"
+                                    },
+                                    unleash_others: {
+                                        description: "Si vrai, l'Entité détachera les autres entités de la laisse.",
+                                        type: "boolean"
                                     }
                                 }
                             }
@@ -16098,21 +16136,158 @@ const versionedChanges: SchemaChange[] = [
         ]
     },
     {
-        version: "beta",
+        version: "1.26.30",
         changes: [
             {
-                action: "add",
-                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:bounciness"],
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.croak", "properties", "interval"],
                 value: {
-                    description: "Définit la façon dont l'Entité rebondit lorsqu'elle rentre en collision avec des surfaces. Une valeur de 0 signifie que l'Entité ne rebondira pas. Una valeur de 1 signfie que l'Entité rebondira avec la même force qu'elle a heurté la surface.",
+                    description: "Plage de temps en secondes entre les croassements de l'entité.",
+                    default: {
+                        min: 10,
+                        max: 20
+                    },
                     type: "object",
                     properties: {
-                        value: {
-                            description: "La quantité de rebond de l'Entité.",
-                            default: 0,
-                            type: "number",
-                            minimum: 0,
-                            maximum: 1
+                        min: {
+                            description: "Le temps minimum en secondes entre les croassements de l'entité.",
+                            type: "number"
+                        },
+                        max: {
+                            description: "Le temps maximum en secondes entre les croassements de l'entité.",
+                            type: "number"
+                        }
+                    }
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.croak", "properties", "duration"],
+                value: {
+                    description: "Plage de temps en secondes pendant laquelle l'entité croasse.",
+                    default: {
+                        min: 4.5,
+                        max: 4.5
+                    },
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "Le temps minimum en secondes pendant lequel l'entité croasse.",
+                            type: "number"
+                        },
+                        max: {
+                            description: "Le temps maximum en secondes pendant lequel l'entité croasse.",
+                            type: "number"
+                        }
+                    }
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.fire_at_target", "properties", "attack_range"],
+                value: {
+                    description: "La distance maximale à laquelle l'Entité peut attaquer sa cible.",
+                    default: {
+                        min: 2,
+                        max: 16
+                    },
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "La distance minimale à laquelle l'Entité peut attaquer sa cible.",
+                            type: "number"
+                        },
+                        max: {
+                            description: "La distance maximale à laquelle l'Entité peut attaquer sa cible.",
+                            type: "number"
+                        }
+                    }
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:pushable_by_entity", "properties", "presets"],
+                value: {
+                    description: "Définit des ensembles de règles prédéfinis pour déterminer comment l'Entité peut être poussée par d'autres entités. La première règle validé par les `filters` sera utilisé. Si aucune est trouvé, une configuration par défaut sera utilisé.",
+                    type: "array",
+                    items: {
+                        type: "object",
+                        properties: {
+                            filters: {
+                                description: "Un filtre qui définit les critères pour que les règles de poussée soient appliquées à une entité.",
+                                ...commonSchemas.minecraft_filter
+                            },
+                            push_mode: {
+                                description: "Définit le type de poussée appliqué à l'Entité lorsqu'elle est poussée par une autre entité.",
+                                default: "default",
+                                type: "string",
+                                enum: ["ball", "default", "legacy_boat", "legacy_minecart", "none"]
+                            },
+                            strength_multiplier: {
+                                description: "Définit un multiplicateur pour la force de poussée appliquée à l'Entité lorsqu'elle est poussée par une autre entité.",
+                                default: 0.05,
+                                type: "number"
+                            },
+                            min_distance: {
+                                description: "Définit la distance minimale entre l'Entité et l'entité qui la pousse avant que la force de poussée ne soit appliquée.",
+                                default: 0.0,
+                                type: "number"
+                            },
+                            push_scale_self: {
+                                description: "Définit un multiplicateur pour la force de poussée appliquée à l'Entité elle-même lorsqu'elle est poussée par une autre entité.",
+                                default: 1.0,
+                                type: "number"
+                            },
+                            push_scale_other: {
+                                description: "Définit un multiplicateur pour la force de poussée appliquée à l'entité qui pousse l'Entité.",
+                                default: 1.0,
+                                type: "number"
+                            },
+                            play_sound_cooldown_in_seconds: {
+                                description: "Définit le temps de recharge (en secondes) entre les sons de poussée joués lorsque l'Entité est poussée par une autre entité.",
+                                default: 0.2,
+                                type: "number"
+                            },
+                            play_sound_impulse_threshold: {
+                                description: "Définit la force minimale de l'impulsion de poussée qui déclenchera le son de poussée lorsque l'Entité est poussée par une autre entité.",
+                                default: 0.2,
+                                type: "number"
+                            },
+                            max_distance: {
+                                description: "Définit la distance maximale entre l'Entité et l'entité qui la pousse avant que la force de poussée ne soit appliquée.",
+                                default: 3.4028234663852886e+38,
+                                type: "number"
+                            },
+                            push_sound: {
+                                description: "Définit si le son `pushed_by_player` doit être joué lorsque l'Entité est poussée par une autre entité.",
+                                default: false,
+                                type: "boolean"
+                            },
+                            kick_speed_scale: {
+                                description: "Multiplicateur appliqué à la vitesse de déplacement de l'entité poussante pour déterminer la force de frappe. Utilisé uniquement lorsque `push_mode` est défini sur `ball`.",
+                                default: 2,
+                                type: "number"
+                            },
+                            max_kick_speed: {
+                                description: "Vitesse maximale de répulsion de l'entité, quelle que soit la vitesse de déplacement de l'entité qui la repousse. Utilisée uniquement lorsque push_mode est défini sur `ball`.",
+                                default: 0.5,
+                                type: "number"
+                            },
+                            min_kick_speed: {
+                                description: "Vitesse minimale de repoussement de l'entité, quelle que soit la vitesse de déplacement de l'entité qui la repousse. Utilisée uniquement lorsque `push_mode` est défini sur `ball`.",
+                                default: 0,
+                                type: "number"
+                            },
+                            require_collision_overlap: {
+                                description: "Lorsque cette option est activée, les entités ne se repousseront pas à moins que leurs zones de collision ne se chevauchent.",
+                                default: true,
+                                type: "boolean"
+                            },
+                            vertical_kick_multiplier: {
+                                description: "Multiplicateur de la force ascendante appliquée lorsque l'entité est poussée au sol. Une valeur de 0 maintient l'entité à plat. Utilisé uniquement lorsque push_mode est défini sur `ball`.",
+                                default: 0.3,
+                                type: "number"
+                            }
                         }
                     }
                 }
@@ -16159,28 +16334,36 @@ const versionedChanges: SchemaChange[] = [
                                         default: 0.5,
                                         type: "number"
                                     },
-                                    horizontal_hit_angle_scale: {
-                                        description: "Ajuste la réponse angulaire horizontale de la cible lorsqu'elle est touchée en fonction de la direction de visée de l'attaquant.",
-                                        default: 0.0,
-                                        type: "number"
-                                    },
-                                    vertical_hit_angle_scale: {
-                                        description: "Ajuste la réponse angulaire verticale de la cible lorsqu'elle est touchée en fonction de la direction de visée de l'attaquant.",
-                                        default: 0.0,
-                                        type: "number"
-                                    },
-                                    vertical_position_angle_scale: {
-                                        description: "Ajuste la réponse angulaire verticale de la cible lorsqu'elle est touchée en fonction de la position relative des pieds de l'attaquant.",
-                                        default: 0.0,
-                                        type: "number"
-                                    },
                                     scale_with_damage: {
                                         description: "Définit si la force de recul doit être mise à l'échelle en fonction des dégâts infligés à la cible.",
                                         default: false,
                                         type: "boolean"
+                                    },
+                                    extra_knockback_approach: {
+                                        description: "Définit l'approche pour combiner le recul supplémentaire des enchantements ou du sprint.",
+                                        default: "reapply_default",
+                                        type: "string",
+                                        enum: ["reapply_default", "multiply_reduced"]
                                     }
                                 }
                             }
+                        }
+                    }
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:bounciness"],
+                value: {
+                    description: "Définit la façon dont l'Entité rebondit lorsqu'elle rentre en collision avec des surfaces. Une valeur de 0 signifie que l'Entité ne rebondira pas. Una valeur de 1 signfie que l'Entité rebondira avec la même force qu'elle a heurté la surface.",
+                    type: "object",
+                    properties: {
+                        value: {
+                            description: "La quantité de rebond de l'Entité.",
+                            default: 0,
+                            type: "number",
+                            minimum: 0,
+                            maximum: 1
                         }
                     }
                 }
@@ -16198,6 +16381,132 @@ const versionedChanges: SchemaChange[] = [
                             type: "number"
                         }
                     }
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.random_look_around", "properties", "look_time"],
+                value: {
+                    description: "La plage de temps en secondes que le mob restera à regarder dans une direction aléatoire avant de regarder ailleurs.",
+                    default: {
+                        min: 2,
+                        max: 4
+                    },
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "Le temps minimum en secondes que le mob restera à regarder dans une direction aléatoire avant de regarder ailleurs.",
+                            type: "number"
+                        },
+                        max: {
+                            description: "Le temps maximum en secondes que le mob restera à regarder dans une direction aléatoire avant de regarder ailleurs.",
+                            type: "number"
+                        }
+                    }
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.place_block", "properties", "xz_range"],
+                value: {
+                    description: "La distance en XZ à laquelle l'Entité peut placer un bloc.",
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "La distance minimale en XZ à laquelle l'Entité peut placer un bloc.",
+                            type: "number"
+                        },
+                        max: {
+                            description: "La distance maximale en XZ à laquelle l'Entité peut placer un bloc.",
+                            type: "number"
+                        }
+                    }
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.place_block", "properties", "y_range"],
+                value: {
+                    description: "La distance en Y à laquelle l'Entité peut placer un bloc.",
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "La distance minimale en Y à laquelle l'Entité peut placer un bloc.",
+                            type: "number"
+                        },
+                        max: {
+                            description: "La distance maximale en Y à laquelle l'Entité peut placer un bloc.",
+                            type: "number"
+                        }
+                    }
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.take_block", "properties", "xz_range"],
+                value: {
+                    description: "La distance en XZ à laquelle l'Entité peut prendre un bloc.",
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "La distance minimale en XZ à laquelle l'Entité peut prendre un bloc.",
+                            type: "number"
+                        },
+                        max: {
+                            description: "La distance maximale en XZ à laquelle l'Entité peut prendre un bloc.",
+                            type: "number"
+                        }
+                    }
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.take_block", "properties", "y_range"],
+                value: {
+                    description: "La distance en Y à laquelle l'Entité peut prendre un bloc.",
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "La distance minimale en Y à laquelle l'Entité peut prendre un bloc.",
+                            type: "number"
+                        },
+                        max: {
+                            description: "La distance maximale en Y à laquelle l'Entité peut prendre un bloc.",
+                            type: "number"
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    {
+        version: "beta",
+        changes: [
+            {
+                action: "add",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:apply_knockback_rules", "properties", "presets", "items", "properties", "horizontal_hit_angle_scale"],
+                value: {
+                    description: "Ajuste la réponse angulaire horizontale de la cible lorsqu'elle est touchée en fonction de la direction de visée de l'attaquant.",
+                    default: 0.0,
+                    type: "number"
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:apply_knockback_rules", "properties", "presets", "items", "properties", "vertical_hit_angle_scale"],
+                value: {
+                    description: "Ajuste la réponse angulaire verticale de la cible lorsqu'elle est touchée en fonction de la direction de visée de l'attaquant.",
+                    default: 0.0,
+                    type: "number"
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:apply_knockback_rules", "properties", "presets", "items", "properties", "vertical_position_angle_scale"],
+                value: {
+                    description: "Ajuste la réponse angulaire verticale de la cible lorsqu'elle est touchée en fonction de la position relative des pieds de l'attaquant.",
+                    default: 0.0,
+                    type: "number"
                 }
             }
         ]

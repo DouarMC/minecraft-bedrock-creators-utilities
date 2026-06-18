@@ -92,7 +92,7 @@ export function getCommonDefinitions(): Record<string, MinecraftJsonSchema> {
                             description: "Le type de test à effectuer",
                             type: "string",
                             enum: [
-                                "actor_health", "inactivity_timer", "is_altitude", "is_mark_variant", "is_skin_id", "is_variant", "random_chance", "rider_count"
+                                "actor_health", "inactivity_timer", "is_altitude", "is_mark_variant", "is_skin_id", "is_variant", "random_chance", "redstone_strength_at_position", "rider_count"
                             ]
                         },
                         subject: {
@@ -313,7 +313,7 @@ export function getCommonDefinitions(): Record<string, MinecraftJsonSchema> {
                             description: "Le type de test à effectuer",
                             type: "string",
                             enum: [
-                                "has_biome_tag"
+                                "has_biome_tag", "biome_has_tag"
                             ]
                         },
                         subject: {

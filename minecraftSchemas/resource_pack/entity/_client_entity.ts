@@ -167,6 +167,11 @@ const baseSchema: MinecraftJsonSchema = {
                                     description: "Si `true`, les effets seront toujours mis à jour si le client de l'Entité est hors écran.",
                                     default: false,
                                     type: "molang"
+                                },
+                                hide_held_items: {
+                                    description: "Si `true`, les items tenus par l'Entité ne seront pas affichés.",
+                                    default: false,
+                                    type: "molang"
                                 }
                             }
                         },
@@ -198,7 +203,7 @@ const baseSchema: MinecraftJsonSchema = {
                         held_item_scale: {
                             description: "Définit la taille de l'Item tenu par cet Entité.",
                             default: 1,
-                            type: "number",
+                            type: "molang",
                             exclusiveMinimum: 0
                         },
                         hide_armor: {
