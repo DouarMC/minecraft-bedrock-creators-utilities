@@ -1026,45 +1026,90 @@ export const versionedSchema: VersionedSchema = {
             ]
         },
         {
-            version: "beta",
+            version: "1.26.30",
             changes: [
                 {
                     action: "add",
                     target: ["properties", "minecraft:biome", "properties", "components", "properties", "minecraft:surface_builder", "properties", "builder", "oneOf", 6],
                     value: {
                         type: "object",
-                        required: ["amplitudes", "first_octave", "gradient_blocks", "noise_seed_string", "non_replaceable_blocks", "type"],
+                        required: ["noise_block_specifiers", "noise_descriptor", "type"],
                         properties: {
-                            amplitudes: {
-                                description: "Régule l'atténuation des n premières octaves du bruit généré.",
+                            noise_block_specifiers: {
+                                description: "Les spécificateurs de blocs de bruit définissant quelles plages de bruit sont associées à quels blocs. Les plages fournies sont valables sur l'intervalle [-1, 1] et peuvent se chevaucher à leurs extrémités.",
                                 type: "array",
                                 minItems: 1,
                                 items: {
-                                    type: "number"
-                                }
-                            },
-                            first_octave: {
-                                description: "Régule les caractéristiques fréquentielles générales du bruit généré. Une valeur plus faible produit un bruit avec un contenu fréquentiel plus bas.",
-                                type: "integer"
-                            },
-                            gradient_blocks: {
-                                description: "Liste des noms de blocs qui seront échantillonnés selon une distribution de bruit de Perlin. L'utilisation de blocs `minecraft:air` est autorisée et n'entraînera pas le remplacement du bloc d'origine. Il est ainsi possible d'ajuster la densité/l'intensité du remplacement de blocs dans le biome à l'aide de ce type de constructeur de surface.",
-                                type: "array",
-                                minItems: 1,
-                                items: {
-                                    oneOf: [
-                                        {
-                                            type: "string",
-                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                    type: "object",
+                                    required: ["block"],
+                                    properties: {
+                                        block: {
+                                            description: "Le bloc à placer si l'échantillon de bruit satisfait le seuil/la plage fournis",
+                                            oneOf: [
+                                                {
+                                                    type: "string",
+                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                },
+                                                commonSchemas.block_descriptor
+                                            ]
                                         },
-                                        commonSchemas.block_descriptor
-                                    ]
+                                        noise: {
+                                            description: "L'identifiant de chaîne du bruit associé à ce NoiseBlockSpecifier.",
+                                            default: "",
+                                            type: "string",
+                                            pattern: "^\\S+$"
+                                        },
+                                        range: {
+                                            description: "La plage de valeurs de bruit échantillonnées associée au bloc fourni.",
+                                            default: {
+                                                "min": 0,
+                                                "max": 0
+                                            },
+                                            type: "object",
+                                            properties: {
+                                                min: {
+                                                    description: "La valeur minimale de la plage de bruit associée à ce bloc.",
+                                                    default: 0,
+                                                    type: "number"
+                                                },
+                                                max: {
+                                                    description: "La valeur maximale de la plage de bruit associée à ce bloc.",
+                                                    default: 0,
+                                                    type: "number"
+                                                }
+                                            }
+                                        },
+                                        threshold: {
+                                            description: "La valeur minimale de bruit échantillonné associée au bloc fourni.",
+                                            default: 0,
+                                            type: "number"
+                                        }
+                                    }
                                 }
                             },
-                            noise_seed_string: {
-                                description: "La chaîne de caractères utilisée pour initialiser le bruit. Elle n'a aucune incidence sur la qualité des valeurs générées.",
-                                type: "string",
-                                minLength: 1
+                            noise_descriptor: {
+                                description: "La spécification du bruit utilisée par le constructeur de surface.",
+                                type: "object",
+                                required: ["amplitudes", "first_octave", "name"],
+                                properties: {
+                                    amplitudes: {
+                                        description: "Régule l'atténuation des n premières octaves du bruit généré.",
+                                        type: "array",
+                                        minItems: 1,
+                                        maxItems: 100,
+                                        items: {
+                                            type: "number"
+                                        }
+                                    },
+                                    first_octave: {
+                                        description: "Régule les caractéristiques fréquentielles générales du bruit généré. Une valeur plus faible produit un bruit avec un contenu fréquentiel plus bas.",
+                                        type: "integer"
+                                    },
+                                    name: {
+                                        description: "La chaîne utilisée pour initialiser le bruit. N'a aucun impact sur les aspects qualitatifs des valeurs générées.",
+                                        type: "string"
+                                    }
+                                }
                             },
                             non_replaceable_blocks: {
                                 description: "Liste des blocs que le constructeur de surface n'est pas autorisé à remplacer. Laisser cette liste vide ou non spécifiée autorisera le remplacement de tout type de bloc (sauf l'air).",
@@ -1089,7 +1134,6 @@ export const versionedSchema: VersionedSchema = {
                             }
                         }
                     }
-
                 },
                 {
                     action: "add",
@@ -1496,38 +1540,83 @@ export const versionedSchema: VersionedSchema = {
                                     },
                                     {
                                         type: "object",
-                                        required: ["amplitudes", "first_octave", "gradient_blocks", "noise_seed_string", "non_replaceable_blocks", "type"],
+                                        required: ["noise_block_specifiers", "noise_descriptor", "type"],
                                         properties: {
-                                            amplitudes: {
-                                                description: "Régule l'atténuation des n premières octaves du bruit généré.",
+                                            noise_block_specifiers: {
+                                                description: "Les spécificateurs de blocs de bruit définissant quelles plages de bruit sont associées à quels blocs. Les plages fournies sont valables sur l'intervalle [-1, 1] et peuvent se chevaucher à leurs extrémités.",
                                                 type: "array",
                                                 minItems: 1,
                                                 items: {
-                                                    type: "number"
-                                                }
-                                            },
-                                            first_octave: {
-                                                description: "Régule les caractéristiques fréquentielles générales du bruit généré. Une valeur plus faible produit un bruit avec un contenu fréquentiel plus bas.",
-                                                type: "integer"
-                                            },
-                                            gradient_blocks: {
-                                                description: "Liste des noms de blocs qui seront échantillonnés selon une distribution de bruit de Perlin. L'utilisation de blocs `minecraft:air` est autorisée et n'entraînera pas le remplacement du bloc d'origine. Il est ainsi possible d'ajuster la densité/l'intensité du remplacement de blocs dans le biome à l'aide de ce type de constructeur de surface.",
-                                                type: "array",
-                                                minItems: 1,
-                                                items: {
-                                                    oneOf: [
-                                                        {
-                                                            type: "string",
-                                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                    type: "object",
+                                                    required: ["block"],
+                                                    properties: {
+                                                        block: {
+                                                            description: "Le bloc à placer si l'échantillon de bruit satisfait le seuil/la plage fournis",
+                                                            oneOf: [
+                                                                {
+                                                                    type: "string",
+                                                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                                                },
+                                                                commonSchemas.block_descriptor
+                                                            ]
                                                         },
-                                                        commonSchemas.block_descriptor
-                                                    ]
+                                                        noise: {
+                                                            description: "L'identifiant de chaîne du bruit associé à ce NoiseBlockSpecifier.",
+                                                            default: "",
+                                                            type: "string",
+                                                            pattern: "^\\S+$"
+                                                        },
+                                                        range: {
+                                                            description: "La plage de valeurs de bruit échantillonnées associée au bloc fourni.",
+                                                            default: {
+                                                                "min": 0,
+                                                                "max": 0
+                                                            },
+                                                            type: "object",
+                                                            properties: {
+                                                                min: {
+                                                                    description: "La valeur minimale de la plage de bruit associée à ce bloc.",
+                                                                    default: 0,
+                                                                    type: "number"
+                                                                },
+                                                                max: {
+                                                                    description: "La valeur maximale de la plage de bruit associée à ce bloc.",
+                                                                    default: 0,
+                                                                    type: "number"
+                                                                }
+                                                            }
+                                                        },
+                                                        threshold: {
+                                                            description: "La valeur minimale de bruit échantillonné associée au bloc fourni.",
+                                                            default: 0,
+                                                            type: "number"
+                                                        }
+                                                    }
                                                 }
                                             },
-                                            noise_seed_string: {
-                                                description: "La chaîne de caractères utilisée pour initialiser le bruit. Elle n'a aucune incidence sur la qualité des valeurs générées.",
-                                                type: "string",
-                                                minLength: 1
+                                            noise_descriptor: {
+                                                description: "La spécification du bruit utilisée par le constructeur de surface.",
+                                                type: "object",
+                                                required: ["amplitudes", "first_octave", "name"],
+                                                properties: {
+                                                    amplitudes: {
+                                                        description: "Régule l'atténuation des n premières octaves du bruit généré.",
+                                                        type: "array",
+                                                        minItems: 1,
+                                                        maxItems: 100,
+                                                        items: {
+                                                            type: "number"
+                                                        }
+                                                    },
+                                                    first_octave: {
+                                                        description: "Régule les caractéristiques fréquentielles générales du bruit généré. Une valeur plus faible produit un bruit avec un contenu fréquentiel plus bas.",
+                                                        type: "integer"
+                                                    },
+                                                    name: {
+                                                        description: "La chaîne utilisée pour initialiser le bruit. N'a aucun impact sur les aspects qualitatifs des valeurs générées.",
+                                                        type: "string"
+                                                    }
+                                                }
                                             },
                                             non_replaceable_blocks: {
                                                 description: "Liste des blocs que le constructeur de surface n'est pas autorisé à remplacer. Laisser cette liste vide ou non spécifiée autorisera le remplacement de tout type de bloc (sauf l'air).",
