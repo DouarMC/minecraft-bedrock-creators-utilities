@@ -2229,13 +2229,15 @@ const versionedChanges: SchemaChange[] = [
                             description: "Le son de l'instrument lorsque le Bloc est placé sur un bloc au dessus.",
                             default: "note.harp",
                             type: "string",
-                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_sound_references
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.data_driven_sound_references,
+                            examples: ["note.none"]
                         },
                         down: {
                             description: "Le son de l'instrument lorsque le Bloc est placé sur un bloc en dessous.",
                             default: "note.none",
                             type: "string",
-                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_sound_references
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.data_driven_sound_references,
+                            examples: ["note.none"]
                         }
                     }
                 }

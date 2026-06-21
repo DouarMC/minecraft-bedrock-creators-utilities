@@ -110,6 +110,11 @@ const baseSchema: MinecraftJsonSchema = {
                                 type: "null"
                             }
                         ]
+                    },
+                    subtitle: {
+                        "x-localized": true,
+                        description: "Le texte affiché à l'écran lorsque le son est joué pour les malentendants. Le texte est affiché dans la langue du joueur si le texte est dans le fichier de langue du pack de ressources. Si le texte n'est pas dans le fichier de langue, il sera affiché tel quel.",
+                        type: "string"
                     }
                 }
             }
