@@ -806,11 +806,30 @@ const versionedChanges: SchemaChange[] = [
                                     "x-dynamic-examples-source": dynamicExamplesSourceKeys.culling_layer_ids
                                 },
                                 culling_shape: {
-                                    "x-experimental_options": ["Experimental Voxel Shape Features"], 
                                     description: "Définit la Voxel Shape à utiliser pour le culling des faces adjacentes du Bloc. Les Voxel Shapes fonctionnent avec les règles de Block Culling et ne fonctionnent pas si aucune règle n'a été définit pour le Bloc. Seuls les blocs adjacents utilisant des Voxel Shapes seront masqué par cette Shape. Les Blocs avec la modèle `minecraft:geometry.full_block` utiliseront toujours la Voxel Shape `minecraft:unit_cube`.",
                                     default: "minecraft:empty",
                                     type: "string",
                                     "x-dynamic-examples-source": dynamicExamplesSourceKeys.voxel_shape_ids
+                                },
+                                n_way_visual_rotation: {
+                                    "x-experimental_options": ["Upcoming Creator Features"],
+                                    description: "Définit la rotation visuelle du modèle du Bloc en fonction de l'état de Bloc spécifié. Les états possible sont les traits `minecraft:cardinal_direction`, `minecraft:sixteen_way_rotation` ainsi que tous les états de blocs personalisé.",
+                                    type: "object",
+                                    minProperties: 1,
+                                    properties: {
+                                        x: {
+                                            description: "L'état de Bloc utilisé pour la rotation visuelle du modèle du Bloc sur l'axe X.",
+                                            type: "string"
+                                        },
+                                        y: {
+                                            description: "L'état de Bloc utilisé pour la rotation visuelle du modèle du Bloc sur l'axe Y.",
+                                            type: "string"
+                                        },
+                                        z: {
+                                            description: "L'état de Bloc utilisé pour la rotation visuelle du modèle du Bloc sur l'axe Z.",
+                                            type: "string"
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -1303,11 +1322,17 @@ const versionedChanges: SchemaChange[] = [
                                     "La liste des états built-in à activer.\n\n" +
                                     "`minecraft:cardinal_direction`: Définit l'orientation cardinale lors du placement d'un Bloc.\n\n" +
                                     "`minecraft:facing_direction`: Définit toutes les directions de placement du Bloc.\n\n" +
-                                    "`minecraft:corner_and_cardinal_direction`: Active l'état de bloc `minecraft:corner` avec les valeurs `none`, `inner_left`, `inner_right`, `outer_left` et `outer_right` qui fournit un comportement similaire aux escaliers Vanilla. `use_beta_features` doit être activé.",
+                                    "`minecraft:corner_and_cardinal_direction`: Active l'état de bloc `minecraft:corner` avec les valeurs `none`, `inner_left`, `inner_right`, `outer_left` et `outer_right` qui fournit un comportement similaire aux escaliers Vanilla.\n\n" +
+                                    "`minecraft:sixteen_way_rotation`: Définit l'orientation du Bloc en 16 directions différentes, avec une valeur comprise entre 0 et 15. L'option `Upcoming Creator Features` doit être activée pour que cette option fonctionne.",
                                     type: "array",
                                     items: {
                                         type: "string",
-                                        enum: ["minecraft:cardinal_direction", "minecraft:facing_direction", "minecraft:corner_and_cardinal_direction"]
+                                        enum: [
+                                            "minecraft:cardinal_direction",
+                                            "minecraft:facing_direction",
+                                            "minecraft:corner_and_cardinal_direction",
+                                            "minecraft:sixteen_way_rotation"
+                                        ]
                                     }
                                 },
                                 y_rotation_offset: {
@@ -1839,7 +1864,7 @@ const versionedChanges: SchemaChange[] = [
                             default: "obstruct_rain_accumulate_snow",
                             type: "string",
                             enum: [
-                                "obrain", "obstruct_rain_accumulate_snow", "none", "snow_log_no_collision"
+                                "obrain", "obstruct_rain_accumulate_snow", "none", "snowlogging"
                             ]
                         }
                     }
@@ -2160,6 +2185,58 @@ const versionedChanges: SchemaChange[] = [
                         type: "string",
                         pattern: schemaPatterns.identifier_with_namespace,
                         "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_tags
+                    }
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:flammable", "properties", "lava_flammable"],
+                value: {
+                    description:
+                    "Définit si le Bloc peut être enflammé par la lave." +
+                    "\n- `always`: le Bloc est pris en compte lorsque la lave tente de propager le feu après la mise à jour des blocs adjacents, tout en respectant les règles normales de placement du feu." +
+                    "\n- `never`: le Bloc ne peut pas être enflammé par la lave.",
+                    default: "never",
+                    type: "string",
+                    enum: ["always", "never"]
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:block_entity"],
+                value: {
+                    "x-experimental_options": ["Upcoming Creator Features"],
+                    description: "Définit si le Bloc est un block-entity. Un block-entity est un type de bloc qui peut stocker des données persistantes et locales, similaire aux coffres, aux générateurs de monstres, aux panneaux, etc. Les block-entities sont plus gourmands en RAM que les blocs normaux, donc utilisez-les avec parcimonie. Ne peut pas être utilisé dans les permutations de blocs.",
+                    type: "object",
+                    properties: {
+                        dynamic_properties: {
+                            description: "Définit si le block-entity peut avoir des propriétés dynamiques.",
+                            type: "boolean"
+                        }
+                    }
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:instrument_sound"],
+                value: {
+                    "x-experimental_options": ["Upcoming Creator Features"],
+                    description: "Définit le son de l'instrument du Bloc. Le son de l'instrument est utilisé par les blocs de note pour produire un son spécifique lorsqu'ils sont activés.",
+                    type: "object",
+                    minProperties: 1,
+                    properties: {
+                        up: {
+                            description: "Le son de l'instrument lorsque le Bloc est placé sur un bloc au dessus.",
+                            default: "note.harp",
+                            type: "string",
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_sound_references
+                        },
+                        down: {
+                            description: "Le son de l'instrument lorsque le Bloc est placé sur un bloc en dessous.",
+                            default: "note.none",
+                            type: "string",
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_sound_references
+                        }
                     }
                 }
             }

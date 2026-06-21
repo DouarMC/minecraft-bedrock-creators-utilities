@@ -3,7 +3,6 @@ import { SchemaChange, VersionedSchema } from "../../../common/types/VersionedSc
 import { schemaPatterns } from "../../shared/schemaPatterns";
 
 const baseSchema: MinecraftJsonSchema = {
-    "x-experimental_options": ["Experimental Voxel Shape Features"],
     description: "Ce fichier sert à créer des Voxel Shapes pour les blocs.",
     type: "object",
     required: ["format_version", "minecraft:voxel_shape"],
@@ -54,6 +53,36 @@ const baseSchema: MinecraftJsonSchema = {
                                 properties: {
                                     min: {
                                         description: "Les coordonnées minimales de la boîte (x, y, z).",
+                                        oneOf: [
+                                            {
+                                                type: "array",
+                                                minItems: 3,
+                                                maxItems: 3,
+                                                items: {
+                                                    type: "number"
+                                                }
+                                            },
+                                            {
+                                                type: "object",
+                                                properties: {
+                                                    x: {
+                                                        default: 0,
+                                                        type: "number"
+                                                    },
+                                                    y: {
+                                                        default: 0,
+                                                        type: "number"
+                                                    },
+                                                    z: {
+                                                        default: 0,
+                                                        type: "number"
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    max: {
+                                        description: "Les coordonnées maximales de la boîte (x, y, z).",
                                         oneOf: [
                                             {
                                                 type: "array",

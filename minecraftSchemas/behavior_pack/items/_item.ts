@@ -1217,6 +1217,15 @@ const versionedChanges: SchemaChange[] = [
                             description: "La durée d'utilisation de l'Item en secondes.",
                             type: "number",
                             minimum: 0
+                        },
+                        start_using: {
+                            description:
+                            "Définit le comportement de déclenchement d'utilisation de l'Item. La valeur par défaut pour une `format_version < 1.26.30` est `always`, `if_first` sinon." +
+                            "\n- `if_first`: démarre seulement si aucun autre composant ne l'utilise encore." +
+                            "\n- `always`: redémarre systématiquement.",
+                            default: "if_first",
+                            type: "string",
+                            enum: ["if_first", "always"]
                         }
                     }
                 }
