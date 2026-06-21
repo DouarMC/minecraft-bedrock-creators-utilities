@@ -705,6 +705,166 @@ const versionedChanges: SchemaChange[] = [
                 }
             }
         ]
+    },
+    {
+        version: "1.26.20",
+        changes: [
+            // 1. Mise à jour de la densité (Air, Weather, Water, Lava, Lava Resistance)
+            ...["air", "weather", "water", "lava", "lava_resistance"].flatMap(medium => [
+                {
+                    action: "modify",
+                    target: ["properties", "minecraft:fog_settings", "properties", "volumetric", "properties", "density", "properties", medium, "properties", "max_density"],
+                    value: {
+                        description: "La quantité maximale d'opacité que le brouillard au sol atteindra. Supporte les valeurs statiques (0.0 à 1.0) ou un tableau de keyframes.",
+                        oneOf: [
+                            {
+                                type: "number",
+                                minimum: 0.0,
+                                maximum: 1.0 
+                            },
+                            {
+                                type: "array",
+                                items: {
+                                    type: "object",
+                                    required: ["time", "value"],
+                                    properties: {
+                                        time: {
+                                            type: "number",
+                                            minimum: 0 },
+                                        value: {
+                                            type: "number",
+                                            minimum: 0.0,
+                                            maximum: 1.0
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    action: "modify",
+                    target: ["properties", "minecraft:fog_settings", "properties", "volumetric", "properties", "density", "properties", medium, "properties", "max_density_height"],
+                    value: {
+                        description: "La hauteur en blocs à laquelle le brouillard au sol atteindra sa densité maximale. Supporte les valeurs statiques ou un tableau de keyframes.",
+                        oneOf: [
+                            { type: "number", minimum: -64, maximum: 320 },
+                            {
+                                type: "array",
+                                items: {
+                                    type: "object",
+                                    required: ["time", "value"],
+                                    properties: {
+                                        time: { type: "number", minimum: 0 },
+                                        value: { type: "number", minimum: -64, maximum: 320 }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    action: "modify",
+                    target: ["properties", "minecraft:fog_settings", "properties", "volumetric", "properties", "density", "properties", medium, "properties", "zero_density_height"],
+                    value: {
+                        description: "La hauteur en blocs à laquelle le brouillard au sol sera complètement transparent. Supporte les valeurs statiques ou un tableau de keyframes.",
+                        oneOf: [
+                            { type: "number", minimum: -64, maximum: 320 },
+                            {
+                                type: "array",
+                                items: {
+                                    type: "object",
+                                    required: ["time", "value"],
+                                    properties: {
+                                        time: { type: "number", minimum: 0 },
+                                        value: { type: "number", minimum: -64, maximum: 320 }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            ] as const),
+            // 2. Mise à jour des coefficients médias (Air, Water, Cloud) pour Scattering et Absorption
+            ...["air", "water", "cloud"].flatMap(medium => [
+                {
+                    action: "modify",
+                    target: ["properties", "minecraft:fog_settings", "properties", "volumetric", "properties", "media_coefficients", "properties", medium, "properties", "scattering"],
+                    value: {
+                        description: "Proportion de lumière qui est diffusée par bloc. Supporte un tableau RGB, un code Hex, ou des keyframes de ces structures.",
+                        oneOf: [
+                            { type: "array", minItems: 3, maxItems: 3, items: { type: "number", minimum: 0, maximum: 1 } },
+                            { type: "string", pattern: schemaPatterns.color_hex },
+                            {
+                                type: "array",
+                                items: {
+                                    type: "object",
+                                    required: ["time", "value"],
+                                    properties: {
+                                        time: { type: "number", minimum: 0 },
+                                        value: {
+                                            oneOf: [
+                                                { type: "array", minItems: 3, maxItems: 3, items: { type: "number", minimum: 0, maximum: 1 } },
+                                                { type: "string", pattern: schemaPatterns.color_hex }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    action: "modify",
+                    target: ["properties", "minecraft:fog_settings", "properties", "volumetric", "properties", "media_coefficients", "properties", medium, "properties", "absorption"],
+                    value: {
+                        description: "Proportion de lumière qui est absorbée par bloc. Supporte un tableau RGB, un code Hex, ou des keyframes de ces structures.",
+                        oneOf: [
+                            { type: "array", minItems: 3, maxItems: 3, items: { type: "number", minimum: 0, maximum: 1 } },
+                            { type: "string", pattern: schemaPatterns.color_hex },
+                            {
+                                type: "array",
+                                items: {
+                                    type: "object",
+                                    required: ["time", "value"],
+                                    properties: {
+                                        time: { type: "number", minimum: 0 },
+                                        value: {
+                                            oneOf: [
+                                                { type: "array", minItems: 3, maxItems: 3, items: { type: "number", minimum: 0, maximum: 1 } },
+                                                { type: "string", pattern: schemaPatterns.color_hex }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            ] as const),
+            // 3. Mise à jour de Henyey Greenstein G (Air, Water)
+            ...["air", "water"].map(medium => ({
+                action: "modify"as const,
+                target: ["properties", "minecraft:fog_settings", "properties", "volumetric", "properties", "henyey_greenstein_g", "properties", medium, "properties", "henyey_greenstein_g"],
+                value: {
+                    description: "Le paramètre g contrôle la direction de la diffusion. Supporte une valeur statique (-1 à 1) ou un tableau de keyframes.",
+                    oneOf: [
+                        { type: "number", minimum: -1, maximum: 1, default: medium === "air" ? 0.75 : 0.6 },
+                        {
+                            type: "array",
+                            items: {
+                                type: "object",
+                                required: ["time", "value"],
+                                properties: {
+                                    time: { type: "number", minimum: 0 },
+                                    value: { type: "number", minimum: -1, maximum: 1 }
+                                }
+                            }
+                        }
+                    ]
+                }
+            }))
+        ]
     }
 ];
 
