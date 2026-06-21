@@ -1355,6 +1355,23 @@ const baseSchema: MinecraftJsonSchema = {
                                                     commonSchemas.block_descriptor
                                                 ]
                                             }
+                                        },
+                                        only_check_intersection_for_motion_blocking_blocks: {
+                                            description: "Définit si la vérification des collisions avec la liste blanche ('block_allowlist') s'applique uniquement aux blocs pleins qui bloquent les mouvements (true) ou à l'ensemble des blocs de la structure, y compris l'air (false).",
+                                            default: true,
+                                            type: "boolean"
+                                        }
+                                    }
+                                },
+                                leveled: {
+                                    description: "Si spécifie, ette option garantit que le niveau du sol de la structure est placé sur un terrain majoritairement plat. Inclut un champ `max_steepness` qui définit la différence de hauteur maximale autorisée entre le point de placement et les échantillons de terrain prélevés au niveau du sol de la structure. Un échantillon de terrain valide est constitué d'un bloc solide surmonté d'un bloc non solide.",
+                                    type: "object",
+                                    required: ["max_steepness"],
+                                    properties: {
+                                        max_steepness: {
+                                            description: "La différence de hauteur maximale autorisée entre le point de placement et les échantillons de terrain prélevés au niveau du sol de la structure.",
+                                            default: 2,
+                                            type: "integer"
                                         }
                                     }
                                 }
@@ -1364,6 +1381,11 @@ const baseSchema: MinecraftJsonSchema = {
                             description: "Définit si la structure doit être tournée autour de son centre ou de son coin inférieur nord-ouest lors du placement.",
                             default: false,
                             type: "boolean"
+                        },
+                        ground_level: {
+                            description: "Définit la coordonnée Y de la structure considéré comme son niveau du sol. Utilisé comme décalage vertical lors du placement, il détermine la couche de la structure prise en compte par les contraintes de niveau et d'ancrage. Tous les blocs non aériens à ce niveau définissent les positions où les contraintes de niveau et d'ancrage sont vérifiées. Si la valeur dépasse la hauteur de la structure, elle est limitée à la valeur maximale autorisée et un avertissement de contenu est émis.",
+                            default: 0,
+                            type: "integer"
                         }
                     }
                 }
@@ -4856,6 +4878,56 @@ const baseSchema: MinecraftJsonSchema = {
                                     }
                                 ]
                             }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            required: ["minecraft:height_difference_filter_feature"],
+            properties: {
+                "minecraft:height_difference_filter_feature": {
+                    description: "Définition d'une Feature qui permet de générer une Feature si le terrain autour présente un certain relief (des falaises, des pentes, ou des fossés).",
+                    type: "object",
+                    required: ["description", "places_feature"],
+                    properties: {
+                        description: {
+                            description: "Contient l'identifiant de la Feature.",
+                            type: "object",
+                            required: ["identifier"],
+                            properties: {
+                                identifier: {
+                                    description: "L'identifiant de la Feature. Doit être de la forme 'namespace:feature_id' où feature_id doit correspondre au nom du fichier.",
+                                    type: "string",
+                                    pattern: schemaPatterns.identifier_with_namespace,
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.data_driven_feature_ids
+                                }
+                            }
+                        },
+                        places_feature: {
+                            description: "La Feature à placer.",
+                            type: "string",
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.feature_ids
+                        },
+                        min_required_upward_height_diff: {
+                            description: "Spécifie la différence de hauteur minimale requise vers le haut",
+                            type: "integer"
+                        },
+                        min_required_downward_height_diff: {
+                            description: "Spécifie la différence de hauteur minimale requise vers le bas",
+                            type: "integer"
+                        },
+                        max_allowed_upward_height_diff: {
+                            description: "Spécifie la différence de hauteur maximale autorisée vers le haut",
+                            type: "integer"
+                        },
+                        max_allowed_downward_height_diff: {
+                            description: "Spécifie la différence de hauteur maximale autorisée vers le bas",
+                            type: "integer"
+                        },
+                        search_radius: {
+                            description: "Spécifie la longueur, dans chaque direction cardinale, que le filtre vérifiera pour les blocs par rapport aux différences données.",
+                            type: "integer"
                         }
                     }
                 }
