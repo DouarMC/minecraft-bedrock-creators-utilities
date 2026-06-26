@@ -298,6 +298,9 @@ export class DynamicSourceHandlers {
                     case "water_settings_ids":
                         exampleValues.push(...await this.getWaterSettingsIds(fileSourcesAvailable));
                         break;
+                    case "data_driven_block_entity_ids":
+                        exampleValues.push(...await this.getDataDrivenBlockEntityIds(fileSourcesAvailable));
+                        break;
                 }
             }
 
@@ -1719,5 +1722,9 @@ export class DynamicSourceHandlers {
         const blockTags: string[] = (await this.getVanillaIdentifiersDist()).VANILLA_BLOCK_TAGS;
 
         return blockTags;
+    }
+
+    private static async getDataDrivenBlockEntityIds(fileSources: (MinecraftGame | MinecraftProject)[]): Promise<string[]> {
+        return ["minecraft:skull", "minecraft:bed", "minecraft:decorated_pot"];
     }
 }

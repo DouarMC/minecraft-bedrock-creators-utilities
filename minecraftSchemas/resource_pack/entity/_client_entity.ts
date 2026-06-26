@@ -29,7 +29,7 @@ const baseSchema: MinecraftJsonSchema = {
                             description: "L'identifiant de l'Entité.",
                             type: "string",
                             pattern: schemaPatterns.identifier_with_namespace,
-                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.entity_ids
+                            "x-dynamic-examples-source": [dynamicExamplesSourceKeys.entity_ids, dynamicExamplesSourceKeys.data_driven_block_entity_ids]
                         },
                         min_engine_version: {
                             description: "Définit la version minimale du moteur Bedrock pour ce Client d'Entité. Si il y a plusieurs définitions pour le même Client de l'Entité, la version la plus élevée sera utilisée à condition que le moteur Bedrock soit compatible.",

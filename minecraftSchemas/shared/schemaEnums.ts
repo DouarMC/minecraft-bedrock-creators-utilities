@@ -33,6 +33,7 @@ export const dynamicExamplesSourceKeys = {
     data_driven_base_block_sound_references: "data_driven_base_block_sound_references",
     data_driven_biome_ids: "data_driven_biome_ids",
     data_driven_block_texture_references: "data_driven_block_texture_references",
+    data_driven_block_entity_ids: "data_driven_block_entity_ids",
     data_driven_camera_preset_ids: "data_driven_camera_preset_ids",
     data_driven_color_grading_settings_ids: "data_driven_color_grading_settings_ids",
     data_driven_dimension_ids: "data_driven_dimension_ids",
