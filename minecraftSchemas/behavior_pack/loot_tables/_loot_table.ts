@@ -913,6 +913,23 @@ const baseSchema: MinecraftJsonSchema = {
                                                         ]
                                                     }
                                                 }
+                                            },
+                                            {
+                                                "x-experimental_options": ["Upcoming Creator Features"],
+                                                type: "object",
+                                                required: ["function", "dynamic_properties"],
+                                                properties: {
+                                                    function: {
+                                                        description: "Le type de fonction.",
+                                                        type: "string",
+                                                        enum: ["carry_over_block_entity_data"]
+                                                    },
+                                                    dynamic_properties: {
+                                                        description: "Définit si lors du looting de ce Bloc-Entité, les propriétés dynamiques de ce dernier seront copiées dans l'item looté.",
+                                                        default: false,
+                                                        type: "boolean"
+                                                    }
+                                                }
                                             }
                                         ]
                                     }

@@ -312,7 +312,7 @@ const baseSchema: MinecraftJsonSchema = {
                             type: "object"
                         },
                         "tag:minecraft:cornerable_stairs": {
-                            description: "Les blocs avec ce tag sont considérés comme des escaliers pouvant se connecter en coin. Actuellement, il faut que l'option `Beta APIs` du monde soit activée pour que les escaliers vanilla possèdent ce tag. Pour ajouter ce tag aux blocs customs, il faut que la propriété `use_beta_features` soit définie sur `true` et que ce bloc possède les états de blocs `minecraft:cardinal_direction`. Exemples d'usages vanilla : [`minecraft:oak_stairs`, `minecraft:stone_brick_stairs`]",
+                            description: "Les blocs avec ce tag sont considérés comme des escaliers pouvant se connecter en coin. Pour ajouter ce tag aux blocs customs, il faut que ce bloc possède les états de blocs `minecraft:cardinal_direction`. Exemples d'usages vanilla : [`minecraft:oak_stairs`, `minecraft:stone_brick_stairs`]",
                             type: "object"
                         },
                         "tag:minecraft:crop": {
@@ -812,7 +812,6 @@ const versionedChanges: SchemaChange[] = [
                                     "x-dynamic-examples-source": dynamicExamplesSourceKeys.voxel_shape_ids
                                 },
                                 n_way_visual_rotation: {
-                                    "x-experimental_options": ["Upcoming Creator Features"],
                                     description: "Définit la rotation visuelle du modèle du Bloc en fonction de l'état de Bloc spécifié. Les états possible sont les traits `minecraft:cardinal_direction`, `minecraft:sixteen_way_rotation` ainsi que tous les états de blocs personalisé.",
                                     type: "object",
                                     minProperties: 1,
@@ -1323,7 +1322,7 @@ const versionedChanges: SchemaChange[] = [
                                     "`minecraft:cardinal_direction`: Définit l'orientation cardinale lors du placement d'un Bloc.\n\n" +
                                     "`minecraft:facing_direction`: Définit toutes les directions de placement du Bloc.\n\n" +
                                     "`minecraft:corner_and_cardinal_direction`: Active l'état de bloc `minecraft:corner` avec les valeurs `none`, `inner_left`, `inner_right`, `outer_left` et `outer_right` qui fournit un comportement similaire aux escaliers Vanilla.\n\n" +
-                                    "`minecraft:sixteen_way_rotation`: Définit l'orientation du Bloc en 16 directions différentes, avec une valeur comprise entre 0 et 15. L'option `Upcoming Creator Features` doit être activée pour que cette option fonctionne.",
+                                    "`minecraft:sixteen_way_rotation`: Définit l'orientation du Bloc en 16 directions différentes, avec une valeur comprise entre 0 et 15.",
                                     type: "array",
                                     items: {
                                         type: "string",
@@ -1759,7 +1758,6 @@ const versionedChanges: SchemaChange[] = [
                 action: "add",
                 target: ["properties", "minecraft:block", "properties", "description", "properties", "traits", "properties", "minecraft:multi_block"],
                 value: {
-                    "x-experimental_options": ["Upcoming Creator Features"],
                     description: "Trait qui expose l'état de bloc built-in `minecraft:multi_block_part` qui fournit des informations sur la partie d'un multibloc. Un multibloc est un ensemble de blocs qui forment ensemble une structure plus grande comme une porte. La boite de selection du bloc prendra automatiquement en compte les différentes parties du multibloc pour fournir une sélection plus précise en mettant `minecraft:selection_box` à `true`. Egalement ce trait peut combiner les boites de selections de chaque partie du multibloc.",
                     type: "object",
                     required: ["enabled_states", "direction"],
@@ -1775,9 +1773,9 @@ const versionedChanges: SchemaChange[] = [
                             }
                         },
                         direction: {
-                            description: "Définit la direction de placement du multibloc de 0 à N. Les valeurs valides sont `up` et `down`.",
+                            description: "Définit la direction de placement du multibloc de 0 à N. Les valeurs valides sont `up` et `down`. Les valeurs `north`, `south`, `east` et `west` sont disponibles avec l'option `Upcoming Creator Features` activée.",
                             type: "string",
-                            enum: ["up", "down"]
+                            enum: ["up", "down", "north", "south", "east", "west"]
                         },
                         parts: {
                             description: "Définit la valeur de l'état `minecraft:multi_block_part` pour chaque partie du multibloc.",
@@ -2220,7 +2218,6 @@ const versionedChanges: SchemaChange[] = [
                 action: "add",
                 target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:instrument_sound"],
                 value: {
-                    "x-experimental_options": ["Upcoming Creator Features"],
                     description: "Définit le son de l'instrument du Bloc. Le son de l'instrument est utilisé par les blocs de note pour produire un son spécifique lorsqu'ils sont activés.",
                     type: "object",
                     minProperties: 1,
@@ -2238,6 +2235,21 @@ const versionedChanges: SchemaChange[] = [
                             type: "string",
                             "x-dynamic-examples-source": dynamicExamplesSourceKeys.data_driven_sound_references,
                             examples: ["note.none"]
+                        }
+                    }
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:sound"],
+                value: {
+                    description: "Définit l'ensemble des sons à attribuer au Bloc et à ses permutations. Les valeurs du fichier `blocks.json` sont prioritaires sur celles du composant `minecraft:sound`.",
+                    type: "object",
+                    properties: {
+                        sound: {
+                            description: "La référence de son de bloc à utiliser. Cette référence doit être définie dans le fichier `sounds.json`.",
+                            type: "string",
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_sound_references
                         }
                     }
                 }

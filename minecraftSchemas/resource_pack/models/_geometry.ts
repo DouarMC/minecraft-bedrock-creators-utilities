@@ -848,7 +848,7 @@ const versionedChanges: SchemaChange[] = [
                 action: "add",
                 target: ["properties", "minecraft:geometry", "items", "properties", "bones", "items", "properties", "binding"],
                 value: {
-                    description: "Expression Molang qui sert à attacher cet os à un l'os résultant de l'expression Molang. \nType: `Molang String`",
+                    description: "Expression Molang qui sert à attacher cet os à un l'os résultant de l'expression Molang.",
                     type: "string"
                 }
             }
@@ -861,7 +861,7 @@ const versionedChanges: SchemaChange[] = [
                 action: "add",
                 target: ["properties", "minecraft:geometry", "items", "properties", "item_display_transforms"],
                 value: {
-                    description: "Contient les tranformations d'affichage du modèle en fonction du contexte de rendu du modèle. \nType: `Object`",
+                    description: "Contient les tranformations d'affichage du modèle en fonction du contexte de rendu du modèle.",
                     type: "object",
                     properties: {
                         gui: {
@@ -1236,7 +1236,7 @@ const versionedChanges: SchemaChange[] = [
                             }
                         },
                         fixed: {
-                            description: "Transformations d'affichage du modèle quand il est dans un cadre. \nType: `Object`",
+                            description: "Transformations d'affichage du modèle quand il est dans un cadre.",
                             type: "object",
                             properties: {
                                 translation: {
@@ -1416,6 +1416,76 @@ const versionedChanges: SchemaChange[] = [
                                         maximum: 80
                                     }
                                 }
+                            }
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    {
+        version: "1.26.40",
+        changes: [
+            {
+                action: "add",
+                target: ["properties", "minecraft:geometry", "items", "properties", "item_display_transforms", "properties", "shelf"],
+                value: {
+                    description: "Transformations d'affichage du modèle quand il est sur une étagère.",
+                    type: "object",
+                    properties: {
+                        translation: {
+                            description: "Le décalage du modèle (3 valeurs flottantes pour X, Y, Z). \nType: `Number[3]`",
+                            type: "array",
+                            minItems: 3,
+                            maxItems: 3,
+                            items: {
+                                type: "number",
+                                minimum: -80,
+                                maximum: 80
+                            }
+                        },
+                        rotation: {
+                            description: "La rotation en degrés du modèle (3 valeurs flottantes pour X, Y, Z). \nType: `Number[3]`",
+                            type: "array",
+                            minItems: 3,
+                            maxItems: 3,
+                            items: {
+                                type: "number",
+                                minimum: -360,
+                                maximum: 360
+                            }
+                        },
+                        scale: {
+                            description: "L'échelle du modèle (3 valeurs flottantes pour X, Y, Z). \nType: `Number[3]`",
+                            type: "array",
+                            minItems: 3,
+                            maxItems: 3,
+                            items: {
+                                type: "number",
+                                minimum: 0,
+                                maximum: 4
+                            }
+                        },
+                        rotation_pivot: {
+                            description: "Le point de pivot de la rotation (3 valeurs flottantes pour X, Y, Z). \nType: `Number[3]`",
+                            type: "array",
+                            minItems: 3,
+                            maxItems: 3,
+                            items: {
+                                type: "number",
+                                minimum: -80,
+                                maximum: 80
+                            }
+                        },
+                        scale_pivot: {
+                            description: "Le point de pivot de l'échelle (3 valeurs flottantes pour X, Y, Z). \nType: `Number[3]`",
+                            type: "array",
+                            minItems: 3,
+                            maxItems: 3,
+                            items: {
+                                type: "number",
+                                minimum: -80,
+                                maximum: 80
                             }
                         }
                     }

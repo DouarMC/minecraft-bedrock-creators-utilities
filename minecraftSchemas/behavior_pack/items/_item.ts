@@ -801,7 +801,7 @@ const versionedChanges: SchemaChange[] = [
                             description: "Le slot d'équipement dans lequel l'Item peut être porté.",
                             type: "string",
                             enum: [
-                                "slot.armor.chest", "slot.armor.feet", "slot.armor.head", "slot.armor.legs", "slot.weapon.offhand"
+                                "slot.armor.chest", "slot.armor.feet", "slot.armor.head", "slot.armor.legs", "slot.weapon.offhand", "slot.armor.body"
                             ]
                         }
                     }
