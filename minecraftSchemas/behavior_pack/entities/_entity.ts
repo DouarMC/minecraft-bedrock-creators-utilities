@@ -14,7 +14,7 @@ const baseSchema: MinecraftJsonSchema = {
             description: "La version du format à utiliser.",
             type: "string",
             enum: [
-                "1.8.0", "1.9.0", "1.10.0", "1.11.0", "1.12.0", "1.13.0", "1.14.0", "1.14.1", "1.14.20", "1.14.30", "1.15.0", "1.16.0", "1.16.20", "1.16.100", "1.16.200", "1.16.210", "1.16.220", "1.16.230", "1.17.0", "1.17.10", "1.17.20", "1.17.30", "1.17.40", "1.18.0", "1.18.10", "1.18.20", "1.18.30", "1.18.40", "1.19.0", "1.19.10", "1.19.20", "1.19.30", "1.19.40", "1.19.50", "1.19.60", "1.19.70", "1.19.80", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100", "1.21.110", "1.21.120", "1.21.130", "1.26.0", "1.26.10", "1.26.20", "1.26.30", "beta"
+                "1.8.0", "1.9.0", "1.10.0", "1.11.0", "1.12.0", "1.13.0", "1.14.0", "1.14.1", "1.14.20", "1.14.30", "1.15.0", "1.16.0", "1.16.20", "1.16.100", "1.16.200", "1.16.210", "1.16.220", "1.16.230", "1.17.0", "1.17.10", "1.17.20", "1.17.30", "1.17.40", "1.18.0", "1.18.10", "1.18.20", "1.18.30", "1.18.40", "1.19.0", "1.19.10", "1.19.20", "1.19.30", "1.19.40", "1.19.50", "1.19.60", "1.19.70", "1.19.80", "1.20.0", "1.20.10", "1.20.20", "1.20.30", "1.20.40", "1.20.50", "1.20.60", "1.20.70", "1.20.80", "1.21.0", "1.21.10", "1.21.20", "1.21.30", "1.21.40", "1.21.50", "1.21.60", "1.21.70", "1.21.80", "1.21.90", "1.21.100", "1.21.110", "1.21.120", "1.21.130", "1.26.0", "1.26.10", "1.26.20", "1.26.30", "1.26.40", "beta"
             ]
         },
         "minecraft:entity": {
@@ -4592,6 +4592,10 @@ const baseSchema: MinecraftJsonSchema = {
                                 }
                             }
                         },
+                        "minecraft:not_pickable_from_inside": {
+                            description: "Lorsque ce paramètre est activé, l'entité ne peut pas être ciblée par un test de collision du curseur tant que le point de vue du sélecteur se trouve à l'intérieur de la boîte de collision de l'entité.",
+                            type: "object"
+                        },
                         "minecraft:npc": {
                             description: "Donne à l'Entité les interactions d'un NPC.",
                             type: "object",
@@ -5358,17 +5362,26 @@ const baseSchema: MinecraftJsonSchema = {
                                                 },
                                                 power_multiplier: {
                                                     description: "De combien le dégât de l'impact est multiplié.",
-                                                    default: 2.0,
+                                                    default: 0,
                                                     type: "number"
                                                 },
-                                                semi_random_diff_damage: {
-                                                    description: "Définit si les dégâts seront basé aléatoirement sur les dégâts et la vitesse.",
-                                                    default: false,
-                                                    type: "boolean"
+                                                difficulty_randomization: {
+                                                    description:
+                                                    "Détermine la manière dont la difficulté du monde influe sur les dégâts finaux." +
+                                                    "\n\n- `none`: la difficulté est ignorée" +
+                                                    "\n\n- `additive`: un terme basé sur la difficulté est ajouté aux dégâts de base" +
+                                                    "\n\n- `multiplicative`: un terme basé sur la difficulté est ajouté au multiplicateur de puissance (`power_multiplier`) avant que celui-ci ne soit mis à l'échelle en fonction de la vitesse du projectile",
+                                                    default: "none",
+                                                    type: "string",
+                                                    enum: ["none", "additive", "multiplicative"]
                                                 },
                                                 set_last_hurt_requires_damage: {
                                                     description: "Définit si le dernier coup doit causer des dégâts pour mettre à jour la dernière propriété blessée.",
                                                     default: false,
+                                                    type: "boolean"
+                                                },
+                                                ceil_pre_critical_damage: {
+                                                    description: "Définit si le montant des dégâts critiques est arrondi à l'entier supérieur avant l'application du multiplicateur de coup critique.",
                                                     type: "boolean"
                                                 }
                                             }
@@ -5656,9 +5669,14 @@ const baseSchema: MinecraftJsonSchema = {
                                     type: "boolean" 
                                 },
                                 should_bounce: {
-                                    description: "Définit si le projectile rebondit lorsqu'il touche quelque chose.",
-                                    default: false,
-                                    type: "boolean"
+                                    description:
+                                    "Définit si le projectile rebondit lorsqu'il touche quelque chose." +
+                                    "\n\n- `no`: le projectile ne rebondit pas" +
+                                    "\n\n- `if_invulnerable`: Le projectile ne rebondit que lorsque la cible est invulnérable à la source de dégâts (par exemple, en mode Créatif ou lors d'un blocage au bouclier)." +
+                                    "\n\n- `if_no_damage_dealt`: Le projectile rebondit chaque fois qu'aucun dégât n'est infligé, quelle que soit la raison (invulnérabilité, capteur de dégâts, frames d'invulnérabilité).",
+                                    default: "no",
+                                    type: "string",
+                                    enum: ["no", "if_invulnerable", "if_no_damage_dealt"]
                                 },
                                 splash_potion: {
                                     description: "Définit si le projectile doit être traité comme une potion de lancer.",
@@ -16280,7 +16298,7 @@ const versionedChanges: SchemaChange[] = [
                             },
                             require_collision_overlap: {
                                 description: "Lorsque cette option est activée, les entités ne se repousseront pas à moins que leurs zones de collision ne se chevauchent.",
-                                default: true,
+                                default: false,
                                 type: "boolean"
                             },
                             vertical_kick_multiplier: {
@@ -16329,7 +16347,7 @@ const versionedChanges: SchemaChange[] = [
                                         default: false,
                                         type: "boolean"
                                     },
-                                    scale_previous_velocity: {
+                                    slowdown_scale: {
                                         description: "Modifie la vélocité précédente de la cible au moment de l'impact.",
                                         default: 0.5,
                                         type: "number"
@@ -16344,6 +16362,15 @@ const versionedChanges: SchemaChange[] = [
                                         default: "reapply_default",
                                         type: "string",
                                         enum: ["reapply_default", "multiply_reduced"]
+                                    },
+                                    knockback_mode: {
+                                        description:
+                                        "Définit le mode de recul appliqué à l'entité attaquée." +
+                                        "\n- `relative_horizontal`: applique le recul dans la direction horizontale relative de l'attaquant." +
+                                        "\n- `hit_direction`: Applique un recul en fonction de la direction du coup et du point d'impact (par exemple, les coups portés par le bas propulsent vers le haut, et ceux portés sur le côté gauche poussent vers la droite).",
+                                        default: "relative_horizontal",
+                                        type: "string",
+                                        enum: ["relative_horizontal", "hit_direction"]
                                     }
                                 }
                             }
@@ -16480,35 +16507,92 @@ const versionedChanges: SchemaChange[] = [
         ]
     },
     {
-        version: "beta",
+        version: "1.26.40",
         changes: [
             {
-                action: "add",
-                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:apply_knockback_rules", "properties", "presets", "items", "properties", "horizontal_hit_angle_scale"],
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.beg", "properties", "look_time"],
                 value: {
-                    description: "Ajuste la réponse angulaire horizontale de la cible lorsqu'elle est touchée en fonction de la direction de visée de l'attaquant.",
-                    default: 0.0,
-                    type: "number"
+                    description: "La plage de temps en secondes que l'entité regardera le joueur qui tient l'item qu'elle aime.",
+                    default: {
+                        min: 2,
+                        max: 4
+                    },
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "Le temps minimum en secondes que l'entité regardera le joueur qui tient l'item qu'elle aime.",
+                            type: "number"
+                        },
+                        max: {
+                            description: "Le temps maximum en secondes que l'entité regardera le joueur qui tient l'item qu'elle aime.",
+                            type: "number"
+                        }
+                    }
                 }
             },
             {
-                action: "add",
-                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:apply_knockback_rules", "properties", "presets", "items", "properties", "vertical_hit_angle_scale"],
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.float_wander", "properties", "float_duration"],
                 value: {
-                    description: "Ajuste la réponse angulaire verticale de la cible lorsqu'elle est touchée en fonction de la direction de visée de l'attaquant.",
-                    default: 0.0,
-                    type: "number"
+                    description: "Temps en secondes que l'Entité flottera avant de choisir une nouvelle direction.",
+                    default: {
+                        min: 0,
+                        max: 0
+                    },
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "Le temps minimum en secondes que l'Entité flottera avant de choisir une nouvelle direction.",
+                            type: "number"
+                        },
+                        max: {
+                            description: "Le temps maximum en secondes que l'Entité flottera avant de choisir une nouvelle direction.",
+                            type: "number"
+                        }
+                    }
                 }
             },
             {
-                action: "add",
-                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:apply_knockback_rules", "properties", "presets", "items", "properties", "vertical_position_angle_scale"],
+                action: "remove",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.ranged_attack", "properties", "attack_interval_min"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.ranged_attack", "properties", "attack_interval_max"],
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.ranged_attack", "properties", "attack_interval"],
                 value: {
-                    description: "Ajuste la réponse angulaire verticale de la cible lorsqu'elle est touchée en fonction de la position relative des pieds de l'attaquant.",
-                    default: 0.0,
-                    type: "number"
+                    description: "Temps de rechargement constant (en secondes), lorsqu'on n'utilise pas de tir chargé. Ne s'adapte pas à la distance de la cible.",
+                    default: {
+                        min: 0,
+                        max: 0
+                    },
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "Le temps minimum de rechargement constant (en secondes), lorsqu'on n'utilise pas de tir chargé. Ne s'adapte pas à la distance de la cible.",
+                            type: "number"
+                        },
+                        max: {
+                            description: "Le temps maximum de rechargement constant (en secondes), lorsqu'on n'utilise pas de tir chargé. Ne s'adapte pas à la distance de la cible.",
+                            type: "number"
+                        }
+                    }
                 }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:pushable_by_entity", "properties", "presets", "items", "properties", "require_collision_overlap", "default"],
+                value: true
             }
+        ]
+    },
+    {
+        version: "beta",
+        changes: [
         ]
     }
 ];

@@ -11,7 +11,7 @@ const baseSchema: MinecraftJsonSchema = {
             description: "La version du Format à utiliser.",
             type: "string",
             enum: [
-                "1.21.110", "1.21.110", "1.21.120", "1.21.130", "1.26.0", "1.26.10", "1.26.20", "1.26.30"
+                "1.21.110", "1.21.110", "1.21.120", "1.21.130", "1.26.0", "1.26.10", "1.26.20", "1.26.30", "1.26.40"
             ]
         },
         "minecraft:voxel_shape": {

@@ -25,7 +25,7 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         id: "behavior_pack/animation_controllers/<all>.json",
         displayName: "Behavior Animation Controllers",
         packType: "behavior_pack",
-        patterns: ["**/animation_controllers/*.json"],
+        patterns: ["**/animation_controllers/**/*.json"],
         excludePatterns: undefined,
         schemaPath: "behavior_pack/animation_controllers/_animation_controllers.json"
     }),
@@ -357,7 +357,7 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         displayName: "Entity Definition",
         packType: "resource_pack",
         patterns: ["**/entity/**/*.json"],
-        excludePatterns: undefined,
+        excludePatterns: ["**/models/**/*.json"],
         schemaPath: "resource_pack/entity/_client_entity.json"
     }),
     "resource_pack/fogs/<all>.json": new MinecraftFileType({
@@ -476,7 +476,7 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         id: "resource_pack/render_controllers/<all>.json",
         displayName: "Render Controllers",
         packType: "resource_pack",
-        patterns: ["**/render_controllers/*.json"],
+        patterns: ["**/render_controllers/**/*.json"],
         excludePatterns: undefined,
         schemaPath: "resource_pack/render_controllers/_render_controllers.json"
     }),

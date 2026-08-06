@@ -1,16 +1,16 @@
 {
     "@minecraft/server": {
         "stable_versions": [
-            "1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0", "1.10.0", "1.11.0", "1.12.0", "1.13.0", "1.14.0", "1.15.0", "1.16.0", "1.17.0", "1.18.0", "1.19.0", "2.0.0", "2.1.0", "2.2.0", "2.3.0", "2.4.0", "2.5.0", "2.6.0", "2.7.0", "2.8.0"
+            "1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0", "1.10.0", "1.11.0", "1.12.0", "1.13.0", "1.14.0", "1.15.0", "1.16.0", "1.17.0", "1.18.0", "1.19.0", "2.0.0", "2.1.0", "2.2.0", "2.3.0", "2.4.0", "2.5.0", "2.6.0", "2.7.0", "2.8.0", "2.9.0"
         ],
         "last_beta_version_stable": {
-            "2.9.0-beta": "2.9.0-beta.1.26.30-stable"
+            "2.10.0-beta": "2.10.0-beta.1.26.40-stable"
         },
         "last_release_candidate_version_preview": {
-            "2.9.0": "2.8.0-rc.1.26.40-preview.26"
+            "2.10.0": "2.10.0-rc.1.26.50-preview.24"
         },
         "last_beta_version_preview": {
-            "2.9.0-beta": "2.7.0-beta.1.26.40-preview.26"
+            "2.11.0-beta": "2.11.0-beta.1.26.50-preview.24"
         }
     },
     "@minecraft/server-ui": {
@@ -18,81 +18,83 @@
             "1.0.0", "1.1.0", "1.2.0", "1.3.0", "2.0.0", "2.1.0"
         ],
         "last_beta_version_stable": {
-            "2.2.0-beta": "2.2.0-beta.1.26.30-stable"
+            "2.2.0-beta": "2.2.0-beta.1.26.40-stable"
         },
-        "last_release_candidate_version_preview": null,
+        "last_release_candidate_version_preview": {
+            "2.2.0": "2.2.0-rc.1.26.50-preview.24"
+        },
         "last_beta_version_preview": {
-            "2.2.0-beta": "2.2.0-beta.1.26.40-preview.26"
+            "2.3.0-beta": "2.3.0-beta.1.26.50-preview.24"
         }
     },
     "@minecraft/server-admin": {
         "stable_versions": [],
         "last_beta_version_stable": {
-            "1.0.0-beta": "1.0.0-beta.1.26.30-stable"
+            "1.0.0-beta": "1.0.0-beta.1.26.40-stable"
         },
         "last_release_candidate_version_preview": null,
         "last_beta_version_preview": {
-            "1.0.0-beta": "1.0.0-beta.1.26.40-preview.26"
+            "1.0.0-beta": "1.0.0-beta.1.26.50-preview.24"
         }
     },
     "@minecraft/server-net": {
         "stable_versions": [],
         "last_beta_version_stable": {
-            "1.0.0-beta": "1.0.0-beta.1.26.30-stable"
+            "1.0.0-beta": "1.0.0-beta.1.26.40-stable"
         },
         "last_release_candidate_version_preview": null,
         "last_beta_version_preview": {
-            "1.0.0-beta": "1.0.0-beta.1.26.40-preview.26"
+            "1.0.0-beta": "1.0.0-beta.1.26.50-preview.24"
         }
     },
     "@minecraft/server-gametest": {
         "stable_versions": [],
         "last_beta_version_stable": {
-            "1.0.0-beta": "1.0.0-beta.1.26.30-stable"
+            "1.0.0-beta": "1.0.0-beta.1.26.40-stable"
         },
         "last_release_candidate_version_preview": null,
         "last_beta_version_preview": {
-            "1.0.0-beta": "1.0.0-beta.1.26.40-preview.26"
+            "1.0.0-beta": "1.0.0-beta.1.26.50-preview.24"
         }
     },
     "@minecraft/server-editor": {
         "stable_versions": [],
         "last_beta_version_stable": {
-            "0.1.0-beta": "0.1.0-beta.1.26.30-stable"
+            "0.1.0-beta": "0.1.0-beta.1.26.40-stable"
         },
         "last_release_candidate_version_preview": null,
         "last_beta_version_preview": {
-            "0.1.0-beta": "0.1.0-beta.1.26.40-preview.26"
+            "0.1.0-beta": "0.1.0-beta.1.26.50-preview.24"
         }
     },
     "@minecraft/diagnostics": {
         "stable_versions": [],
         "last_beta_version_stable": {
-            "1.0.0-beta": "1.0.0-beta.1.26.30-stable"
+            "1.0.0-beta": "1.0.0-beta.1.26.40-stable"
         },
         "last_release_candidate_version_preview": null,
         "last_beta_version_preview": {
-            "1.0.0-beta": "1.0.0-beta.1.26.40-preview.26"
+            "1.0.0-beta": "1.0.0-beta.1.26.50-preview.24"
         }
     },
     "@minecraft/debug-utilities": {
         "stable_versions": [],
         "last_beta_version_stable": {
-            "1.0.0-beta": "1.0.0-beta.1.26.30-stable"
+            "1.0.0-beta": "1.0.0-beta.1.26.40-stable"
         },
         "last_release_candidate_version_preview": null,
         "last_beta_version_preview": {
-            "1.0.0-beta": "1.0.0-beta.1.26.40-preview.26"
+            "1.0.0-beta": "1.0.0-beta.1.26.50-preview.24"
         }
     },
     "@minecraft/server-graphics": {
         "stable_versions": [],
         "last_beta_version_stable": {
-            "1.0.0-beta": "1.0.0-beta.1.26.30-stable"
+            "1.0.0-beta": "1.0.0-beta.1.26.40-stable"
         },
         "last_release_candidate_version_preview": null,
         "last_beta_version_preview": {
-            "1.0.0-beta": "1.0.0-beta.1.26.40-preview.26"
+            "1.0.0-beta": "1.0.0-beta.1.26.50-preview.24"
         }
     }
 }

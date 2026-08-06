@@ -54,6 +54,11 @@
                 "command": "minecraft-bedrock-creators-utilities.visualizeMcStats",
                 "title": "Visualiser un fichier McStats.",
                 "category": "Minecraft Bedrock Utilities"
+            },
+            {
+                "command": "minecraft-bedrock-creators-utilities.projectOpen",
+                "title": "Ouvrir un projet Minecraft Bedrock",
+                "category": "Minecraft Bedrock Utilities"
             }
         ],
         "jsonValidation": [
@@ -97,6 +102,7 @@
         "typescript": "^5.8.3"
     },
     "dependencies": {
+        "fast-glob": "^3.3.3",
         "jsonc-parser": "^3.3.1",
         "lodash": "^4.17.21",
         "minimatch": "^10.1.1",
