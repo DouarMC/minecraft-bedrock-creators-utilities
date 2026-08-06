@@ -4932,6 +4932,49 @@ const baseSchema: MinecraftJsonSchema = {
                     }
                 }
             }
+        },
+        {
+            required: ["minecraft:horizontal_tree_decoration_feature"],
+            properties: {
+                "minecraft:horizontal_tree_decoration_feature": {
+                    description: "Définition d'une Feature qui place une décoration sur un arbre sur les troncs d'arbres horizontaux.",
+                    type: "object",
+                    required: ["description", "places_block", "allow_adjacent", "bark_side_only"],
+                    properties: {
+                        description: {
+                            description: "Contient l'identifiant de la Feature.",
+                            type: "object",
+                            required: ["identifier"],
+                            properties: {
+                                identifier: {
+                                    description: "L'identifiant de la Feature. Doit être de la forme 'namespace:feature_id' où feature_id doit correspondre au nom du fichier.",
+                                    type: "string",
+                                    pattern: schemaPatterns.identifier_with_namespace,
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.data_driven_feature_ids
+                                }
+                            }
+                        },
+                        places_block: {
+                            description: "Le bloc à placer.",
+                            oneOf: [
+                                {
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                },
+                                commonSchemas.block_descriptor
+                            ]
+                        },
+                        allow_adjacent: {
+                            description: "Indique si des blocs du même type peuvent être adjacents. Si cette option est désactivée, les blocs seront placés en laissant un espace d'au moins un bloc entre eux.",
+                            type: "boolean"
+                        },
+                        bark_side_only: {
+                            description: "Si cette option est activée, le bloc ne sera jamais placé du côté « ouvert » d'un bloc (imaginez que le bloc est un tronc d'arbre tombé).",
+                            type: "boolean"
+                        }
+                    }
+                }
+            }
         }
     ]
 };

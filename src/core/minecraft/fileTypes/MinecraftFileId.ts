@@ -22,6 +22,7 @@ export type MinecraftFileId =
     "behavior_pack/recipes/<all>.json" |
     "behavior_pack/spawn_rules/<all>.json" |
     "behavior_pack/shapes/<all>.json" |
+    "behavior_pack/sounds/sound_definitions.json" |
     "behavior_pack/structures/<all>.{mcstructure,nbt}" |
     "behavior_pack/texts/<all>.lang" |
     "behavior_pack/texts/languages.json" |

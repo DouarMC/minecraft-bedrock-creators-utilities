@@ -191,6 +191,14 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         excludePatterns: undefined,
         schemaPath: "behavior_pack/spawn_rules/_spawn_rules.json"
     }),
+    "behavior_pack/sounds/sound_definitions.json": new MinecraftFileType({
+        id: "behavior_pack/sounds/sound_definitions.json",
+        displayName: "Sound Definitions (Behavior Pack)",
+        packType: "behavior_pack",
+        patterns: ["**/sounds/sound_definitions.json"],
+        excludePatterns: undefined,
+        schemaPath: "behavior_pack/sounds/sound_definitions.json"
+    }),
     "behavior_pack/structures/<all>.{mcstructure,nbt}": new MinecraftFileType({
         id: "behavior_pack/structures/<all>.{mcstructure,nbt}",
         displayName: "Structures",
