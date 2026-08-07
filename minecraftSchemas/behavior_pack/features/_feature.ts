@@ -4675,6 +4675,158 @@ const baseSchema: MinecraftJsonSchema = {
                                     }
                                 }
                             }
+                        },
+                        poplar_trunk: {
+                            description: "Configuration du tronc de peuplier.",
+                            type: "object",
+                            required: ["trunk_block", "trunk_height"],
+                            properties: {
+                                trunk_block: {
+                                    description: "Le bloc qui forme le tronc de peuplier.",
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                        },
+                                        commonSchemas.block_descriptor
+                                    ]
+                                },
+                                trunk_height: {
+                                    description: "Hauteur du tronc de peuplier.",
+                                    oneOf: [
+                                        {
+                                            type: "integer",
+                                            minimum: 1
+                                        },
+                                        {
+                                            type: "object",
+                                            required: ["range_min", "range_max"],
+                                            properties: {
+                                                range_min: {
+                                                    description: "Hauteur minimale du tronc de peuplier.",
+                                                    type: "integer",
+                                                    minimum: 1
+                                                },
+                                                range_max: {
+                                                    description: "Hauteur maximale du tronc de peuplier.",
+                                                    type: "integer",
+                                                    minimum: 1
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                remaining_trunk_height_above_branches: {
+                                    description: "Hauteur du tronc restant au-dessus des branches.",
+                                    oneOf: [
+                                        {
+                                            type: "integer",
+                                            minimum: 1
+                                        },
+                                        {
+                                            type: "object",
+                                            required: ["range_min", "range_max"],
+                                            properties: {
+                                                range_min: {
+                                                    description: "Hauteur minimale du tronc restant au-dessus des branches.",
+                                                    type: "integer",
+                                                    minimum: 1
+                                                },
+                                                range_max: {
+                                                    description: "Hauteur maximale du tronc restant au-dessus des branches.",
+                                                    type: "integer",
+                                                    minimum: 1
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                amount_of_foliage_support_branches: {
+                                    description: "Nombre de branches de support de feuillage.",
+                                    oneOf: [
+                                        {
+                                            type: "integer",
+                                            minimum: 1
+                                        },
+                                        {
+                                            type: "object",
+                                            required: ["range_min", "range_max"],
+                                            properties: {
+                                                range_min: {
+                                                    description: "Nombre minimal de branches de support de feuillage.",
+                                                    type: "integer",
+                                                    minimum: 1
+                                                },
+                                                range_max: {
+                                                    description: "Nombre maximal de branches de support de feuillage.",
+                                                    type: "integer",
+                                                    minimum: 1
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                log_decoration_feature: {
+                                    description: "La Feature de décoration du tronc de peuplier.",
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.feature_ids
+                                }
+                            }
+                        },
+                        poplar_canopy: {
+                            description: "Configuration de la canopée de peuplier.",
+                            type: "object",
+                            properties: {
+                                radius: {
+                                    type: "array",
+                                    items: {
+                                        type: "object",
+                                        properties: {
+                                            value: {
+                                                type: "integer"
+                                            },
+                                            weight: {
+                                                type: "number"
+                                            }
+                                        }
+                                    }
+                                },
+                                height: {
+                                    type: "object",
+                                    properties: {
+                                        range_min: {
+                                            type: "integer"
+                                        },
+                                        range_max: {
+                                            type: "integer"
+                                        }
+                                    }
+                                },
+                                side_hole_chance: {
+                                    description: "Probabilité de créer un trou sur le côté de la canopée.",
+                                    type: "number"
+                                },
+                                leaf_block: {
+                                    description: "Le bloc qui forme la canopée de peuplier.",
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                        },
+                                        commonSchemas.block_descriptor
+                                    ]
+                                },
+                                branch_block: {
+                                    description: "Le bloc qui forme les branches de la canopée de peuplier.",
+                                    oneOf: [
+                                        {
+                                            type: "string",
+                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                        },
+                                        commonSchemas.block_descriptor
+                                    ]
+                                }
+                            }
                         }
                     }
                 }
