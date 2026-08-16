@@ -539,11 +539,9 @@ const baseSchema: MinecraftJsonSchema = {
                             type: "string"
                         },
                         addition: {
-                            description: "Le matériau requis pour la transformation.",
+                            description: "Le matériau requis pour la transformation. Les items qui possèdent ce tag peuvent être utilisés pour cette recette. L'item doit avoir le tag `minecraft:transform_materials`.",
                             type: "string",
-                            enum: [
-                                "minecraft:netherite_ingot"
-                            ]
+                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
                         },
                         result: {
                             description: "L'item produit par cette recette.",

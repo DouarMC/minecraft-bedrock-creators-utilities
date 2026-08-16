@@ -5127,6 +5127,62 @@ const baseSchema: MinecraftJsonSchema = {
                     }
                 }
             }
+        },
+        {
+            required: ["minecraft:multi_block_feature"],
+            properties: {
+                "minecraft:multi_block_feature": {
+                    description: "Définition d'une Feature qui place un multi-bloc dans le monde. Un multi-bloc doit être défini avec le trait `minecraft:multi_block`.",
+                    type: "object",
+                    required: ["description", "places_block"],
+                    properties: {
+                        description: {
+                            description: "Contient l'identifiant de la Feature.",
+                            type: "object",
+                            required: ["identifier"],
+                            properties: {
+                                identifier: {
+                                    description: "L'identifiant de la Feature. Doit être de la forme 'namespace:feature_id' où feature_id doit correspondre au nom du fichier.",
+                                    type: "string",
+                                    pattern: schemaPatterns.identifier_with_namespace,
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.data_driven_feature_ids
+                                }
+                            }
+                        },
+                        places_block: {
+                            description: "Le bloc à placer.",
+                            oneOf: [
+                                {
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                },
+                                commonSchemas.block_descriptor
+                            ]
+                        },
+                        enforce_placement_rules: {
+                            description: "Définit si les règles de placement du bloc doivent être appliquées. Cela peut éventuellement provenir du composant de filtre de placement.",
+                            type: "boolean"
+                        },
+                        may_replace: {
+                            description: "Liste des blocs qui peuvent être remplacés par ce multi-bloc. Les autres multi-blocs ne peuvent jamais être remplacés.",
+                            type: "array",
+                            items: {
+                                oneOf: [
+                                    {
+                                        type: "string",
+                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                    },
+                                    commonSchemas.block_descriptor
+                                ]
+                            }
+                        },
+                        randomize_rotation: {
+                            description: "Si vrai, le multi-bloc sera placé avec une rotation aléatoire.",
+                            type: "boolean"
+                        }
+                    }
+                }
+            }
         }
     ]
 };
