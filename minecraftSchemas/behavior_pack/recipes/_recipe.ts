@@ -403,7 +403,7 @@ const baseSchema: MinecraftJsonSchema = {
                                 oneOf: [
                                     {
                                         type: "string",
-                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
+                                        "x-dynamic-examples-source": [dynamicExamplesSourceKeys.item_ids, dynamicExamplesSourceKeys.block_ids]
                                     },
                                     {
                                         type: "object",
@@ -411,7 +411,7 @@ const baseSchema: MinecraftJsonSchema = {
                                             item: {
                                                 description: "L'identifiant de l'item.",
                                                 type: "string",
-                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
+                                                "x-dynamic-examples-source": [dynamicExamplesSourceKeys.item_ids, dynamicExamplesSourceKeys.block_ids]
                                             },
                                             tag: {
                                                 description: "L'identifiant du tag des items qui peuvent être utilisés dans ce contexte.",
