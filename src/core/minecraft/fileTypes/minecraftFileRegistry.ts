@@ -50,7 +50,7 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         displayName: "Blocks Definition",
         packType: "behavior_pack",
         patterns: ["**/blocks/**/*.json"],
-        excludePatterns: undefined,
+        excludePatterns: ["**/loot_tables/**/*.json"],
         schemaPath: "behavior_pack/blocks/_block.json"
     }),
     "behavior_pack/cameras/presets/<all>.json": new MinecraftFileType({

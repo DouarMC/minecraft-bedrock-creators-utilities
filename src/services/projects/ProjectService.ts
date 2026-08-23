@@ -808,7 +808,7 @@ export class ProjectService {
         try {
             scriptsFolder = VscodeUtils.getUriFromPath(minecraftProject.getScriptsPath());
             if (! await VscodeUtils.isDirectory(scriptsFolder)) {
-                throw new Error(`Le chemin "scripts" existe mais n'est pas un dossier : ${scriptsFolder.fsPath}`);
+                return false; // Si le dossier "scripts" n'existe pas, il n'y a pas besoin de compiler du TypeScript
             }
         } catch (error) {
             if (error instanceof Error) {
@@ -816,10 +816,6 @@ export class ProjectService {
             }
 
             throw error;
-        }
-
-        if (! scriptsFolder) {
-            return false; // Si le dossier "scripts" n'existe pas, il n'y a pas besoin de compiler du TypeScript
         }
 
         return true; // Si le dossier "scripts" existe, on considère qu'il peut contenir des fichiers TypeScript à compiler, donc on retourne true pour indiquer qu'une compilation TypeScript est nécessaire

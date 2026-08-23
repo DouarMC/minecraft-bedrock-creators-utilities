@@ -232,21 +232,24 @@ const baseSchema: MinecraftJsonSchema = {
                                             description: "Les items qui ont tous les tags ici seront acceptés.",
                                             type: "array",
                                             items: {
-                                                type: "string"
+                                                type: "string",
+                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_tags
                                             }
                                         },
                                         "minecraft:match_tool_filter_any": {
                                             description: "Les items qui ont au moins un des tags ici seront acceptés.",
                                             type: "array",
                                             items: {
-                                                type: "string"
+                                                type: "string",
+                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_tags
                                             }
                                         },
                                         "minecraft:match_tool_filter_none": {
                                             description: "Les items qui n'ont aucun des tags ici seront acceptés.",
                                             type: "array",
                                             items: {
-                                                type: "string"
+                                                type: "string",
+                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_tags
                                             }
                                         }
                                     }
