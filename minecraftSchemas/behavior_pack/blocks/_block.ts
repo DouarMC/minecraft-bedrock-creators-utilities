@@ -2253,6 +2253,17 @@ const versionedChanges: SchemaChange[] = [
                         }
                     }
                 }
+            },
+            {
+                action: "modify",
+                target: ["definitions", "material_instance", "oneOf", "1", "properties", "ambient_occlusion"],
+                value: {
+                    description: "Définit le niveau d'occlusion ambiante du Bloc. L'occlusion ambiante est un effet d'éclairage qui simule la lumière indirecte dans les coins et les crevasses.",
+                    default: 1.0,
+                    type: "number",
+                    minimum: 0.0,
+                    maximum: 10.0
+                }
             }
         ]
     }
