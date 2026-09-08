@@ -324,7 +324,7 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         id: "resource_pack/blocks.json",
         displayName: "Blocks Definition",
         packType: "resource_pack",
-        patterns: ["blocks.json"],
+        patterns: ["**/blocks.json"],
         excludePatterns: undefined,
         schemaPath: "resource_pack/blocks.json"
     }),
