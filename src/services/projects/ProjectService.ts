@@ -238,7 +238,7 @@ export class ProjectService {
                 description: "pack.description",
                 uuid: randomUUID(),
                 version: [0, 0, 1],
-                min_engine_version: [1, 21, 120]
+                min_engine_version: [1, 26, 40]
             },
             modules: []
         };
@@ -270,7 +270,7 @@ export class ProjectService {
                 description: "pack.description",
                 uuid: randomUUID(),
                 version: [0, 0, 1],
-                min_engine_version: [1, 21, 120]
+                min_engine_version: [1, 26, 40]
             },
             modules: [
                 {
