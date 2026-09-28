@@ -2903,74 +2903,65 @@ const baseSchema: MinecraftJsonSchema = {
                             description: "Définit les interactions qui peuvent être utilisées avec une Entité.",
                             type: "object",
                             properties: {
-                                add_items: {
-                                    description: "La Loot Table avec les items à ajouter à l'inventaire du joueur lors d'une interaction réussie.",
-                                    type: "object",
-                                    properties: {
-                                        table: {
-                                            description: "Le chemin de la Loot Table.",
-                                            type: "string",
-                                            pattern: schemaPatterns.loot_tables_file,
-                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.loot_table_file_paths
-                                        }
-                                    }
-                                },
-                                cooldown: {
-                                    description: "Temps en secondes avant que cette interaction puisse être utilisée à nouveau.",
-                                    default: 0.0,
-                                    type: "number"
-                                },
-                                cooldown_after_being_attacked: {
-                                    description: "Temps en secondes avant que cette interaction puisse être utilisée à nouveau après avoir été attaquée.",
-                                    default: 0.0,
-                                    type: "number"
-                                },
-                                drop_item_slot: {
-                                    description: "Le slot pour retirer et déposer l'item, le cas échéant, lors d'une interaction réussie. Les slots d'inventaire sont désignés par des nombres positifs; les slots d'armure sont désignés par slot.armor.head, slot.armor.chest, slot.armor.legs, slot.armor.feet et slot.armor.body.",
-                                    type: "string",
-                                    enum: [
-                                        "slot.armor.chest", "slot.armor.feet", "slot.armor.head", "slot.armor.legs", "slot.armor.body", "slot.weapon.mainhand", "slot.weapon.offhand"
-                                    ]
-                                },
-                                drop_item_y_offset: {
-                                    description: "Définit un décalage personnalisé de l'axe des Y lorsqu'un élément est déposé. Nécessite que la propriété `drop_item_slot` soit spécifié.",
-                                    default: 0,
-                                    type: "number"
-                                },
-                                equip_item_slot: {
-                                    description: "Le slot pour équiper l'item, le cas échéant, lors d'une interaction réussie. Les slots d'inventaire sont désignés par des nombres positifs; les slots d'armure sont désignés par slot.armor.head, slot.armor.chest, slot.armor.legs, slot.armor.feet et slot.armor.body.",
-                                    type: "string",
-                                    enum: [
-                                        "slot.armor.chest", "slot.armor.feet", "slot.armor.head", "slot.armor.legs", "slot.armor.body", "slot.weapon.mainhand", "slot.weapon.offhand"
-                                    ]
-                                },
-                                health_amount: {
-                                    description: "Le montant de santé que l'Entité gagne ou perd lors d'une interaction réussie. Les valeurs négatives nuiront à l'Entité.",
-                                    default: 0,
-                                    type: "integer"
-                                },
-                                hurt_item: {
-                                    description: "Le montant de dégâts que l'item subira lorsqu'il sera utilisé pour interagir avec cette Entité. Une valeur de 0 signifie que l'item ne subira aucun dégât.",
-                                    default: 0,
-                                    type: "integer"
-                                },
-                                interact_text: {
-                                    "x-localized": true,
-                                    description: "Texte à afficher lorsqu'un joueur peut interagir avec cette Entité.",
-                                    type: "string"
-                                },
                                 interactions: {
                                     description: "Liste des interactions qui peuvent être utilisées avec cette Entité.",
                                     type: "array",
                                     items: {
                                         type: "object",
                                         properties: {
+                                            add_items: {
+                                                description: "La Loot Table avec les items à ajouter à l'inventaire du joueur lors d'une interaction réussie.",
+                                                type: "object",
+                                                properties: {
+                                                    table: {
+                                                        description: "Le chemin de la Loot Table.",
+                                                        type: "string",
+                                                        pattern: schemaPatterns.loot_tables_file,
+                                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.loot_table_file_paths
+                                                    }
+                                                }
+                                            },
+                                            cooldown: {
+                                                description: "Temps en secondes avant que cette interaction puisse être utilisée à nouveau.",
+                                                default: 0.0,
+                                                type: "number"
+                                            },
+                                            cooldown_after_being_attacked: {
+                                                description: "Temps en secondes avant que cette interaction puisse être utilisée à nouveau après avoir été attaquée.",
+                                                default: 0.0,
+                                                type: "number"
+                                            },
+                                            drop_item_slot: {
+                                                description: "Le slot pour retirer et déposer l'item, le cas échéant, lors d'une interaction réussie. Les slots d'inventaire sont désignés par des nombres positifs; les slots d'armure sont désignés par slot.armor.head, slot.armor.chest, slot.armor.legs, slot.armor.feet et slot.armor.body.",
+                                                type: "string",
+                                                enum: [
+                                                    "slot.armor.chest", "slot.armor.feet", "slot.armor.head", "slot.armor.legs", "slot.armor.body", "slot.weapon.mainhand", "slot.weapon.offhand"
+                                                ]
+                                            },
+                                            drop_item_y_offset: {
+                                                description: "Définit un décalage personnalisé de l'axe des Y lorsqu'un élément est déposé. Nécessite que la propriété `drop_item_slot` soit spécifié.",
+                                                default: 0,
+                                                type: "number"
+                                            },
+                                            equip_item_slot: {
+                                                description: "Le slot pour équiper l'item, le cas échéant, lors d'une interaction réussie. Les slots d'inventaire sont désignés par des nombres positifs; les slots d'armure sont désignés par slot.armor.head, slot.armor.chest, slot.armor.legs, slot.armor.feet et slot.armor.body.",
+                                                type: "string",
+                                                enum: [
+                                                    "slot.armor.chest", "slot.armor.feet", "slot.armor.head", "slot.armor.legs", "slot.armor.body", "slot.weapon.mainhand", "slot.weapon.offhand"
+                                                ]
+                                            },
                                             give_item: {
                                                 description: "Défiit si l'item tenu par le joueur sera donné à l'Entité lors d'une interaction réussie.",
                                                 type: "boolean"
                                             },
+                                            health_amount: {
+                                                description: "Le montant de santé que l'Entité gagne ou perd lors d'une interaction réussie. Les valeurs négatives nuiront à l'Entité.",
+                                                default: 0,
+                                                type: "integer"
+                                            },
                                             hurt_item: {
                                                 description: "Le montant de dégâts que l'item subira lorsqu'il sera utilisé pour interagir avec cette Entité.",
+                                                default: 0,
                                                 type: "integer"
                                             },
                                             interact_text: {
@@ -3011,6 +3002,28 @@ const baseSchema: MinecraftJsonSchema = {
                                                 description: "Le son à jouer lorsqu'une interaction réussie se produit.",
                                                 type: "string"
                                             },
+                                            repair_entity_item: {
+                                                description: "Permet la réparation de l'item d'une Entité donnée.",
+                                                type: "object",
+                                                properties: {
+                                                    amount: {
+                                                        description: "De combien de durabilité l'item doit être réparé.",
+                                                        type: "integer"
+                                                    },
+                                                    slot: {
+                                                        description: "Le slot de l'entité contenant l'item à réparer. Les slots d'inventaire sont désignés par des nombres positifs; les slots d'armure sont désignés par slot.armor.head, slot.armor.chest, slot.armor.legs, slot.armor.feet et slot.armor.body.",
+                                                        type: "string",
+                                                        enum: [
+                                                            "slot.armor.chest", "slot.armor.feet", "slot.armor.head", "slot.armor.legs", "slot.armor.body"
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            spawn_entities: {
+                                                description: "Entité à faire apparaître lorsqu'une interaction réussie se produit.",
+                                                type: "string",
+                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.entity_ids
+                                            },
                                             spawn_items: {
                                                 description: "Loot table avec les items à faire apparaître lors d'une interaction réussie.",
                                                 type: "object",
@@ -3033,108 +3046,27 @@ const baseSchema: MinecraftJsonSchema = {
                                                 default: false,
                                                 type: "boolean"
                                             },
+                                            transform_to_item: {
+                                                description: "L'item utilisé dans cette interaction réussi se transformera en un cet item.",
+                                                type: "string",
+                                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
+                                            },
                                             take_item: {
                                                 description: "Définit si l'item tenu par le joueur sera pris par l'Entité lors d'une interaction réussie.",
                                                 type: "boolean"
                                             },
                                             use_item: {
                                                 description: "Définit si l'interaction utilisera un item.",
+                                                default: false,
                                                 type: "boolean"
+                                            },
+                                            vibration: {
+                                                description: "Le type de vibration à émettre lorsque l'interaction se produit.",
+                                                default: "entity_interact",
+                                                enum: ["none", "shear", "entity_die", "entity_act", "entity_interact"]
                                             }
                                         }
                                     }
-                                },
-                                on_interact: {
-                                    description: "Evenement à déclencher lorsqu'une interaction réussie se produit.",
-                                    oneOf: [
-                                        {
-                                            type: "string"
-                                        },
-                                        commonSchemas.entity_event_trigger
-                                    ]
-                                },
-                                particle_on_start: {
-                                    description: "Effet de particules qui sera initié au début de l'interaction.",
-                                    type: "object",
-                                    properties: {
-                                        particle_offset_towards_interactor: {
-                                            description: "Définit si la particule apparaîtra plus proche de qui a effectué l'interaction.",
-                                            default: false,
-                                            type: "boolean"
-                                        },
-                                        particle_type: {
-                                            description: "Le type de particule à afficher.",
-                                            type: "string"
-                                        },
-                                        particle_y_offset: {
-                                            description: "Décalage vertical du système de particules.",
-                                            default: 0.0,
-                                            type: "number"
-                                        }
-                                    }
-                                },
-                                play_sounds: {
-                                    description: "Une ou plusieurs identifiants sonores à jouer lorsque l'interaction se produit.",
-                                    type: "string"
-                                },
-                                repair_entity_item: {
-                                    description: "Permet la réparation de l'item d'une Entité donnée.",
-                                    type: "object",
-                                    properties: {
-                                        amount: {
-                                            description: "De combien de durabilité l'item doit être réparé.",
-                                            type: "integer"
-                                        },
-                                        slot: {
-                                            description: "Le slot de l'entité contenant l'item à réparer. Les slots d'inventaire sont désignés par des nombres positifs; les slots d'armure sont désignés par slot.armor.head, slot.armor.chest, slot.armor.legs, slot.armor.feet et slot.armor.body.",
-                                            type: "string",
-                                            enum: [
-                                                "slot.armor.chest", "slot.armor.feet", "slot.armor.head", "slot.armor.legs", "slot.armor.body"
-                                            ]
-                                        }
-                                    }
-                                },
-                                spawn_entities: {
-                                    description: "Entité à faire apparaître lorsqu'une interaction réussie se produit.",
-                                    type: "string",
-                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.entity_ids
-                                },
-                                spawn_items: {
-                                    description: "Loot table avec les items à faire apparaître lors d'une interaction réussie.",
-                                    type: "object",
-                                    properties: {
-                                        table: {
-                                            description: "Le chemin de la Loot Table.",
-                                            type: "string",
-                                            pattern: schemaPatterns.loot_tables_file,
-                                            "x-dynamic-examples-source": dynamicExamplesSourceKeys.loot_table_file_paths
-                                        },
-                                        y_offset: {
-                                            description: "Décalage vertical pour les items qui apparaissent.",
-                                            default: 1,
-                                            type: "number"
-                                        }
-                                    }
-                                },
-                                swing: {
-                                    description: "Définit si le joueur fera l'animation de 'swing' lorsqu'il interagit avec cette Entité.",
-                                    default: false,
-                                    type: "boolean"
-                                },
-                                transform_to_item: {
-                                    description: "L'item utilisé dans cette interaction réussi se transformera en un cet item.",
-                                    type: "string",
-                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.item_ids
-                                },
-                                use_item: {
-                                    description: "Définit si l'interaction utilisera un item.",
-                                    default: false,
-                                    type: "boolean"
-                                },
-                                vibration: {
-                                    description: "Le type de vibration à émettre lorsque l'interaction se produit.",
-                                    default: "entity_interact",
-                                    enum: ["none", "shear", "entity_die", "entity_act", "entity_interact"]
                                 }
                             }
                         },
@@ -16587,6 +16519,183 @@ const versionedChanges: SchemaChange[] = [
                 action: "modify",
                 target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:pushable_by_entity", "properties", "presets", "items", "properties", "require_collision_overlap", "default"],
                 value: true
+            }
+        ]
+    },
+    {
+        version: "1.26.50",
+        changes: [
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:interact", "properties", "interactions", "items", "properties", "spawn_entities"],
+                value: {
+                    description: "Définit les entités qui seront générées lors d'une interaction réussie.",
+                    type: "array",
+                    items: {
+                        type: "string",
+                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.entity_ids
+                    }
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:interact", "properties", "interactions", "items", "properties", "play_sounds"],
+                value: {
+                    description: "Définit les sons qui seront joués lors d'une interaction réussie.",
+                    type: "array",
+                    items: {
+                        type: "string"
+                    }
+                }
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:projectile", "properties", "on_hit", "properties", "spawn_chance", "properties", "first_spawn_percent_chance"]
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:projectile", "properties", "on_hit", "properties", "spawn_chance", "properties", "first_spawn_chance"],
+                value: {
+                    description: "La chance qu'une entité soit générée lors de l'impact du projectile.",
+                    default: 0,
+                    type: "number",
+                    minimum: 0,
+                    maximum: 1
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:projectile", "properties", "on_hit", "properties", "spawn_chance", "properties", "second_spawn_chance"],
+                value: {
+                    description: "La chance qu'une deuxième entité soit générée lors de l'impact du projectile.",
+                    default: 0,
+                    type: "number",
+                    minimum: 0,
+                    maximum: 1
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:projectile", "properties", "anchor"],
+                value: {
+                    description:
+                    "Définit le point d'ancrage du projectile par rapport à l'Entité qui le tire." +
+                    "\n\n- `origin`: le projectile est ancré au point d'origine" +
+                    "\n\n- `eye_height`: le projectile est ancré à la hauteur des yeux de l'Entité" +
+                    "\n\n- `middle`: le projectile est ancré au milieu de l'Entité",
+                    default: "origin",
+                    type: "string",
+                    enum: ["origin", "eye_height", "middle"]
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:projectile", "properties", "on_hit", "properties", "impact_damage", "properties", "damage"],
+                value: {
+                    description: "La quantité de dégâts infligés par le projectile lorsqu'il touche une cible.",
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "La quantité minimale de dégâts infligés par le projectile lorsqu'il touche une cible.",
+                            type: "number"
+                        },
+                        max: {
+                            description: "La quantité maximale de dégâts infligés par le projectile lorsqu'il touche une cible.",
+                            type: "number"
+                        }
+                    }
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:projectile", "properties", "on_hit", "properties", "mob_effect"],
+                value: {
+                    description: "Définit le ou les effets de statut qui seront appliqués à la cible lorsqu'elle est touchée par le projectile.",
+                    type: "object",
+                    properties: {
+                        effects: {
+                            description: "La liste des effets de statut qui seront appliqués à la cible lorsqu'elle est touchée par le projectile.",
+                            type: "array",
+                            items: {
+                                type: "object",
+                                properties: {
+                                    amplifier: {
+                                        description: "Le multiplcateur de l'amplification de cet effet.",
+                                        default: 1,
+                                        type: "integer"
+                                    },
+                                    ambient: {
+                                        description: "Définit si un mob apparaitra qui n'est pas hostile comme l'entité de chauve-souris dans Minecraft.",
+                                        default: false,
+                                        type: "boolean"
+                                    },
+                                    duration: {
+                                        description: "La durée de l'effet.",
+                                        default: 1,
+                                        oneOf: [
+                                            {
+                                                type: "integer"
+                                            },
+                                            {
+                                                type: "string",
+                                                enum: ["infinite"]
+                                            }
+                                        ]
+                                    },
+                                    durationeasy: {
+                                        description: "La durée de l'effet en mode facile.`",
+                                        default: 0,
+                                        oneOf: [
+                                            {
+                                                type: "integer"
+                                            },
+                                            {
+                                                type: "string",
+                                                enum: ["infinite"]
+                                            }
+                                        ]
+                                    },
+                                    durationhard: {
+                                        description: "La durée de l'effet en mode difficile.",
+                                        default: 800,
+                                        oneOf: [
+                                            {
+                                                type: "integer"
+                                            },
+                                            {
+                                                type: "string",
+                                                enum: ["infinite"]
+                                            }
+                                        ]
+                                    },
+                                    durationnormal: {
+                                        description: "La durée de l'effet en mode normal.",
+                                        default: 200,
+                                        oneOf: [
+                                            {
+                                                type: "integer"
+                                            },
+                                            {
+                                                type: "string",
+                                                enum: ["infinite"]
+                                            }
+                                        ]
+                                    },
+                                    effect: {
+                                        description: "L'effet à appliquer.",
+                                        type: "string",
+                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.effect_ids
+                                    },
+                                    visible: {
+                                        description: "Définit si l'effet est visible.",
+                                        default: false,
+                                        type: "boolean"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         ]
     },
