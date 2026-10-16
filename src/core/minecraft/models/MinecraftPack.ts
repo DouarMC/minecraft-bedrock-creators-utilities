@@ -1,3 +1,4 @@
+//fouillé
 import { MinecraftPackType } from "./MinecraftTypes";
 import { Manifest } from "./fileStructures/Manifest";
 
@@ -8,7 +9,7 @@ export class MinecraftPack {
 
     public constructor(
         rootUri: string,
-        manifest: any,
+        manifest: Manifest,
         packType: MinecraftPackType
     ) {
         this.rootUri = rootUri;
@@ -22,7 +23,7 @@ export class MinecraftPack {
      * @returns 
      */
     public static determinePackType(manifest: Manifest): MinecraftPackType | undefined {
-        if (! manifest.modules || !Array.isArray(manifest.modules)) {
+        if (! manifest.modules || ! Array.isArray(manifest.modules)) {
             return undefined;
         }
 

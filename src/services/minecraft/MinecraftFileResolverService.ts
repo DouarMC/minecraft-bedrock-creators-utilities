@@ -12,9 +12,15 @@ import { MinecraftProject } from '../../core/minecraft/models/projects/Minecraft
 import { MinecraftGameManager } from './MinecraftGameManager';
 
 export class MinecraftFileResolverService {
-    // Petit cache pour ne pas relire le fichier manifest 100 fois par seconde
+    /**
+     * Petit cache pour ne pas relire le fichier manifest 100 fois par seconde
+    */
     private static packCache: Map<string, MinecraftPack> = new Map();
 
+    /**
+     * Obtenir toutes les classes de type de fichier Minecraft crées dans `minecraftFileRegistry.ts`.
+     * @returns 
+     */
     public static getAllFileTypes(): MinecraftFileType[] {
         return Object.values(minecraftFileRegistry);
     }

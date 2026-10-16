@@ -9,9 +9,7 @@
     "categories": [
         "Other"
     ],
-    "activationEvents": [
-        "onStartupFinished"
-    ],
+    "activationEvents": [],
     "main": "./out/src/extension.js",
     "contributes": {
         "commands": [
@@ -54,11 +52,6 @@
                 "command": "minecraft-bedrock-creators-utilities.visualizeMcStats",
                 "title": "Visualiser un fichier McStats.",
                 "category": "Minecraft Bedrock Utilities"
-            },
-            {
-                "command": "minecraft-bedrock-creators-utilities.projectOpen",
-                "title": "Ouvrir un projet Minecraft Bedrock",
-                "category": "Minecraft Bedrock Utilities"
             }
         ],
         "jsonValidation": [
@@ -88,25 +81,23 @@
         "lint": "eslint src",
         "test": "vscode-test",
         "build-schemas": "tsx scripts/buildSchemas.ts",
-        "include-vanilla-identifier-to-json": "tsx scripts/includeVanillaIdentifierToJson.ts",
-        "dev-schema-editor": "tsx scripts/schemaEditor/index.ts"
+        "include-vanilla-identifier-to-json": "tsx scripts/includeVanillaIdentifierToJson.ts"
     },
     "devDependencies": {
+        "tsx": "^4.21.0",
+
         "@types/lodash": "^4.17.20",
         "@types/node": "20.x",
         "@types/vscode": "^1.100.0",
         "@typescript-eslint/eslint-plugin": "^8.31.1",
         "@typescript-eslint/parser": "^8.31.1",
         "eslint": "^9.25.1",
-        "tsx": "^4.21.0",
         "typescript": "^5.8.3"
     },
     "dependencies": {
-        "fast-glob": "^3.3.3",
         "jsonc-parser": "^3.3.1",
         "lodash": "^4.17.21",
         "minimatch": "^10.1.1",
-        "zip-lib": "^1.1.2",
-        "zlib": "^1.0.5"
+        "zip-lib": "^1.1.2"
     }
 }
