@@ -13,7 +13,7 @@ import { VersionResolver } from "../minecraft/versioning/VersionResolver";
 export class DynamicSourceHandlers {
     public static async getDynamicExampleSourceValues(key: DynamicExamplesSourceKey | DynamicExamplesSourceKey[] | Object): Promise<string[]> {
         const exampleValues: string[] = [];
-        const minecraftProject = MinecraftProjectManager.project;
+        const minecraftProject = MinecraftProjectManager.getProject();
         const minecraftGame = minecraftProject
             ? MinecraftGameManager.getMinecraftGameForProject(minecraftProject)
             : undefined;

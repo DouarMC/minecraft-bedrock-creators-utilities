@@ -29,7 +29,7 @@ export class ToggleAutoDeployFeature extends Feature {
     
     public register(): void {
         // Vérifie si un projet Minecraft est chargé avant d'enregistrer la commande
-        const minecraftProject = MinecraftProjectManager.project;
+        const minecraftProject = MinecraftProjectManager.getProject();
         if (minecraftProject === undefined) {
             console.warn("Aucun projet Minecraft Bedrock chargé. La fonctionnalité de basculement du déploiement automatique ne sera pas enregistrée.");
             return;
@@ -74,7 +74,7 @@ export class ToggleAutoDeployFeature extends Feature {
      */
     private async startWatcherIfPossible(): Promise<void> {
         // Vérifie à nouveau si un projet Minecraft est chargé avant de démarrer le watcher
-        const minecraftProject = MinecraftProjectManager.project;
+        const minecraftProject = MinecraftProjectManager.getProject();
         if (minecraftProject === undefined) {
             vscode.window.showWarningMessage("Aucun projet chargé, impossible d'activer le déploiement automatique.");
             this.toggleState = "off";

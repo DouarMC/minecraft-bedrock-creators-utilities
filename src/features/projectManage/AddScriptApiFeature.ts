@@ -18,7 +18,7 @@ export class AddScriptApiFeature extends Feature {
     public register(): void {
         const disposable = vscode.commands.registerCommand(AddScriptApiFeature.ADD_SCRIPT_API_COMMAND_ID, async () => {
             // Vérifie qu'un projet Minecraft Bedrock est chargé
-            const minecraftProject = MinecraftProjectManager.project;
+            const minecraftProject = MinecraftProjectManager.getProject();
             if (minecraftProject === undefined) {
                 vscode.window.showErrorMessage("Aucun projet Minecraft Bedrock n'est chargé.");
                 return;

@@ -6,9 +6,18 @@ import { MinecraftStableGame } from "../../core/minecraft/models/games/Minecraft
 import { FileSystemUtils } from "../../vscode-utils/FileSystemUtils";
 import { VscodeUtils } from "../../vscode-utils/VscodeUtils";
 
-
+/**
+ * Classe de gestion des installations de Minecraft Bedrock (Stable et Preview).
+ */
 export class MinecraftGameManager {
+    /**
+     * Récupère l'installation de Minecraft Bedrock Stable.
+     */
     private static stableGame: MinecraftStableGame | undefined;
+
+    /**
+     * Récupère l'installation de Minecraft Bedrock Preview.
+     */
     private static previewGame: MinecraftPreviewGame | undefined;
 
     /**
@@ -27,8 +36,8 @@ export class MinecraftGameManager {
     }
 
     /**
-     * Récupère l'installation de Minecraft Bedrock Preview.
-     * @throws {Error} Si Minecraft Bedrock Preview n'est pas installé.
+     * Récupère l'installation de Minecraft Bedrock.
+     * @throws {Error} Si Minecraft Bedrock n'est pas installé.
      * @returns 
      */
     public static getStableGame(): MinecraftStableGame {
@@ -52,17 +61,34 @@ export class MinecraftGameManager {
         return this.previewGame;
     }
 
+    /**
+     * Récupère l'installation de Minecraft Bedrock correspondant au projet Minecraft donné.
+     * @param minecraftProject Le projet Minecraft pour lequel récupérer l'installation de Minecraft Bedrock.
+     * @returns
+     * @throws {Error} Si l'installation de Minecraft Bedrock correspondant au projet n'est pas trouvée.
+     */
     public static getMinecraftGameForProject(minecraftProject: MinecraftProject): MinecraftGame | undefined {
         const minecraftProduct = minecraftProject.minecraftProduct;
         if (minecraftProduct === "stable") {
+            if (! this.stableGame) {
+                throw new Error("Minecraft Bedrock Stable n'est pas installé.");
+            }
             return this.stableGame;
         } else if (minecraftProduct === "preview") {
+            if (! this.previewGame) {
+                throw new Error("Minecraft Bedrock Preview n'est pas installé.");
+            }
             return this.previewGame;
-        } else {
-            return undefined;
         }
+
+        throw new Error(`Le projet Minecraft ${minecraftProject.id} a un produit Minecraft inconnu : ${minecraftProduct}`);
     }
 
+    /**
+     * Vérifie si le jeu Minecraft Bedrock est installé sur le système.
+     * @param game Le jeu Minecraft Bedrock (Stable ou Preview) à vérifier.
+     * @returns
+     */
     public static async isInstalled(game: MinecraftGame): Promise<boolean> {
         try {
             FileSystemUtils.ensureWindowsPlatform();
@@ -110,6 +136,11 @@ export class MinecraftGameManager {
         return dataFolder;
     }
 
+    /**
+     * Récupère le dossier com.mojang du jeu Minecraft Bedrock.
+     * @param game Le jeu Minecraft (Stable ou Preview) pour lequel récupérer le dossier com.mojang.
+     * @returns
+     */
     public static async getComMojangFolder(game: MinecraftGame): Promise<vscode.Uri> {
         const appData = process.env.APPDATA;
         if (! appData) {
@@ -150,6 +181,12 @@ export class MinecraftGameManager {
         return definitionsFolder;
     }
 
+    /**
+     * Récupère les dossiers des behavior packs du jeu Minecraft Bedrock vanilla.
+     * @param game 
+     * @returns
+     * @throws {Error} Si le dossier des behavior packs ne peut pas être trouvé.
+     */
     public static async getVanillaBehaviorPackFolders(game: MinecraftGame): Promise<vscode.Uri[]> {
         let dataFolder: vscode.Uri;
         try {
@@ -178,6 +215,12 @@ export class MinecraftGameManager {
         return behaviorPackUris;
     }
 
+    /**
+     * Récupère les dossiers des resource packs du jeu Minecraft Bedrock vanilla.
+     * @param game
+     * @returns
+     * @throws {Error} Si le dossier des resource packs ne peut pas être trouvé.
+     */
     public static async getVanillaResourcePackFolders(game: MinecraftGame): Promise<vscode.Uri[]> {
         let dataFolder: vscode.Uri;
         try {

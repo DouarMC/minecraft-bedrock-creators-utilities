@@ -6,12 +6,14 @@ import * as vscode from "vscode";
 export class VscodeUtils {
     /**
      * Le contexte de l'extension, initialisé dans la fonction activate de l'extension. Permet d'accéder à des fonctionnalités de VSCode comme les commandes, les événements, etc.
+     * @verified
      */
     private static context: vscode.ExtensionContext | undefined;
 
     /**
-     * Initialise le contexte de l'extension. Doit être appelé dans la fonction activate de l'extension.
-     * @param context 
+     * Initialise le contexte de l'extension. Doit être appelé dans la fonction activate de l'extension. Utile pour accéder au contexte de l'extension dans d'autres classes ou fonctions.
+     * @param context
+     * @verified
      */
     public static initializeContext(context: vscode.ExtensionContext): void {
         this.context = context;
@@ -76,7 +78,8 @@ export class VscodeUtils {
      * Vérifie si un URI est un fichier
      * @param uri L'URI à vérifier
      * @throws {Error} Lève une erreur si le fichier ne peut pas être vérifié.
-     * @returns 
+     * @returns
+     * @verified
      */
     public static async isFile(uri: vscode.Uri): Promise<boolean> {
         try {

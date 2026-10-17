@@ -11,6 +11,9 @@ import { AddonMinecraftProject } from '../../core/minecraft/models/projects/Addo
 import { MinecraftProject } from '../../core/minecraft/models/projects/MinecraftProject';
 import { MinecraftGameManager } from './MinecraftGameManager';
 
+/**
+ * Classe Service qui permet de trouver le type de fichier Minecraft associé à un fichier donné, ainsi que de récupérer les fichiers data-driven associés à un type de fichier.
+ */
 export class MinecraftFileResolverService {
     /**
      * Petit cache pour ne pas relire le fichier manifest 100 fois par seconde
@@ -85,7 +88,7 @@ export class MinecraftFileResolverService {
     }
 
     /**
-     * Détermine le type de fichier en fonction de son URI et des patterns définis.
+     * Détermine le type de fichier Minecraft en fonction de son URI et des patterns définis.
      * @param fileUri L'URI du fichier à analyser.
      */
     public static async resolveFileType(fileUri: vscode.Uri): Promise<MinecraftFileType | undefined> {

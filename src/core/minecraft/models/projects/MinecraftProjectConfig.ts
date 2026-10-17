@@ -29,6 +29,7 @@ export class MinecraftProjectConfig {
      * Crée une instance de MinecraftProjectConfig à partir d'un objet brut
      * @throws {Error} Si la configuration est invalide
      * @param rawConfig Le contenu brut de la configuration
+     * @verified
      */
     public constructor(rawConfig: any) {
         if (! rawConfig || typeof rawConfig !== "object") { // Vérifie que la configuration est un objet valide
@@ -87,7 +88,8 @@ export class MinecraftProjectConfig {
      * Crée une instance de MinecraftProjectConfig à partir d'une chaîne JSON ou d'un objet
      * @param json La chaîne JSON ou l'objet brut
      * @throws {Error} Si la configuration est invalide
-     * @returns 
+     * @returns
+     * @verified
      */
     public static fromJSON(json: string | object): MinecraftProjectConfig {
         const data = typeof json === "string" ? JSON.parse(json) : json;

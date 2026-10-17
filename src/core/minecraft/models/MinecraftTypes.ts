@@ -5,11 +5,13 @@ export type MinecraftPackType = "behavior_pack" | "resource_pack" | "skin_pack" 
 
 /**
  * Type représentant les différents types de projets Minecraft.
+ * @verified
  */
 export type MinecraftProjectType = "addon" | "skin_pack" | "world_template";
 
 /**
  * Type représentant les différents produits Minecraft ciblés par les projets.
+ * @verified
  */
 export type MinecraftProduct = "stable" | "preview";
 

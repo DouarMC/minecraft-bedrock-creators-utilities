@@ -2,6 +2,10 @@ import * as vscode from "vscode";
 import { MinecraftProject } from "../../core/minecraft/models/projects/MinecraftProject";
 import { MinecraftProjectLoader } from "./MinecraftProjectLoader";
 
+/**
+ * Classe responsable de la gestion du projet Minecraft actuellement chargé dans l'extension.
+ * @verified
+ */
 export class MinecraftProjectManager {
     /**
      * Le projet Minecraft actuellement chargé, ou undefined s'il n'y en a pas.
@@ -47,7 +51,7 @@ export class MinecraftProjectManager {
 
         try {
             this.currentProject = await MinecraftProjectLoader.load(folder);
-            console.log(`[MBCU] Projet Minecraft chargé : ${this.currentProject?.id}`);
+            console.log(`[MBCU] Projet Minecraft chargé : ${this.currentProject.id}`);
         } catch (error) {
             console.error("[MBCU] Échec du chargement du projet Minecraft :", error);
             this.currentProject = undefined;
@@ -57,7 +61,7 @@ export class MinecraftProjectManager {
     /**
      * Renvoie le projet actuellement chargé, ou undefined s'il n'y en a pas.
      */
-    public static get project(): MinecraftProject | undefined {
+    public static getProject(): MinecraftProject | undefined {
         return this.currentProject;
     }
 

@@ -22,7 +22,7 @@ export class DeployProjectFeature extends Feature {
     private registerDeployProjectCommand(): void {
         const disposable = vscode.commands.registerCommand(DeployProjectFeature.DEPLOY_PROJECT_COMMAND_ID, async () => {
             // On vérifie d'abord qu'un projet Minecraft est chargé avant de tenter de le déployer
-            const minecraftProject = MinecraftProjectManager.project;
+            const minecraftProject = MinecraftProjectManager.getProject();
             if (minecraftProject === undefined) {
                 vscode.window.showErrorMessage("Aucun projet Minecraft Bedrock est chargé.");
                 return;
