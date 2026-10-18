@@ -5,6 +5,9 @@ import { MinecraftJsonSchema } from "../../../../common/types/MinecraftJsonSchem
 import { SchemaFetcher } from "../../network/SchemaFetcher";
 import { VersionResolver } from "../versioning/VersionResolver";
 
+/**
+ * Service pour la gestion des schémas Minecraft.
+ */
 export class MinecraftSchemaService {
     /**
      * Renvoie le schéma Minecraft adapté au document donné.
@@ -41,12 +44,12 @@ export class MinecraftSchemaService {
     private static extractFormatVersion(document: vscode.TextDocument): string | number | undefined {
         const text = document.getText();
 
-        // 🚀 Tentative 1: JSON.parse standard (le plus rapide si JSON valide
+        // Tentative 1: JSON.parse standard (le plus rapide si JSON valide
         try {
             const json = JsonParser.parse(text);
             return json.format_version || undefined;
         } catch {
-            // 🛡️ Fallback: Regex simple si JSON invalide
+            // Fallback: Regex simple si JSON invalide
             const match = text.match(/"format_version"\s*:\s*"([^"]+)"/);
             return match ? match[1] : undefined;
         }

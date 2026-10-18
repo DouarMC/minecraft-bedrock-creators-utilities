@@ -33,6 +33,7 @@ export class ToggleAutoDeployFeature extends Feature {
         let minecraftProject: MinecraftProject;
         try {
             minecraftProject = MinecraftProjectManager.getProject();
+            console.warn(`[MBCU] Projet Minecraft actuellement chargé : ${minecraftProject.id}`);
         } catch (error) {
             vscode.window.showErrorMessage("Aucun projet Minecraft Bedrock n'est chargé. La fonctionnalité de basculement du déploiement automatique ne sera pas enregistrée.");
             return;

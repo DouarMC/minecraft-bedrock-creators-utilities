@@ -2,9 +2,23 @@
 import { MinecraftPackType } from "./MinecraftTypes";
 import { Manifest } from "./fileStructures/Manifest";
 
+/**
+ * Représente un pack Minecraft Bedrock (Behavior Pack, Resource Pack, Skin Pack ou World Template).
+ */
 export class MinecraftPack {
+    /**
+     * Chemin du dossier racine du pack Minecraft Bedrock.
+     */
     public readonly rootUri: string;
+
+    /**
+     * Manifeste du pack Minecraft Bedrock.
+     */
     public readonly manifest: Manifest;
+
+    /**
+     * Type du pack Minecraft Bedrock (Behavior Pack, Resource Pack, Skin Pack ou World Template).
+     */
     public readonly packType: MinecraftPackType;
 
     public constructor(

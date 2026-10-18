@@ -33,6 +33,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     for (const feature of features) {
         feature.register();
+        console.log(`[MBCU] Feature registered: ${feature.constructor.name}`);
     }
 }
 

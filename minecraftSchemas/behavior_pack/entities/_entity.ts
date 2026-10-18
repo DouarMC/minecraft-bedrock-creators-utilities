@@ -5093,7 +5093,7 @@ const baseSchema: MinecraftJsonSchema = {
                                 },
                                 isolated_physics: {
                                     description: "Définit si le projectile ne sera pas affecté par des forces extérieures telles que le frottement et la trainée.",
-                                    default: true,
+                                    default: false,
                                     type: "boolean"
                                 },
                                 knockback: {
@@ -6665,6 +6665,15 @@ const baseSchema: MinecraftJsonSchema = {
                                     type: "number",
                                     minimum: 0.0,
                                     maximum: 1.0
+                                },
+                                teleports_on_projectile_hit: {
+                                    description: "Définit si l'entité se téléportera lorsqu'elle est touchée par un projectile.",
+                                    default: false,
+                                    type: "boolean"
+                                },
+                                projectile_filter: {
+                                    description: "Si présent, l'entité ne se téléportera que lorsqu'elle est touchée par un projectile qui satisfait le filtre.",
+                                    ...commonSchemas.minecraft_filter
                                 }
                             }
                         },
@@ -16435,6 +16444,11 @@ const versionedChanges: SchemaChange[] = [
                         }
                     }
                 }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:projectile", "properties", "isolated_physics", "default"],
+                value: true
             }
         ]
     },
@@ -16695,6 +16709,104 @@ const versionedChanges: SchemaChange[] = [
                             }
                         }
                     }
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:projectile", "properties", "multiple_targets", "default"],
+                value: false
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.ranged_attack", "properties", "in_range_movement_mode"],
+                value: {
+                    description:
+                    "Définit le mode de mouvement de l'Entité lorsqu'elle est à portée de sa cible." +
+                    "\n\n- `hold_position`: L'entité maintient sa position lorsqu'elle se trouve à portée de sa cible." +
+                    "\n\n- `follow_target`: L'entité suit sa cible lorsqu'elle se trouve à portée de sa cible.",
+                    default: "hold_position",
+                    type: "string",
+                    enum: ["hold_position", "follow_target"]
+                }
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.ranged_attack", "properties", "attack_radius"],
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.ranged_attack", "properties", "attack_radius_min"],
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:behavior.ranged_attack", "properties", "attack_range"],
+                value: {
+                    description: "Définit la plage de distance à laquelle l'Entité peut faire une attaque à distance.",
+                    default: {
+                        max: 0,
+                        min: 0
+                    },
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "La distance minimale à laquelle l'Entité peut faire une attaque à distance.",
+                            type: "number"
+                        },
+                        max: {
+                            description: "La distance maximale à laquelle l'Entité peut faire une attaque à distance.",
+                            type: "number"
+                        }
+                    }
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:freezing_immune"],
+                value: {
+                    description: "Définit que l'Entité est immunisée contre le gel.",
+                    type: "object"
+                }
+            },
+            {
+                action: "remove",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:projectile", "owner_launch_immunity_ticks"],
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:can_stand_on_powder_snow"],
+                value: {
+                    description: "Définit que l'Entité peut se tenir sur la neige poudreuse.",
+                    type: "object"
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:block_movement_slowdown_immunity"],
+                value: {
+                    description: "Définit que l'Entité est immunisée contre le ralentissement du mouvement causé par les blocs spécifiés.",
+                    type: "object",
+                    properties: {
+                        blocks: {
+                            description: "La liste des blocs qui ne ralentiront pas le mouvement de l'Entité.",
+                            type: "array",
+                            items: {
+                                oneOf: [
+                                    {
+                                        type: "string",
+                                    },
+                                    commonSchemas.block_descriptor
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:freezing_vulnerable"],
+                value: {
+                    description: "Définit que l'Entité est vulnérable aux dégâts de gel de la neige poudreuse.",
+                    type: "object"
                 }
             }
         ]

@@ -1,3 +1,6 @@
+/**
+ * Classe abstraite représentant un jeu Minecraft Bedrock.
+ */
 export abstract class MinecraftGame {
     /**
      * Nom du dossier d'installation du jeu Minecraft Bedrock.
