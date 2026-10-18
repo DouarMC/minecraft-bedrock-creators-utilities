@@ -46,7 +46,9 @@ export class ExploreMinecraftFoldersFeature extends Feature {
             try {
                 await FileSystemUtils.openExplorerWithCheck(folderToOpen);
             } catch (error) {
-                vscode.window.showErrorMessage(`❌ Erreur lors de l'ouverture du dossier : ${(error as Error).message}`);
+                if (error instanceof Error) {
+                    vscode.window.showErrorMessage(`⚠️ Impossible d'ouvrir le dossier ${folderToOpen.fsPath} : ${error.message}`);
+                }
             }
         });
 

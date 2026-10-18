@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { Feature } from "../Feature";
 import { MinecraftProjectManager } from "../../services/projects/MinecraftProjectManager";
 import { ProjectService } from "../../services/projects/ProjectService";
+import { MinecraftProject } from "../../core/minecraft/models/projects/MinecraftProject";
 
 /**
  * Fonctionnalité pour basculer le déploiement automatique d'un projet Minecraft Bedrock lorsque des changements sont détectés dans le dossier "addon" du projet. Cette fonctionnalité utilise un watcher pour surveiller les changements de fichiers et déclencher le déploiement automatique en conséquence. L'état du déploiement automatique est affiché dans la barre de statut de VSCode, permettant aux utilisateurs de voir rapidement s'il est activé ou désactivé, et de cliquer pour basculer son état.
@@ -29,9 +30,11 @@ export class ToggleAutoDeployFeature extends Feature {
     
     public register(): void {
         // Vérifie si un projet Minecraft est chargé avant d'enregistrer la commande
-        const minecraftProject = MinecraftProjectManager.getProject();
-        if (minecraftProject === undefined) {
-            console.warn("Aucun projet Minecraft Bedrock chargé. La fonctionnalité de basculement du déploiement automatique ne sera pas enregistrée.");
+        let minecraftProject: MinecraftProject;
+        try {
+            minecraftProject = MinecraftProjectManager.getProject();
+        } catch (error) {
+            vscode.window.showErrorMessage("Aucun projet Minecraft Bedrock n'est chargé. La fonctionnalité de basculement du déploiement automatique ne sera pas enregistrée.");
             return;
         }
 
@@ -74,15 +77,18 @@ export class ToggleAutoDeployFeature extends Feature {
      */
     private async startWatcherIfPossible(): Promise<void> {
         // Vérifie à nouveau si un projet Minecraft est chargé avant de démarrer le watcher
-        const minecraftProject = MinecraftProjectManager.getProject();
-        if (minecraftProject === undefined) {
+        let minecraftProject: MinecraftProject;
+        try {
+            minecraftProject = MinecraftProjectManager.getProject();
+        } catch (error) {
             vscode.window.showWarningMessage("Aucun projet chargé, impossible d'activer le déploiement automatique.");
             this.toggleState = "off";
             this.updateStatusBar();
             return;
         }
 
-        let pattern = new vscode.RelativePattern(minecraftProject.folder, "addon/**/*"); // Surveille tous les fichiers dans le dossier "addon" et ses sous-dossiers
+        // Surveille tous les fichiers dans le dossier "addon" et ses sous-dossiers
+        let pattern = new vscode.RelativePattern(minecraftProject.folder, "addon/**/*");
         /**
          * Liste des fichiers à ignorer pour éviter les déploiements inutiles
          */

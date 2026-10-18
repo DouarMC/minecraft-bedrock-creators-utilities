@@ -8,6 +8,7 @@ import { ProjectService } from "../../services/projects/ProjectService";
 import { PromptService } from "../../services/prompts/PromptService";
 import { VscodeUtils } from "../../vscode-utils/VscodeUtils";
 import { MinecraftFileResolverService } from "../../services/minecraft/MinecraftFileResolverService";
+import { MinecraftProject } from "../../core/minecraft/models/projects/MinecraftProject";
 
 export class AddScriptApiFeature extends Feature {
     /**
@@ -18,13 +19,16 @@ export class AddScriptApiFeature extends Feature {
     public register(): void {
         const disposable = vscode.commands.registerCommand(AddScriptApiFeature.ADD_SCRIPT_API_COMMAND_ID, async () => {
             // Vérifie qu'un projet Minecraft Bedrock est chargé
-            const minecraftProject = MinecraftProjectManager.getProject();
-            if (minecraftProject === undefined) {
-                vscode.window.showErrorMessage("Aucun projet Minecraft Bedrock n'est chargé.");
+            let minecraftProject: MinecraftProject;
+            try {
+                minecraftProject = MinecraftProjectManager.getProject();
+            } catch (error) {
+                vscode.window.showErrorMessage("Aucun projet Minecraft Bedrock n'est chargé. Veuillez charger un projet avant de tenter d'ajouter l'API de script.");
                 return;
             }
 
-            if (minecraftProject instanceof AddonMinecraftProject === false) { // L'API de script ne peut être ajoutée que pour les projets de type Addon
+            // L'API de script ne peut être ajoutée que pour les projets de type Addon
+            if (minecraftProject instanceof AddonMinecraftProject === false) {
                 vscode.window.showErrorMessage("L'API de script ne peut être ajoutée qu'aux projets de type 'Addon'.");
                 return;
             }
@@ -36,14 +40,9 @@ export class AddScriptApiFeature extends Feature {
                     return;
                 }
             } catch (error) {
-                let errorMessage;
                 if (error instanceof Error) {
-                    errorMessage = "Erreur lors de la récupération du dossier Behavior Pack : " + error.message;
-                } else {
-                    errorMessage = String(error);
+                    vscode.window.showErrorMessage("Erreur lors de la vérification du dossier de Behavior Pack : " + error.message);
                 }
-
-                vscode.window.showErrorMessage(errorMessage);
                 return;
             }
 
@@ -80,14 +79,10 @@ export class AddScriptApiFeature extends Feature {
             try {
                 await ProjectService.createScriptApiStructure(VscodeUtils.getUriFromPath(minecraftProject.folder));
             } catch (error) {
-                let errorMessage;
                 if (error instanceof Error) {
-                    errorMessage = "Erreur lors de la création de la structure de l'API de script : " + error.message;
-                } else {
-                    errorMessage = String(error);
+                    vscode.window.showErrorMessage("Erreur lors de la création de la structure de l'API de script : " + error.message);
                 }
-
-                vscode.window.showErrorMessage(errorMessage);
+                return;
             }
 
             // Demande à l'utilisateur de sélectionner les modules de l'API de script à ajouter au projet
@@ -95,30 +90,22 @@ export class AddScriptApiFeature extends Feature {
             try {
                 selectedModules = await PromptService.askScriptApiModules(minecraftProject.minecraftProduct);
             } catch (error) {
-                let errorMessage;
                 if (error instanceof Error) {
-                    errorMessage = "Erreur lors de la sélection des modules de l'API de script : " + error.message;
-                } else {
-                    errorMessage = String(error);
+                    vscode.window.showErrorMessage("Erreur lors de la sélection des modules de l'API de script : " + error.message);
                 }
-
-                vscode.window.showErrorMessage(errorMessage);
+                return;
             }
 
-            if (selectedModules !== undefined) { // Si l'utilisateur a sélectionné des modules, on les ajoute au manifeste et au package.json du projet
+            // Si l'utilisateur a sélectionné des modules, on les ajoute au manifeste et au package.json du projet
+            if (selectedModules !== undefined) {
                 // On récupère le package.json du projet pour y ajouter les modules de l'API de script en dépendances, et ainsi les installer via npm
                 let packageJsonUri: vscode.Uri;
                 try {
                     packageJsonUri = VscodeUtils.getUriFromPath(path.join(minecraftProject.folder, "package.json"));
                 } catch (error) {
-                    let errorMessage;
                     if (error instanceof Error) {
-                        errorMessage = "Erreur lors de la récupération du fichier package.json : " + error.message;
-                    } else {
-                        errorMessage = String(error);
+                        vscode.window.showErrorMessage("Erreur lors de la récupération du package.json du projet : " + error.message);
                     }
-
-                    vscode.window.showErrorMessage(errorMessage);
                     return;
                 }
 
@@ -126,7 +113,7 @@ export class AddScriptApiFeature extends Feature {
                 try {
                     const content = await vscode.workspace.fs.readFile(packageJsonUri);
                     packageJsonContent = JSON.parse(content.toString());
-                } catch (e) {
+                } catch (error) {
                     vscode.window.showErrorMessage("Impossible de lire le fichier package.json.");
                     return;
                 }
@@ -135,6 +122,7 @@ export class AddScriptApiFeature extends Feature {
                     ProjectService.addScriptApiModules(manifestJson, packageJsonContent, selectedModules);
                 } catch (error) {
                     vscode.window.showErrorMessage(`Erreur lors de l'ajout des modules de l'API de script : ${error}`);
+                    return;
                 }
 
                 // Enregistre les modifications dans le manifeste et le package.json du projet

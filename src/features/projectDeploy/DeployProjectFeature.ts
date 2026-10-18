@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { Feature } from "../Feature";
 import { MinecraftProjectManager } from "../../services/projects/MinecraftProjectManager";
 import { ProjectService } from "../../services/projects/ProjectService";
+import { MinecraftProject } from "../../core/minecraft/models/projects/MinecraftProject";
 
 /**
  * Fonctionnalité pour déployer un projet Minecraft Bedrock dans les fichiers du jeu.
@@ -22,9 +23,11 @@ export class DeployProjectFeature extends Feature {
     private registerDeployProjectCommand(): void {
         const disposable = vscode.commands.registerCommand(DeployProjectFeature.DEPLOY_PROJECT_COMMAND_ID, async () => {
             // On vérifie d'abord qu'un projet Minecraft est chargé avant de tenter de le déployer
-            const minecraftProject = MinecraftProjectManager.getProject();
-            if (minecraftProject === undefined) {
-                vscode.window.showErrorMessage("Aucun projet Minecraft Bedrock est chargé.");
+            let minecraftProject: MinecraftProject;
+            try {
+                minecraftProject = MinecraftProjectManager.getProject();
+            } catch (error) {
+                vscode.window.showErrorMessage("Aucun projet Minecraft Bedrock n'est chargé. Veuillez charger un projet avant de tenter de le déployer.");
                 return;
             }
 
@@ -40,14 +43,9 @@ export class DeployProjectFeature extends Feature {
                     try {
                         await ProjectService.deployProject(minecraftProject);
                     } catch (error) {
-                        let errorMessage: string;
                         if (error instanceof Error) {
-                            errorMessage = error.message;
-                        } else {
-                            errorMessage = String(error);
+                            vscode.window.showErrorMessage(`Échec du déploiement du projet : ${error.message}`);
                         }
-
-                        vscode.window.showErrorMessage(`Échec du déploiement du projet "${minecraftProject.id}": ${errorMessage}`);
                     }
 
                     vscode.window.showInformationMessage(`Le projet "${minecraftProject.id}" a été déployé avec succès.`);

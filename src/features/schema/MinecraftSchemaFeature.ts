@@ -20,6 +20,9 @@ export class MinecraftSchemaFeature extends Feature {
         );
     }
 
+    /**
+     * Enregistre le fournisseur de survol (hover provider) pour les fichiers JSON et JSONC.
+     */
     private registerHoverProvider(): void {
         this.extensionContext.subscriptions.push(
             vscode.languages.registerHoverProvider(
@@ -28,7 +31,9 @@ export class MinecraftSchemaFeature extends Feature {
                     async provideHover(document, position) {
                         console.log("Providing hover...");
                         const schema = await MinecraftSchemaService.getSchemaForDocument(document);
-                        if (!schema) return null;
+                        if (! schema) {
+                            return null;
+                        }
 
                         return SchemaHover.doHover(document, position, schema);
                     }
@@ -37,6 +42,9 @@ export class MinecraftSchemaFeature extends Feature {
         );
     }
 
+    /**
+     * Enregistre le fournisseur de complétion (completion provider) pour les fichiers JSON et JSONC.
+     */
     private registerCompletionProvider(): void {
         this.extensionContext.subscriptions.push(
             vscode.languages.registerCompletionItemProvider(
@@ -44,7 +52,9 @@ export class MinecraftSchemaFeature extends Feature {
                 {
                     async provideCompletionItems(document, position) {
                         const schema = await MinecraftSchemaService.getSchemaForDocument(document);
-                        if (!schema) return null;
+                        if (! schema) {
+                            return null;
+                        }
 
                         const completionList = await SchemaCompletion.doCompletion(document, position, schema);
                         return completionList;
@@ -54,6 +64,10 @@ export class MinecraftSchemaFeature extends Feature {
         );
     }
 
+    /**
+     * Enregistre le fournisseur de diagnostics pour les fichiers JSON et JSONC.
+     * @returns 
+     */
     private registerDiagnosticsProvider(): vscode.DiagnosticCollection {
         const diagnostics = vscode.languages.createDiagnosticCollection("minecraft-bedrock-creators-utilities.jsonSchema");
 
@@ -78,6 +92,12 @@ export class MinecraftSchemaFeature extends Feature {
         return diagnostics;
     }
 
+    /**
+     * Met à jour les diagnostics pour un document donné en fonction de son schéma JSON.
+     * @param document Le document à analyser.
+     * @param diagnostics La collection de diagnostics à mettre à jour.
+     * @returns 
+     */
     private async updateDiagnostics(document: vscode.TextDocument, diagnostics: vscode.DiagnosticCollection): Promise<void> {
         const schema = await MinecraftSchemaService.getSchemaForDocument(document);
         if (schema === undefined) {

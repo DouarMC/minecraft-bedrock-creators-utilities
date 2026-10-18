@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { Feature } from "../Feature";
 import { MinecraftProjectManager } from "../../services/projects/MinecraftProjectManager";
 import { ProjectService } from "../../services/projects/ProjectService";
+import { MinecraftProject } from "../../core/minecraft/models/projects/MinecraftProject";
 
 export class ExportProjectFeature extends Feature {
     /**
@@ -12,9 +13,11 @@ export class ExportProjectFeature extends Feature {
     public register(): void {
         const disposable = vscode.commands.registerCommand(ExportProjectFeature.EXPORT_PROJECT_COMMAND_ID, async () => {
             // Vérifier qu'un projet Minecraft Bedrock est chargé
-            const minecraftProject = MinecraftProjectManager.getProject();
-            if (minecraftProject === undefined) {
-                vscode.window.showErrorMessage("Aucun projet Minecraft Bedrock n'est chargé.");
+            let minecraftProject: MinecraftProject;
+            try {
+                minecraftProject = MinecraftProjectManager.getProject();
+            } catch (error) {
+                vscode.window.showErrorMessage("Aucun projet Minecraft Bedrock n'est chargé. Veuillez charger un projet avant de tenter de l'exporter.");
                 return;
             }
 
@@ -29,9 +32,10 @@ export class ExportProjectFeature extends Feature {
                         progress.report({ message: "Exportation en cours..." });
                         await ProjectService.exportProject(minecraftProject);
                         vscode.window.showInformationMessage(`Le projet "${minecraftProject.id}" a été exporté avec succès.`);
-                    } catch (error: any) {
-                        const errorMessage = error instanceof Error ? error.message : String(error);
-                        vscode.window.showErrorMessage(`Échec de l'exportation du projet "${minecraftProject.id}": ${errorMessage}`);
+                    } catch (error) {
+                        if (error instanceof Error) {
+                            vscode.window.showErrorMessage(`Échec de l'exportation du projet : ${error.message}`);
+                        }
                     }
                 }
             );

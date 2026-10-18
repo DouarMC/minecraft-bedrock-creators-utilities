@@ -60,8 +60,12 @@ export class MinecraftProjectManager {
 
     /**
      * Renvoie le projet actuellement chargé, ou undefined s'il n'y en a pas.
+     * @throws {Error} Si aucun projet n'est actuellement chargé.
      */
-    public static getProject(): MinecraftProject | undefined {
+    public static getProject(): MinecraftProject {
+        if (! this.currentProject) {
+            throw new Error("Aucun projet Minecraft n'est actuellement chargé.");
+        }
         return this.currentProject;
     }
 

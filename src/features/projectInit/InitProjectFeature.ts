@@ -82,22 +82,28 @@ export class InitProjectFeature extends Feature {
             }
 
             // En fonction du type de projet sélectionné, crée la structure de base du projet Minecraft Bedrock correspondante, et affiche une erreur si la création échoue
-            if (projectMetadata.type === "addon") {
-                try {
-                    await ProjectService.createAddonStructure(projectFolder, projectMetadata);
-                    // Ouvrir le dossier du projet dans VSCode
-                    await vscode.commands.executeCommand("vscode.openFolder", projectFolder, false);
-
-                } catch (error) {
-                    if (error instanceof Error) {
-                        vscode.window.showErrorMessage(`Erreur lors de la création de la structure du projet Add-on : ${error.message}`);
-                        return;
+            switch (projectMetadata.type) {
+                case "addon":
+                    try {
+                        await ProjectService.createAddonStructure(projectFolder, projectMetadata);
+                        // Ouvrir le dossier du projet dans VSCode
+                        await vscode.commands.executeCommand("vscode.openFolder", projectFolder, false);
+                    } catch (error) {
+                        if (error instanceof Error) {
+                            vscode.window.showErrorMessage(`Erreur lors de la création de la structure du projet Add-on : ${error.message}`);
+                            return;
+                        }
+                    break;
                     }
-                }
-            } else if (projectMetadata.type === "skin_pack") {
-                // TODO
-            } else if (projectMetadata.type === "world_template") {
-                // TODO
+                case "skin_pack":
+                    // TODO
+                    break;
+                case "world_template":
+                    // TODO
+                    break;
+                default:
+                    vscode.window.showErrorMessage(`Type de projet inconnu : ${projectMetadata.type}`);
+                    return;
             }
 
             // Afficher un message de succès une fois que le projet a été initialisé
