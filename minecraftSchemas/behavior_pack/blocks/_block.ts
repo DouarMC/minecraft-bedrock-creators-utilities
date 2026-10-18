@@ -1773,9 +1773,9 @@ const versionedChanges: SchemaChange[] = [
                             }
                         },
                         direction: {
-                            description: "Définit la direction de placement du multibloc de 0 à N. Les valeurs valides sont `up` et `down`. Les valeurs `north`, `south`, `east` et `west` sont disponibles avec l'option `Upcoming Creator Features` activée.",
+                            description: "Définit la direction de placement du multibloc de 0 à N.",
                             type: "string",
-                            enum: ["up", "down", "north", "south", "east", "west"]
+                            enum: ["up", "down"]
                         },
                         parts: {
                             description: "Définit la valeur de l'état `minecraft:multi_block_part` pour chaque partie du multibloc.",
@@ -2203,13 +2203,26 @@ const versionedChanges: SchemaChange[] = [
                 action: "add",
                 target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:block_entity"],
                 value: {
-                    "x-experimental_options": ["Upcoming Creator Features"],
                     description: "Définit si le Bloc est un block-entity. Un block-entity est un type de bloc qui peut stocker des données persistantes et locales, similaire aux coffres, aux générateurs de monstres, aux panneaux, etc. Les block-entities sont plus gourmands en RAM que les blocs normaux, donc utilisez-les avec parcimonie. Ne peut pas être utilisé dans les permutations de blocs.",
                     type: "object",
                     properties: {
                         dynamic_properties: {
                             description: "Définit si le block-entity peut avoir des propriétés dynamiques.",
                             type: "boolean"
+                        },
+                        container: {
+                            "x-experimental_options": true,
+                            description: "Définit si le block-entity est un conteneur. Un conteneur est un type de block-entity qui peut stocker des items, similaire aux coffres, aux fours, aux distributeurs, etc.",
+                            type: "object",
+                            required: ["slot_count"],
+                            properties: {
+                                slot_count: {
+                                    description: "Le nombre de slots dans le conteneur.",
+                                    type: "integer",
+                                    minimum: 1,
+                                    maximum: 54
+                                }
+                            }
                         }
                     }
                 }
@@ -2243,7 +2256,7 @@ const versionedChanges: SchemaChange[] = [
                 action: "add",
                 target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:sound"],
                 value: {
-                    description: "Définit l'ensemble des sons à attribuer au Bloc et à ses permutations. Les valeurs du fichier `blocks.json` sont prioritaires sur celles du composant `minecraft:sound`.",
+                    description: "Définit l'ensemble des sons à attribuer au Bloc. Les valeurs du fichier `blocks.json` sont prioritaires sur celles du composant `minecraft:sound`.",
                     type: "object",
                     properties: {
                         sound: {
@@ -2264,6 +2277,16 @@ const versionedChanges: SchemaChange[] = [
                     minimum: 0.0,
                     maximum: 10.0
                 }
+            }
+        ]
+    },
+    {
+        version: "1.26.50",
+        changes: [
+            {
+                action: "modify",
+                target: ["properties", "minecraft:block", "properties", "description", "properties", "traits", "properties", "minecraft:multi_block", "properties", "direction", "enum"],
+                value: ["up", "down", "north", "south", "east", "west"]
             }
         ]
     }

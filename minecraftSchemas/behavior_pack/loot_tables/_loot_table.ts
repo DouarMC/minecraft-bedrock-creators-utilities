@@ -27,6 +27,12 @@ const baseSchema: MinecraftJsonSchema = {
                                             description: "Le type de condition.",
                                             type: "string",
                                             enum: ["killed_by_player", "killed_by_player_or_pets", "is_baby"]
+                                        },
+                                        operator: {
+                                            description: "L'opérateur de comparaison.",
+                                            default: "==",
+                                            type: "string",
+                                            enum: ["==", "!=", "not"]
                                         }
                                     }
                                 },
@@ -38,6 +44,12 @@ const baseSchema: MinecraftJsonSchema = {
                                             description: "Le type de condition.",
                                             type: "string",
                                             enum: ["has_mark_variant", "has_variant"]
+                                        },
+                                        operator: {
+                                            description: "L'opérateur de comparaison.",
+                                            default: "==",
+                                            type: "string",
+                                            enum: ["==", "!=", "not"]
                                         },
                                         value: {
                                             description: "La valeur de la condition.",
@@ -53,6 +65,12 @@ const baseSchema: MinecraftJsonSchema = {
                                             description: "Le type de condition.",
                                             type: "string",
                                             enum: ["random_chance"]
+                                        },
+                                        operator: {
+                                            description: "L'opérateur de comparaison.",
+                                            default: "==",
+                                            type: "string",
+                                            enum: ["==", "!=", "not"]
                                         },
                                         chance: {
                                             description: "Le pourcentage de chance.",
@@ -70,6 +88,12 @@ const baseSchema: MinecraftJsonSchema = {
                                             description: "Le type de condition.",
                                             type: "string",
                                             enum: ["random_difficulty_chance"]
+                                        },
+                                        operator: {
+                                            description: "L'opérateur de comparaison.",
+                                            default: "==",
+                                            type: "string",
+                                            enum: ["==", "!=", "not"]
                                         },
                                         default_chance: {
                                             description: "La chance par défaut.",
@@ -112,6 +136,12 @@ const baseSchema: MinecraftJsonSchema = {
                                             type: "string",
                                             enum: ["random_chance_with_looting"]
                                         },
+                                        operator: {
+                                            description: "L'opérateur de comparaison.",
+                                            default: "==",
+                                            type: "string",
+                                            enum: ["==", "!=", "not"]
+                                        },
                                         chance: {
                                             description: "Le pourcentage de chance.",
                                             type: "number",
@@ -135,6 +165,12 @@ const baseSchema: MinecraftJsonSchema = {
                                             type: "string",
                                             enum: ["random_regional_difficulty_chance"]
                                         },
+                                        operator: {
+                                            description: "L'opérateur de comparaison.",
+                                            default: "==",
+                                            type: "string",
+                                            enum: ["==", "!=", "not"]
+                                        },
                                         max_chance: {
                                             description: "La chance maximale.",
                                             type: "number",
@@ -151,6 +187,12 @@ const baseSchema: MinecraftJsonSchema = {
                                             description: "Le type de condition.",
                                             type: "string",
                                             enum: ["match_tool"]
+                                        },
+                                        operator: {
+                                            description: "L'opérateur de comparaison.",
+                                            default: "==",
+                                            type: "string",
+                                            enum: ["==", "!=", "not"]
                                         },
                                         count: {
                                             description: "Le nombre d'item.",
@@ -263,6 +305,12 @@ const baseSchema: MinecraftJsonSchema = {
                                             type: "string",
                                             enum: ["killed_by_entity", "entity_killed", "damaged_by_entity", "passenger_of_entity"]
                                         },
+                                        operator: {
+                                            description: "L'opérateur de comparaison.",
+                                            default: "==",
+                                            type: "string",
+                                            enum: ["==", "!=", "not"]
+                                        },
                                         entity_type: {
                                             description: "Le type d'entité.",
                                             type: "string",
@@ -277,6 +325,12 @@ const baseSchema: MinecraftJsonSchema = {
                                             description: "Le type de condition.",
                                             type: "string",
                                             enum: ["entity_properties"]
+                                        },
+                                        operator: {
+                                            description: "L'opérateur de comparaison.",
+                                            default: "==",
+                                            type: "string",
+                                            enum: ["==", "!=", "not"]
                                         },
                                         entity: {
                                             description: "L'entité.",

@@ -594,6 +594,56 @@ export const versionedSchema: VersionedSchema = {
                                             enum: ["dropdown"]
                                         }
                                     }
+                                },
+                                {
+                                    type: "object",
+                                    required: ["defaults", "name", "options", "text", "type"],
+                                    properties: {
+                                        defaults: {
+                                            description: "Valeurs par défaut du paramètre.",
+                                            type: "array",
+                                            maxItems: 20,
+                                            items: {
+                                                type: "string"
+                                            }
+                                        },
+                                        name: {
+                                            description: "Identifiant du paramètre.",
+                                            type: "string",
+                                            pattern: schemaPatterns.identifier_with_namespace
+                                        },
+                                        options: {
+                                            description: "Options disponibles pour le paramètre.",
+                                            type: "array",
+                                            minItems: 2,
+                                            maxItems: 20,
+                                            items: {
+                                                type: "object",
+                                                required: ["name", "text"],
+                                                properties: {
+                                                    name: {
+                                                        description: "Valeur de l'option.",
+                                                        type: "string",
+                                                        minLength: 1
+                                                    },
+                                                    text: {
+                                                        description: "Texte affiché pour l'option.",
+                                                        type: "string",
+                                                        minLength: 1
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        text: {
+                                            description: "Texte affiché pour le paramètre.",
+                                            type: "string"
+                                        },
+                                        type: {
+                                            description: "Type de paramètre.",
+                                            type: "string",
+                                            enum: ["multiselect"]
+                                        }
+                                    }
                                 }
                             ]
                         }

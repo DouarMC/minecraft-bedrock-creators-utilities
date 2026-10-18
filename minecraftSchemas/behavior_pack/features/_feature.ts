@@ -1244,7 +1244,7 @@ const baseSchema: MinecraftJsonSchema = {
                 "minecraft:snap_to_surface_feature": {
                     description: "Définition d'une Feature qui accroche la valeur y d'une position de placement de fonction au sol ou au plafond dans la plage de recherche verticale fournie.",
                     type: "object",
-                    required: ["description", "feature_to_snap", "vertical_search_range"],
+                    required: ["description", "feature_to_snap", "search_range"],
                     properties: {
                         description: {
                             description: "Contient l'identifiant de la Feature.",
@@ -1263,14 +1263,14 @@ const baseSchema: MinecraftJsonSchema = {
                             type: "string",
                             "x-dynamic-examples-source": dynamicExamplesSourceKeys.feature_ids
                         },
-                        vertical_search_range: {
+                        search_range: {
                             description: "La plage de recherche verticale pour un sol ou un plafond pour accrocher la Feature.",
                             type: "integer"
                         },
                         surface: {
                             description: "Définit la surface à laquelle la valeur y de la position de placement sera accrochée.",
                             type: "string",
-                            enum: ["ceiling", "floor", "random_horizontal"]
+                            enum: ["ceiling", "floor", "random_horizontal", "wall"]
                         },
                         allow_air_placement: {
                             description: "Détermine si la Feature peut être placée dans l'air.",
@@ -1285,6 +1285,10 @@ const baseSchema: MinecraftJsonSchema = {
                         embed_in_surface: {
                             description: "Définit si la Feature doit être partiellement intégrée dans la surface à laquelle elle est accrochée. Si vrai, la moitié inférieure de la Feature sera intégrée dans la surface.",
                             default: false,
+                            type: "boolean"
+                        },
+                        allow_non_air_placement: {
+                            description: "Détermine si la Feature peut être placée sur des blocs solides.",
                             type: "boolean"
                         }
                     }
@@ -5179,6 +5183,176 @@ const baseSchema: MinecraftJsonSchema = {
                         randomize_rotation: {
                             description: "Si vrai, le multi-bloc sera placé avec une rotation aléatoire.",
                             type: "boolean"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            required: ["minecraft:conditional_list"],
+            properties: {
+                "minecraft:conditional_list": {
+                    description: "Feature qui place d'autres features en fonction d'une liste de conditions évalué dans l'ordre.",
+                    type: "object",
+                    required: ["description", "conditional_features"],
+                    properties: {
+                        description: {
+                            description: "Contient l'identifiant de la Feature.",
+                            type: "object",
+                            required: ["identifier"],
+                            properties: {
+                                identifier: {
+                                    description: "L'identifiant de la Feature. Doit être de la forme 'namespace:feature_id' où feature_id doit correspondre au nom du fichier.",
+                                    type: "string",
+                                    pattern: schemaPatterns.identifier_with_namespace,
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.data_driven_feature_ids
+                                }
+                            }
+                        },
+
+                        conditional_features: {
+                            description: "Liste des features conditionnelles à placer.",
+                            type: "array",
+                            items: {
+                                type: "object",
+                                required: ["places_feature"],
+                                properties: {
+                                    places_feature: {
+                                        description: "La Feature à placer.",
+                                        type: "string",
+                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.feature_ids
+                                    },
+                                    condition: {
+                                        description: "La condition Molang à évaluer pour placer la feature.",
+                                        type: "molang"
+                                    }
+                                }
+                            }
+                        },
+
+                        early_out_scheme: {
+                            description:
+                            "Définit comment le système de condition doit se comporter quand une évaluation s'arrête." +
+                            "\n\-`condition_success`: S'arrête à la première condition qui réussit." +
+                            "\n\-`placement_success`: S'arrête au premier placement de feature réussi." +
+                            "\n\-`none`: Évalue toutes les conditions et place toutes les features qui réussissent.",
+                            default: "none",
+                            type: "string",
+                            enum: ["condition_success", "placement_success", "none"]
+                        }
+                    }
+                }
+            }
+        },
+        {
+            required: ["minecraft:multipart_block_column_feature"],
+            properties: {
+                "minecraft:multipart_block_column_feature": {
+                    description: "Définition d'une Feature qui place une colonne de 1 à 4 type de blocs dans l'ordre.",
+                    type: "object",
+                    required: ["description"],
+                    properties: {
+                        description: {
+                            description: "Contient l'identifiant de la Feature.",
+                            type: "object",
+                            required: ["identifier"],
+                            properties: {
+                                identifier: {
+                                    description: "L'identifiant de la Feature. Doit être de la forme 'namespace:feature_id' où feature_id doit correspondre au nom du fichier.",
+                                    type: "string",
+                                    pattern: schemaPatterns.identifier_with_namespace,
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.data_driven_feature_ids
+                                }
+                            }
+                        },
+                        tip_block: {
+                            description: "Le bloc à placer en haut de la colonne.",
+                            oneOf: [
+                                {
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                },
+                                commonSchemas.block_descriptor
+                            ]
+                        },
+                        frustum_block: {
+                            description: "Le bloc à placer dans la colonne entre le bloc de base et le bloc de pointe.",
+                            oneOf: [
+                                {
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                },
+                                commonSchemas.block_descriptor
+                            ]
+                        },
+                        base_block: {
+                            description: "Le bloc à placer en bas de la colonne.",
+                            oneOf: [
+                                {
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                },
+                                commonSchemas.block_descriptor
+                            ]
+                        },
+                        middle_block: {
+                            description: "Le/les bloc à placer dans la colonne entre le bloc de base et le bloc de frustum.",
+                            oneOf: [
+                                {
+                                    type: "string",
+                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                },
+                                commonSchemas.block_descriptor
+                            ]
+                        },
+                        height_range: {
+                            description: "La plage de hauteur de la colonne.",
+                            type: "object",
+                            required: ["range_min", "range_max"],
+                            properties: {
+                                range_min: {
+                                    description: "La hauteur minimale de la colonne.",
+                                    type: "integer",
+                                    minimum: 1
+                                },
+                                range_max: {
+                                    description: "La hauteur maximale de la colonne.",
+                                    type: "integer",
+                                    minimum: 1
+                                }
+                            }
+                        },
+                        direction: {
+                            description: "La direction dans laquelle la colonne sera placée.",
+                            default: "UP",
+                            type: "string",
+                            enum: ["UP", "DOWN"]
+                        },
+                        may_place_on: {
+                            description: "Les blocs sur lesquels la colonne peut être placée. Omettez ce champ pour autoriser n'importe quel bloc.",
+                            type: "array",
+                            items: {
+                                oneOf: [
+                                    {
+                                        type: "string",
+                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                    },
+                                    commonSchemas.block_descriptor
+                                ]
+                            }
+                        },
+                        may_replace: {
+                            description: "Les blocs que la colonne peut remplacer. Omettez ce champ pour autoriser n'importe quel bloc.",
+                            type: "array",
+                            items: {
+                                oneOf: [
+                                    {
+                                        type: "string",
+                                        "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                                    },
+                                    commonSchemas.block_descriptor
+                                ]
+                            }
                         }
                     }
                 }
