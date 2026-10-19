@@ -82,7 +82,58 @@ const baseSchema: MinecraftJsonSchema = {
 
 export const versionedSchema: VersionedSchema = {
     baseSchema: baseSchema,
-    versionedChanges: []
+    versionedChanges: [
+        {
+            version: "1.26.50",
+            changes: [
+                {
+                    action: "add",
+                    target: ["properties", "minecraft:dimension", "properties", "components", "properties", "minecraft:default_biome"],
+                    value: {
+                        description: "Définit le biome par défaut de la Dimension. Ne fonctionne pas avec les dimensions vanilla.",
+                        type: "object",
+                        properties: {
+                            biome: {
+                                description: "L'identifiant du biome par défaut de la Dimension.",
+                                default: "minecraft:ocean",
+                                type: "string",
+                                pattern: schemaPatterns.identifier_with_namespace,
+                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.biome_ids
+                            }
+                        }
+                    }
+                },
+                {
+                    action: "remove",
+                    target: ["properties", "minecraft:dimension", "properties", "components", "properties", "minecraft:dimension_bounds"]
+                },
+                {
+                    action: "add",
+                    target: ["properties", "minecraft:dimension", "properties", "components", "properties", "minecraft:dimension_height"],
+                    value: {
+                        description: "Définit la hauteur de la Dimension.",
+                        type: "object",
+                        required: ["height_range", "min_y"],
+                        properties: {
+                            height_range: {
+                                description: "La plage de hauteur de la Dimension.",
+                                type: "integer",
+                                minimum: 16,
+                                maximum: 1024,
+                                multipleOf: 16
+                            },
+                            min_y: {
+                                description: "La limite minimale de la Dimension.",
+                                type: "integer",
+                                minimum: -512,
+                                maximum: 512,
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ]
 };
 
 export default versionedSchema;
