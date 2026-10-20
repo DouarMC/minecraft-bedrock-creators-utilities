@@ -73,6 +73,11 @@ const baseSchema: MinecraftJsonSchema = {
                                             description: "S'il y a plus d'un son dans la liste, le son à jouer est choisi aléatoirement. `weight` (valeur entière comme 5) donnera la chance relative que ce son soit choisi dans la liste. Par exemple, s'il y a deux sons dans la liste, un avec `weight`: 10 et l'autre avec `weight`: 2, le premier sera joué environ 5 fois plus souvent que le second.",
                                             default: 1,
                                             type: "number"
+                                        },
+                                        allow_concurrent_streaming: {
+                                            description: "Définit si l'évenement sonore peut jouer plusieurs instances simultanées et indépendantes. Doit avoire `stream: true` pour être pris en compte.",
+                                            default: false,
+                                            type: "boolean"
                                         }
                                     }
                                 }
@@ -124,7 +129,18 @@ const baseSchema: MinecraftJsonSchema = {
 
 export const versionedSchema: VersionedSchema = {
     baseSchema: baseSchema,
-    versionedChanges: []
+    versionedChanges: [
+        {
+            version: "1.26.50",
+            changes: [
+                {
+                    action: "modify",
+                    target: ["properties", "sound_definitions", "additionalProperties", "properties", "sounds", "items", "oneOf", "1", "properties", "allow_concurrent_streaming", "default"],
+                    value: true
+                }
+            ]
+        }
+    ]
 };
 
 export default versionedSchema;

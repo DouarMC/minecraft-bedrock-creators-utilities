@@ -12,6 +12,7 @@ import { ExportProjectFeature } from "./features/projectExport/ExportProjectFeat
 import { AddScriptApiFeature } from "./features/projectManage/AddScriptApiFeature";
 import { MinecraftSchemaFeature } from "./features/schema/MinecraftSchemaFeature";
 import { McStatsVisualizerFeature } from "./features/mcstats/McStatsVisualizerFeature";
+import { BrArchiveExtractorFeature } from "./features/mcstats/BrArchiveExtractorFeature";
 
 export async function activate(context: vscode.ExtensionContext) {
     console.log("[MBCU] Activating Minecraft Bedrock Code Utils extension...");
@@ -28,7 +29,8 @@ export async function activate(context: vscode.ExtensionContext) {
         new ExportProjectFeature(context),
         new AddScriptApiFeature(context),
         new MinecraftSchemaFeature(context),
-        new McStatsVisualizerFeature(context)
+        new McStatsVisualizerFeature(context),
+        new BrArchiveExtractorFeature(context)
     ];
 
     for (const feature of features) {

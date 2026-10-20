@@ -52,6 +52,11 @@
                 "command": "minecraft-bedrock-creators-utilities.visualizeMcStats",
                 "title": "Visualiser un fichier McStats.",
                 "category": "Minecraft Bedrock Utilities"
+            },
+            {
+                "command": "minecraft-bedrock-creators-utilities.extractBrArchive",
+                "title": "Extraire un fichier .brarchive",
+                "category": "Minecraft Bedrock Utilities"
             }
         ],
         "jsonValidation": [
@@ -84,14 +89,13 @@
         "include-vanilla-identifier-to-json": "tsx scripts/includeVanillaIdentifierToJson.ts"
     },
     "devDependencies": {
-        "tsx": "^4.21.0",
-
         "@types/lodash": "^4.17.20",
         "@types/node": "20.x",
         "@types/vscode": "^1.100.0",
         "@typescript-eslint/eslint-plugin": "^8.31.1",
         "@typescript-eslint/parser": "^8.31.1",
         "eslint": "^9.25.1",
+        "tsx": "^4.21.0",
         "typescript": "^5.8.3"
     },
     "dependencies": {

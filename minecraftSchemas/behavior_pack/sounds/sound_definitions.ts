@@ -40,53 +40,57 @@ const baseSchema: MinecraftJsonSchema = {
                                 description: "La durée du son en secondes.",
                                 type: "number",
                                 minimum: 0
+                            }
+                        }
+                    },
+                    music_info: {
+                        description: "Contient les informations sur la musique.",
+                        type: "object",
+                        properties: {
+                            genres: {
+                                description: "Contient les genres de la musique.",
+                                type: "array",
+                                items: {
+                                    type: "string"
+                                }
                             },
-                            music_info: {
-                                description: "Contient les informations sur la musique.",
-                                type: "object",
-                                properties: {
-                                    genres: {
-                                        description: "Contient les genres de la musique.",
-                                        type: "array",
-                                        items: {
-                                            type: "string"
-                                        }
-                                    },
-                                    moods: {
-                                        description: "Contient les humeurs de la musique.",
-                                        type: "array",
-                                        items: {
-                                            type: "string"
-                                        }
-                                    },
-                                    artist: {
-                                        description: "Contient le nom de l'artiste de la musique.",
-                                        type: "string"
-                                    },
-                                    title: {
-                                        description: "Contient le titre de la musique.",
+                            moods: {
+                                description: "Contient les humeurs de la musique.",
+                                type: "array",
+                                items: {
+                                    type: "string"
+                                }
+                            },
+                            artist: {
+                                description: "Contient le nom de l'artiste de la musique.",
+                                type: "string"
+                            },
+                            title: {
+                                description: "Contient le titre de la musique.",
+                                type: "string"
+                            }
+                        }
+                    },
+                    tags: {
+                        description: "Permet au créateur de definir les filtres et les valeurs en plus.",
+                        type: "object",
+                        additionalProperties: {
+                            oneOf: [
+                                {
+                                    type: "string"
+                                },
+                                {
+                                    type: "array",
+                                    items: {
                                         type: "string"
                                     }
                                 }
-                            },
-                            tags: {
-                                description: "Permet au créateur de definir les filtres et les valeurs en plus.",
-                                type: "object",
-                                additionalProperties: {
-                                    oneOf: [
-                                        {
-                                            type: "string"
-                                        },
-                                        {
-                                            type: "array",
-                                            items: {
-                                                type: "string"
-                                            }
-                                        }
-                                    ]
-                                }
-                            }
+                            ]
                         }
+                    },
+                    broadcast_range: {
+                        description: "Spécifie une portée en XZ (en blocs) pour la diffusion du son.",
+                        type: "number"
                     }
                 }
             }

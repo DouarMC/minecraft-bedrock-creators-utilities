@@ -10,6 +10,7 @@ import { MinecraftGame } from '../../core/minecraft/models/games/MinecraftGame';
 import { AddonMinecraftProject } from '../../core/minecraft/models/projects/AddonMinecraftProject';
 import { MinecraftProject } from '../../core/minecraft/models/projects/MinecraftProject';
 import { MinecraftGameManager } from './MinecraftGameManager';
+import { BrArchiveUtils } from '../../core/minecraft/BrArchiveUtils';
 
 /**
  * Classe Service qui permet de trouver le type de fichier Minecraft associé à un fichier donné, ainsi que de récupérer les fichiers data-driven associés à un type de fichier.
@@ -254,15 +255,17 @@ export class MinecraftFileResolverService {
 
     /**
      * Scanne récursivement un dossier externe (Vanilla) pour trouver les fichiers correspondants.
-     * Utilise l'API FS de VS Code, donc compatible Web/Remote.
-     * @param root 
-     * @param pattern 
-     * @param excludes 
-     */
+     * Supporte les fichiers classiques ET les entrées virtuelles dans les fichiers .brarchive.
+    */
     private static async findFilesManual(root: vscode.Uri, pattern: string, excludes?: string[]): Promise<vscode.Uri[]> {
         const results: vscode.Uri[] = [];
 
-        // Fonction récursive locale
+        // Extrait les mots-clés fixes du pattern (ex: "**/biomes/*.json" -> ["biomes"])
+        // Permet d'éviter d'ouvrir "entities.brarchive" quand on cherche des biomes !
+        const patternKeywords = pattern
+            .split("/")
+            .filter(segment => segment && !segment.includes("*") && !segment.includes("?") && !segment.includes("."));
+
         const walk = async (currentUri: vscode.Uri) => {
             try {
                 const entries = await vscode.workspace.fs.readDirectory(currentUri);
@@ -270,21 +273,57 @@ export class MinecraftFileResolverService {
                 for (const [name, type] of entries) {
                     const fileUri = vscode.Uri.joinPath(currentUri, name);
 
-                    // Calculer le chemin relatif pour le matching (ex: "entities/cow.json")
-                    // On retire le prefixe racine
+                    // Calculer le chemin relatif (ex: "entities/cow.json" ou "__brarchive/biomes.brarchive")
                     const relativePath = fileUri.fsPath.replace(root.fsPath, '').replace(/^[\\\/]/, '').replace(/\\/g, '/');
 
                     if (type === vscode.FileType.Directory) {
-                        // Optimisation : Ne pas descendre si le dossier est exclu
                         if (excludes && excludes.some(ex => minimatch(relativePath + '/', ex))) {
                             continue;
                         }
-                        // Récursion
                         await walk(fileUri);
                     } else if (type === vscode.FileType.File) {
-                        // Vérification du pattern
+                        // CAS A : C'est une archive .brarchive Vanilla
+                        if (name.endsWith(".brarchive")) {
+                            // Déterminer le dossier virtuel que remplace cette archive
+                            // Ex: "__brarchive/biomes.brarchive" -> "biomes"
+                            // Ex: "biomes.brarchive" -> "biomes"
+                            // Ex: "__brarchive/aim_assist/presets.brarchive" -> "aim_assist/presets"
+                            let virtualFolder = relativePath
+                                .replace(/^__brarchive\//, "")
+                                .slice(0, -".brarchive".length);
+
+                            if (virtualFolder === "__root__") {
+                                virtualFolder = "";
+                            }
+
+                            // Optimisation : On n'ouvre l'index du .brarchive que si son nom est compatible avec le pattern cherché
+                            const isRelevantArchive = patternKeywords.length === 0 || patternKeywords.some(kw =>
+                                virtualFolder.toLowerCase().includes(kw.toLowerCase()) || kw.toLowerCase().includes(virtualFolder.toLowerCase())
+                            );
+
+                            if (!isRelevantArchive && virtualFolder !== "") {
+                                continue;
+                            }
+
+                            // Lire uniquement l'index binaire de l'archive
+                            const archiveEntries = await BrArchiveUtils.readIndex(fileUri.fsPath);
+
+                            for (const entry of archiveEntries) {
+                                const virtualRelativePath = virtualFolder
+                                    ? `${virtualFolder}/${entry.name}`
+                                    : entry.name;
+
+                                if (minimatch(virtualRelativePath, pattern, { dot: true, nocase: true })) {
+                                    if (!excludes || !excludes.some(ex => minimatch(virtualRelativePath, ex))) {
+                                        results.push(BrArchiveUtils.createEntryUri(fileUri, entry, virtualRelativePath));
+                                    }
+                                }
+                            }
+                            continue;
+                        }
+
+                        // CAS B : Fichier normal (.json, .png, etc.)
                         if (minimatch(relativePath, pattern, { dot: true, nocase: true })) {
-                            // Vérification de l'exclusion
                             if (!excludes || !excludes.some(ex => minimatch(relativePath, ex))) {
                                 results.push(fileUri);
                             }

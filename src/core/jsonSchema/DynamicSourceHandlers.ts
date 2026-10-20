@@ -9,6 +9,7 @@ import { MinecraftProjectManager } from "../../services/projects/MinecraftProjec
 import { MinecraftFileId } from "../minecraft/fileTypes/MinecraftFileId";
 import { ExtensionConfig } from "../ExtensionConfig";
 import { VersionResolver } from "../minecraft/versioning/VersionResolver";
+import { BrArchiveUtils } from "../minecraft/BrArchiveUtils";
 
 export class DynamicSourceHandlers {
     public static async getDynamicExampleSourceValues(key: DynamicExamplesSourceKey | DynamicExamplesSourceKey[] | Object): Promise<string[]> {
@@ -321,9 +322,21 @@ export class DynamicSourceHandlers {
     }
 
     private static async getFileContent(file: vscode.Uri): Promise<any> {
-        const fileData = await vscode.workspace.fs.readFile(file);
-        const fileContent = new TextDecoder("utf-8").decode(fileData);
-        return JsonParser.parse(fileContent);
+        let rawText: string;
+
+        if (BrArchiveUtils.isBrArchiveEntryUri(file)) {
+            const params = new URLSearchParams(file.query);
+            const offset = Number(params.get("offset"));
+            const length = Number(params.get("length"));
+            rawText = await BrArchiveUtils.readEntryText(file.fsPath, offset, length);
+        } else {
+            const rawData = await vscode.workspace.fs.readFile(file);
+            rawText = Buffer.from(rawData).toString("utf8");
+        }
+
+        // Ton parsing JSON actuel (avec nettoyage d'éventuels commentaires si tu en as un)
+        const cleanJson = rawText.replace(/\\"|"(?:\\"|[^"])*"|(\/\/.*|\/\*[\s\S]*?\*\/)/g, (m, g) => g ? "" : m);
+        return JSON.parse(cleanJson);
     }
 
     private static async getDataDrivenFilesFromSources(minecraftFileId: MinecraftFileId, fileSources: (MinecraftGame | MinecraftProject)[]): Promise<vscode.Uri[]> {
