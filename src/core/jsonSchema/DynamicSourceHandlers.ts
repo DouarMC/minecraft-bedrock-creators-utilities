@@ -322,19 +322,25 @@ export class DynamicSourceHandlers {
     }
 
     private static async getFileContent(file: vscode.Uri): Promise<any> {
-        let rawText: string;
+        let buffer: Buffer;
 
         if (BrArchiveUtils.isBrArchiveEntryUri(file)) {
             const params = new URLSearchParams(file.query);
             const offset = Number(params.get("offset"));
             const length = Number(params.get("length"));
-            rawText = await BrArchiveUtils.readEntryText(file.fsPath, offset, length);
+            buffer = await BrArchiveUtils.readEntryBuffer(file.fsPath, offset, length);
         } else {
             const rawData = await vscode.workspace.fs.readFile(file);
-            rawText = Buffer.from(rawData).toString("utf8");
+            buffer = Buffer.from(rawData.buffer, rawData.byteOffset, rawData.byteLength);
         }
 
-        // Ton parsing JSON actuel (avec nettoyage d'éventuels commentaires si tu en as un)
+        // NOUVEAU : Si l'entrée est compilée au format binaire MCB (\x7FMCB)
+        if (BrArchiveUtils.isMcbBuffer(buffer)) {
+            return BrArchiveUtils.parseMcbToMinimalJson(buffer);
+        }
+
+        // Sinon, c'est un fichier JSON texte classique
+        const rawText = buffer.toString("utf8");
         const cleanJson = rawText.replace(/\\"|"(?:\\"|[^"])*"|(\/\/.*|\/\*[\s\S]*?\*\/)/g, (m, g) => g ? "" : m);
         return JSON.parse(cleanJson);
     }
@@ -1141,7 +1147,8 @@ export class DynamicSourceHandlers {
 
     private static async getLootTableFilePaths(fileSources: (MinecraftGame | MinecraftProject)[]): Promise<string[]> {
         function getLootTableRelativePath(uri: vscode.Uri): string | null {
-            const match = /[\/\\](loot_tables[\/\\].+\.json)$/i.exec(uri.fsPath);
+            const targetPath = BrArchiveUtils.getVirtualOrFsPath(uri);
+            const match = /[\/\\](loot_tables[\/\\].+\.json)$/i.exec(targetPath);
             if (!match) {return null;}
             return match[1].replace(/\\/g, '/');
         }
@@ -1160,7 +1167,8 @@ export class DynamicSourceHandlers {
 
     private static async getMcfunctionFilePathsWithoutExtension(fileSources: (MinecraftGame | MinecraftProject)[]): Promise<string[]> {
         function getMcfunctionRelativePath(uri: vscode.Uri): string | null {
-            const match = /[\/\\](functions[\/\\].+)\.mcfunction$/i.exec(uri.fsPath);
+            const targetPath = BrArchiveUtils.getVirtualOrFsPath(uri);
+            const match = /[\/\\](functions[\/\\].+)\.mcfunction$/i.exec(targetPath);
             if (!match) {return null;}
             // Uniformise les slashs pour être cross-platform
             return match[1].replace(/\\/g, '/');
@@ -1287,7 +1295,8 @@ export class DynamicSourceHandlers {
 
     private static async getProjectTextureFilePaths(fileSources: (MinecraftGame | MinecraftProject)[]): Promise<string[]> {
         function getTextureRelativePath(uri: vscode.Uri): string | null {
-            const match = /[\/\\](textures[\/\\].+\.(tga|png|jpg|jpeg))$/i.exec(uri.fsPath);
+            const targetPath = BrArchiveUtils.getVirtualOrFsPath(uri);
+            const match = /[\/\\](textures[\/\\].+\.(tga|png|jpg|jpeg))$/i.exec(targetPath);
             if (!match) {return null;}
             return match[1].replace(/\\/g, '/');
         }
@@ -1307,7 +1316,8 @@ export class DynamicSourceHandlers {
 
     private static async getProjectUiFilePaths(fileSources: (MinecraftGame | MinecraftProject)[]): Promise<string[]> {
         function getUiRelativePath(uri: vscode.Uri): string | null {
-            const match = /[\/\\](ui[\/\\].+\.json)$/i.exec(uri.fsPath);
+            const targetPath = BrArchiveUtils.getVirtualOrFsPath(uri);
+            const match = /[\/\\](ui[\/\\].+\.json)$/i.exec(targetPath);
             if (!match) {return null;}
             return match[1].replace(/\\/g, '/');
         }
@@ -1480,7 +1490,8 @@ export class DynamicSourceHandlers {
 
     private static async getSoundFilePathsWithoutExtension(fileSources: (MinecraftGame | MinecraftProject)[]): Promise<string[]> {
         function getSoundRelativePath(uri: vscode.Uri): string | null {
-            const match = /[\/\\](sounds[\/\\].+?)(?:\.(ogg|wav|mp3|fsb))?$/i.exec(uri.fsPath);
+            const targetPath = BrArchiveUtils.getVirtualOrFsPath(uri);
+            const match = /[\/\\](sounds[\/\\].+?)(?:\.(ogg|wav|mp3|fsb))?$/i.exec(targetPath);
             if (!match) {return null;}
             return match[1].replace(/\\/g, '/');
         }
@@ -1580,7 +1591,8 @@ export class DynamicSourceHandlers {
 
     private static async getTextureFilePaths(fileSources: (MinecraftGame | MinecraftProject)[]): Promise<string[]> {
         function getTextureRelativePath(uri: vscode.Uri): string | null {
-            const match = /[\/\\](textures[\/\\].+\.(tga|png|jpg|jpeg))$/i.exec(uri.fsPath);
+            const targetPath = BrArchiveUtils.getVirtualOrFsPath(uri);
+            const match = /[\/\\](textures[\/\\].+\.(tga|png|jpg|jpeg))$/i.exec(targetPath);
             if (!match) {return null;}
             return match[1].replace(/\\/g, '/');
         }
@@ -1599,7 +1611,8 @@ export class DynamicSourceHandlers {
 
     private static async getTradingFilePaths(fileSources: (MinecraftGame | MinecraftProject)[]): Promise<string[]> {
         function getTradingRelativePath(uri: vscode.Uri): string | null {
-            const match = /[\/\\](trading[\/\\].+\.json)$/i.exec(uri.fsPath);
+            const targetPath = BrArchiveUtils.getVirtualOrFsPath(uri);
+            const match = /[\/\\](trading[\/\\].+\.json)$/i.exec(targetPath);
             if (!match) {return null;}
             return match[1].replace(/\\/g, '/');
         }

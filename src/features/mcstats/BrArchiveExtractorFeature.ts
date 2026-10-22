@@ -1,16 +1,9 @@
 import * as vscode from "vscode";
 import { Feature } from "../Feature";
-
-interface BrArchiveEntry {
-    name: string;
-    data: Uint8Array;
-}
+import { BrArchiveUtils } from "../../core/minecraft/BrArchiveUtils";
 
 export class BrArchiveExtractorFeature extends Feature {
     private static readonly EXTRACT_BRARCHIVE_COMMAND_ID = "minecraft-bedrock-creators-utilities.extractBrArchive";
-    private static readonly MAGIC_BYTES = Buffer.from("7d2725b1a0527026", "hex");
-    private static readonly HEADER_SIZE = 16;
-    private static readonly ENTRY_SIZE = 256;
 
     public register(): void {
         const disposable = vscode.commands.registerCommand(BrArchiveExtractorFeature.EXTRACT_BRARCHIVE_COMMAND_ID, async () => {
@@ -49,13 +42,11 @@ export class BrArchiveExtractorFeature extends Feature {
             const targetFolderUri = outputFolderUri[0];
 
             try {
-                const fileData = await vscode.workspace.fs.readFile(archiveUri);
-                const buffer = Buffer.from(fileData.buffer, fileData.byteOffset, fileData.byteLength);
+                // Lecture de l'index via BrArchiveUtils et filtrage des fichiers fantômes de taille 0 (ex: .png externes)
+                const allEntries = await BrArchiveUtils.readIndex(archiveUri.fsPath);
+                const extractableEntries = allEntries.filter(entry => entry.length > 0);
 
-                // Décodage binaire natif sans aucune librairie externe
-                const entries = this.parseBrArchive(buffer);
-
-                if (entries.length === 0) {
+                if (extractableEntries.length === 0) {
                     vscode.window.showInformationMessage("Aucun fichier extractible trouvé dans cette archive .brarchive.");
                     return;
                 }
@@ -67,24 +58,28 @@ export class BrArchiveExtractorFeature extends Feature {
                         cancellable: false
                     },
                     async (progress) => {
-                        const total = entries.length;
-                        const textDecoder = new TextDecoder("utf-8");
+                        const total = extractableEntries.length;
                         const textEncoder = new TextEncoder();
 
                         for (let i = 0; i < total; i++) {
-                            const entry = entries[i];
+                            const entry = extractableEntries[i];
                             const destinationFileUri = vscode.Uri.joinPath(targetFolderUri, entry.name);
 
-                            let bytesToWrite: Uint8Array = entry.data;
+                            const rawBuffer = await BrArchiveUtils.readEntryBuffer(
+                                archiveUri.fsPath,
+                                entry.absoluteOffset,
+                                entry.length
+                            );
 
-                            // Beautify automatique pour les fichiers .json minifiés
-                            if (entry.name.endsWith(".json")) {
+                            let bytesToWrite: Uint8Array = rawBuffer;
+
+                            // Beautify automatique pour les vrais fichiers .json texte (ignore les binaires MCB)
+                            if (entry.name.endsWith(".json") && !BrArchiveUtils.isMcbBuffer(rawBuffer)) {
                                 try {
-                                    const rawJson = textDecoder.decode(entry.data);
-                                    const parsed = JSON.parse(rawJson);
+                                    const parsed = JSON.parse(rawBuffer.toString("utf8"));
                                     bytesToWrite = textEncoder.encode(JSON.stringify(parsed, null, 2));
                                 } catch {
-                                    bytesToWrite = entry.data;
+                                    bytesToWrite = rawBuffer;
                                 }
                             }
 
@@ -101,7 +96,7 @@ export class BrArchiveExtractorFeature extends Feature {
                 );
 
                 const action = await vscode.window.showInformationMessage(
-                    `Extraction terminée : ${entries.length} fichiers extraits !`,
+                    `Extraction terminée : ${extractableEntries.length} fichiers extraits !`,
                     "Ouvrir dans l'explorateur système"
                 );
 
@@ -115,65 +110,5 @@ export class BrArchiveExtractorFeature extends Feature {
         });
 
         this.extensionContext.subscriptions.push(disposable);
-    }
-
-    /**
-     * Décode le format binaire .brarchive (Little-Endian)
-     */
-    private parseBrArchive(buffer: Buffer): BrArchiveEntry[] {
-        if (buffer.length < BrArchiveExtractorFeature.HEADER_SIZE) {
-            throw new Error("Le fichier est trop court pour être un .brarchive valide.");
-        }
-
-        // 1. Vérification de la signature (8 premiers octets : 7d 27 25 b1 a0 52 70 26)
-        const magic = buffer.subarray(0, 8);
-        if (!magic.equals(BrArchiveExtractorFeature.MAGIC_BYTES)) {
-            throw new Error(`Signature .brarchive invalide (${magic.toString("hex")}).`);
-        }
-
-        // 2. Lecture du nombre d'entrées et de la version
-        const numEntries = buffer.readUInt32LE(8);
-        const version = buffer.readUInt32LE(12);
-
-        if (version !== 1) {
-            console.warn(`Version .brarchive non standard détectée : ${version}`);
-        }
-
-        const dataBlockStart = BrArchiveExtractorFeature.HEADER_SIZE + (numEntries * BrArchiveExtractorFeature.ENTRY_SIZE);
-        if (buffer.length < dataBlockStart) {
-            throw new Error("Archive corrompue : la table d'index dépasse la taille du fichier.");
-        }
-
-        const entries: BrArchiveEntry[] = [];
-
-        // 3. Lecture de chaque entrée (256 octets par entrée)
-        for (let i = 0; i < numEntries; i++) {
-            const entryOffset = BrArchiveExtractorFeature.HEADER_SIZE + (i * BrArchiveExtractorFeature.ENTRY_SIZE);
-
-            const nameLength = buffer.readUInt8(entryOffset);
-            const name = buffer.toString("utf8", entryOffset + 1, entryOffset + 1 + nameLength);
-
-            const relativeDataOffset = buffer.readUInt32LE(entryOffset + 248);
-            const dataLength = buffer.readUInt32LE(entryOffset + 252);
-
-            // On ignore les fichiers fantômes de taille 0 (ex: .png/.fsb externes)
-            if (dataLength === 0) {
-                continue;
-            }
-
-            const start = dataBlockStart + relativeDataOffset;
-            const end = start + dataLength;
-
-            if (end > buffer.length) {
-                throw new Error(`Données tronquées pour l'entrée "${name}".`);
-            }
-
-            entries.push({
-                name,
-                data: buffer.subarray(start, end)
-            });
-        }
-
-        return entries;
     }
 }
