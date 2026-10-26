@@ -172,6 +172,23 @@ const baseSchema: MinecraftJsonSchema = {
                                     description: "Si `true`, les items tenus par l'Entité ne seront pas affichés.",
                                     default: false,
                                     type: "molang"
+                                },
+                                animate: {
+                                    description: "Ce script s'exécute chaque image après `pre_animation`. C'est ici que vous exécutez des animations et des contrôleurs d'animation. Chaque image, chaque animation ou contrôleur d'animation de cette clé sera exécuté.",
+                                    type: "array",
+                                    items: {
+                                        oneOf: [
+                                            {
+                                                type: "string"
+                                            },
+                                            {
+                                                type: "object",
+                                                additionalProperties: {
+                                                    type: "molang"
+                                                }
+                                            }
+                                        ]
+                                    }
                                 }
                             }
                         },
