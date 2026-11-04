@@ -131,7 +131,7 @@ export const versionedSchema: VersionedSchema = {
     baseSchema: baseSchema,
     versionedChanges: [
         {
-            version: "1.26.50", "1.26.60",
+            version: "1.26.50",
             changes: [
                 {
                     action: "modify",
