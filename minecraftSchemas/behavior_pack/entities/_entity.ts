@@ -16812,6 +16812,77 @@ const versionedChanges: SchemaChange[] = [
         ]
     },
     {
+        version: "1.26.60",
+        changes: [
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:movement.jump", "properties", "jump_delay"],
+                value: {
+                    description: "Delai après le saut avant que l'Entité puisse sauter à nouveau.",
+                    default: {
+                        min: 0,
+                        max: 0
+                    },
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "Le délai minimum après le saut avant que l'Entité puisse sauter à nouveau.",
+                            type: "number"
+                        },
+                        max: {
+                            description: "Le délai maximum après le saut avant que l'Entité puisse sauter à nouveau.",
+                            type: "number"
+                        }
+                    }
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:economy_trade_table", "properties", "cured_discount"],
+                value: {
+                    description: "De combien le rabais doit être modifié lorsque le joueur a guéri le Zombie Villager. Peut être spécifié comme une paire de nombres (rabais de commerce de bas niveau et rabais de commerce de haut niveau).",
+                    default: {
+                        min: -5,
+                        max: 20
+                    },
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "Le rabais minimum lorsque le joueur a guéri le Zombie Villager.",
+                            type: "number"
+                        },
+                        max: {
+                            description: "Le rabais maximum lorsque le joueur a guéri le Zombie Villager.",
+                            type: "number"
+                        }
+                    }
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:economy_trade_table", "properties", "max_cured_discount"],
+                value: {
+                    description: "Le montant maximum que le rabais peut être modifié lorsque le joueur a guéri le Zombie Villager. Peut être spécifié comme une paire de nombres (rabais de commerce de bas niveau et rabais de commerce de haut niveau).",
+                    default: {
+                        min: -25,
+                        max: -63
+                    },
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "Le rabais maximum minimum lorsque le joueur a guéri le Zombie Villager.",
+                            type: "number"
+                        },
+                        max: {
+                            description: "Le rabais maximum maximum lorsque le joueur a guéri le Zombie Villager.",
+                            type: "number"
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    {
         version: "beta",
         changes: [
         ]
