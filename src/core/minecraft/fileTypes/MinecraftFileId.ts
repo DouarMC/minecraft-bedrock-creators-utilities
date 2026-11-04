@@ -20,6 +20,7 @@ export type MinecraftFileId =
     "behavior_pack/items/<all>.json" |
     "behavior_pack/loot_tables/<all>.json" |
     "behavior_pack/poi/blocks/<all>.json" |
+    "behavior_pack/poi/tags/<all>.json" |
     "behavior_pack/recipes/<all>.json" |
     "behavior_pack/spawn_rules/<all>.json" |
     "behavior_pack/shapes/<all>.json" |

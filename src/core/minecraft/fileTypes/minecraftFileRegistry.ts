@@ -639,5 +639,13 @@ export const minecraftFileRegistry: Record<MinecraftFileId, MinecraftFileType> =
         patterns: ["**/poi/blocks/*.json"],
         excludePatterns: undefined,
         schemaPath: "behavior_pack/poi/blocks/_poi_block.json"
+    }),
+    "behavior_pack/poi/tags/<all>.json": new MinecraftFileType({
+        id: "behavior_pack/poi/tags/<all>.json",
+        displayName: "Points of Interest (POI) Tags",
+        packType: "behavior_pack",
+        patterns: ["**/poi/tags/*.json"],
+        excludePatterns: undefined,
+        schemaPath: "behavior_pack/poi/tags/_poi_tag.json"
     })
 };
