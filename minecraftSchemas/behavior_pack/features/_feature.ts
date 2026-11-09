@@ -3206,7 +3206,32 @@ const baseSchema: MinecraftJsonSchema = {
                             properties: {
                                 trunk_width: {
                                     description: "La largeur du tronc de l'arbre géant.",
-                                    type: "integer"
+                                    oneOf: [
+                                        {
+                                            type: "integer"
+                                        },
+                                        {
+                                            type: "array",
+                                            minItems: 2,
+                                            maxItems: 2,
+                                            items: {
+                                                type: "integer"
+                                            }
+                                        },
+                                        {
+                                            type: "object",
+                                            properties: {
+                                                range_min: {
+                                                    description: "",
+                                                    type: "integer"
+                                                },
+                                                range_max: {
+                                                    description: "",
+                                                    type: "integer"
+                                                }
+                                            }
+                                        }
+                                    ]
                                 },
                                 trunk_height: {
                                     description: "Configuration de la hauteur du tronc de l'arbre géant.",

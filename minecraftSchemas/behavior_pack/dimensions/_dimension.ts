@@ -130,6 +130,24 @@ export const versionedSchema: VersionedSchema = {
                             }
                         }
                     }
+                },
+                {
+                    action: "add",
+                    target: ["properties", "minecraft:dimension", "properties", "components", "properties", "minecraft:clouds"],
+                    value: {
+                        description: "Définit la hauteur des nuages de la Dimension.",
+                        type: "object",
+                        required: ["height"],
+                        properties: {
+                            height: {
+                                description: "La coordonnée Y à laquelle les nuages seront affichés dans la Dimension.",
+                                default: 128,
+                                type: "integer",
+                                minimum: -512,
+                                maximum: 512
+                            }
+                        }
+                    }
                 }
             ]
         }

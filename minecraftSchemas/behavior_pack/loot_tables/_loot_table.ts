@@ -8,6 +8,13 @@ const baseSchema: MinecraftJsonSchema = {
     type: "object",
     required: ["pools"],
     properties: {
+        format_version: {
+            description: "La version du format à utiliser.",
+            type: "string",
+            enum: [
+                "1.26.60"
+            ]
+        },
         pools: {
             description: "Répertorie toutes les Pools de la Loot Table. Une Pool correspond à un ensemble de règles déterminant les Items générés.",
             type: "array",
@@ -1006,7 +1013,8 @@ const baseSchema: MinecraftJsonSchema = {
 
 export const versionedSchema: VersionedSchema = {
     baseSchema: baseSchema,
-    versionedChanges: []
+    versionedChanges: [
+    ]
 };
 
 export default versionedSchema;

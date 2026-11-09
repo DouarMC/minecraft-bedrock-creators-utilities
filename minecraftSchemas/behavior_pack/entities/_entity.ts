@@ -6891,17 +6891,21 @@ const baseSchema: MinecraftJsonSchema = {
                                         block_chance: {
                                             description: "Chance que, une fois un bloc trouvé, l'entité accélère la transformation.",
                                             default: 0.0,
-                                            type: "number"
+                                            type: "number",
+                                            minimum: 0.0,
+                                            maximum: 1.0
                                         },
                                         block_max: {
                                             description: "Nombre maximum de blocs que l'entité cherchera pour aider à la transformation. Si non défini ou défini à 0, il sera défini sur le rayon de blocs.",
                                             default: 0,
-                                            type: "integer"
+                                            type: "integer",
+                                            minimum: 0
                                         },
                                         block_radius: {
                                             description: "Distance en blocs que l'entité cherchera des blocs qui peuvent aider à la transformation.",
                                             default: 0,
-                                            type: "integer"
+                                            type: "integer",
+                                            minimum: 0
                                         },
                                         block_types: {
                                             description: "Liste des blocs qui peuvent aider à la transformation.",
@@ -6924,7 +6928,8 @@ const baseSchema: MinecraftJsonSchema = {
                                         value: {
                                             description: "Temps en secondes avant que l'entité se transforme.",
                                             default: 0,
-                                            type: "number"
+                                            type: "number",
+                                            minimum: 0
                                         }
                                     }
                                 }
@@ -16878,6 +16883,75 @@ const versionedChanges: SchemaChange[] = [
                             type: "number"
                         }
                     }
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:timer", "properties", "time"],
+                value: {
+                    description: "La durée en secondes avant que l'événement ne se déclenche. Peut être spécifié comme un nombre ou une paire de nombres (min et max). Incompatible avec random_time_choices.",
+                    default: {
+                        min: 0,
+                        max: 0
+                    },
+                    type: "object",
+                    properties: {
+                        min: {
+                            description: "La durée minimale en secondes avant que l'événement ne se déclenche.",
+                            type: "number"
+                        },
+                        max: {
+                            description: "La durée maximale en secondes avant que l'événement ne se déclenche.",
+                            type: "number"
+                        }
+                    }
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:transformation", "properties", "begin_transform_sound"],
+                value: {
+                    description: "Le son qui sera joué lorsque l'entité commencera à se transformer.",
+                    type: "array",
+                    items: {
+                        type: "string"
+                    }
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:transformation", "properties", "transformation_sound"],
+                value: {
+                    description: "Le son qui se joue lorsque l'entité se transforme.",
+                    type: "array",
+                    items: {
+                        type: "string"
+                    }
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:attack", "properties", "damage"],
+                value: {
+                    description: "Le montant de dégâts infligés par l'attaque. Note: Une valeur négative soignera l'Entité. Si un tableau est fourni, un montant de dégâts aléatoire sera choisi entre les deux valeurs.",
+                    oneOf: [
+                        {
+                            type: "integer"
+                        },
+                        {
+                            type: "object",
+                            properties: {
+                                min: {
+                                    description: "",
+                                    type: "integer"
+                                },
+                                max: {
+                                    description: "",
+                                    type: "integer"
+                                }
+                            }
+                        }
+                    ]
                 }
             }
         ]
