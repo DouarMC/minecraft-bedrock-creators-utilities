@@ -16953,6 +16953,58 @@ const versionedChanges: SchemaChange[] = [
                         }
                     ]
                 }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:trail", "properties", "replaceable_blocks"],
+                value: {
+                    description: "La liste des blocs qui peuvent être remplacé par le Bloc de chemin. Si le bloc qui est au décalage d'apparition n'est pas dans la liste, le bloc de chemin n'apparaitra pas. Par défaut, celà s'affectera que pour les blocs d'air.",
+                    defaut: [],
+                    type: "array",
+                    items: {
+                        oneOf: [
+                            {
+                                type: "string",
+                                "x-dynamic-examples-source": dynamicExamplesSourceKeys.block_ids
+                            },
+                            commonSchemas.block_descriptor
+                        ]
+                    }
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:trail", "properties", "radius"],
+                value: {
+                    description: "Lorsqu'elle est spécifiée, la traînée génère des blocs sur une zone horizontale de (2 * radius + 1) par (2 * radius + 1), centrée sur le décalage de génération. Si elle est omise, la méthode d'échantillonnage classique aux quatre coins est utilisée.",
+                    default: -1,
+                    type: "integer",
+                    minimum: -1,
+                    maximum: 16
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:trail", "properties", "force_replace_matched_blocks"],
+                value: {
+                    description: "Lorsque cette option est activée, la traînée remplace les blocs qui correspondent à la liste des blocs remplaçables, même si les règles de placement habituelles s'y opposent.",
+                    default: false,
+                    type: "boolean"
+                }
+            },
+            {
+                action: "modify",
+                target: ["properties", "minecraft:entity", "properties", "components", "properties", "minecraft:rideable", "properties", "dismount_mode"],
+                value: {
+                    description:
+                    "Définit où les chevaucheurs sont placés lorsqu'ils descendent de l'Entité." +
+                    "\n\n- `default`: les chevaucheurs sont placés sur une position au sol valide autour de l'Entité ou au centre de la boite de collision si aucune position est trouvée." +
+                    "\n\n- `on_top_center`: les chevaucheurs sont placés au centre en haut de la boite de collision de l'Entité." +
+                    "\n\n- `look_direction`: les chevaucheurs sont placés sur le bloc vosiin dans la direction de ces derniers, si le bloc n'est pas un bloc de lave.",
+                    default: "default",
+                    type: "string",
+                    enum: ["default", "on_top_center", "look_direction"]
+                }
             }
         ]
     },

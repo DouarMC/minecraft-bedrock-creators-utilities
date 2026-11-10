@@ -2289,6 +2289,15 @@ const versionedChanges: SchemaChange[] = [
                 value: ["up", "down", "north", "south", "east", "west"]
             }
         ]
+    },
+    {
+        version: "1.26.60",
+        changes: [
+            {
+                action: "remove",
+                target: ["properties", "minecraft:block", "properties", "description", "properties", "traits", "properties", "minecraft:collision_box", "oneOf", 1]
+            }
+        ]
     }
 ];
 

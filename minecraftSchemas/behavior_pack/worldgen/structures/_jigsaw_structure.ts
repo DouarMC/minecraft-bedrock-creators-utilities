@@ -394,6 +394,11 @@ const baseSchema: MinecraftJsonSchema = {
                     default: "apply_waterlogging",
                     type: "string",
                     enum: ["apply_waterlogging", "ignore_waterlogging"]
+                },
+                on_placed: {
+                    description: "Nom du rappel utilisé après le placement de cette structure dans le monde",
+                    default: "",
+                    type: "string"
                 }
             }
         }
