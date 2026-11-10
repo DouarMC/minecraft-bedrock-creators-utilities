@@ -2281,7 +2281,7 @@ const versionedChanges: SchemaChange[] = [
         ]
     },
     {
-        version: "1.26.50", 
+        version: "1.26.50",
         changes: [
             {
                 action: "modify",
