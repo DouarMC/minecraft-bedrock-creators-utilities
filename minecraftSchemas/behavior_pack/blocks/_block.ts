@@ -2295,7 +2295,7 @@ const versionedChanges: SchemaChange[] = [
         changes: [
             {
                 action: "remove",
-                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:collision_box", "oneOf", "1"]
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:collision_box", "oneOf", 1]
             }
         ]
     }
