@@ -2211,7 +2211,7 @@ const versionedChanges: SchemaChange[] = [
                             type: "boolean"
                         },
                         container: {
-                            "x-experimental_options": true,
+                            "x-experimental_options": ["Upcoming Creator Features"],
                             description: "Définit si le block-entity est un conteneur. Un conteneur est un type de block-entity qui peut stocker des items, similaire aux coffres, aux fours, aux distributeurs, etc.",
                             type: "object",
                             required: ["slot_count"],
@@ -2221,6 +2221,13 @@ const versionedChanges: SchemaChange[] = [
                                     type: "integer",
                                     minimum: 1,
                                     maximum: 54
+                                },
+                                title: {
+                                    "x-localized": true,
+                                    description: "Le titre du conteneur. Le titre est affiché lorsque le joueur ouvre le conteneur.",
+                                    type: "string",
+                                    minLength: 1,
+                                    maxLength: 256
                                 }
                             }
                         }
@@ -2306,47 +2313,166 @@ const versionedChanges: SchemaChange[] = [
                         {
                             type: "array",
                             items: {
-                                type: "object",
-                                required: ["origin", "size"],
-                                properties: {
-                                    origin: {
-                                        description: "La position de l'origine de la boîte de collision du Bloc.",
-                                        default: [-8, 0, -8],
-                                        type: "array",
-                                        minItems: 3,
-                                        maxItems: 3,
-                                        items: [
-                                            {
-                                                type: "number",
-                                                minimum: -8,
-                                                maximum: 8
+                                oneOf: [
+                                    {
+                                        type: "object",
+                                        required: ["origin", "size"],
+                                        properties: {
+                                            origin: {
+                                                description: "La position de l'origine de la boîte de collision du Bloc.",
+                                                default: [-8, 0, -8],
+                                                type: "array",
+                                                minItems: 3,
+                                                maxItems: 3,
+                                                items: [
+                                                    {
+                                                        type: "number",
+                                                        minimum: -8,
+                                                        maximum: 8
+                                                    },
+                                                    {
+                                                        type: "number",
+                                                        minimum: 0,
+                                                        maximum: 24
+                                                    },
+                                                    {
+                                                        type: "number",
+                                                        minimum: -8,
+                                                        maximum: 8
+                                                    }
+                                                ]
                                             },
-                                            {
-                                                type: "number",
-                                                minimum: 0,
-                                                maximum: 24
-                                            },
-                                            {
-                                                type: "number",
-                                                minimum: -8,
-                                                maximum: 8
+                                            size: {
+                                                description: "La taille de la boîte de collision du Bloc.",
+                                                default: [16, 16, 16],
+                                                type: "array",
+                                                minItems: 3,
+                                                maxItems: 3,
+                                                items: {
+                                                    type: "number"
+                                                }
                                             }
-                                        ]
+                                        }
                                     },
-                                    size: {
-                                        description: "La taille de la boîte de collision du Bloc.",
-                                        default: [16, 16, 16],
-                                        type: "array",
-                                        minItems: 3,
-                                        maxItems: 3,
-                                        items: {
-                                            type: "number"
+                                    {
+                                        "x-experimental_options": ["Upcoming Creator Features"],
+                                        type: "object",
+                                        required: ["min", "max"],
+                                        properties: {
+                                            min: {
+                                                description: "La position minimale de la boîte de collision du Bloc.",
+                                                default: [0, 0, 0],
+                                                type: "array",
+                                                minItems: 3,
+                                                maxItems: 3,
+                                                items: [
+                                                    {
+                                                        type: "number",
+                                                        minimum: 0,
+                                                        maximum: 16
+                                                    },
+                                                    {
+                                                        type: "number",
+                                                        minimum: 0,
+                                                        maximum: 24
+                                                    },
+                                                    {
+                                                        type: "number",
+                                                        minimum: 0,
+                                                        maximum: 16
+                                                    }
+                                                ]
+                                            },
+                                            max: {
+                                                description: "La position maximale de la boîte de collision du Bloc.",
+                                                default: [0, 0, 0],
+                                                type: "array",
+                                                minItems: 3,
+                                                maxItems: 3,
+                                                items: [
+                                                    {
+                                                        type: "number",
+                                                        minimum: 0,
+                                                        maximum: 16
+                                                    },
+                                                    {
+                                                        type: "number",
+                                                        minimum: 0,
+                                                        maximum: 24
+                                                    },
+                                                    {
+                                                        type: "number",
+                                                        minimum: 0,
+                                                        maximum: 16
+                                                    }
+                                                ]
+                                            }
                                         }
                                     }
-                                }
+                                ]
                             }
                         }
                     ]
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:block_entity", "properties", "entity_storage"],
+                value: {
+                    "x-experimental_options": ["Upcoming Creator Features"],
+                    description: "Définit si le block-entity peut stocker des entités. Les entités stockées sont des entités qui sont attachées au block-entity et qui peuvent être récupérées avec le script.",
+                    default: false,
+                    type: "boolean"
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:enchantment_power_transmitter"],
+                value: {
+                    "x-experimental_options": ["Upcoming Creator Features"],
+                    description: "Définit si le Bloc peut transmettre la puissance d'enchantement aux blocs de table d'enchantement. Les blocs de table d'enchantement utilisent la puissance d'enchantement pour déterminer le niveau d'enchantement disponible pour l'objet à enchanter.",
+                    default: false,
+                    type: "boolean"
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:vibration_properties"],
+                value: {
+                    "x-experimental_options": ["Upcoming Creator Features"],
+                    description: "Définit les propriétés de vibration du Bloc. Les vibrations sont utilisées par les blocs de sculk pour détecter les événements dans le monde.",
+                    type: "object",
+                    properties: {
+                        dampen_vibrations: {
+                            description: "Définit si le Bloc peut atténuer les vibrations. Les blocs qui atténuent les vibrations réduisent la portée des vibrations qui passent à travers eux.",
+                            default: false,
+                            type: "boolean"
+                        },
+                        occlude_vibrations: {
+                            description: "Définit si le Bloc peut occulter les vibrations. Les blocs qui occultent les vibrations bloquent complètement les vibrations qui passent à travers eux.",
+                            default: false,
+                            type: "boolean"
+                        }
+                    }
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:neighbor_change"],
+                value: {
+                    "x-experimental_options": ["Upcoming Creator Features"],
+                    description: "Définit les directions dans lesquelles le Bloc peut détecter les changements de blocs voisins. Utilisés pour les custom components du Script API.",
+                    type: "object",
+                    properties: {
+                        neighbor_directions: {
+                            description: "Les directions dans lesquelles le Bloc peut détecter les changements de blocs voisins.",
+                            type: "array",
+                            items: {
+                                type: "string",
+                                enum: ["up", "down", "north", "south", "east", "west", "all"]
+                            }
+                        }
+                    }
                 }
             }
         ]

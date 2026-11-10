@@ -642,6 +642,11 @@ export const versionedSchema: VersionedSchema = {
                                             description: "Type de paramètre.",
                                             type: "string",
                                             enum: ["multiselect"]
+                                        },
+                                        selection_text: {
+                                            description: "Texte affiché dans le menu déroulant de sélection du multiselect. Si ce champ n'est pas défini, les éléments actuellement sélectionnés seront affichés à la place.",
+                                            default: "",
+                                            type: "string"
                                         }
                                     }
                                 }
