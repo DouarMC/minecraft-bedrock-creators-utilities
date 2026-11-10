@@ -2294,8 +2294,60 @@ const versionedChanges: SchemaChange[] = [
         version: "1.26.60",
         changes: [
             {
-                action: "remove",
-                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:collision_box", "oneOf", 1]
+                action: "modify",
+                target: ["properties", "minecraft:block", "properties", "components", "properties", "minecraft:collision_box"],
+                value: {
+                    description: "Définit la boîte de collision du Bloc. Si cette valeur est `true`, le Bloc utilisera les valeurs par défaut pour `origin` et `size`. Si cette valeur est une liste, le Bloc utilisera plusieurs boîtes de collision, ce qui permet de créer des formes de collision plus complexes que les boîtes rectangulaires standard. Les Blocs ont une limite de 16 unités en largeur, et 24 en hauteur.",
+                    default: true,
+                    oneOf: [
+                        {
+                            type: "boolean"
+                        },
+                        {
+                            type: "array",
+                            items: {
+                                type: "object",
+                                required: ["origin", "size"],
+                                properties: {
+                                    origin: {
+                                        description: "La position de l'origine de la boîte de collision du Bloc.",
+                                        default: [-8, 0, -8],
+                                        type: "array",
+                                        minItems: 3,
+                                        maxItems: 3,
+                                        items: [
+                                            {
+                                                type: "number",
+                                                minimum: -8,
+                                                maximum: 8
+                                            },
+                                            {
+                                                type: "number",
+                                                minimum: 0,
+                                                maximum: 24
+                                            },
+                                            {
+                                                type: "number",
+                                                minimum: -8,
+                                                maximum: 8
+                                            }
+                                        ]
+                                    },
+                                    size: {
+                                        description: "La taille de la boîte de collision du Bloc.",
+                                        default: [16, 16, 16],
+                                        type: "array",
+                                        minItems: 3,
+                                        maxItems: 3,
+                                        items: {
+                                            type: "number"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
             }
         ]
     }
