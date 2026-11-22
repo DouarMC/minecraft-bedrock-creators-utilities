@@ -186,6 +186,11 @@ const baseSchema: MinecraftJsonSchema = {
                                 type: "string",
                                 pattern: [schemaPatterns.script_version, "beta"],
                                 examples: ["beta"]
+                            },
+                            optional: {
+                                description: "Indique si la dépendance est optionnelle.",
+                                default: false,
+                                type: "boolean"
                             }
                         }
                     },
@@ -470,6 +475,7 @@ export const versionedSchema: VersionedSchema = {
                         description: "Définitions des paramètres configurables par le joueur.",
                         type: "array",
                         minItems: 1,
+                        maxItems: 50,
                         items: {
                             oneOf: [
                                 {
@@ -656,7 +662,7 @@ export const versionedSchema: VersionedSchema = {
                 },
                 {
                     action: "add",
-                    target: ["properties", "pack_optimization_version"],
+                    target: ["properties", "header", "properties", "pack_optimization_version"],
                     value: {
                         value: {
                             description: "La version du pack.",
@@ -692,6 +698,14 @@ export const versionedSchema: VersionedSchema = {
                                 }
                             ]
                         }
+                    }
+                },
+                {
+                    action: "add",
+                    target: ["properties", "has_education_metadata"],
+                    value: {
+                        description: "Indique si le pack contient des métadonnées éducatives.",
+                        type: "boolean"
                     }
                 }
             ]

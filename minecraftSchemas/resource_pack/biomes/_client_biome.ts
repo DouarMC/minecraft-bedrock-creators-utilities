@@ -42,15 +42,17 @@ const baseSchema: MinecraftJsonSchema = {
                             properties: {
                                 addition: {
                                     description: "Son nommé qui se joue occasionnellement à la position de l'auditeur.",
+                                    default: "",
                                     type: "string"
                                 },
                                 loop: {
                                     description: "Son nommé qui se joue en boucle tant que la position de l'auditeur est à l'intérieur du biome.",
+                                    default: "",
                                     type: "string"
                                 },
                                 mood: {
                                     description: "Son nommé qui se joue rarement à une position de bloc d'air proche lorsque le niveau de lumière est faible. Les biomes sans son d'ambiance d'humeur utiliseront le son `ambient.cave`.",
-                                    default: "ambient.cave",
+                                    default: "",
                                     type: "string"
                                 }
                             }
@@ -59,11 +61,6 @@ const baseSchema: MinecraftJsonSchema = {
                             description: "Définit comment la musique est jouée dans le biome.",
                             type: "object",
                             properties: {
-                                music_definition: {
-                                    description: "Définit la musique à jouer dans le biome. Si ce n'est pas définit ou si la musique n'est pas trouvée, une musique par défaut détérminée par la dimension sera jouée. Si des strings vides sont fournies, aucune musique ne sera jouée. La référence doit être une musique définie dans le fichier `music_definitions.json`. Les sons doivent êtres de type `.ogg`.",
-                                    type: "string",
-                                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.music_references
-                                },
                                 volume_multiplier: {
                                     description: "Multiplicateur temporaire et progressif appliqué au volume de la musique lorsqu'on se trouve dans ce biome. Doit être une valeur comprise entre 0 et 1, inclus.",
                                     type: "number",
@@ -247,6 +244,15 @@ const versionedChanges: SchemaChange[] = [
                             "x-dynamic-examples-source": dynamicExamplesSourceKeys.atmosphere_settings_ids
                         }
                     }
+                }
+            },
+            {
+                action: "add",
+                target: ["properties", "minecraft:client_biome", "properties", "components", "properties", "minecraft:biome_music", "properties", "music_definition"],
+                value: {
+                    description: "Définit la musique à jouer dans le biome. Si ce n'est pas définit ou si la musique n'est pas trouvée, une musique par défaut détérminée par la dimension sera jouée. Si des strings vides sont fournies, aucune musique ne sera jouée. La référence doit être une musique définie dans le fichier `music_definitions.json`. Les sons doivent êtres de type `.ogg`.",
+                    type: "string",
+                    "x-dynamic-examples-source": dynamicExamplesSourceKeys.music_references
                 }
             },
             {

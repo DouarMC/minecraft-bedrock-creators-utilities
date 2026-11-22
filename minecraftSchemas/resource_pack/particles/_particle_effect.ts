@@ -1058,143 +1058,146 @@ const baseSchema: MinecraftJsonSchema = {
                 },
                 curves: {
                     description: "Les courbes de particules sont des courbes de particules qui peuvent être utilisées pour définir des propriétés de particules qui changent au fil du temps.",
-                    oneOf: [
-                        {
-                            type: "object",
-                            required: ["type", "nodes", "input"],
-                            properties: {
-                                type: {
-                                    description:
-                                    "Le type de courbe de particules." +
-                                    "\n\n`linear`: une série de nœuds, également espacés entre 0 et 1 après l'application de l'entrée/plage horizontale." +
-                                    "\n\n`bezier`: une spline de bezier à 4 nœuds, le premier et le dernier point étant les valeurs à 0 et 1 et les deux points du milieu formant les lignes de pente à 0,33 pour le premier point et 0,66 pour le second." +
-                                    "\n\n`catmull_rom`: une série de courbes qui passent par tous les nœuds sauf le dernier/premier. Les premiers/derniers nœuds sont utilisés pour former la pente des deuxièmes/deuxièmes derniers points respectivement. Tous les points sont également espacés." +
-                                    "\n\n`bezier_chain`: une chaîne de splines de bezier. Une série de points est spécifiée avec leurs pentes correspondantes, et chaque segment utilise sa paire de points et de pentes pour former une spline de bezier. Chaque point, à l'exception du premier/dernier, est partagé entre sa paire de segments de spline.",
-                                    type: "string",
-                                    enum: ["linear", "bezier", "bezier_chain", "catmull_rom"]
-                                },
-                                nodes: {
-                                    description: "Les nœuds sonnt les nœuds de contrôle pour la courbe. Ils sont supposés être également espacés; cette notation ne fonctionne que pour les courbes linéaires, de bezier et de catmull_rom.",
-                                    oneOf: [
-                                        {
-                                            type: "array",
-                                            minItems: 3,
-                                            maxItems: 3,
-                                            items: {
-                                                type: "molang"
-                                            }
-                                        },
-                                        {
-                                            type: "object",
-                                            propertyNames: {
-                                                pattern: schemaPatterns.particle_lifetime_keyframe
+                    type: "object",
+                    additionalProperties: {
+                        oneOf: [
+                            {
+                                type: "object",
+                                required: ["type", "nodes", "input"],
+                                properties: {
+                                    type: {
+                                        description:
+                                        "Le type de courbe de particules." +
+                                        "\n\n`linear`: une série de nœuds, également espacés entre 0 et 1 après l'application de l'entrée/plage horizontale." +
+                                        "\n\n`bezier`: une spline de bezier à 4 nœuds, le premier et le dernier point étant les valeurs à 0 et 1 et les deux points du milieu formant les lignes de pente à 0,33 pour le premier point et 0,66 pour le second." +
+                                        "\n\n`catmull_rom`: une série de courbes qui passent par tous les nœuds sauf le dernier/premier. Les premiers/derniers nœuds sont utilisés pour former la pente des deuxièmes/deuxièmes derniers points respectivement. Tous les points sont également espacés." +
+                                        "\n\n`bezier_chain`: une chaîne de splines de bezier. Une série de points est spécifiée avec leurs pentes correspondantes, et chaque segment utilise sa paire de points et de pentes pour former une spline de bezier. Chaque point, à l'exception du premier/dernier, est partagé entre sa paire de segments de spline.",
+                                        type: "string",
+                                        enum: ["linear", "bezier", "bezier_chain", "catmull_rom"]
+                                    },
+                                    nodes: {
+                                        description: "Les nœuds sonnt les nœuds de contrôle pour la courbe. Ils sont supposés être également espacés; cette notation ne fonctionne que pour les courbes linéaires, de bezier et de catmull_rom.",
+                                        oneOf: [
+                                            {
+                                                type: "array",
+                                                minItems: 3,
+                                                maxItems: 3,
+                                                items: {
+                                                    type: "molang"
+                                                }
                                             },
-                                            additionalProperties: {
+                                            {
                                                 type: "object",
-                                                properties: {
-                                                    value: {
-                                                        description: "La valeur de la courbe à ce point.",
-                                                        type: "molang"
-                                                    },
-                                                    left_value: {
-                                                        description: "La valeur de la courbe à ce point.",
-                                                        type: "molang"
-                                                    },
-                                                    right_value: {
-                                                        description: "La valeur de la courbe à ce point.",
-                                                        type: "molang"
-                                                    },
-                                                    slope: {
-                                                        description: "La pente de la courbe à ce point.",
-                                                        type: "molang"
-                                                    },
-                                                    left_slope: {
-                                                        description: "La pente de la courbe à ce point.",
-                                                        type: "molang"
-                                                    },
-                                                    right_slope: {
-                                                        description: "La pente de la courbe à ce point.",
-                                                        type: "molang"
+                                                propertyNames: {
+                                                    pattern: schemaPatterns.particle_lifetime_keyframe
+                                                },
+                                                additionalProperties: {
+                                                    type: "object",
+                                                    properties: {
+                                                        value: {
+                                                            description: "La valeur de la courbe à ce point.",
+                                                            type: "molang"
+                                                        },
+                                                        left_value: {
+                                                            description: "La valeur de la courbe à ce point.",
+                                                            type: "molang"
+                                                        },
+                                                        right_value: {
+                                                            description: "La valeur de la courbe à ce point.",
+                                                            type: "molang"
+                                                        },
+                                                        slope: {
+                                                            description: "La pente de la courbe à ce point.",
+                                                            type: "molang"
+                                                        },
+                                                        left_slope: {
+                                                            description: "La pente de la courbe à ce point.",
+                                                            type: "molang"
+                                                        },
+                                                        right_slope: {
+                                                            description: "La pente de la courbe à ce point.",
+                                                            type: "molang"
+                                                        }
                                                     }
                                                 }
                                             }
-                                        }
-                                    ]
-                                },
-                                input: {
-                                    description: "L'entrée de la courbe.",
-                                    type: "molang"
-                                },
-                                horizontal_range: {
-                                    description: "La plage horizontale de la courbe.",
-                                    type: "molang"
+                                        ]
+                                    },
+                                    input: {
+                                        description: "L'entrée de la courbe.",
+                                        type: "molang"
+                                    },
+                                    horizontal_range: {
+                                        description: "La plage horizontale de la courbe.",
+                                        type: "molang"
+                                    }
                                 }
-                            }
-                        },
-                        {
-                            type: "object",
-                            required: ["type", "nodes", "input"],
-                            properties: {
-                                type: {
-                                    description: "Le type de courbe de particules.",
-                                    type: "string",
-                                    pattern: "^bezier_chain$"
-                                },
-                                nodes: {
-                                    description: "Les nœuds sonnt les nœuds de contrôle pour la courbe. Ils sont supposés être également espacés; cette notation ne fonctionne que pour les courbes linéaires, de bezier et de catmull_rom.",
-                                    oneOf: [
-                                        {
-                                            type: "array",
-                                            minItems: 3,
-                                            maxItems: 3,
-                                            items: {
-                                                type: "molang"
-                                            }
-                                        },
-                                        {
-                                            type: "object",
-                                            propertyNames: {
-                                                pattern: schemaPatterns.particle_lifetime_keyframe
+                            },
+                            {
+                                type: "object",
+                                required: ["type", "nodes", "input"],
+                                properties: {
+                                    type: {
+                                        description: "Le type de courbe de particules.",
+                                        type: "string",
+                                        pattern: "^bezier_chain$"
+                                    },
+                                    nodes: {
+                                        description: "Les nœuds sonnt les nœuds de contrôle pour la courbe. Ils sont supposés être également espacés; cette notation ne fonctionne que pour les courbes linéaires, de bezier et de catmull_rom.",
+                                        oneOf: [
+                                            {
+                                                type: "array",
+                                                minItems: 3,
+                                                maxItems: 3,
+                                                items: {
+                                                    type: "molang"
+                                                }
                                             },
-                                            additionalProperties: {
+                                            {
                                                 type: "object",
-                                                properties: {
-                                                    value: {
-                                                        description: "La valeur de la courbe à ce point.",
-                                                        type: "molang"
-                                                    },
-                                                    left_value: {
-                                                        description: "La valeur de la courbe à ce point.",
-                                                        type: "molang"
-                                                    },
-                                                    right_value: {
-                                                        description: "La valeur de la courbe à ce point.",
-                                                        type: "molang"
-                                                    },
-                                                    slope: {
-                                                        description: "La pente de la courbe à ce point.",
-                                                        type: "molang"
-                                                    },
-                                                    left_slope: {
-                                                        description: "La pente de la courbe à ce point.",
-                                                        type: "molang"
-                                                    },
-                                                    right_slope: {
-                                                        description: "La pente de la courbe à ce point.",
-                                                        type: "molang"
+                                                propertyNames: {
+                                                    pattern: schemaPatterns.particle_lifetime_keyframe
+                                                },
+                                                additionalProperties: {
+                                                    type: "object",
+                                                    properties: {
+                                                        value: {
+                                                            description: "La valeur de la courbe à ce point.",
+                                                            type: "molang"
+                                                        },
+                                                        left_value: {
+                                                            description: "La valeur de la courbe à ce point.",
+                                                            type: "molang"
+                                                        },
+                                                        right_value: {
+                                                            description: "La valeur de la courbe à ce point.",
+                                                            type: "molang"
+                                                        },
+                                                        slope: {
+                                                            description: "La pente de la courbe à ce point.",
+                                                            type: "molang"
+                                                        },
+                                                        left_slope: {
+                                                            description: "La pente de la courbe à ce point.",
+                                                            type: "molang"
+                                                        },
+                                                        right_slope: {
+                                                            description: "La pente de la courbe à ce point.",
+                                                            type: "molang"
+                                                        }
                                                     }
                                                 }
                                             }
-                                        }
-                                    ]
-                                },
-                                input: {
-                                    description: "L'entrée de la courbe.",
-                                    type: "molang"
+                                        ]
+                                    },
+                                    input: {
+                                        description: "L'entrée de la courbe.",
+                                        type: "molang"
+                                    }
                                 }
                             }
-                        }
-                    ]
+                        ]
+                    }
                 },
                 events: {
                     description: "Les événements de particules sont des événements qui peuvent être déclenchés par des particules.",

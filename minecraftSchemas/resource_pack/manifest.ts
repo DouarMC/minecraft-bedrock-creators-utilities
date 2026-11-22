@@ -355,6 +355,7 @@ export const versionedSchema: VersionedSchema = {
                         description: "Définitions des paramètres configurables par le joueur.",
                         type: "array",
                         minItems: 1,
+                        maxItems: 50,
                         items: {
                             oneOf: [
                                 {
@@ -537,6 +538,54 @@ export const versionedSchema: VersionedSchema = {
                                 }
                             ]
                         }
+                    }
+                },
+                {
+                    action: "add",
+                    target: ["properties", "header", "properties", "pack_optimization_version"],
+                    value: {
+                        value: {
+                            description: "La version du pack.",
+                            oneOf: [
+                                {
+                                    type: "string"
+                                },
+                                {
+                                    type: "object",
+                                    required: ["major", "minor", "patch"],
+                                    properties: {
+                                        buildMeta: {
+                                            description: "Informations supplémentaires sur la version.",
+                                            type: "string"
+                                        },
+                                        major: {
+                                            description: "La version majeure du pack.",
+                                            type: "integer"
+                                        },
+                                        minor: {
+                                            description: "La version mineure du pack.",
+                                            type: "integer"
+                                        },
+                                        patch: {
+                                            description: "La version de correction du pack.",
+                                            type: "integer"
+                                        },
+                                        preRelease: {
+                                            description: "La version pré-release du pack.",
+                                            type: "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    action: "add",
+                    target: ["properties", "has_education_metadata"],
+                    value: {
+                        description: "Indique si le pack contient des métadonnées éducatives.",
+                        type: "boolean"
                     }
                 }
             ]

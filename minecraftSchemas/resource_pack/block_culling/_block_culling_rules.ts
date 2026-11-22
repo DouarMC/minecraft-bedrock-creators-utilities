@@ -54,7 +54,8 @@ const baseSchema: MinecraftJsonSchema = {
                                     },
                                     cube: {
                                         description: "L'index du cube du modèle de l'os à cull.",
-                                        type: "integer"
+                                        type: "integer",
+                                        minimum: 0
                                     },
                                     face: {
                                         description: "La face du cube à cull.",
