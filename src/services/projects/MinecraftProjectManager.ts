@@ -16,25 +16,44 @@ export class MinecraftProjectManager {
      * Le FileSystemWatcher pour surveiller les changements du fichier de configuration du projet Minecraft.
      */
     private static configWatcher: vscode.FileSystemWatcher | undefined;
+    private static subscriptions: vscode.Disposable[] = [];
 
 
     /**
      * Initialise le MinecraftProjectManager en configurant les écouteurs nécessaires.
      */
-    public static async initialize(): Promise<void> {
+    public static async initialize(extensionSubscriptions: vscode.Disposable[]): Promise<void> {
+        this.dispose();
+
         // Charge le projet Minecraft au démarrage de l'extension
         await this.reload();
 
-        // Reload quand les dossiers de workspace changent
-        vscode.workspace.onDidChangeWorkspaceFolders(async () => {
+        const workspaceFolderListener = vscode.workspace.onDidChangeWorkspaceFolders(async () => {
             await this.reload();
         });
 
-        // Surveille les changements du fichier de configuration du projet Minecraft
         this.configWatcher = vscode.workspace.createFileSystemWatcher(`**/${MinecraftProjectLoader.CONFIG_FILE_NAME}`);
-        this.configWatcher.onDidChange(async () => await this.reload());
-        this.configWatcher.onDidCreate(async () => await this.reload());
-        this.configWatcher.onDidDelete(() => this.clear());
+        this.subscriptions = [
+            workspaceFolderListener,
+            this.configWatcher,
+            this.configWatcher.onDidChange(async () => await this.reload()),
+            this.configWatcher.onDidCreate(async () => await this.reload()),
+            this.configWatcher.onDidDelete(() => this.clear())
+        ];
+        extensionSubscriptions.push(...this.subscriptions);
+    }
+
+    /**
+     * Libère les écouteurs du gestionnaire et efface le projet chargé.
+     */
+    public static dispose(): void {
+        for (const subscription of this.subscriptions) {
+            subscription.dispose();
+        }
+
+        this.subscriptions = [];
+        this.configWatcher = undefined;
+        this.clear();
     }
 
     /**

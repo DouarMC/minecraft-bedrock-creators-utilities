@@ -18,7 +18,7 @@ export async function activate(context: vscode.ExtensionContext) {
     console.log("[MBCU] Activating Minecraft Bedrock Code Utils extension...");
     VscodeUtils.initializeContext(context);
 
-    await MinecraftProjectManager.initialize();
+    await MinecraftProjectManager.initialize(context.subscriptions);
     await MinecraftGameManager.initialize();
 
     const features: Feature[] = [
@@ -40,5 +40,6 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
-    // TRUC A FAIRE
+    MinecraftProjectManager.dispose();
+    VscodeUtils.clearContext();
 }

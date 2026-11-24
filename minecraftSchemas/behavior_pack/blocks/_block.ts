@@ -2208,6 +2208,7 @@ const versionedChanges: SchemaChange[] = [
                     properties: {
                         dynamic_properties: {
                             description: "Définit si le block-entity peut avoir des propriétés dynamiques.",
+                            default: false,
                             type: "boolean"
                         },
                         container: {

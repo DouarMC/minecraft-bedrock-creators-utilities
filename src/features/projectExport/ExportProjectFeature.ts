@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { Feature } from "../Feature";
 import { MinecraftProjectManager } from "../../services/projects/MinecraftProjectManager";
-import { ProjectService } from "../../services/projects/ProjectService";
+import { ProjectExporter } from "../../services/projects/ProjectExporter";
 import { MinecraftProject } from "../../core/minecraft/models/projects/MinecraftProject";
 
 export class ExportProjectFeature extends Feature {
@@ -30,7 +30,7 @@ export class ExportProjectFeature extends Feature {
                 async (progress) => {
                     try {
                         progress.report({ message: "Exportation en cours..." });
-                        await ProjectService.exportProject(minecraftProject);
+                        await ProjectExporter.exportProject(minecraftProject);
                         vscode.window.showInformationMessage(`Le projet "${minecraftProject.id}" a été exporté avec succès.`);
                     } catch (error) {
                         if (error instanceof Error) {

@@ -16265,6 +16265,7 @@ const versionedChanges: SchemaChange[] = [
                     properties: {
                         presets: {
                             description: "Définit des ensembles de règles de recul prédéfinis.",
+                            default: [],
                             type: "array",
                             items: {
                                 type: "object",

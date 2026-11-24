@@ -19,6 +19,10 @@ export class VscodeUtils {
         this.context = context;
     }
 
+    public static clearContext(): void {
+        this.context = undefined;
+    }
+
     /**
      * Récupère le contexte de l'extension
      * @returns

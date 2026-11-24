@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { ExtensionConfig } from "../../core/ExtensionConfig";
 import { FolderPickItem, PromptItems } from "./PromptItems";
-import { MinecraftAddonPackType, MinecraftProduct, MinecraftProjectType } from "../../core/minecraft/models/MinecraftTypes";
+import { MinecraftAddonPackType, MinecraftProduct } from "../../core/minecraft/models/MinecraftTypes";
 import { ProjectMetadata } from "../../types/projectConfig";
 
 /**
@@ -31,21 +31,6 @@ export class PromptService {
      * @returns Renvoie un objet contenant les métadonnées du projet ou undefined si l'utilisateur a annulé la saisie.
      */
     public static async askProjectMetadata(): Promise<ProjectMetadata | undefined> {
-        // Selection du type de projet (Addon, Skin Pack, World Template)
-        const selectedProjectTypeItem = await vscode.window.showQuickPick(
-            PromptItems.PROJECT_TYPE_ITEMS,
-            {
-                title: "Type du projet",
-                placeHolder: "Sélectionnez le type du projet",
-                canPickMany: false,
-                ignoreFocusOut: true
-            }
-        );
-        // Si l'utilisateur annule la sélection, on retourne undefined pour indiquer que l'opération a été annulée
-        if (selectedProjectTypeItem === undefined) {
-            return;
-        }
-
         // Demande de l'ID du projet avec validation pour n'accepter que les caractères valides (lettres minuscules, chiffres, tirets, underscores)
         // Anlève les espaces inutiles et convertit en minuscules pour éviter les erreurs de format
         const id = (await vscode.window.showInputBox({
@@ -101,7 +86,7 @@ export class PromptService {
         }
 
         return {
-            type: selectedProjectTypeItem.label as MinecraftProjectType,
+            type: "addon",
             id: id,
             displayName: displayName,
             author: author,

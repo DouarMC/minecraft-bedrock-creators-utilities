@@ -135,8 +135,9 @@ const baseSchema: MinecraftJsonSchema = {
                                                 },
                                                 type: {
                                                     description: "Contrôle le type de teinte d'herbe à utiliser.",
+                                                    const: "tint",
                                                     type: "string",
-                                                    enum: ["tint"]
+                                                    enum: ["tint", "noise"]
                                                 }
                                             }
                                         },
@@ -146,8 +147,9 @@ const baseSchema: MinecraftJsonSchema = {
                                             properties: {
                                                 type: {
                                                     description: "Contrôle le type de teinte d'herbe à utiliser.",
+                                                    const: "noise",
                                                     type: "string",
-                                                    enum: ["noise"]
+                                                    enum: ["noise", "tint"]
                                                 }
                                             }
                                         }

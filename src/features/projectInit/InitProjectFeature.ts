@@ -2,6 +2,9 @@ import * as vscode from "vscode";
 import { VscodeUtils } from "../../vscode-utils/VscodeUtils";
 import { PromptService } from "../../services/prompts/PromptService";
 import { ProjectService } from "../../services/projects/ProjectService";
+import { AddonProjectScaffolder } from "../../services/projects/AddonProjectScaffolder";
+import { ProjectInitializationCleanup } from "../../services/projects/ProjectInitializationCleanup";
+import { AddonSetupPromptResult, collectAddonSetupOptions } from "./AddonSetupPromptFlow";
 import { Feature } from "../Feature";
 
 /**
@@ -60,50 +63,52 @@ export class InitProjectFeature extends Feature {
                 return;
             }
 
-            try { // Tente de créer le fichier de configuration VSCode pour le projet, et affiche une erreur si la création échoue
+            let setupResult: AddonSetupPromptResult;
+            try {
+                setupResult = await collectAddonSetupOptions(projectMetadata.minecraftProduct, {
+                    askAddonPackTypes: () => PromptService.askAddonPackTypes(),
+                    askBehaviorPackModuleTypes: () => PromptService.askBehaviorPackModuleTypes(),
+                    askScriptApiModules: (minecraftProduct) => PromptService.askScriptApiModules(minecraftProduct)
+                });
+            } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : String(error);
+                vscode.window.showErrorMessage(`Erreur lors de la configuration de l'Add-on : ${errorMessage}`);
+                return;
+            }
+
+            if (setupResult.status === "cancelled") {
+                const message = setupResult.reason === "pack-types"
+                    ? "Aucun pack sélectionné. L'initialisation a été annulée."
+                    : "Aucun module sélectionné. L'initialisation a été annulée.";
+                vscode.window.showWarningMessage(message);
+                return;
+            }
+
+            try {
                 await ProjectService.createVSCodeSettings(projectFolder);
-            } catch (error) {
-                if (error instanceof Error) {
-                    vscode.window.showErrorMessage(`Erreur lors de la création du fichier de configuration VSCode : ${error.message}`);
-                    return;
-                }
-
-                return;
-            }
-
-            try { // Tente de créer le fichier de configuration du projet Minecraft, et affiche une erreur si la création échoue
                 await ProjectService.createMinecraftProjectFile(projectFolder, projectMetadata);
+                await AddonProjectScaffolder.create(projectFolder, projectMetadata, setupResult.options);
             } catch (error) {
-                if (error instanceof Error) {
-                    vscode.window.showErrorMessage(`Erreur lors de la création du fichier de configuration du projet : ${error.message}`);
+                const errorMessage = error instanceof Error ? error.message : String(error);
+                try {
+                    await ProjectInitializationCleanup.removeGeneratedEntries(projectFolder);
+                } catch (cleanupError) {
+                    const cleanupErrorMessage = cleanupError instanceof Error ? cleanupError.message : String(cleanupError);
+                    vscode.window.showErrorMessage(
+                        `Erreur lors de l'initialisation du projet : ${errorMessage}. ${cleanupErrorMessage}`
+                    );
+                    return;
                 }
 
+                vscode.window.showErrorMessage(`Erreur lors de l'initialisation du projet : ${errorMessage}`);
                 return;
             }
 
-            // En fonction du type de projet sélectionné, crée la structure de base du projet Minecraft Bedrock correspondante, et affiche une erreur si la création échoue
-            switch (projectMetadata.type) {
-                case "addon":
-                    try {
-                        await ProjectService.createAddonStructure(projectFolder, projectMetadata);
-                        // Ouvrir le dossier du projet dans VSCode
-                        await vscode.commands.executeCommand("vscode.openFolder", projectFolder, false);
-                    } catch (error) {
-                        if (error instanceof Error) {
-                            vscode.window.showErrorMessage(`Erreur lors de la création de la structure du projet Add-on : ${error.message}`);
-                            return;
-                        }
-                    break;
-                    }
-                case "skin_pack":
-                    // TODO
-                    break;
-                case "world_template":
-                    // TODO
-                    break;
-                default:
-                    vscode.window.showErrorMessage(`Type de projet inconnu : ${projectMetadata.type}`);
-                    return;
+            try {
+                await vscode.commands.executeCommand("vscode.openFolder", projectFolder, false);
+            } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : String(error);
+                vscode.window.showWarningMessage(`Le projet a été créé, mais n'a pas pu être ouvert : ${errorMessage}`);
             }
 
             // Afficher un message de succès une fois que le projet a été initialisé

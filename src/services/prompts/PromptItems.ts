@@ -29,26 +29,6 @@ export class PromptItems {
             alwaysShow: true
         }
     ];
-    public static readonly PROJECT_TYPE_ITEMS: vscode.QuickPickItem[] = [
-        {
-            label: "addon",
-            description: "Un addon pour Minecraft Bedrock.",
-            detail: "Peut contenir un pack de comportements et/ou un pack de ressources.",
-            alwaysShow: true
-        },
-        {
-            label: "skin_pack",
-            description: "Un pack de skins pour Minecraft Bedrock.",
-            detail: "Contient des skins personnalisés pour les personnages du jeu.",
-            alwaysShow: true
-        },
-        {
-            label: "world_template",
-            description: "Un modèle de monde pour Minecraft Bedrock.",
-            detail: "Permet de créer et partager des mondes personnalisés et préconfigurés.",
-            alwaysShow: true
-        }
-    ];
     public static readonly MINECRAFT_PRODUCT_ITEMS: vscode.QuickPickItem[] = [
         {
             label: "stable",

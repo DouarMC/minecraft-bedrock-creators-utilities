@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { Feature } from "../Feature";
 import { MinecraftProjectManager } from "../../services/projects/MinecraftProjectManager";
-import { ProjectService } from "../../services/projects/ProjectService";
+import { ProjectDeployer } from "../../services/projects/ProjectDeployer";
 import { MinecraftProject } from "../../core/minecraft/models/projects/MinecraftProject";
 
 /**
@@ -107,7 +107,7 @@ export class ToggleAutoDeployFeature extends Feature {
             }
 
             try { // Tente de déployer le projet lorsque des changements sont détectés
-                await ProjectService.deployProject(minecraftProject);
+                await ProjectDeployer.deployProject(minecraftProject);
             } catch (error: any) {
                 const errorMessage = error instanceof Error ? error.message : String(error);
                 vscode.window.showErrorMessage(`Échec du déploiement automatique du projet "${minecraftProject.id}": ${errorMessage}`);
@@ -122,7 +122,7 @@ export class ToggleAutoDeployFeature extends Feature {
 
         // Tentative de déploiement initial
         try {
-            await ProjectService.deployProject(minecraftProject);
+            await ProjectDeployer.deployProject(minecraftProject);
         } catch (error: any) {
             const errorMessage = error instanceof Error ? error.message : String(error);
             vscode.window.showErrorMessage(`Échec du déploiement initial du projet "${minecraftProject.id}": ${errorMessage}`);

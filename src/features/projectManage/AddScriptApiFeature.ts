@@ -4,7 +4,8 @@ import * as JsonParser from "jsonc-parser";
 import { Feature } from "../Feature";
 import { MinecraftProjectManager } from "../../services/projects/MinecraftProjectManager";
 import { AddonMinecraftProject } from "../../core/minecraft/models/projects/AddonMinecraftProject";
-import { ProjectService } from "../../services/projects/ProjectService";
+import { ScriptApiService } from "../../services/projects/ScriptApiService";
+import { AddonManifestFactory } from "../../services/projects/AddonManifestFactory";
 import { PromptService } from "../../services/prompts/PromptService";
 import { VscodeUtils } from "../../vscode-utils/VscodeUtils";
 import { MinecraftFileResolverService } from "../../services/minecraft/MinecraftFileResolverService";
@@ -77,7 +78,7 @@ export class AddScriptApiFeature extends Feature {
 
             // Active l'API de script dans le manifeste, et ajoute les modules sélectionnés par l'utilisateur
             try {
-                await ProjectService.createScriptApiStructure(VscodeUtils.getUriFromPath(minecraftProject.folder));
+                await ScriptApiService.createScriptApiStructure(VscodeUtils.getUriFromPath(minecraftProject.folder));
             } catch (error) {
                 if (error instanceof Error) {
                     vscode.window.showErrorMessage("Erreur lors de la création de la structure de l'API de script : " + error.message);
@@ -119,7 +120,7 @@ export class AddScriptApiFeature extends Feature {
                 }
 
                 try { // Ajoute les modules de l'API de script au manifeste et au package.json du projet
-                    ProjectService.addScriptApiModules(manifestJson, packageJsonContent, selectedModules);
+                    AddonManifestFactory.addScriptApiModules(manifestJson, packageJsonContent, selectedModules);
                 } catch (error) {
                     vscode.window.showErrorMessage(`Erreur lors de l'ajout des modules de l'API de script : ${error}`);
                     return;
@@ -129,7 +130,7 @@ export class AddScriptApiFeature extends Feature {
                 await VscodeUtils.writeFile(packageJsonUri, JSON.stringify(packageJsonContent, null, 4));
 
                 // Installe les dépendances npm des modules de l'API de script ajoutés au projet
-                await ProjectService.installNpmDependencies(VscodeUtils.getUriFromPath(minecraftProject.folder));
+                await ScriptApiService.installNpmDependencies(VscodeUtils.getUriFromPath(minecraftProject.folder));
             }
 
             // Enregistre les modifications dans le manifeste du projet

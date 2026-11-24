@@ -24,15 +24,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # 2. Installation de Node et des dépendances (Nécessaire pour le build des schémas)
+      # 2. Installation de Node et des dépendances
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: "20"
           cache: "npm"
 
       - name: Install Dependencies
         run: npm ci
+
+      - name: Test
+        run: npm test
 
       # 3. Génération des Schémas (Créé le dossier dist/minecraftSchemas)
       - name: Build Schemas

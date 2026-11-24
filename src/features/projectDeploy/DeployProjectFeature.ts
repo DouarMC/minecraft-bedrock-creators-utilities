@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { Feature } from "../Feature";
 import { MinecraftProjectManager } from "../../services/projects/MinecraftProjectManager";
-import { ProjectService } from "../../services/projects/ProjectService";
+import { ProjectDeployer } from "../../services/projects/ProjectDeployer";
 import { MinecraftProject } from "../../core/minecraft/models/projects/MinecraftProject";
 
 /**
@@ -41,11 +41,11 @@ export class DeployProjectFeature extends Feature {
                 async (progress) => {
                     progress.report({ message: "Déploiement en cours..." });
                     try {
-                        await ProjectService.deployProject(minecraftProject);
+                        await ProjectDeployer.deployProject(minecraftProject);
                     } catch (error) {
-                        if (error instanceof Error) {
-                            vscode.window.showErrorMessage(`Échec du déploiement du projet : ${error.message}`);
-                        }
+                        const errorMessage = error instanceof Error ? error.message : String(error);
+                        vscode.window.showErrorMessage(`Échec du déploiement du projet : ${errorMessage}`);
+                        return;
                     }
 
                     vscode.window.showInformationMessage(`Le projet "${minecraftProject.id}" a été déployé avec succès.`);

@@ -13,7 +13,8 @@
     },
     "include": [
         "src/**/*",
-        "common/**/*"
+        "common/**/*",
+        "test/**/*"
     ],
     "exclude": [
         "node_modules",
